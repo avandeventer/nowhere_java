@@ -1,0 +1,55 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.9-SNAPSHOT'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+apply plugin: 'application'
+mainClassName = "client.nowhere.GameApplication"
+
+group = 'client'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(22)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://repo.spring.io/snapshot' }
+}
+
+ext {
+	set('springCloudGcpVersion', "5.4.3")
+	set('springCloudVersion', "2023.0.3")
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'com.google.cloud:spring-cloud-gcp-starter-storage'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	compileOnly 'com.google.firebase:firebase-admin:1.32.0'
+	implementation 'com.google.firebase:firebase-admin:6.3.0'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "com.google.cloud:spring-cloud-gcp-dependencies:${springCloudGcpVersion}"
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
