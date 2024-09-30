@@ -3,17 +3,17 @@ package client.nowhere.model;
 public class Player {
 
     private String authorId;
-    private String firstName;
-    private String lastName;
+    private String userName;
     private int strength = 0;
     private int dexterity = 0;
     private int charisma = 0;
     private int intellect = 0;
     private int wealth = 0;
+    private String gameCode;
 
-    public Player(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Player(String gameCode, String userName) {
+        this.gameCode = gameCode;
+        this.userName = userName;
     }
 
     public String getAuthorId() {
@@ -24,20 +24,12 @@ public class Player {
         this.authorId = authorId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public int getStrength() {
@@ -79,4 +71,13 @@ public class Player {
     public void setWealth(int wealth) {
         this.wealth = wealth;
     }
+
+    public String getGameCode() {
+        return gameCode;
+    }
+
+    public void setGameCode(String gameCode) {
+        this.gameCode = gameCode;
+    }
+
 }

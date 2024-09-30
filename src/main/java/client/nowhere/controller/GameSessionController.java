@@ -1,10 +1,12 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.GameSessionHelper;
+import client.nowhere.model.GameSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 public class GameSessionController {
 
@@ -15,10 +17,18 @@ public class GameSessionController {
         this.gameSessionHelper = gameSessionHelper;
     }
 
-    @PostMapping("/game")
-    public String create() {
-        String sessionCode = this.gameSessionHelper.createGameSession();
-        return sessionCode;
+    @PostMapping(value = "/game", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public GameSession create() {
+        GameSession game = this.gameSessionHelper.createGameSession();
+        return game;
+    }
+
+    @PutMapping(value = "/game", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public GameSession update(@RequestBody GameSession gameSession) {
+        GameSession game = this.gameSessionHelper.updateGameSession(gameSession);
+        return game;
     }
 
 }

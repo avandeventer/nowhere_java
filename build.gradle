@@ -53,3 +53,13 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+application {
+	mainClass = 'client.nowhere.GameApplication'
+}
+
+jar {
+	manifest {
+		attributes 'Main-Class': application.mainClass
+	}
+}

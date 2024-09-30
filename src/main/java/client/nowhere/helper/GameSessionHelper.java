@@ -1,6 +1,7 @@
 package client.nowhere.helper;
 
 import client.nowhere.dao.GameSessionDAO;
+import client.nowhere.model.GameSession;
 import client.nowhere.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,8 +18,12 @@ public class GameSessionHelper {
         this.gameSessionDAO = gameSessionDAO;
     }
 
-    public String createGameSession() {
+    public GameSession createGameSession() {
         return gameSessionDAO.createGameSession(generateSessionCode());
+    }
+
+    public GameSession updateGameSession(GameSession gameSession) {
+        return gameSessionDAO.updateGameSession(gameSession);
     }
 
     private String generateSessionCode() {
@@ -33,7 +38,7 @@ public class GameSessionHelper {
         return sessionCode;
     }
 
-    public Player joinPlayer(String gameCode, String playerFirstName, String playerLastName) {
-        return this.gameSessionDAO.joinGameSession(gameCode, playerFirstName, playerLastName);
+    public Player joinPlayer(Player player) {
+        return this.gameSessionDAO.joinGameSession(player);
     }
 }

@@ -3,10 +3,10 @@ package client.nowhere.controller;
 import client.nowhere.helper.GameSessionHelper;
 import client.nowhere.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(maxAge = 3600)
 @RestController
 public class PlayerController {
 
@@ -17,12 +17,15 @@ public class PlayerController {
         this.gameSessionHelper = gameSessionHelper;
     }
 
-    @PostMapping("/player")
-    public String create(@RequestParam String gameCode,
-                         @RequestParam String playerFirstName,
-                         @RequestParam String playerLastName) {
-        Player player = this.gameSessionHelper.joinPlayer(gameCode, playerFirstName, playerLastName);
-        return player.getFirstName();
+    @PostMapping(value = "/player", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Player create(@RequestBody Player player) throws Exception {
+        if(player == null) {
+            throw new Exception("Must include user name and game code");
+        }
+
+        this.gameSessionHelper.joinPlayer(player);
+        return player;
     }
 
 }
