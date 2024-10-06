@@ -1,14 +1,80 @@
 package client.nowhere.model;
 
 import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Option {
 
-    String optionText;
+    String optionId = "";
+    String outcomeAuthorId = "";
+    String optionText = "";
+    String attemptText = "";
     Stat statRequirement;
     int statDC;
-    ArrayList<Repercussion> successResults;
-    ArrayList<Repercussion> failureResults;
+    String successText = "";
+    ArrayList<OutcomeStat> successResults;
+
+    String failureText = "";
+    ArrayList<OutcomeStat> failureResults;
+
+    public Option () {
+        this.optionId = UUID.randomUUID().toString();
+    }
+
+    public Option(String optionId,
+                  String optionText,
+                  String attemptText,
+                  String outcomeAuthorId,
+                  Stat statRequirement,
+                  int statDC,
+                  String successText,
+                  ArrayList<OutcomeStat> successResults,
+                  String failureText,
+                  ArrayList<OutcomeStat> failureResults) {
+        this.optionId = optionId;
+        this.optionText = optionText;
+        this.outcomeAuthorId = outcomeAuthorId;
+        this.statRequirement = statRequirement;
+        this.statDC = statDC;
+        this.attemptText = attemptText;
+        this.successText = successText;
+        this.successResults = successResults;
+        this.failureText = failureText;
+        this.failureResults = failureResults;
+    }
+
+    public void randomizeOptionStats (int minDC, int maxDC) {
+        this.optionText = "";
+        this.statRequirement = Stat.values()[ThreadLocalRandom.current().nextInt(Stat.values().length)];
+        this.statDC = ThreadLocalRandom.current().nextInt(minDC, maxDC + 1);
+
+        OutcomeStat successStat = new OutcomeStat();
+        successStat.randomizeOutcomeStat(1, 2);
+        this.successResults = new ArrayList<>();
+        this.successResults.add(successStat);
+
+        OutcomeStat failureStat = new OutcomeStat();
+        failureStat.randomizeOutcomeStat(1, 2);
+        this.failureResults = new ArrayList<>();
+        this.failureResults.add(failureStat);
+    }
+
+    public String getOptionId() {
+        return optionId;
+    }
+
+    public void setOptionId(String optionId) {
+        this.optionId = optionId;
+    }
+
+    public String getOutcomeAuthorId() {
+        return outcomeAuthorId;
+    }
+
+    public void setOutcomeAuthorId(String outcomeAuthorId) {
+        this.outcomeAuthorId = outcomeAuthorId;
+    }
 
     public String getOptionText() {
         return optionText;
@@ -16,6 +82,14 @@ public class Option {
 
     public void setOptionText(String optionText) {
         this.optionText = optionText;
+    }
+
+    public String getAttemptText() {
+        return attemptText;
+    }
+
+    public void setAttemptText(String attemptText) {
+        this.attemptText = attemptText;
     }
 
     public Stat getStatRequirement() {
@@ -34,19 +108,35 @@ public class Option {
         this.statDC = statDC;
     }
 
-    public ArrayList<Repercussion> getSuccessResults() {
+    public String getSuccessText() {
+        return successText;
+    }
+
+    public void setSuccessText(String successText) {
+        this.successText = successText;
+    }
+
+    public ArrayList<OutcomeStat> getSuccessResults() {
         return successResults;
     }
 
-    public void setSuccessResults(ArrayList<Repercussion> successResults) {
+    public void setSuccessResults(ArrayList<OutcomeStat> successResults) {
         this.successResults = successResults;
     }
 
-    public ArrayList<Repercussion> getFailureResults() {
+    public String getFailureText() {
+        return failureText;
+    }
+
+    public void setFailureText(String failureText) {
+        this.failureText = failureText;
+    }
+
+    public ArrayList<OutcomeStat> getFailureResults() {
         return failureResults;
     }
 
-    public void setFailureResults(ArrayList<Repercussion> failureResults) {
+    public void setFailureResults(ArrayList<OutcomeStat> failureResults) {
         this.failureResults = failureResults;
     }
 }

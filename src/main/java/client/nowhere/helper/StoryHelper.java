@@ -15,7 +15,12 @@ public class StoryHelper {
         this.storyDAO = storyDAO;
     }
 
-    public Story createPrompt(Story story) {
+    public Story createStory(Story story) {
+        story.randomizeNewStory();
         return storyDAO.createStory(story);
+    }
+
+    public Story updateStory(Story story) {
+        return storyDAO.updateStory(story);
     }
 }

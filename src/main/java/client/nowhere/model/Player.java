@@ -1,5 +1,7 @@
 package client.nowhere.model;
 
+import java.util.UUID;
+
 public class Player {
 
     private String authorId;
@@ -11,9 +13,12 @@ public class Player {
     private int wealth = 0;
     private String gameCode;
 
+    public Player() { }
+
     public Player(String gameCode, String userName) {
         this.gameCode = gameCode;
         this.userName = userName;
+        this.authorId = UUID.randomUUID().toString();
     }
 
     public String getAuthorId() {
@@ -22,6 +27,10 @@ public class Player {
 
     public void setAuthorId(String authorId) {
         this.authorId = authorId;
+    }
+
+    public void createRandomAuthorId() {
+        this.authorId = UUID.randomUUID().toString();
     }
 
     public String getUserName() {

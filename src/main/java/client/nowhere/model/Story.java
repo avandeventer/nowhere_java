@@ -1,19 +1,62 @@
 package client.nowhere.model;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Story {
 
-    private String prompt;
-    private ArrayList<Option> options;
-    private String gameCode;
-    private ArrayList<String> sequelStoryIds;
-    private ArrayList<String> prequelStoryIds;
+    private String storyId = "";
+    private String prompt = "";
+    private String authorId = "";
+    private Location location;
+    private List<Option> options;
+    private String gameCode = "";
+    private List<Repercussion> successRepercussions;
+    private List<Repercussion> failureRepercussions;
 
-    public Story() {}
+    public Story () {
+        this.storyId = UUID.randomUUID().toString();
+    }
 
-    public Story(String prompt) {
-        this.prompt = prompt;
+    public Story(String gameCode) {
+        this.gameCode = gameCode;
+        this.storyId = UUID.randomUUID().toString();
+    }
+
+    public void randomizeNewStory() {
+        this.prompt = "";
+        int minDC = 1;
+        int maxDC = 10;
+
+        AdventureMap adventureMap = new AdventureMap();
+        int locationId = ThreadLocalRandom.current().nextInt(0, adventureMap.locations.size() + 1);
+
+        Option optionOne = new Option();
+        optionOne.randomizeOptionStats(minDC, maxDC);
+
+        if(optionOne.getStatDC() >= 7) {
+            maxDC = 6;
+        }
+
+        if(optionOne.getStatDC() <= 3) {
+            minDC = 3;
+        }
+
+        Option optionTwo = new Option();
+        optionTwo.randomizeOptionStats(minDC, maxDC);
+        this.options = new ArrayList<>();
+        options.add(optionOne);
+        options.add(optionTwo);
+    }
+
+    public String getStoryId() {
+        return storyId;
+    }
+
+    public void setStoryId(String storyId) {
+        this.storyId = storyId;
     }
 
     public String getPrompt() {
@@ -24,11 +67,11 @@ public class Story {
         this.prompt = prompt;
     }
 
-    public ArrayList<Option> getOptions() {
+    public List<Option> getOptions() {
         return options;
     }
 
-    public void setOptions(ArrayList<Option> options) {
+    public void setOptions(List<Option> options) {
         this.options = options;
     }
 
@@ -40,20 +83,36 @@ public class Story {
         this.gameCode = gameCode;
     }
 
-    public ArrayList<String> getSequelStoryIds() {
-        return sequelStoryIds;
+    public List<Repercussion> getSuccessRepercussions() {
+        return successRepercussions;
     }
 
-    public void setSequelStoryIds(ArrayList<String> sequelStoryIds) {
-        this.sequelStoryIds = sequelStoryIds;
+    public void setSuccessRepercussions(List<Repercussion> successRepercussions) {
+        this.successRepercussions = successRepercussions;
     }
 
-    public ArrayList<String> getPrequelStoryIds() {
-        return prequelStoryIds;
+    public List<Repercussion> getFailureRepercussions() {
+        return failureRepercussions;
     }
 
-    public void setPrequelStoryIds(ArrayList<String> prequelStoryIds) {
-        this.prequelStoryIds = prequelStoryIds;
+    public void setFailureRepercussions(List<Repercussion> failureRepercussions) {
+        this.failureRepercussions = failureRepercussions;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
     }
 
 }

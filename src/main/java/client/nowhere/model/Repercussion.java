@@ -2,26 +2,9 @@ package client.nowhere.model;
 
 public class Repercussion {
 
-    Stat impactedStat;
-    int statChange;
     String sequelPlayerId;
     String sequelLocationId;
-
-    public Stat getImpactedStat() {
-        return impactedStat;
-    }
-
-    public void setImpactedStat(Stat impactedStat) {
-        this.impactedStat = impactedStat;
-    }
-
-    public int getStatChange() {
-        return statChange;
-    }
-
-    public void setStatChange(int statChange) {
-        this.statChange = statChange;
-    }
+    Event event;
 
     public String getSequelPlayerId() {
         return sequelPlayerId;
@@ -38,4 +21,13 @@ public class Repercussion {
     public void setSequelLocationId(String sequelLocationId) {
         this.sequelLocationId = sequelLocationId;
     }
+
+    public Event getEvent() {
+        return event;
+    }
+
+    public void setEvent(Event event) {
+        this.event = event;
+    }
+
 }

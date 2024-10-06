@@ -1,6 +1,6 @@
 package client.nowhere.config;
 
-import com.google.api.core.ApiFuture;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.FirebaseApp;
@@ -26,4 +26,10 @@ public class FirestoreConfig {
         }
         return FirestoreClient.getFirestore();
     }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
 }

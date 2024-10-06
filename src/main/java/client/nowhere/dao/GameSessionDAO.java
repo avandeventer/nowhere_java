@@ -4,6 +4,8 @@ import client.nowhere.exception.ResourceException;
 import client.nowhere.model.GameSession;
 import client.nowhere.model.GameState;
 import client.nowhere.model.Player;
+import client.nowhere.model.Story;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +16,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Component
 public class GameSessionDAO {
 
     private final Firestore db;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     public GameSessionDAO(Firestore db) {
@@ -74,4 +80,42 @@ public class GameSessionDAO {
         }
         return gameSession;
     }
+
+    public List<Player> getPlayers(String gameCode) {
+        List<Player> players = new ArrayList<>();
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            players = mapPlayers(gameSession);
+        } catch (InterruptedException | ExecutionException e) {
+            System.out.println("There was an issue retrieving the players for this session. " + e.getMessage());
+        }
+        return players;
+    }
+
+    private List<Player> mapPlayers(DocumentSnapshot document) {
+        List<Map<String, Object>> rawPlayers = (List<Map<String, Object>>) document.get("players");
+
+        if (rawPlayers == null) {
+            throw new ResourceException("No players found in the game session");
+        }
+
+        List<Player> players = rawPlayers.stream()
+                .map(rawStory -> objectMapper.convertValue(rawStory, Player.class))
+                .collect(Collectors.toList());
+
+        return players;
+    }
+
+    private DocumentSnapshot getGameSession(DocumentReference gameSessionRef) throws InterruptedException, ExecutionException {
+        // Get the game session data
+        ApiFuture<DocumentSnapshot> future = gameSessionRef.get();
+        DocumentSnapshot document = future.get();
+
+        if (!document.exists()) {
+            throw new ResourceException("Game session does not exist");
+        }
+        return document;
+    }
+
 }

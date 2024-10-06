@@ -8,6 +8,8 @@ public class GameSession {
     ArrayList<Player> players;
     GameState gameState;
 
+    public GameSession() { }
+
     public GameSession(String gameCode) {
         this.gameCode = gameCode;
     }

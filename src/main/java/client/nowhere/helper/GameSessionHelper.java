@@ -6,6 +6,7 @@ import client.nowhere.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Random;
 
 @Component
@@ -23,6 +24,16 @@ public class GameSessionHelper {
     }
 
     public GameSession updateGameSession(GameSession gameSession) {
+
+        switch(gameSession.getGameState()) {
+            case WRITE_PROMPTS:
+                List<Player> players = gameSessionDAO.getPlayers(gameSession.getGameCode());
+                for(Player player : players) {
+                    System.out.println(player.getUserName());
+                }
+                break;
+        }
+
         return gameSessionDAO.updateGameSession(gameSession);
     }
 
@@ -39,6 +50,7 @@ public class GameSessionHelper {
     }
 
     public Player joinPlayer(Player player) {
+        player.createRandomAuthorId();
         return this.gameSessionDAO.joinGameSession(player);
     }
 }

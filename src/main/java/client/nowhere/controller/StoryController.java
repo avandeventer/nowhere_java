@@ -3,10 +3,7 @@ package client.nowhere.controller;
 import client.nowhere.helper.StoryHelper;
 import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(maxAge = 3600)
 @RestController
@@ -20,9 +17,18 @@ public class StoryController {
     }
 
     @PostMapping("/story")
-    public String create(@RequestBody Story story) {
-        Story updatedStory = this.storyHelper.createPrompt(story);
-        return story.getPrompt();
+    @ResponseBody
+    public Story create(@RequestBody Story story) {
+        Story updatedStory = this.storyHelper.createStory(story);
+        return updatedStory;
     }
+
+    @PutMapping("/story")
+    @ResponseBody
+    public Story update(@RequestBody Story story) {
+        Story updatedStory = this.storyHelper.updateStory(story);
+        return updatedStory;
+    }
+
 
 }
