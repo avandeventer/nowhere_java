@@ -19,6 +19,7 @@ public class StoryController {
     @PostMapping("/story")
     @ResponseBody
     public Story create(@RequestBody Story story) {
+        story.randomizeNewStory();
         Story updatedStory = this.storyHelper.createStory(story);
         return updatedStory;
     }

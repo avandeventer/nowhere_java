@@ -1,22 +1,27 @@
 package client.nowhere.helper;
 
 import client.nowhere.dao.GameSessionDAO;
-import client.nowhere.model.GameSession;
-import client.nowhere.model.Player;
+import client.nowhere.dao.StoryDAO;
+import client.nowhere.exception.ResourceException;
+import client.nowhere.model.*;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Component
 public class GameSessionHelper {
 
     private final GameSessionDAO gameSessionDAO;
+    private final StoryHelper storyHelper;
 
     @Autowired
-    public GameSessionHelper(GameSessionDAO gameSessionDAO) {
+    public GameSessionHelper(GameSessionDAO gameSessionDAO, StoryHelper storyHelper) {
         this.gameSessionDAO = gameSessionDAO;
+        this.storyHelper = storyHelper;
     }
 
     public GameSession createGameSession() {
@@ -25,16 +30,73 @@ public class GameSessionHelper {
 
     public GameSession updateGameSession(GameSession gameSession) {
 
-        switch(gameSession.getGameState()) {
-            case WRITE_PROMPTS:
-                List<Player> players = gameSessionDAO.getPlayers(gameSession.getGameCode());
-                for(Player player : players) {
-                    System.out.println(player.getUserName());
-                }
-                break;
+        try {
+            switch (gameSession.getGameState()) {
+                case WRITE_PROMPTS:
+                    List<Player> players = gameSessionDAO.getPlayers(gameSession.getGameCode());
+                    int locationIndex = ThreadLocalRandom.current().nextInt(0, DefaultLocation.values().length);
+                    AdventureMap adventureMap = new AdventureMap();
+
+                    int story1OutcomeAuthorIdIndex = ThreadLocalRandom.current().nextInt(1, players.size());
+                    int story2OutcomeAuthorIdIndex = ThreadLocalRandom.current().nextInt(1, players.size());
+                    if (story2OutcomeAuthorIdIndex == story1OutcomeAuthorIdIndex) {
+                        story2OutcomeAuthorIdIndex++;
+                    }
+
+                    for (int i = 0; i < players.size(); i++) {
+                        locationIndex = locationIndex >= DefaultLocation.values().length ? 0 : locationIndex;
+                        story1OutcomeAuthorIdIndex = story1OutcomeAuthorIdIndex >= players.size() ? 0 : story1OutcomeAuthorIdIndex;
+                        story2OutcomeAuthorIdIndex = story2OutcomeAuthorIdIndex >= players.size() ? 0 : story2OutcomeAuthorIdIndex;
+
+                        Player player = players.get(i);
+
+                        Story storyOne = generatePlayerStory(
+                                gameSession.getGameCode(),
+                                adventureMap.getLocations().get(locationIndex),
+                                players.get(story1OutcomeAuthorIdIndex).getAuthorId(),
+                                player.getAuthorId()
+                        );
+
+                        int locationIndexTwo = (locationIndex + 1 >= adventureMap.getLocations().size()) ? 0 : locationIndex;
+
+                        Story storyTwo = generatePlayerStory(
+                                gameSession.getGameCode(),
+                                adventureMap.getLocations().get(locationIndexTwo),
+                                players.get(story2OutcomeAuthorIdIndex).getAuthorId(),
+                                player.getAuthorId()
+                        );
+
+                        storyHelper.createStory(storyOne);
+                        storyHelper.createStory(storyTwo);
+
+                        locationIndex++;
+                        story1OutcomeAuthorIdIndex++;
+                        story2OutcomeAuthorIdIndex++;
+                    }
+                    break;
+            }
+        } catch (Exception e) {
+            System.out.println("Story creation stopped");
+            throw new ResourceException("Story creation failure", e);
         }
 
         return gameSessionDAO.updateGameSession(gameSession);
+    }
+
+    private Story generatePlayerStory(
+            String gameSessionCode,
+            Location location,
+            String outcomeAuthorId,
+            String playerAuthorId
+    ) {
+        Story storyOne = new Story(gameSessionCode);
+        storyOne.randomizeNewStory();
+        storyOne.setLocation(location);
+        storyOne.setAuthorId(playerAuthorId);
+        for (Option option : storyOne.getOptions()) {
+            option.setOutcomeAuthorId(outcomeAuthorId);
+        }
+        return storyOne;
     }
 
     private String generateSessionCode() {

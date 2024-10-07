@@ -3,7 +3,6 @@ package client.nowhere.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Story {
 
@@ -29,9 +28,6 @@ public class Story {
         this.prompt = "";
         int minDC = 1;
         int maxDC = 10;
-
-        AdventureMap adventureMap = new AdventureMap();
-        int locationId = ThreadLocalRandom.current().nextInt(0, adventureMap.locations.size() + 1);
 
         Option optionOne = new Option();
         optionOne.randomizeOptionStats(minDC, maxDC);

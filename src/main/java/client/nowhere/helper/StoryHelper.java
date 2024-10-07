@@ -16,7 +16,6 @@ public class StoryHelper {
     }
 
     public Story createStory(Story story) {
-        story.randomizeNewStory();
         return storyDAO.createStory(story);
     }
 
