@@ -52,7 +52,7 @@ public class StoryDAO {
                 if (storyToUpdate.getStoryId().equals(story.getStoryId())) {
                     storyToUpdate.setPrompt(story.getPrompt());
                     List<Option> optionsToUpdate = new ArrayList<>();
-                    for(Option resultOption : storyToUpdate.getOptions()) {
+                    for (Option resultOption : storyToUpdate.getOptions()) {
                         for (Option inputOption : story.getOptions()) {
                             if (resultOption.getOptionId().equals(inputOption.getOptionId())) {
                                 Option optionToUpdate = new Option(
@@ -66,7 +66,7 @@ public class StoryDAO {
                                         !inputOption.getOutcomeAuthorId().isEmpty() ?
                                                 inputOption.getOutcomeAuthorId() :
                                                 resultOption.getOutcomeAuthorId(),
-                                          resultOption.getStatRequirement(),
+                                        resultOption.getStatRequirement(),
                                         resultOption.getStatDC(),
                                         !inputOption.getSuccessText().isEmpty() ?
                                                 inputOption.getSuccessText() :
@@ -119,5 +119,21 @@ public class StoryDAO {
             throw new ResourceException("Game session does not exist");
         }
         return document;
+    }
+
+    public List<Story> getPlayerStories(String gameCode, String authorId) {
+        List<Story> playerStories;
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            List<Story> stories = mapStories(gameSession);
+            playerStories = stories.stream()
+                    .filter(story -> story.getAuthorId().equals(authorId))
+                    .collect(Collectors.toList());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue updating the story", e);
+        }
+        return playerStories;
     }
 }

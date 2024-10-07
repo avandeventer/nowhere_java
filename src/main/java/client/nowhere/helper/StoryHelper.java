@@ -5,6 +5,8 @@ import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class StoryHelper {
 
@@ -21,5 +23,9 @@ public class StoryHelper {
 
     public Story updateStory(Story story) {
         return storyDAO.updateStory(story);
+    }
+
+    public List<Story> getPlayerStories(String gameCode, String authorId) {
+        return storyDAO.getPlayerStories(gameCode, authorId);
     }
 }

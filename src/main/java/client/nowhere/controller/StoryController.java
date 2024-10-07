@@ -5,6 +5,8 @@ import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(maxAge = 3600)
 @RestController
 public class StoryController {
@@ -29,6 +31,15 @@ public class StoryController {
     public Story update(@RequestBody Story story) {
         Story updatedStory = this.storyHelper.updateStory(story);
         return updatedStory;
+    }
+
+    @GetMapping("/story")
+    @ResponseBody
+    public List<Story> getPlayerStories(
+            @RequestParam String gameCode,
+            @RequestParam String authorId) {
+        List<Story> playerStories = this.storyHelper.getPlayerStories(gameCode, authorId);
+        return playerStories;
     }
 
 
