@@ -7,7 +7,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Option {
 
     String optionId = "";
-    String outcomeAuthorId = "";
     String optionText = "";
     String attemptText = "";
     Stat statRequirement;
@@ -25,7 +24,6 @@ public class Option {
     public Option(String optionId,
                   String optionText,
                   String attemptText,
-                  String outcomeAuthorId,
                   Stat statRequirement,
                   int statDC,
                   String successText,
@@ -34,7 +32,6 @@ public class Option {
                   ArrayList<OutcomeStat> failureResults) {
         this.optionId = optionId;
         this.optionText = optionText;
-        this.outcomeAuthorId = outcomeAuthorId;
         this.statRequirement = statRequirement;
         this.statDC = statDC;
         this.attemptText = attemptText;
@@ -66,14 +63,6 @@ public class Option {
 
     public void setOptionId(String optionId) {
         this.optionId = optionId;
-    }
-
-    public String getOutcomeAuthorId() {
-        return outcomeAuthorId;
-    }
-
-    public void setOutcomeAuthorId(String outcomeAuthorId) {
-        this.outcomeAuthorId = outcomeAuthorId;
     }
 
     public String getOptionText() {

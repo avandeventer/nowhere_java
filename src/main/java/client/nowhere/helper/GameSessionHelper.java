@@ -32,7 +32,7 @@ public class GameSessionHelper {
 
         try {
             switch (gameSession.getGameState()) {
-                case WRITE_PROMPTS:
+                case START:
                     List<Player> players = gameSessionDAO.getPlayers(gameSession.getGameCode());
                     int locationIndex = ThreadLocalRandom.current().nextInt(0, DefaultLocation.values().length);
                     AdventureMap adventureMap = new AdventureMap();
@@ -73,6 +73,8 @@ public class GameSessionHelper {
                         story1OutcomeAuthorIdIndex++;
                         story2OutcomeAuthorIdIndex++;
                     }
+                    gameSession.setGameState(GameState.WRITE_PROMPTS);
+                    gameSessionDAO.updateGameSession(gameSession);
                     break;
             }
         } catch (Exception e) {
@@ -89,14 +91,12 @@ public class GameSessionHelper {
             String outcomeAuthorId,
             String playerAuthorId
     ) {
-        Story storyOne = new Story(gameSessionCode);
-        storyOne.randomizeNewStory();
-        storyOne.setLocation(location);
-        storyOne.setAuthorId(playerAuthorId);
-        for (Option option : storyOne.getOptions()) {
-            option.setOutcomeAuthorId(outcomeAuthorId);
-        }
-        return storyOne;
+        Story story = new Story(gameSessionCode);
+        story.randomizeNewStory();
+        story.setLocation(location);
+        story.setAuthorId(playerAuthorId);
+        story.setOutcomeAuthorId(outcomeAuthorId);
+        return story;
     }
 
     private String generateSessionCode() {

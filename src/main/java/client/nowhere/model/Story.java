@@ -9,6 +9,7 @@ public class Story {
     private String storyId = "";
     private String prompt = "";
     private String authorId = "";
+    private String outcomeAuthorId = "";
     private Location location;
     private List<Option> options;
     private String gameCode = "";
@@ -111,4 +112,9 @@ public class Story {
         this.authorId = authorId;
     }
 
+    public String getOutcomeAuthorId() {
+        return this.outcomeAuthorId;
+    }
+
+    public void setOutcomeAuthorId(String outcomeAuthorId) { this.outcomeAuthorId = outcomeAuthorId; }
 }

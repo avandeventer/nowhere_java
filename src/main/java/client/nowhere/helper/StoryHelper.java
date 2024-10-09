@@ -28,4 +28,8 @@ public class StoryHelper {
     public List<Story> getPlayerStories(String gameCode, String authorId) {
         return storyDAO.getPlayerStories(gameCode, authorId);
     }
+
+    public List<Story> getPlayerStoriesByOutcomeAuthorId(String gameCode, String outcomeAuthorId) {
+        return storyDAO.getPlayerStoriesByOutcomeAuthorId(gameCode, outcomeAuthorId);
+    }
 }
