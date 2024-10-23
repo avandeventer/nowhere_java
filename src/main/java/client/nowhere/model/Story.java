@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Story {
+public class Story extends Object {
 
     private String storyId = "";
     private String prompt = "";

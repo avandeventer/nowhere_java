@@ -1,6 +1,7 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.StoryHelper;
+import client.nowhere.model.ResponseObject;
 import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -35,15 +36,14 @@ public class StoryController {
 
     @GetMapping("/story")
     @ResponseBody
-    public List<Story> getPlayerStories(
+    public ResponseObject getPlayerStories(
             @RequestParam String gameCode,
             @RequestParam(required = false) String authorId,
             @RequestParam(required = false) String outcomeAuthorId) {
-
         if (authorId != null) {
-            return this.storyHelper.getPlayerStories(gameCode, authorId);
+            return new ResponseObject(this.storyHelper.getPlayerStories(gameCode, authorId));
         } else if (outcomeAuthorId != null) {
-            return this.storyHelper.getPlayerStoriesByOutcomeAuthorId(gameCode, outcomeAuthorId);
+            return new ResponseObject(this.storyHelper.getPlayerStoriesByOutcomeAuthorId(gameCode, outcomeAuthorId));
         } else {
             throw new IllegalArgumentException("Either authorId or outcomeAuthorId must be provided.");
         }
