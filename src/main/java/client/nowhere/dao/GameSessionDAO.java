@@ -4,7 +4,6 @@ import client.nowhere.exception.ResourceException;
 import client.nowhere.model.GameSession;
 import client.nowhere.model.GameState;
 import client.nowhere.model.Player;
-import client.nowhere.model.Story;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;

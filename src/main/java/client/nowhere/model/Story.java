@@ -7,6 +7,7 @@ import java.util.UUID;
 public class Story extends Object {
 
     private String storyId = "";
+    private boolean visited = false;
     private String prompt = "";
     private String authorId = "";
     private String outcomeAuthorId = "";
@@ -117,4 +118,12 @@ public class Story extends Object {
     }
 
     public void setOutcomeAuthorId(String outcomeAuthorId) { this.outcomeAuthorId = outcomeAuthorId; }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
+    }
 }

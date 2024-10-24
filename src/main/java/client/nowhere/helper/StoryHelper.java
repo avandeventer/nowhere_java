@@ -25,11 +25,23 @@ public class StoryHelper {
         return storyDAO.updateStory(story);
     }
 
-    public List<Story> getPlayerStories(String gameCode, String authorId) {
-        return storyDAO.getPlayerStories(gameCode, authorId);
+    public List<Story> getAuthorStories(String gameCode, String authorId) {
+        return storyDAO.getAuthorStories(gameCode, authorId);
     }
 
-    public List<Story> getPlayerStoriesByOutcomeAuthorId(String gameCode, String outcomeAuthorId) {
-        return storyDAO.getPlayerStoriesByOutcomeAuthorId(gameCode, outcomeAuthorId);
+    public List<Story> getAuthorStoriesByOutcomeAuthorId(String gameCode, String outcomeAuthorId) {
+        return storyDAO.getAuthorStoriesByOutcomeAuthorId(gameCode, outcomeAuthorId);
+    }
+
+    public Story getPlayerStory(String gameCode, String playerId, int locationId) {
+        List<Story> playerStories = storyDAO.getPlayerStories(gameCode, playerId, locationId);
+
+        Story story = new Story();
+        if(playerStories.size() > 0) {
+            story = playerStories.get(0);
+            story.setVisited(true);
+            storyDAO.updateStory(story);
+        }
+        return story;
     }
 }

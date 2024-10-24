@@ -7,6 +7,7 @@ public class GameSession {
     String gameCode;
     ArrayList<Player> players;
     GameState gameState;
+    ActivePlayerSession activePlayerSession;
 
     public GameSession() { }
 
@@ -43,5 +44,14 @@ public class GameSession {
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
     }
+
+    public ActivePlayerSession getActivePlayerSession() {
+        return activePlayerSession;
+    }
+
+    public void setActivePlayerSession(ActivePlayerSession activePlayerSession) {
+        this.activePlayerSession = activePlayerSession;
+    }
+
 
 }

@@ -6,8 +6,6 @@ import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @CrossOrigin(maxAge = 3600)
 @RestController
 public class StoryController {
@@ -36,17 +34,28 @@ public class StoryController {
 
     @GetMapping("/story")
     @ResponseBody
-    public ResponseObject getPlayerStories(
+    public ResponseObject getAuthorStories(
             @RequestParam String gameCode,
             @RequestParam(required = false) String authorId,
             @RequestParam(required = false) String outcomeAuthorId) {
         if (authorId != null) {
-            return new ResponseObject(this.storyHelper.getPlayerStories(gameCode, authorId));
+            return new ResponseObject(this.storyHelper.getAuthorStories(gameCode, authorId));
         } else if (outcomeAuthorId != null) {
-            return new ResponseObject(this.storyHelper.getPlayerStoriesByOutcomeAuthorId(gameCode, outcomeAuthorId));
+            return new ResponseObject(this.storyHelper.getAuthorStoriesByOutcomeAuthorId(gameCode, outcomeAuthorId));
         } else {
             throw new IllegalArgumentException("Either authorId or outcomeAuthorId must be provided.");
         }
     }
 
+    @GetMapping("/adventure")
+    @ResponseBody
+    public Story getPlayerStories(
+            @RequestParam String gameCode,
+            @RequestParam String playerId,
+            @RequestParam int locationId) {
+        if(gameCode == null || playerId == null) {
+            throw new IllegalArgumentException("Either gameCode or playerId must be provided.");
+        }
+        return this.storyHelper.getPlayerStory(gameCode, playerId, locationId);
+    }
 }

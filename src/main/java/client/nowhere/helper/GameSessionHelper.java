@@ -115,4 +115,8 @@ public class GameSessionHelper {
         player.createRandomAuthorId();
         return this.gameSessionDAO.joinGameSession(player);
     }
+
+    public List<Player> getPlayers(String gameCode) {
+        return this.gameSessionDAO.getPlayers(gameCode);
+    }
 }
