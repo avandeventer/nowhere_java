@@ -1,5 +1,7 @@
 package client.nowhere.model;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
 
 public class GameSession {
@@ -13,13 +15,16 @@ public class GameSession {
 
     public GameSession(String gameCode) {
         this.gameCode = gameCode;
+        this.players = new ArrayList<>();
+        this.activePlayerSession = new ActivePlayerSession();
     }
 
     public GameSession(String gameCode, GameState gameState) {
         this.gameCode = gameCode;
         this.gameState = gameState;
+        this.players = new ArrayList<>();
+        this.activePlayerSession = new ActivePlayerSession();
     }
-
 
     public String getGameCode() {
         return gameCode;

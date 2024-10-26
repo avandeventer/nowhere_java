@@ -1,10 +1,11 @@
 package client.nowhere.model;
 
 public class ActivePlayerSession {
-    String gameCode;
-    String playerId;
-    String playerChoiceOptionId;
+    String gameCode = "";
+    String playerId = "";
+    String playerChoiceOptionId = "";
     Story story;
+    boolean setNextPlayerTurn;
 
     public ActivePlayerSession() { }
 
@@ -24,6 +25,22 @@ public class ActivePlayerSession {
         this.playerChoiceOptionId = playerChoiceOptionId;
     }
 
+    public void update(ActivePlayerSession updatedSession) {
+        if(!updatedSession.getPlayerChoiceOptionId().isEmpty()) {
+            this.playerChoiceOptionId = updatedSession.getPlayerChoiceOptionId();
+        }
+
+        if(!updatedSession.getPlayerId().isEmpty()) {
+            this.playerId = updatedSession.getPlayerId();
+        }
+
+        if(updatedSession.getStory() != null) {
+            this.story = updatedSession.getStory();
+        }
+
+        this.setNextPlayerTurn = updatedSession.setNextPlayerTurn;
+    }
+
     public Story getStory() {
         return story;
     }
@@ -39,4 +56,13 @@ public class ActivePlayerSession {
     public void setGameCode(String gameCode) {
         this.gameCode = gameCode;
     }
+
+    public boolean isSetNextPlayerTurn() {
+        return setNextPlayerTurn;
+    }
+
+    public void setSetNextPlayerTurn(boolean setNextPlayerTurn) {
+        this.setNextPlayerTurn = setNextPlayerTurn;
+    }
+
 }

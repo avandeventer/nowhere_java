@@ -1,9 +1,7 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.ActiveSessionHelper;
-import client.nowhere.helper.StoryHelper;
 import client.nowhere.model.ActivePlayerSession;
-import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,11 +12,11 @@ public class ActiveSessionController {
     private final ActiveSessionHelper activeSessionHelper;
 
     @Autowired
-    public ActiveSessionController(ActiveSessionHelper storyHelper) {
+    public ActiveSessionController(ActiveSessionHelper activeSessionHelper) {
         this.activeSessionHelper = activeSessionHelper;
     }
 
-    @PutMapping("/activeSession")
+    @PutMapping("/activePlayerSession")
     @ResponseBody
     public ActivePlayerSession update(@RequestBody ActivePlayerSession activeSession) {
         return this.activeSessionHelper.update(activeSession);

@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Component
 public class GameSessionDAO {
@@ -34,12 +33,16 @@ public class GameSessionDAO {
         List<Player> list = new ArrayList<>();
         DocumentReference docRef = db.collection("gameSessions").document(sessionCode);
         Map<String, Object> data = new HashMap<>();
+
+        GameSession gameSession = new GameSession(sessionCode);
+        gameSession.setGameCode(sessionCode);
+        gameSession.setGameState(GameState.INIT);
         data.put("code", sessionCode);
         data.put("players", list);
         data.put("gameState", GameState.INIT);
 
         try {
-            ApiFuture<WriteResult> result = docRef.set(data);
+            ApiFuture<WriteResult> result = docRef.set(gameSession);
             WriteResult asyncResponse = result.get();
             System.out.println("Update time : " + result.get().toString());
             System.out.println("Object " + result.get().toString());
@@ -47,8 +50,6 @@ public class GameSessionDAO {
             e.printStackTrace();
             throw new ResourceException("There was an issue creating the game session", e);
         }
-        GameSession gameSession = new GameSession(sessionCode);
-        gameSession.setGameState(GameState.INIT);
         return gameSession;
     }
 
@@ -85,29 +86,14 @@ public class GameSessionDAO {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
-            players = mapPlayers(gameSession);
+            players = (List<Player>) FirestoreDAOUtil.mapDocument(objectMapper, gameSession, "players", Player.class);
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("There was an issue retrieving the players for this session. " + e.getMessage());
         }
         return players;
     }
 
-    private List<Player> mapPlayers(DocumentSnapshot document) {
-        List<Map<String, Object>> rawPlayers = (List<Map<String, Object>>) document.get("players");
-
-        if (rawPlayers == null) {
-            throw new ResourceException("No players found in the game session");
-        }
-
-        List<Player> players = rawPlayers.stream()
-                .map(rawStory -> objectMapper.convertValue(rawStory, Player.class))
-                .collect(Collectors.toList());
-
-        return players;
-    }
-
     private DocumentSnapshot getGameSession(DocumentReference gameSessionRef) throws InterruptedException, ExecutionException {
-        // Get the game session data
         ApiFuture<DocumentSnapshot> future = gameSessionRef.get();
         DocumentSnapshot document = future.get();
 
@@ -117,4 +103,15 @@ public class GameSessionDAO {
         return document;
     }
 
+    public GameSession getGame(String gameCode) {
+        GameSession gameSession = new GameSession();
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            DocumentSnapshot gameSessionSnapshot = getGameSession(gameSessionRef);
+            gameSession = FirestoreDAOUtil.mapGameSession(gameSessionSnapshot);
+        } catch (InterruptedException | ExecutionException e) {
+            System.out.println("There was an issue retrieving the game session " + e.getMessage());
+        }
+        return gameSession;
+    }
 }

@@ -1,0 +1,38 @@
+package client.nowhere.dao;
+
+import client.nowhere.exception.ResourceException;
+import client.nowhere.model.GameSession;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.cloud.firestore.DocumentSnapshot;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class FirestoreDAOUtil {
+    public static <T> List<?> mapDocument(ObjectMapper objectMapper, DocumentSnapshot document, String documentPath, Class<T> targetType) {
+        if(documentPath.equals("")) {
+            document.getData();
+        }
+
+        List<Map<String, Object>> rawDocumentMap = (List<Map<String, Object>>) document.get(documentPath);
+
+        if (rawDocumentMap == null) {
+            throw new ResourceException("No documents found in the game session " + documentPath);
+        }
+
+        List<?> documents = rawDocumentMap.stream()
+                .map(rawStory -> objectMapper.convertValue(rawStory, targetType))
+                .collect(Collectors.toList());
+
+        return documents;
+    }
+
+    public static <T> GameSession mapGameSession(DocumentSnapshot document) {
+        if (document.exists()) {
+            return document.toObject(GameSession.class);
+        } else {
+            throw new ResourceException("No data found for the document");
+        }
+    }
+}

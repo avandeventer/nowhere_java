@@ -119,4 +119,8 @@ public class GameSessionHelper {
     public List<Player> getPlayers(String gameCode) {
         return this.gameSessionDAO.getPlayers(gameCode);
     }
+
+    public GameSession getGame(String gameCode) {
+        return this.gameSessionDAO.getGame(gameCode);
+    }
 }
