@@ -71,19 +71,23 @@ public class GameSessionHelper {
 
                         if(isTestMode) {
                             storyOne.setPrompt(UUID.randomUUID().toString());
+                            storyOne.getOptions().get(0).setAttemptText(UUID.randomUUID().toString());
                             storyOne.getOptions().get(0).setOptionText(UUID.randomUUID().toString());
                             storyOne.getOptions().get(0).setSuccessText(UUID.randomUUID().toString());
                             storyOne.getOptions().get(0).setFailureText(UUID.randomUUID().toString());
 
+                            storyOne.getOptions().get(1).setAttemptText(UUID.randomUUID().toString());
                             storyOne.getOptions().get(1).setOptionText(UUID.randomUUID().toString());
                             storyOne.getOptions().get(1).setSuccessText(UUID.randomUUID().toString());
                             storyOne.getOptions().get(1).setFailureText(UUID.randomUUID().toString());
 
                             storyTwo.setPrompt(UUID.randomUUID().toString());
+                            storyTwo.getOptions().get(0).setAttemptText(UUID.randomUUID().toString());
                             storyTwo.getOptions().get(0).setOptionText(UUID.randomUUID().toString());
                             storyTwo.getOptions().get(0).setSuccessText(UUID.randomUUID().toString());
                             storyTwo.getOptions().get(0).setFailureText(UUID.randomUUID().toString());
 
+                            storyTwo.getOptions().get(1).setAttemptText(UUID.randomUUID().toString());
                             storyTwo.getOptions().get(1).setOptionText(UUID.randomUUID().toString());
                             storyTwo.getOptions().get(1).setSuccessText(UUID.randomUUID().toString());
                             storyTwo.getOptions().get(1).setFailureText(UUID.randomUUID().toString());
