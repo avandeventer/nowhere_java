@@ -1,7 +1,6 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.GameSessionHelper;
-import client.nowhere.model.Location;
 import client.nowhere.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -33,8 +32,8 @@ public class PlayerController {
             throw new Exception("Must include user name and game code");
         }
 
-        this.gameSessionHelper.joinPlayer(player);
-        return player;
+        Player joinedPlayer = this.gameSessionHelper.joinPlayer(player);
+        return joinedPlayer;
     }
 
 }

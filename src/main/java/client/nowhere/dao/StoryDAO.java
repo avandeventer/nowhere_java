@@ -162,10 +162,7 @@ public class StoryDAO {
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             playerStories = stories.stream()
-                    .filter(story -> !story.getOutcomeAuthorId().equals(playerId)
-                            && (story.getLocation() != null)
-                            && story.getLocation().getLocationId() == locationId
-                            && !story.isVisited()
+                    .filter(story -> wasNotWrittenByPlayer(playerId, locationId, story)
                     )
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
@@ -173,5 +170,13 @@ public class StoryDAO {
             throw new ResourceException("There was an issue updating the story", e);
         }
         return playerStories;
+    }
+
+    private boolean wasNotWrittenByPlayer(String playerId, int locationId, Story story) {
+        return !story.getAuthorId().equals(playerId)
+                && !story.getOutcomeAuthorId().equals(playerId)
+                && (story.getLocation() != null)
+                && story.getLocation().getLocationId() == locationId
+                && !story.isVisited();
     }
 }

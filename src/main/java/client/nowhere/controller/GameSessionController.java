@@ -35,8 +35,8 @@ public class GameSessionController {
 
     @PutMapping(value = "/game", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public GameSession update(@RequestBody GameSession gameSession) {
-        GameSession game = this.gameSessionHelper.updateGameSession(gameSession);
+    public GameSession update(@RequestParam boolean isTestMode, @RequestBody GameSession gameSession) {
+        GameSession game = this.gameSessionHelper.updateGameSession(gameSession, isTestMode);
         return game;
     }
 

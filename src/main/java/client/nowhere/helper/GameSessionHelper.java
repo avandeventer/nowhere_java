@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Component
 public class GameSessionHelper {
@@ -28,7 +31,7 @@ public class GameSessionHelper {
         return gameSessionDAO.createGameSession(generateSessionCode());
     }
 
-    public GameSession updateGameSession(GameSession gameSession) {
+    public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
 
         try {
             switch (gameSession.getGameState()) {
@@ -65,6 +68,26 @@ public class GameSessionHelper {
                                 players.get(story2OutcomeAuthorIdIndex).getAuthorId(),
                                 player.getAuthorId()
                         );
+
+                        if(isTestMode) {
+                            storyOne.setPrompt(UUID.randomUUID().toString());
+                            storyOne.getOptions().get(0).setOptionText(UUID.randomUUID().toString());
+                            storyOne.getOptions().get(0).setSuccessText(UUID.randomUUID().toString());
+                            storyOne.getOptions().get(0).setFailureText(UUID.randomUUID().toString());
+
+                            storyOne.getOptions().get(1).setOptionText(UUID.randomUUID().toString());
+                            storyOne.getOptions().get(1).setSuccessText(UUID.randomUUID().toString());
+                            storyOne.getOptions().get(1).setFailureText(UUID.randomUUID().toString());
+
+                            storyTwo.setPrompt(UUID.randomUUID().toString());
+                            storyTwo.getOptions().get(0).setOptionText(UUID.randomUUID().toString());
+                            storyTwo.getOptions().get(0).setSuccessText(UUID.randomUUID().toString());
+                            storyTwo.getOptions().get(0).setFailureText(UUID.randomUUID().toString());
+
+                            storyTwo.getOptions().get(1).setOptionText(UUID.randomUUID().toString());
+                            storyTwo.getOptions().get(1).setSuccessText(UUID.randomUUID().toString());
+                            storyTwo.getOptions().get(1).setFailureText(UUID.randomUUID().toString());
+                        }
 
                         storyHelper.createStory(storyOne);
                         storyHelper.createStory(storyTwo);
@@ -112,6 +135,16 @@ public class GameSessionHelper {
     }
 
     public Player joinPlayer(Player player) {
+        List<Player> alreadyJoinedPlayers =
+                this.gameSessionDAO.getPlayers(player.getGameCode());
+
+        Optional<Player> alreadyJoined = alreadyJoinedPlayers.stream().filter(alreadyJoinedPlayer ->
+                alreadyJoinedPlayer.getUserName().equals(player.getUserName())).collect(Collectors.toList()).stream().findAny();
+
+        if(alreadyJoined.isPresent()) {
+            return alreadyJoined.get();
+        }
+
         player.createRandomAuthorId();
         return this.gameSessionDAO.joinGameSession(player);
     }
