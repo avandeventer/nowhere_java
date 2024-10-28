@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Component
 public class GameSessionDAO {
@@ -113,5 +114,26 @@ public class GameSessionDAO {
             System.out.println("There was an issue retrieving the game session " + e.getMessage());
         }
         return gameSession;
+    }
+
+    public Player updatePlayer(Player player) {
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(player.getGameCode());
+            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            List<Player> players = (List<Player>) FirestoreDAOUtil.mapDocument(objectMapper, gameSession, "players", Player.class);
+            players.stream()
+                    .filter(existingPlayer -> existingPlayer.getAuthorId().equals(player.getAuthorId()))
+                    .forEach(existingPlayer -> {
+                        existingPlayer.updatePlayer(player);
+                    });
+
+            ApiFuture<WriteResult> result = gameSessionRef.update("players", players);
+            WriteResult asyncResponse = result.get();
+            System.out.println("Update time : " + result.get().toString());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue creating the game session", e);
+        }
+        return player;
     }
 }

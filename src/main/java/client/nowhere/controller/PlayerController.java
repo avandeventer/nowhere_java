@@ -36,4 +36,14 @@ public class PlayerController {
         return joinedPlayer;
     }
 
+    @PutMapping(value = "/player", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Player update(@RequestBody Player player) throws Exception {
+        if(player == null) {
+            throw new Exception("Must include user name and game code");
+        }
+
+        Player updatedPlayer = this.gameSessionHelper.updatePlayer(player);
+        return updatedPlayer;
+    }
 }

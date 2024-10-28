@@ -1,7 +1,5 @@
 package client.nowhere.model;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.util.ArrayList;
 
 public class GameSession {

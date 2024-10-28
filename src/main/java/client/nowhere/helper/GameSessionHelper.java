@@ -160,4 +160,8 @@ public class GameSessionHelper {
     public GameSession getGame(String gameCode) {
         return this.gameSessionDAO.getGame(gameCode);
     }
+
+    public Player updatePlayer(Player player) {
+        return this.gameSessionDAO.updatePlayer(player);
+    }
 }

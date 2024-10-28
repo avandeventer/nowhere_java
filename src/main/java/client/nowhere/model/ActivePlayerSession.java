@@ -1,10 +1,13 @@
 package client.nowhere.model;
 
+import java.util.List;
+
 public class ActivePlayerSession {
     String gameCode = "";
     String playerId = "";
     String playerChoiceOptionId = "";
     Story story;
+    List<String> outcomeDisplay;
     boolean setNextPlayerTurn;
 
     public ActivePlayerSession() { }
@@ -38,6 +41,10 @@ public class ActivePlayerSession {
             this.story = updatedSession.getStory();
         }
 
+        if(updatedSession.getOutcomeDisplay().size() != 0) {
+            this.outcomeDisplay = updatedSession.getOutcomeDisplay();
+        }
+
         this.setNextPlayerTurn = updatedSession.setNextPlayerTurn;
     }
 
@@ -65,4 +72,11 @@ public class ActivePlayerSession {
         this.setNextPlayerTurn = setNextPlayerTurn;
     }
 
+    public List<String> getOutcomeDisplay() {
+        return outcomeDisplay;
+    }
+
+    public void setOutcomeDisplay(List<String> outcomeDisplay) {
+        this.outcomeDisplay = outcomeDisplay;
+    }
 }

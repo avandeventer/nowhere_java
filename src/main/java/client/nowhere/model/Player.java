@@ -11,6 +11,7 @@ public class Player {
     private int charisma = 0;
     private int intellect = 0;
     private int wealth = 0;
+    private int magic = 0;
     private String gameCode;
 
     public Player() { }
@@ -81,6 +82,14 @@ public class Player {
         this.wealth = wealth;
     }
 
+    public int getMagic() {
+        return magic;
+    }
+
+    public void setMagic(int magic) {
+        this.magic = magic;
+    }
+
     public String getGameCode() {
         return gameCode;
     }
@@ -89,4 +98,12 @@ public class Player {
         this.gameCode = gameCode;
     }
 
+    public void updatePlayer(Player player) {
+        this.setStrength(player.getStrength());
+        this.setIntellect(player.getIntellect());
+        this.setCharisma(player.getCharisma());
+        this.setDexterity(player.getDexterity());
+        this.setWealth(player.getWealth());
+        this.setMagic(player.getMagic());
+    }
 }
