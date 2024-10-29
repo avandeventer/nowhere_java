@@ -60,7 +60,7 @@ public class GameSessionHelper {
                                 player.getAuthorId()
                         );
 
-                        int locationIndexTwo = (locationIndex + 1 >= adventureMap.getLocations().size()) ? 0 : locationIndex;
+                        int locationIndexTwo = (locationIndex + 1 >= adventureMap.getLocations().size()) ? 0 : locationIndex + 1;
 
                         Story storyTwo = generatePlayerStory(
                                 gameSession.getGameCode(),

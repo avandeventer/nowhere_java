@@ -42,7 +42,6 @@ public class ActiveSessionDAO {
             throw new ResourceException("There was an issue reading the game session", e);
         }
         return activeSessionToUpdate;
-
     }
 
     private DocumentSnapshot getGameSession(DocumentReference gameSessionRef) throws InterruptedException, ExecutionException {
