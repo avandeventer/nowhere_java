@@ -40,8 +40,9 @@ public class GameSessionHelper {
                     break;
                 case START_PHASE2:
                     players = gameSessionDAO.getPlayers(gameSession.getGameCode());
-                    List<Story> playedStories = storyDAO.getPlayedStories(gameSession.getGameCode());
+                    List<Story> playedStories = storyDAO.getPlayedStories(gameSession.getGameCode(), isTestMode);
                     generateStoriesToWrite(gameSession, isTestMode, players, playedStories, true);
+                    gameSession.setGameState(GameState.WRITE_PROMPTS_AGAIN);
                     break;
 
             }
@@ -92,7 +93,6 @@ public class GameSessionHelper {
                     shouldGenerateSequelStory ? playedStories.get(sequelStoryIndex).isPlayerSucceeded() : false
             );
             sequelStoryIndex++;
-            //TODO: STUFF FOR SEQUELS HERE
 
             int locationIndexTwo = (locationIndex + 1 >= adventureMap.getLocations().size()) ? 0 : locationIndex + 1;
 

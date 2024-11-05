@@ -234,14 +234,14 @@ public class StoryDAO {
         }
     }
 
-    public List<Story> getPlayedStories(String gameCode) {
+    public List<Story> getPlayedStories(String gameCode, boolean isTestMode) {
         List<Story> authorStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
-                    .filter(story -> story.isVisited() && !story.getSelectedOptionId().isEmpty())
+                    .filter(story -> isTestMode || (story.isVisited() && !story.getSelectedOptionId().isEmpty()))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
