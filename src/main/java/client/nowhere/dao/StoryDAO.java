@@ -1,6 +1,7 @@
 package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
+import client.nowhere.model.Location;
 import client.nowhere.model.Option;
 import client.nowhere.model.Story;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -53,6 +55,9 @@ public class StoryDAO {
                     if(!story.getPrompt().isEmpty()) {
                         storyToUpdate.setPrompt(story.getPrompt());
                     }
+
+                    storyToUpdate.setPlayerId(story.getPlayerId());
+                    storyToUpdate.setSelectedOptionId(story.getSelectedOptionId());
 
                     storyToUpdate.setVisited(story.isVisited());
 
@@ -124,19 +129,19 @@ public class StoryDAO {
     }
 
     public List<Story> getAuthorStories(String gameCode, String authorId) {
-        List<Story> playerStories;
+        List<Story> authorStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
-            playerStories = stories.stream()
+            authorStories = stories.stream()
                     .filter(story -> story.getAuthorId().equals(authorId))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue updating the story", e);
         }
-        return playerStories;
+        return authorStories;
     }
 
     public List<Story> getAuthorStoriesByOutcomeAuthorId(String gameCode, String outcomeAuthorId) {
@@ -178,5 +183,82 @@ public class StoryDAO {
                 && (story.getLocation() != null)
                 && story.getLocation().getLocationId() == locationId
                 && !story.isVisited();
+    }
+
+    public Story createGlobalStory(Story story) {
+        try {
+            DocumentReference globalStoryRef = db.collection("stories").document(story.getStoryId());
+            ApiFuture<WriteResult> result = globalStoryRef.set(story);
+            WriteResult asyncResponse = result.get();
+            System.out.println("Update time : " + result.get().toString());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue creating the game session", e);
+        }
+        return story;
+    }
+
+    public List<Story> getGlobalStories(int locationId) {
+        try {
+            QuerySnapshot querySnapshot = db.collection("stories")
+                    .whereEqualTo("location.locationId", locationId)
+                    .get()
+                    .get();
+
+            List<Story> authorStories = querySnapshot.getDocuments().stream()
+                    .map(document -> document.toObject(Story.class))
+                    .collect(Collectors.toList());
+
+            return authorStories;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue retrieving stories by locationId", e);
+        }
+    }
+
+    public List<Story> getGlobalSequelPlayerStories(List<String> storyIds) {
+        try {
+            QuerySnapshot querySnapshot = db.collection("stories")
+                    .whereIn("prequelStoryId", storyIds)
+                    .get()
+                    .get();
+
+            List<Story> authorStories = querySnapshot.getDocuments().stream()
+                    .map(document -> document.toObject(Story.class))
+                    .collect(Collectors.toList());
+
+            return authorStories;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue retrieving stories by locationId", e);
+        }
+    }
+
+    public List<Story> getPlayedStories(String gameCode) {
+        List<Story> authorStories;
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            List<Story> stories = mapStories(gameSession);
+            authorStories = stories.stream()
+                    .filter(story -> story.isVisited() && !story.getSelectedOptionId().isEmpty())
+                    .collect(Collectors.toList());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue updating the story", e);
+        }
+        return authorStories;
+    }
+
+    public List<Story> getStories(String gameCode) {
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            List<Story> stories = mapStories(gameSession);
+            return stories;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue updating the story", e);
+        }
     }
 }

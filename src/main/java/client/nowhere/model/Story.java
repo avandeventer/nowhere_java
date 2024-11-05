@@ -11,6 +11,12 @@ public class Story extends Object {
     private String prompt = "";
     private String authorId = "";
     private String outcomeAuthorId = "";
+    private String playerId = "";
+    private String selectedOptionId = "";
+    private boolean playerSucceeded = false;
+    private boolean prequelStorySucceeded = false;
+    private String prequelStoryId = "";
+    private String prequelStoryPlayerId = "";
     private Location location;
     private List<Option> options;
     private String gameCode = "";
@@ -24,6 +30,39 @@ public class Story extends Object {
     public Story(String gameCode) {
         this.gameCode = gameCode;
         this.storyId = UUID.randomUUID().toString();
+    }
+
+    public Story(
+            String gameSessionCode,
+            Location location,
+            String outcomeAuthorId,
+            String playerAuthorId
+    ) {
+        this.gameCode = gameSessionCode;
+        this.storyId = UUID.randomUUID().toString();
+        randomizeNewStory();
+        this.location = location;
+        this.authorId = playerAuthorId;
+        this.outcomeAuthorId = outcomeAuthorId;
+    }
+
+    public Story(
+            String gameSessionCode,
+            Location location,
+            String outcomeAuthorId,
+            String playerAuthorId,
+            String prequelStoryId,
+            String playerPrequelStoryId,
+            boolean prequelStorySucceeded
+    ) {
+        this.gameCode = gameSessionCode;
+        this.storyId = UUID.randomUUID().toString();
+        randomizeNewStory();
+        this.location = location;
+        this.authorId = playerAuthorId;
+        this.outcomeAuthorId = outcomeAuthorId;
+        this.prequelStoryId = prequelStoryId;
+        this.prequelStorySucceeded = prequelStorySucceeded;
     }
 
     public void randomizeNewStory() {
@@ -119,11 +158,59 @@ public class Story extends Object {
 
     public void setOutcomeAuthorId(String outcomeAuthorId) { this.outcomeAuthorId = outcomeAuthorId; }
 
+    public String getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(String playerId) {
+        this.playerId = playerId;
+    }
+
+    public String getSelectedOptionId() {
+        return selectedOptionId;
+    }
+
+    public void setSelectedOptionId(String selectedOptionId) {
+        this.selectedOptionId = selectedOptionId;
+    }
+
     public boolean isVisited() {
         return visited;
     }
 
     public void setVisited(boolean visited) {
         this.visited = visited;
+    }
+
+    public String getPrequelStoryId() {
+        return prequelStoryId;
+    }
+
+    public void setPrequelStoryId(String prequelStoryId) {
+        this.prequelStoryId = prequelStoryId;
+    }
+
+    public boolean isPlayerSucceeded() {
+        return playerSucceeded;
+    }
+
+    public void setPlayerSucceeded(boolean playerSucceeded) {
+        this.playerSucceeded = playerSucceeded;
+    }
+
+    public boolean isPrequelStorySucceeded() {
+        return prequelStorySucceeded;
+    }
+
+    public void setPrequelStorySucceeded(boolean prequelStorySucceeded) {
+        this.prequelStorySucceeded = prequelStorySucceeded;
+    }
+
+    public String getPrequelStoryPlayerId() {
+        return prequelStoryPlayerId;
+    }
+
+    public void setPrequelStoryPlayerId(String prequelStoryPlayerId) {
+        this.prequelStoryPlayerId = prequelStoryPlayerId;
     }
 }

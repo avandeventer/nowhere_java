@@ -11,11 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Component
 public class GameSessionDAO {
@@ -26,21 +23,17 @@ public class GameSessionDAO {
     private ObjectMapper objectMapper;
 
     @Autowired
-    public GameSessionDAO(Firestore db) {
+    public GameSessionDAO(Firestore db, ObjectMapper objectMapper) {
         this.db = db;
+        this.objectMapper = objectMapper;
     }
 
     public GameSession createGameSession(String sessionCode) {
-        List<Player> list = new ArrayList<>();
         DocumentReference docRef = db.collection("gameSessions").document(sessionCode);
-        Map<String, Object> data = new HashMap<>();
 
         GameSession gameSession = new GameSession(sessionCode);
         gameSession.setGameCode(sessionCode);
         gameSession.setGameState(GameState.INIT);
-        data.put("code", sessionCode);
-        data.put("players", list);
-        data.put("gameState", GameState.INIT);
 
         try {
             ApiFuture<WriteResult> result = docRef.set(gameSession);

@@ -29,22 +29,10 @@ public class ActivePlayerSession {
     }
 
     public void update(ActivePlayerSession updatedSession) {
-        if(!updatedSession.getPlayerChoiceOptionId().isEmpty()) {
-            this.playerChoiceOptionId = updatedSession.getPlayerChoiceOptionId();
-        }
-
-        if(!updatedSession.getPlayerId().isEmpty()) {
-            this.playerId = updatedSession.getPlayerId();
-        }
-
-        if(updatedSession.getStory() != null) {
-            this.story = updatedSession.getStory();
-        }
-
-        if(updatedSession.getOutcomeDisplay().size() != 0) {
-            this.outcomeDisplay = updatedSession.getOutcomeDisplay();
-        }
-
+        this.playerChoiceOptionId = updatedSession.getPlayerChoiceOptionId();
+        this.playerId = updatedSession.getPlayerId();
+        this.story = updatedSession.getStory();
+        this.outcomeDisplay = updatedSession.getOutcomeDisplay();
         this.setNextPlayerTurn = updatedSession.setNextPlayerTurn;
     }
 

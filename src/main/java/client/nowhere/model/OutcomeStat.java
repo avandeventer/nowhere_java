@@ -9,6 +9,11 @@ public class OutcomeStat {
 
     public OutcomeStat () { }
 
+    public OutcomeStat (Stat impactedStat, int statChange) {
+        this.impactedStat = impactedStat;
+        this.statChange = statChange;
+    }
+
     public void randomizeOutcomeStat (int min, int max) {
         this.impactedStat = Stat.values()[ThreadLocalRandom.current().nextInt(Stat.values().length)];
         this.statChange = ThreadLocalRandom.current().nextInt(min, max + 1);

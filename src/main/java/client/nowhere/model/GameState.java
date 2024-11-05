@@ -6,6 +6,7 @@ public enum GameState {
     WRITE_PROMPTS,
     WRITE_OPTIONS,
     ROUND1,
+    START_PHASE2,
     WRITE_PROMPTS_AGAIN,
     WRITE_OPTIONS_AGAIN,
     ROUND2,

@@ -6,5 +6,6 @@ public enum Stat {
     CHARISMA,
     INTELLECT,
     WEALTH,
-    MAGIC
+    MAGIC,
+    FAVOR
 }

@@ -1,6 +1,7 @@
 package client.nowhere.model;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -12,13 +13,21 @@ public class Option {
     Stat statRequirement;
     int statDC;
     String successText = "";
-    ArrayList<OutcomeStat> successResults;
+    List<OutcomeStat> successResults;
 
     String failureText = "";
-    ArrayList<OutcomeStat> failureResults;
+    List<OutcomeStat> failureResults;
 
     public Option () {
         this.optionId = UUID.randomUUID().toString();
+    }
+
+    public Option (String optionText,
+                   String attemptText,
+                   List<OutcomeStat> successResults) {
+        this.optionText = optionText;
+        this.attemptText = attemptText;
+        this.successResults = successResults;
     }
 
     public Option(String optionId,
@@ -27,9 +36,9 @@ public class Option {
                   Stat statRequirement,
                   int statDC,
                   String successText,
-                  ArrayList<OutcomeStat> successResults,
+                  List<OutcomeStat> successResults,
                   String failureText,
-                  ArrayList<OutcomeStat> failureResults) {
+                  List<OutcomeStat> failureResults) {
         this.optionId = optionId;
         this.optionText = optionText;
         this.statRequirement = statRequirement;
@@ -105,7 +114,7 @@ public class Option {
         this.successText = successText;
     }
 
-    public ArrayList<OutcomeStat> getSuccessResults() {
+    public List<OutcomeStat> getSuccessResults() {
         return successResults;
     }
 
@@ -121,7 +130,7 @@ public class Option {
         this.failureText = failureText;
     }
 
-    public ArrayList<OutcomeStat> getFailureResults() {
+    public List<OutcomeStat> getFailureResults() {
         return failureResults;
     }
 
