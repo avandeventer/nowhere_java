@@ -81,7 +81,7 @@ public enum DefaultLocation {
             Arrays.asList(
                     new Option(
                             "Pray",
-                            "You spend the week in pious reverie. You feel the glow and self-satisfaction of knowing your are in good standing with your god.",
+                            "You spend the week in pious reverie. You feel the glow and self-satisfaction of knowing you are in good standing with your god.",
                             Arrays.asList(
                                     new OutcomeStat(Stat.FAVOR, 1),
                                     new OutcomeStat(Stat.MAGIC, 1)

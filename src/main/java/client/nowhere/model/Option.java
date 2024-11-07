@@ -52,7 +52,7 @@ public class Option {
 
     public void randomizeOptionStats (int minDC, int maxDC) {
         this.optionText = "";
-        this.statRequirement = Stat.values()[ThreadLocalRandom.current().nextInt(Stat.values().length)];
+        this.statRequirement = Stat.values()[ThreadLocalRandom.current().nextInt(Stat.values().length - 1)];
         this.statDC = ThreadLocalRandom.current().nextInt(minDC, maxDC + 1);
 
         OutcomeStat successStat = new OutcomeStat();

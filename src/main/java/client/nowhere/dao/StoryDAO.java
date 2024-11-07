@@ -135,7 +135,7 @@ public class StoryDAO {
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
-                    .filter(story -> story.getAuthorId().equals(authorId))
+                    .filter(story -> story.getAuthorId().equals(authorId) && !story.isVisited())
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -260,5 +260,22 @@ public class StoryDAO {
             e.printStackTrace();
             throw new ResourceException("There was an issue updating the story", e);
         }
+    }
+
+    public List<Story> getAuthorStoriesByStoryId(String gameCode, String storyId) {
+        List<Story> playerStories;
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            List<Story> stories = mapStories(gameSession);
+            playerStories = stories.stream()
+                    .filter(story -> story.getStoryId().equals(storyId))
+                    .collect(Collectors.toList());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue updating the story", e);
+        }
+        return playerStories;
+
     }
 }

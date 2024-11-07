@@ -6,10 +6,7 @@ import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -39,6 +36,10 @@ public class StoryHelper {
         return storyDAO.getAuthorStoriesByOutcomeAuthorId(gameCode, outcomeAuthorId);
     }
 
+    public List<Story> getAuthorStoriesByStoryId(String gameCode, String storyId) {
+        return storyDAO.getAuthorStoriesByStoryId(gameCode, storyId);
+    }
+
     public Story getPlayerStory(String gameCode, String playerId, int locationId) {
         List<Story> gameSessionStories = storyDAO.getStories(gameCode);
         List<Story> sequelStories = getSequelStories(gameSessionStories, playerId, locationId);
@@ -51,18 +52,23 @@ public class StoryHelper {
 
             if(playerStories.size() == 0) {
                 List<Story> globalStories = storyDAO.getGlobalStories(locationId);
-                int globalStoryIndex = ThreadLocalRandom.current().nextInt(0, globalStories.size());
 
-                while(gameSessionStoryIds.contains(globalStories.get(globalStoryIndex).getStoryId())) {
-                    if(globalStoryIndex >= globalStories.size()) {
-                        globalStoryIndex = 0;
+                if(globalStories.size() == 0) {
+                    story.defaultStory(gameCode, locationId);
+                    storyDAO.createStory(story);
+                } else {
+                    int globalStoryIndex = ThreadLocalRandom.current().nextInt(0, globalStories.size());
+                    while (gameSessionStoryIds.contains(globalStories.get(globalStoryIndex).getStoryId())) {
+                        if (globalStoryIndex >= globalStories.size()) {
+                            globalStoryIndex = 0;
+                        }
+                        globalStoryIndex++;
                     }
-                    globalStoryIndex++;
-                }
-                story = globalStories.get(globalStoryIndex);
-                story.setGameCode(gameCode);
+                    story = globalStories.get(globalStoryIndex);
+                    story.setGameCode(gameCode);
 
-                storyDAO.createStory(story);
+                    storyDAO.createStory(story);
+                }
             } else {
                 story = playerStories.get(0);
             }

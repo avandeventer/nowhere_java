@@ -37,11 +37,14 @@ public class StoryController {
     public ResponseObject getAuthorStories(
             @RequestParam String gameCode,
             @RequestParam(required = false) String authorId,
-            @RequestParam(required = false) String outcomeAuthorId) {
+            @RequestParam(required = false) String outcomeAuthorId,
+            @RequestParam(required = false) String storyId) {
         if (authorId != null) {
             return new ResponseObject(this.storyHelper.getAuthorStories(gameCode, authorId));
         } else if (outcomeAuthorId != null) {
             return new ResponseObject(this.storyHelper.getAuthorStoriesByOutcomeAuthorId(gameCode, outcomeAuthorId));
+        } else if (storyId != null) {
+            return new ResponseObject(this.storyHelper.getAuthorStoriesByStoryId(gameCode, storyId));
         } else {
             throw new IllegalArgumentException("Either authorId or outcomeAuthorId must be provided.");
         }
