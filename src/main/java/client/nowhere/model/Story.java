@@ -23,6 +23,7 @@ public class Story extends Object {
     private String gameCode = "";
     private List<Repercussion> successRepercussions;
     private List<Repercussion> failureRepercussions;
+    private List<String> prequelOutcomeDisplay;
 
     public Story () {
         this.storyId = UUID.randomUUID().toString();
@@ -109,12 +110,6 @@ public class Story extends Object {
                 this.options.get(0).successText = "Your singing encourages the ghostly person. They seem satisfied and join in song with you.";
                 this.options.get(0).failureText = "They are immediately disgusted by your performance. They disappear before you even finish. In your shame you decide not to go perform any time soon.";
                 break;
-            case FAVOR:
-                creatureEncountered = "a small farmhand";
-                this.options.get(0).optionText = "Pick a flower for the child";
-                this.options.get(0).successText = "The child is overjoyed and bursts into a shower of plant life. You feel warm inside.";
-                this.options.get(0).failureText = "The child's predicament cannot be solved with a flower. They stare at you incredulously and then sigh and take the flower and carry on. You don't feel like you helped at all.";
-                break;
             case MAGIC:
                 creatureEncountered = "a great winged spirit";
                 this.options.get(0).optionText = "Cast a binding hex";
@@ -158,12 +153,6 @@ public class Story extends Object {
                 this.options.get(1).optionText = "Offer your own story in return";
                 this.options.get(1).successText = "The two of you swap stories well into the night. You almost don't notice when your companion fades away. You feel lonely, but fulfilled.";
                 this.options.get(1).failureText = "Your companion is incensed that you would talk about yourself instead of take an interest. You jerk.";
-                break;
-            case FAVOR:
-                predicament = "asks you about your opinions on the harvest last year";
-                this.options.get(1).optionText = "Say you thought the harvest was fair";
-                this.options.get(1).successText = "They pause momentarily considering your opinion... But then they agree that the harvest god is merciful and fair. They vanish in a cloud of plant life.";
-                this.options.get(1).failureText = "They pause momentarily considering your opinion... But then their eyes narrow. How dare you speak about our patron with so little reverence! They snap their fingers and disappear.";
                 break;
             case MAGIC:
                 predicament = "begins quietly uttering phrases in an unknown language";
@@ -340,5 +329,13 @@ public class Story extends Object {
 
     public void setPrequelStoryPlayerId(String prequelStoryPlayerId) {
         this.prequelStoryPlayerId = prequelStoryPlayerId;
+    }
+
+    public List<String> getPrequelOutcomeDisplay() {
+        return prequelOutcomeDisplay;
+    }
+
+    public void setPrequelOutcomeDisplay(List<String> prequelOutcomeDisplay) {
+        this.prequelOutcomeDisplay = prequelOutcomeDisplay;
     }
 }

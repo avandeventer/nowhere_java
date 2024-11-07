@@ -12,6 +12,7 @@ public class Player {
     private int intellect = 0;
     private int wealth = 0;
     private int magic = 0;
+    private int favor = 0;
     private String gameCode;
 
     public Player() { }
@@ -98,6 +99,14 @@ public class Player {
         this.gameCode = gameCode;
     }
 
+    public int getFavor() {
+        return favor;
+    }
+
+    public void setFavor(int favor) {
+        this.favor = favor;
+    }
+
     public void updatePlayer(Player player) {
         this.setStrength(player.getStrength());
         this.setIntellect(player.getIntellect());
@@ -105,5 +114,6 @@ public class Player {
         this.setDexterity(player.getDexterity());
         this.setWealth(player.getWealth());
         this.setMagic(player.getMagic());
+        this.setFavor(player.getFavor());
     }
 }

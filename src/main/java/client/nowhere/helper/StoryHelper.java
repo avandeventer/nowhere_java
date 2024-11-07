@@ -57,17 +57,21 @@ public class StoryHelper {
                     story.defaultStory(gameCode, locationId);
                     storyDAO.createStory(story);
                 } else {
-                    int globalStoryIndex = ThreadLocalRandom.current().nextInt(0, globalStories.size());
-                    while (gameSessionStoryIds.contains(globalStories.get(globalStoryIndex).getStoryId())) {
-                        if (globalStoryIndex >= globalStories.size()) {
-                            globalStoryIndex = 0;
-                        }
-                        globalStoryIndex++;
+                    boolean storySelected = false;
+                    for(Story globalStory : globalStories) {
+                        if (!gameSessionStoryIds.contains(globalStory.getStoryId())) {
+                            story = globalStory;
+                            story.setGameCode(gameCode);
+                            storyDAO.createStory(story);
+                            storySelected = true;
+                            break;
+                        };
                     }
-                    story = globalStories.get(globalStoryIndex);
-                    story.setGameCode(gameCode);
 
-                    storyDAO.createStory(story);
+                    if(!storySelected) {
+                        story.defaultStory(gameCode, locationId);
+                        storyDAO.createStory(story);
+                    }
                 }
             } else {
                 story = playerStories.get(0);
