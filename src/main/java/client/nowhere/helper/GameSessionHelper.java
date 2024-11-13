@@ -58,7 +58,8 @@ public class GameSessionHelper {
                             do {
                                 assignedAuthorId = playerAuthorQueue.poll();
                                 playerAuthorQueue.offer(assignedAuthorId);
-                            } while (assignedAuthorId.equals(storyWithPrompt.getPlayerId()));
+                            } while (assignedAuthorId.equals(storyWithPrompt.getPlayerId())
+                                    || assignedAuthorId.equals(storyWithPrompt.getAuthorId()));
 
                             if(!option.getSuccessText().isEmpty() && !option.getFailureText().isEmpty()) {
                                 continue;

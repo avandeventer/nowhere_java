@@ -6,6 +6,8 @@ import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(maxAge = 3600)
 @RestController
 public class StoryController {
@@ -60,5 +62,16 @@ public class StoryController {
             throw new IllegalArgumentException("Either gameCode or playerId must be provided.");
         }
         return this.storyHelper.getPlayerStory(gameCode, playerId, locationId);
+    }
+
+    @GetMapping("/adventure/played")
+    @ResponseBody
+    public List<Story> getPlayedStoriesForAdventure(
+            @RequestParam String gameCode,
+            @RequestParam String playerId) {
+        if(gameCode == null || playerId == null) {
+            throw new IllegalArgumentException("Either gameCode or playerId must be provided.");
+        }
+        return this.storyHelper.getPlayedStoriesForAdventure(gameCode, playerId);
     }
 }

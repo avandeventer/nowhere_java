@@ -2,9 +2,7 @@ package client.nowhere.helper;
 
 import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
-import client.nowhere.model.GameSession;
 import client.nowhere.model.Option;
-import client.nowhere.model.Player;
 import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -144,5 +142,9 @@ public class StoryHelper {
         }
 
         return storyDAO.createGlobalStory(story);
+    }
+
+    public List<Story> getPlayedStoriesForAdventure(String gameCode, String playerId) {
+        return storyDAO.getPlayedStoriesForAdventure(gameCode, playerId);
     }
 }

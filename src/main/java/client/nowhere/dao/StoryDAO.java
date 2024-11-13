@@ -157,19 +157,20 @@ public class StoryDAO {
     }
 
     public List<Story> getAuthorStoriesByOutcomeAuthorId(String gameCode, String outcomeAuthorId) {
-        List<Story> playerStories;
+        List<Story> outcomeAuthorStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
-            playerStories = stories.stream()
-                    .filter(story -> story.getOutcomeAuthorId().equals(outcomeAuthorId) && !story.isVisited())
+            outcomeAuthorStories = stories.stream()
+                    .filter(story -> story.getSelectedOptionId().isEmpty() && story.getOptions().stream()
+                            .anyMatch(option -> option.getOutcomeAuthorId().equals(outcomeAuthorId)))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue updating the story", e);
         }
-        return playerStories;
+        return outcomeAuthorStories;
     }
 
     public List<Story> getPlayerStories(String gameCode, String playerId, int locationId) {
@@ -253,6 +254,24 @@ public class StoryDAO {
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
                     .filter(story -> isTestMode || (story.isVisited() && !story.getSelectedOptionId().isEmpty()))
+                    .collect(Collectors.toList());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue updating the story", e);
+        }
+        return authorStories;
+    }
+
+    public List<Story> getPlayedStoriesForAdventure(String gameCode, String playerId) {
+        List<Story> authorStories;
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            List<Story> stories = mapStories(gameSession);
+            authorStories = stories.stream()
+                    .filter(story -> story.isVisited() &&
+                            story.getPlayerId().equals(playerId) &&
+                            story.getSelectedOptionId().isEmpty())
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
