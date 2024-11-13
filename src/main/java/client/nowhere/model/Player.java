@@ -6,13 +6,13 @@ public class Player {
 
     private String authorId;
     private String userName;
-    private int strength = 0;
-    private int dexterity = 0;
-    private int charisma = 0;
-    private int intellect = 0;
-    private int wealth = 0;
-    private int magic = 0;
-    private int favor = 0;
+    private int strength = 4;
+    private int dexterity = 4;
+    private int charisma = 4;
+    private int intellect = 4;
+    private int wealth = 4;
+    private int magic = 4;
+    private int favor = 4;
     private String gameCode;
 
     public Player() { }

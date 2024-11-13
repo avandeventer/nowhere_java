@@ -2,12 +2,9 @@ package client.nowhere.controller;
 
 import client.nowhere.helper.GameSessionHelper;
 import client.nowhere.model.GameSession;
-import client.nowhere.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @CrossOrigin(maxAge = 3600)
 @RestController

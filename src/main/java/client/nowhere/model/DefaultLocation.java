@@ -143,4 +143,9 @@ public enum DefaultLocation {
     public List<Option> getDefaultOptions() {
         return defaultOptions;
     }
+
+    public String getLabel() {
+        return label;
+    }
+
 }

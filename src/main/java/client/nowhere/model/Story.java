@@ -64,6 +64,7 @@ public class Story extends Object {
         this.authorId = playerAuthorId;
         this.outcomeAuthorId = outcomeAuthorId;
         this.prequelStoryId = prequelStoryId;
+        this.prequelStoryPlayerId = playerPrequelStoryId;
         this.prequelStorySucceeded = prequelStorySucceeded;
     }
 

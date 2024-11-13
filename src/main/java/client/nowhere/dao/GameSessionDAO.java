@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -62,9 +64,12 @@ public class GameSessionDAO {
 
     public GameSession updateGameSession(GameSession gameSession) {
         DocumentReference gameSessionRef = db.collection("gameSessions").document(gameSession.getGameCode());
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("gameState", gameSession.getGameState());
+        updates.put("activeGameStateSession", gameSession.getActiveGameStateSession());
 
         try {
-            ApiFuture<WriteResult> result = gameSessionRef.update("gameState", gameSession.getGameState());
+            ApiFuture<WriteResult> result = gameSessionRef.update(updates);
             WriteResult asyncResponse = result.get();
             System.out.println("Update time : " + result.get().toString());
             System.out.println("Object " + result.get().toString());

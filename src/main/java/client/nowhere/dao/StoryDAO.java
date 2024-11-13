@@ -52,44 +52,56 @@ public class StoryDAO {
             for (int i = 0; i < stories.size(); i++) {
                 Story storyToUpdate = stories.get(i);
                 if (storyToUpdate.getStoryId().equals(story.getStoryId())) {
-                    if(!story.getPrompt().isEmpty()) {
+                    if (!story.getPrompt().isEmpty()) {
                         storyToUpdate.setPrompt(story.getPrompt());
                     }
 
-                    storyToUpdate.setPlayerId(story.getPlayerId());
-                    storyToUpdate.setSelectedOptionId(story.getSelectedOptionId());
+                    if (!story.getPlayerId().isEmpty()) {
+                        storyToUpdate.setPlayerId(story.getPlayerId());
+                    }
+
+                    if (!story.getSelectedOptionId().isEmpty()) {
+                        storyToUpdate.setSelectedOptionId(story.getSelectedOptionId());
+                    }
 
                     storyToUpdate.setVisited(story.isVisited());
 
                     List<Option> optionsToUpdate = new ArrayList<>();
-                    for (Option resultOption : storyToUpdate.getOptions()) {
-                        for (Option inputOption : story.getOptions()) {
-                            if (resultOption.getOptionId().equals(inputOption.getOptionId())) {
-                                Option optionToUpdate = new Option(
-                                        resultOption.getOptionId(),
-                                        !inputOption.getOptionText().isEmpty() ?
-                                                inputOption.getOptionText() :
-                                                resultOption.getOptionText(),
-                                        !inputOption.getOptionText().isEmpty() ?
-                                                inputOption.getOptionText() :
-                                                resultOption.getOptionText(),
-                                        resultOption.getStatRequirement(),
-                                        resultOption.getStatDC(),
-                                        !inputOption.getSuccessText().isEmpty() ?
-                                                inputOption.getSuccessText() :
-                                                resultOption.getSuccessText(),
-                                        resultOption.getSuccessResults(),
-                                        !inputOption.getFailureText().isEmpty() ?
-                                                inputOption.getFailureText() :
-                                                resultOption.getFailureText(),
-                                        resultOption.getFailureResults()
-                                );
-                                optionsToUpdate.add(optionToUpdate);
+
+                    if (story.getOptions() != null && story.getOptions().size() != 0) {
+                        for (Option resultOption : storyToUpdate.getOptions()) {
+                            for (Option inputOption : story.getOptions()) {
+                                if (resultOption.getOptionId().equals(inputOption.getOptionId())) {
+                                    Option optionToUpdate = new Option(
+                                            resultOption.getOptionId(),
+                                            !inputOption.getOptionText().isEmpty() ?
+                                                    inputOption.getOptionText() :
+                                                    resultOption.getOptionText(),
+                                            !inputOption.getOptionText().isEmpty() ?
+                                                    inputOption.getOptionText() :
+                                                    resultOption.getOptionText(),
+                                            resultOption.getStatRequirement(),
+                                            resultOption.getStatDC(),
+                                            !inputOption.getSuccessText().isEmpty() ?
+                                                    inputOption.getSuccessText() :
+                                                    resultOption.getSuccessText(),
+                                            resultOption.getSuccessResults(),
+                                            !inputOption.getFailureText().isEmpty() ?
+                                                    inputOption.getFailureText() :
+                                                    resultOption.getFailureText(),
+                                            resultOption.getFailureResults(),
+                                            !inputOption.getOutcomeAuthorId().isEmpty() ?
+                                                    inputOption.getOutcomeAuthorId() :
+                                                    resultOption.getOutcomeAuthorId()
+                                    );
+                                    optionsToUpdate.add(optionToUpdate);
+                                }
                             }
                         }
+                        storyToUpdate.setOptions(optionsToUpdate);
+                        stories.set(i, storyToUpdate);
+                        break;
                     }
-                    storyToUpdate.setOptions(optionsToUpdate);
-                    stories.set(i, storyToUpdate);
                     break;
                 }
             }
@@ -151,7 +163,7 @@ public class StoryDAO {
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             playerStories = stories.stream()
-                    .filter(story -> story.getOutcomeAuthorId().equals(outcomeAuthorId))
+                    .filter(story -> story.getOutcomeAuthorId().equals(outcomeAuthorId) && !story.isVisited())
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -167,8 +179,7 @@ public class StoryDAO {
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             playerStories = stories.stream()
-                    .filter(story -> wasNotWrittenByPlayer(playerId, locationId, story)
-                    )
+                    .filter(story -> wasNotWrittenByPlayer(playerId, locationId, story))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

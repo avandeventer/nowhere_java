@@ -30,13 +30,45 @@ public class GameSessionHelper {
     }
 
     public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
-
         try {
+            List<Player> players = gameSessionDAO.getPlayers(gameSession.getGameCode());
+            ActiveGameStateSession gameStateSession =
+                    gameSession.getActiveGameStateSession();
+            gameStateSession.resetPlayerDoneStatus(players);
+            gameSession.setActiveGameStateSession(gameStateSession);
+
             switch (gameSession.getGameState()) {
                 case START:
-                    List<Player> players = gameSessionDAO.getPlayers(gameSession.getGameCode());
                     generateStoriesToWrite(gameSession, isTestMode, players, new ArrayList<>(), false);
                     gameSession.setGameState(GameState.WRITE_PROMPTS);
+                    break;
+                case GENERATE_WRITE_OPTION_AUTHORS:
+                case GENERATE_WRITE_OPTION_AUTHORS_AGAIN:
+                    Queue<String> playerAuthorQueue = new LinkedList<>(players.stream()
+                            .map(Player::getAuthorId)
+                            .collect(Collectors.toList()));
+
+                    List<Story> stories = storyDAO.getStories(gameSession.getGameCode());
+                    List<Story> storiesWithPrompts = stories.stream().filter(story -> !story.getPlayerId().isEmpty()
+                            && story.isVisited()
+                            && story.getSelectedOptionId().isEmpty()).collect(Collectors.toList());
+                    for (Story storyWithPrompt : storiesWithPrompts) {
+                        for (Option option : storyWithPrompt.getOptions()) {
+                            String assignedAuthorId;
+                            do {
+                                assignedAuthorId = playerAuthorQueue.poll();
+                                playerAuthorQueue.offer(assignedAuthorId);
+                            } while (assignedAuthorId.equals(storyWithPrompt.getPlayerId()));
+
+                            if(!option.getSuccessText().isEmpty() && !option.getFailureText().isEmpty()) {
+                                continue;
+                            }
+
+                            option.setOutcomeAuthorId(assignedAuthorId);
+                        }
+                        storyDAO.updateStory(storyWithPrompt);
+                    }
+                    gameSession.setGameStateToNext();
                     break;
                 case START_PHASE2:
                     players = gameSessionDAO.getPlayers(gameSession.getGameCode());
@@ -44,7 +76,6 @@ public class GameSessionHelper {
                     generateStoriesToWrite(gameSession, isTestMode, players, playedStories, true);
                     gameSession.setGameState(GameState.WRITE_PROMPTS_AGAIN);
                     break;
-
             }
         } catch (Exception e) {
             System.out.println("Story creation stopped");
@@ -64,89 +95,75 @@ public class GameSessionHelper {
         int locationIndex = ThreadLocalRandom.current().nextInt(0, DefaultLocation.values().length);
         AdventureMap adventureMap = new AdventureMap();
 
-        int story1OutcomeAuthorIdIndex = ThreadLocalRandom.current().nextInt(1, players.size());
-        int story2OutcomeAuthorIdIndex = ThreadLocalRandom.current().nextInt(1, players.size());
-        if (story2OutcomeAuthorIdIndex == story1OutcomeAuthorIdIndex) {
-            story2OutcomeAuthorIdIndex++;
-        }
-
         int sequelStoryIndex = 0;
         for (int i = 0; i < players.size(); i++) {
             locationIndex = locationIndex >= DefaultLocation.values().length ? 0 : locationIndex;
-            story1OutcomeAuthorIdIndex = story1OutcomeAuthorIdIndex >= players.size() ? 0 : story1OutcomeAuthorIdIndex;
-            story2OutcomeAuthorIdIndex = story2OutcomeAuthorIdIndex >= players.size() ? 0 : story2OutcomeAuthorIdIndex;
 
             Player player = players.get(i);
 
             Random rand = new Random();
 
-            int coinFlip = rand.nextInt(8);
-            boolean shouldGenerateSequelStory = coinFlip == 3 && isPhaseTwo;
-            boolean shouldGenerateSequelPlayerStory = coinFlip == 4 && isPhaseTwo;
+            int coinFlip = rand.nextInt(3);
+            boolean shouldGenerateSequelStory = coinFlip == 2 && isPhaseTwo;
+            boolean shouldGenerateSequelPlayerStory = coinFlip == 1 && isPhaseTwo;
             Story storyOne = new Story(
                     gameSession.getGameCode(),
                     adventureMap.getLocations().get(locationIndex),
-                    players.get(story1OutcomeAuthorIdIndex).getAuthorId(),
+                    "",
                     player.getAuthorId(),
                     shouldGenerateSequelStory ? playedStories.get(sequelStoryIndex).getStoryId() : "",
                     shouldGenerateSequelPlayerStory ? playedStories.get(sequelStoryIndex).getPlayerId() : "",
-                    shouldGenerateSequelStory ? playedStories.get(sequelStoryIndex).isPlayerSucceeded() : false
+                    shouldGenerateSequelStory && playedStories.get(sequelStoryIndex).isPlayerSucceeded()
             );
             sequelStoryIndex++;
 
-            int locationIndexTwo = (locationIndex + 1 >= adventureMap.getLocations().size()) ? 0 : locationIndex + 1;
+            locationIndex++;
+            locationIndex = locationIndex >= DefaultLocation.values().length ? 0 : locationIndex;
 
             coinFlip = rand.nextInt(8);
             shouldGenerateSequelStory = coinFlip == 3 && isPhaseTwo;
             shouldGenerateSequelPlayerStory = coinFlip == 4 && isPhaseTwo;
             Story storyTwo = new Story(
                     gameSession.getGameCode(),
-                    adventureMap.getLocations().get(locationIndexTwo),
-                    players.get(story2OutcomeAuthorIdIndex).getAuthorId(),
+                    adventureMap.getLocations().get(locationIndex),
+                    "",
                     player.getAuthorId(),
                     shouldGenerateSequelStory ? playedStories.get(sequelStoryIndex).getStoryId() : "",
                     shouldGenerateSequelPlayerStory ? playedStories.get(sequelStoryIndex).getPlayerId() : "",
-                    shouldGenerateSequelStory ? playedStories.get(sequelStoryIndex).isPlayerSucceeded() : false
+                    shouldGenerateSequelStory && playedStories.get(sequelStoryIndex).isPlayerSucceeded()
             );
 
             if(isTestMode) {
                 storyOne.setPrompt(UUID.randomUUID().toString());
                 storyOne.getOptions().get(0).setAttemptText(UUID.randomUUID().toString());
                 storyOne.getOptions().get(0).setOptionText(UUID.randomUUID().toString());
-                storyOne.getOptions().get(0).setSuccessText(UUID.randomUUID().toString());
-                storyOne.getOptions().get(0).setFailureText(UUID.randomUUID().toString());
 
                 storyOne.getOptions().get(1).setAttemptText(UUID.randomUUID().toString());
                 storyOne.getOptions().get(1).setOptionText(UUID.randomUUID().toString());
-                storyOne.getOptions().get(1).setSuccessText(UUID.randomUUID().toString());
-                storyOne.getOptions().get(1).setFailureText(UUID.randomUUID().toString());
 
                 storyTwo.setPrompt(UUID.randomUUID().toString());
                 storyTwo.getOptions().get(0).setAttemptText(UUID.randomUUID().toString());
                 storyTwo.getOptions().get(0).setOptionText(UUID.randomUUID().toString());
-                storyTwo.getOptions().get(0).setSuccessText(UUID.randomUUID().toString());
-                storyTwo.getOptions().get(0).setFailureText(UUID.randomUUID().toString());
 
                 storyTwo.getOptions().get(1).setAttemptText(UUID.randomUUID().toString());
                 storyTwo.getOptions().get(1).setOptionText(UUID.randomUUID().toString());
-                storyTwo.getOptions().get(1).setSuccessText(UUID.randomUUID().toString());
-                storyTwo.getOptions().get(1).setFailureText(UUID.randomUUID().toString());
             }
 
             storyHelper.createStory(storyOne);
             storyHelper.createStory(storyTwo);
 
             locationIndex++;
-            story1OutcomeAuthorIdIndex++;
-            story2OutcomeAuthorIdIndex++;
+            // locationIndexTwo++;
+            // story1OutcomeAuthorIdIndex++;
+            // story2OutcomeAuthorIdIndex++;
         }
     }
 
     private String generateSessionCode() {
-        String CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        String CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789";
         StringBuilder stringBuilder = new StringBuilder();
         Random rnd = new Random();
-        while (stringBuilder.length() < 5) {
+        while (stringBuilder.length() < 6) {
             int index = (int) (rnd.nextFloat() * CHARS.length());
             stringBuilder.append(CHARS.charAt(index));
         }

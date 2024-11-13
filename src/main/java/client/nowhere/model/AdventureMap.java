@@ -16,7 +16,7 @@ public class AdventureMap {
         this.locations = new ArrayList<>();
         int locationId = 0;
         for(DefaultLocation location : DefaultLocation.values()) {
-            Location townLocale = new Location(location.name(), locationId, location.getDefaultOptions());
+            Location townLocale = new Location(location.name(), locationId, location.getDefaultOptions(), location.getLabel());
             locationId++;
             this.locations.add(townLocale);
         }

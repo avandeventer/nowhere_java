@@ -1,6 +1,7 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.ActiveSessionHelper;
+import client.nowhere.model.ActiveGameStateSession;
 import client.nowhere.model.ActivePlayerSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,4 +23,11 @@ public class ActiveSessionController {
         return this.activeSessionHelper.update(activeSession);
     }
 
+    @PutMapping("/activeGameStateSession")
+    @ResponseBody
+    public ActiveGameStateSession updateGameStateSession(@RequestParam String gameCode,
+                                                         @RequestParam String authorId,
+                                                         @RequestParam boolean isDone) {
+        return this.activeSessionHelper.update(gameCode, authorId, isDone);
+    }
 }

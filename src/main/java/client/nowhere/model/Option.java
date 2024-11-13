@@ -13,6 +13,7 @@ public class Option {
     Stat statRequirement;
     int statDC;
     String successText = "";
+    String outcomeAuthorId = "";
     List<OutcomeStat> successResults;
 
     String failureText = "";
@@ -38,7 +39,8 @@ public class Option {
                   String successText,
                   List<OutcomeStat> successResults,
                   String failureText,
-                  List<OutcomeStat> failureResults) {
+                  List<OutcomeStat> failureResults,
+                  String outcomeAuthorId) {
         this.optionId = optionId;
         this.optionText = optionText;
         this.statRequirement = statRequirement;
@@ -48,6 +50,7 @@ public class Option {
         this.successResults = successResults;
         this.failureText = failureText;
         this.failureResults = failureResults;
+        this.outcomeAuthorId = outcomeAuthorId;
     }
 
     public void randomizeOptionStats (int minDC, int maxDC) {
@@ -136,5 +139,13 @@ public class Option {
 
     public void setFailureResults(ArrayList<OutcomeStat> failureResults) {
         this.failureResults = failureResults;
+    }
+
+    public String getOutcomeAuthorId() {
+        return outcomeAuthorId;
+    }
+
+    public void setOutcomeAuthorId(String outcomeAuthorId) {
+        this.outcomeAuthorId = outcomeAuthorId;
     }
 }

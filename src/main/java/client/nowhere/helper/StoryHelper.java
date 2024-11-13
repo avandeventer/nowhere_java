@@ -1,23 +1,27 @@
 package client.nowhere.helper;
 
+import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
+import client.nowhere.model.GameSession;
 import client.nowhere.model.Option;
+import client.nowhere.model.Player;
 import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Component
 public class StoryHelper {
 
     private final StoryDAO storyDAO;
+    private final GameSessionDAO gameSessionDAO;
 
     @Autowired
-    public StoryHelper(StoryDAO storyDAO) {
+    public StoryHelper(StoryDAO storyDAO, GameSessionDAO gameSessionDAO) {
         this.storyDAO = storyDAO;
+        this.gameSessionDAO = gameSessionDAO;
     }
 
     public Story createStory(Story story) {
@@ -84,6 +88,7 @@ public class StoryHelper {
         }
 
         story.setVisited(true);
+        story.setPlayerId(playerId);
         storyDAO.updateStory(story);
         return story;
     }

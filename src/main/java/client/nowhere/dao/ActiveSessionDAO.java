@@ -1,6 +1,7 @@
 package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
+import client.nowhere.model.ActiveGameStateSession;
 import client.nowhere.model.ActivePlayerSession;
 import client.nowhere.model.GameSession;
 import com.google.api.core.ApiFuture;
@@ -52,6 +53,45 @@ public class ActiveSessionDAO {
             throw new ResourceException("Game session does not exist");
         }
         return document;
+    }
+
+    public ActiveGameStateSession update(String gameCode, String authorId, boolean isDone) {
+        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+
+        ActiveGameStateSession activeSessionToUpdate = new ActiveGameStateSession();
+        try {
+            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            GameSession game = FirestoreDAOUtil.mapGameSession(gameSession);
+            activeSessionToUpdate = game.getActiveGameStateSession();
+            activeSessionToUpdate.getIsPlayerDone().put(authorId, isDone);
+
+            ApiFuture<WriteResult> result = gameSessionRef.update("activeGameStateSession", activeSessionToUpdate);
+            WriteResult asyncResponse = result.get();
+            System.out.println("Update time : " + result.get().toString());
+            System.out.println("Object " + result.get().toString());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue reading the game session", e);
+        }
+        return activeSessionToUpdate;
+
+    }
+
+    public ActiveGameStateSession update(ActiveGameStateSession activeGameStateSession) {
+        DocumentReference gameSessionRef = db.collection("gameSessions").document(activeGameStateSession.getGameCode());
+
+        ActiveGameStateSession activeSessionToUpdate = new ActiveGameStateSession();
+        try {
+            ApiFuture<WriteResult> result = gameSessionRef.update("activePlayerSession", activeSessionToUpdate);
+            WriteResult asyncResponse = result.get();
+            System.out.println("Update time : " + result.get().toString());
+            System.out.println("Object " + result.get().toString());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue reading the game session", e);
+        }
+        return activeSessionToUpdate;
+
     }
 
 }
