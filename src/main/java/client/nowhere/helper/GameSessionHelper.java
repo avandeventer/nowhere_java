@@ -109,10 +109,10 @@ public class GameSessionHelper {
             boolean shouldGenerateSequelPlayerStory = coinFlip == 1 && isPhaseTwo;
             Story storyOne = new Story(
                     gameSession.getGameCode(),
-                    adventureMap.getLocations().get(locationIndex),
+                    shouldGenerateSequelPlayerStory ? new Location() : adventureMap.getLocations().get(locationIndex),
                     "",
                     player.getAuthorId(),
-                    shouldGenerateSequelStory ? playedStories.get(sequelStoryIndex).getStoryId() : "",
+                    shouldGenerateSequelStory || shouldGenerateSequelPlayerStory ? playedStories.get(sequelStoryIndex).getStoryId() : "",
                     shouldGenerateSequelPlayerStory ? playedStories.get(sequelStoryIndex).getPlayerId() : "",
                     shouldGenerateSequelStory && playedStories.get(sequelStoryIndex).isPlayerSucceeded()
             );
@@ -121,15 +121,15 @@ public class GameSessionHelper {
             locationIndex++;
             locationIndex = locationIndex >= DefaultLocation.values().length ? 0 : locationIndex;
 
-            coinFlip = rand.nextInt(8);
-            shouldGenerateSequelStory = coinFlip == 3 && isPhaseTwo;
-            shouldGenerateSequelPlayerStory = coinFlip == 4 && isPhaseTwo;
+            coinFlip = rand.nextInt(3);
+            shouldGenerateSequelStory = coinFlip == 2 && isPhaseTwo;
+            shouldGenerateSequelPlayerStory = coinFlip == 1 && isPhaseTwo;
             Story storyTwo = new Story(
                     gameSession.getGameCode(),
                     adventureMap.getLocations().get(locationIndex),
                     "",
                     player.getAuthorId(),
-                    shouldGenerateSequelStory ? playedStories.get(sequelStoryIndex).getStoryId() : "",
+                    shouldGenerateSequelStory || shouldGenerateSequelPlayerStory ? playedStories.get(sequelStoryIndex).getStoryId() : "",
                     shouldGenerateSequelPlayerStory ? playedStories.get(sequelStoryIndex).getPlayerId() : "",
                     shouldGenerateSequelStory && playedStories.get(sequelStoryIndex).isPlayerSucceeded()
             );

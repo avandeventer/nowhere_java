@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -66,9 +65,10 @@ public class StoryDAO {
 
                     storyToUpdate.setVisited(story.isVisited());
 
-                    List<Option> optionsToUpdate = new ArrayList<>();
+                    // Update options only if story.getOptions() is not null or empty
+                    if (story.getOptions() != null && !story.getOptions().isEmpty()) {
+                        List<Option> optionsToUpdate = new ArrayList<>();
 
-                    if (story.getOptions() != null && story.getOptions().size() != 0) {
                         for (Option resultOption : storyToUpdate.getOptions()) {
                             for (Option inputOption : story.getOptions()) {
                                 if (resultOption.getOptionId().equals(inputOption.getOptionId())) {
@@ -98,10 +98,14 @@ public class StoryDAO {
                                 }
                             }
                         }
-                        storyToUpdate.setOptions(optionsToUpdate);
-                        stories.set(i, storyToUpdate);
-                        break;
+
+                        // Only update the options if optionsToUpdate is not empty
+                        if (!optionsToUpdate.isEmpty()) {
+                            storyToUpdate.setOptions(optionsToUpdate);
+                        }
                     }
+
+                    stories.set(i, storyToUpdate);
                     break;
                 }
             }
@@ -147,7 +151,7 @@ public class StoryDAO {
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
-                    .filter(story -> story.getAuthorId().equals(authorId) && !story.isVisited())
+                    .filter(story -> story.getAuthorId().equals(authorId) && story.getPlayerId().isEmpty())
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -192,9 +196,9 @@ public class StoryDAO {
     private boolean wasNotWrittenByPlayer(String playerId, int locationId, Story story) {
         return !story.getAuthorId().equals(playerId)
                 && !story.getOutcomeAuthorId().equals(playerId)
-                && (story.getLocation() != null)
-                && story.getLocation().getLocationId() == locationId
-                && !story.isVisited();
+                && (story.getLocation() != null
+                && story.getLocation().getLocationId() == locationId)
+                && story.getPlayerId().isEmpty();
     }
 
     public Story createGlobalStory(Story story) {
@@ -253,7 +257,7 @@ public class StoryDAO {
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
-                    .filter(story -> isTestMode || (story.isVisited() && !story.getSelectedOptionId().isEmpty()))
+                    .filter(story -> isTestMode || (!story.getPlayerId().isEmpty() && !story.getSelectedOptionId().isEmpty()))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -269,7 +273,7 @@ public class StoryDAO {
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
-                    .filter(story -> story.isVisited() &&
+                    .filter(story ->
                             story.getPlayerId().equals(playerId) &&
                             story.getSelectedOptionId().isEmpty())
                     .collect(Collectors.toList());

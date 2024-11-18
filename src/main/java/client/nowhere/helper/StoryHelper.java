@@ -79,8 +79,16 @@ public class StoryHelper {
                 story = playerStories.get(0);
             }
         } else {
-            story = sequelStories.get(0);
-            if(gameSessionStoryIds.contains(story.getStoryId())) {
+            Optional<Story> playerSequelStoryExists = sequelStories.stream()
+                    .filter(sequelStory -> sequelStory.getPrequelStoryPlayerId().equals(playerId)).findAny();
+
+            if(playerSequelStoryExists.isPresent()) {
+                story = playerSequelStoryExists.get();
+            } else {
+                story = sequelStories.get(0);
+            }
+
+            if(!gameSessionStoryIds.contains(story.getStoryId())) {
                 storyDAO.createStory(story);
             }
         }
@@ -118,7 +126,7 @@ public class StoryHelper {
     }
 
     private boolean isPlayerSequel(String playerId, int locationId, Story gameSessionStory) {
-        return !gameSessionStory.isVisited()
+        return gameSessionStory.getPlayerId().isEmpty()
                 && gameSessionStory.getSelectedOptionId().isEmpty()
                 && !gameSessionStory.getPrequelStoryId().isEmpty()
                 && (gameSessionStory.getPrequelStoryPlayerId().equals(playerId)
