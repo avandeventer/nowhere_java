@@ -14,6 +14,7 @@ public class Player {
     private int magic = 4;
     private int favor = 4;
     private String gameCode;
+    private boolean isFirstPlayer = false;
 
     public Player() { }
 
@@ -115,5 +116,13 @@ public class Player {
         this.setWealth(player.getWealth());
         this.setMagic(player.getMagic());
         this.setFavor(player.getFavor());
+    }
+
+    public boolean getFirstPlayer() {
+        return this.isFirstPlayer;
+    }
+
+    public void setFirstPlayer(boolean isFirstPlayer) {
+        this.isFirstPlayer = isFirstPlayer;
     }
 }

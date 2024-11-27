@@ -151,7 +151,9 @@ public class StoryDAO {
             DocumentSnapshot gameSession = getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
-                    .filter(story -> story.getAuthorId().equals(authorId) && story.getPlayerId().isEmpty())
+                    .filter(story -> story.getAuthorId().equals(authorId)
+                            && story.getPlayerId().isEmpty()
+                            && story.getPrompt().isEmpty())
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -168,7 +170,9 @@ public class StoryDAO {
             List<Story> stories = mapStories(gameSession);
             outcomeAuthorStories = stories.stream()
                     .filter(story -> story.getSelectedOptionId().isEmpty() && story.getOptions().stream()
-                            .anyMatch(option -> option.getOutcomeAuthorId().equals(outcomeAuthorId)))
+                            .anyMatch(option -> option.getOutcomeAuthorId().equals(outcomeAuthorId)
+                                    && option.getFailureText().isEmpty()
+                                    && option.getSuccessText().isEmpty()))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -198,7 +202,8 @@ public class StoryDAO {
                 && !story.getOutcomeAuthorId().equals(playerId)
                 && (story.getLocation() != null
                 && story.getLocation().getLocationId() == locationId)
-                && story.getPlayerId().isEmpty();
+                && story.getPlayerId().isEmpty()
+                && story.getPrequelStoryPlayerId().isEmpty();
     }
 
     public Story createGlobalStory(Story story) {

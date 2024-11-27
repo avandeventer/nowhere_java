@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Component
 public class GameSessionDAO {
@@ -133,5 +134,10 @@ public class GameSessionDAO {
             throw new ResourceException("There was an issue creating the game session", e);
         }
         return player;
+    }
+
+    public Player getPlayer(String gameCode, String authorId) {
+        List<Player> players = this.getPlayers(gameCode);
+        return players.stream().filter(player -> player.getAuthorId().equals(authorId)).findFirst().get();
     }
 }

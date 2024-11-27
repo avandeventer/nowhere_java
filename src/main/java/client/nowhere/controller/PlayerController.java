@@ -25,6 +25,10 @@ public class PlayerController {
         return this.gameSessionHelper.getPlayers(gameCode);
     }
 
+    @GetMapping("/player/authorId")
+    @ResponseBody
+    public Player get(@RequestParam("gameCode") String gameCode, @RequestParam("authorId") String authorId) { return this.gameSessionHelper.getPlayer(gameCode, authorId); }
+
     @PostMapping(value = "/player", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Player create(@RequestBody Player player) throws Exception {

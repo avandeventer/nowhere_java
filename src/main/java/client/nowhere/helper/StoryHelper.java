@@ -2,6 +2,7 @@ package client.nowhere.helper;
 
 import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
+import client.nowhere.model.AdventureMap;
 import client.nowhere.model.Option;
 import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,8 @@ public class StoryHelper {
 
             if(playerSequelStoryExists.isPresent()) {
                 story = playerSequelStoryExists.get();
+                AdventureMap adventureMap = new AdventureMap();
+                story.setLocation(adventureMap.getLocations().get(locationId));
             } else {
                 story = sequelStories.get(0);
             }
@@ -120,9 +123,8 @@ public class StoryHelper {
     }
 
     private boolean isVisitedByPlayer(String playerId, Story gameSessionStory) {
-        return gameSessionStory.isVisited()
-                && !gameSessionStory.getSelectedOptionId().isEmpty()
-                && gameSessionStory.getStoryId().equals(playerId);
+        return gameSessionStory.getPlayerId().equals(playerId)
+                && !gameSessionStory.getSelectedOptionId().isEmpty();
     }
 
     private boolean isPlayerSequel(String playerId, int locationId, Story gameSessionStory) {
