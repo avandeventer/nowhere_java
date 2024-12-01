@@ -29,13 +29,27 @@ public class GameSessionHelper {
         return gameSessionDAO.createGameSession(generateSessionCode());
     }
 
+    public GameSession  updateToNextGameState(String gameCode) {
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        gameSession.setGameStateToNext();
+        return updateGameSession(gameSession, false);
+    }
+
     public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
+        GameSession existingSession = gameSessionDAO.getGame(gameSession.getGameCode());
+
+        if(existingSession.getGameState().equals(gameSession.getGameState())) {
+            return existingSession;
+        }
+
         try {
+            gameSessionDAO.updateGameSession(gameSession);
             List<Player> players = gameSessionDAO.getPlayers(gameSession.getGameCode());
             ActiveGameStateSession gameStateSession =
                     gameSession.getActiveGameStateSession();
             gameStateSession.resetPlayerDoneStatus(players);
             gameSession.setActiveGameStateSession(gameStateSession);
+
 
             switch (gameSession.getGameState()) {
                 case START:

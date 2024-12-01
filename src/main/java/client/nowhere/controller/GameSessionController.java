@@ -38,4 +38,11 @@ public class GameSessionController {
         return game;
     }
 
+    @PutMapping(value = "/game/next", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public GameSession nextGameState(@RequestParam String gameCode) {
+        GameSession game = this.gameSessionHelper.updateToNextGameState(gameCode);
+        return game;
+    }
+
 }

@@ -63,9 +63,18 @@ public class StoryDAO {
                         storyToUpdate.setSelectedOptionId(story.getSelectedOptionId());
                     }
 
-                    storyToUpdate.setVisited(story.isVisited());
+                    if(story.isVisited()) {
+                        storyToUpdate.setVisited(story.isVisited());
+                    }
 
-                    // Update options only if story.getOptions() is not null or empty
+                    if(story.isPlayerSucceeded()) {
+                        storyToUpdate.setPlayerSucceeded(story.isPlayerSucceeded());
+                    }
+
+                    if(story.isPrequelStorySucceeded()) {
+                        storyToUpdate.setPlayerSucceeded(story.isPrequelStorySucceeded());
+                    }
+
                     if (story.getOptions() != null && !story.getOptions().isEmpty()) {
                         List<Option> optionsToUpdate = new ArrayList<>();
 
@@ -99,7 +108,6 @@ public class StoryDAO {
                             }
                         }
 
-                        // Only update the options if optionsToUpdate is not empty
                         if (!optionsToUpdate.isEmpty()) {
                             storyToUpdate.setOptions(optionsToUpdate);
                         }

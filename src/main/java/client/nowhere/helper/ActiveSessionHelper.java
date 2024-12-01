@@ -26,11 +26,6 @@ public class ActiveSessionHelper {
 
     public ActiveGameStateSession update(String gameCode, String authorId, boolean isDone) {
         ActiveGameStateSession activeGameStateSession = this.activeSessionDAO.update(gameCode, authorId, isDone);
-        if(!activeGameStateSession.getIsPlayerDone().containsValue(false)) {
-            GameSession gameSession = gameSessionHelper.getGame(gameCode);
-            gameSession.setGameStateToNext();
-            gameSessionHelper.updateGameSession(gameSession, false);
-        }
         return activeGameStateSession;
     }
 }
