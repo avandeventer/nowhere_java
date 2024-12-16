@@ -2,6 +2,7 @@ package client.nowhere.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -342,5 +343,18 @@ public class Story extends Object {
 
     public void setPrequelOutcomeDisplay(List<String> prequelOutcomeDisplay) {
         this.prequelOutcomeDisplay = prequelOutcomeDisplay;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Story story = (Story) o;
+        return visited == story.visited && playerSucceeded == story.playerSucceeded && prequelStorySucceeded == story.prequelStorySucceeded && Objects.equals(storyId, story.storyId) && Objects.equals(prompt, story.prompt) && Objects.equals(authorId, story.authorId) && Objects.equals(outcomeAuthorId, story.outcomeAuthorId) && Objects.equals(playerId, story.playerId) && Objects.equals(selectedOptionId, story.selectedOptionId) && Objects.equals(prequelStoryId, story.prequelStoryId) && Objects.equals(prequelStoryPlayerId, story.prequelStoryPlayerId) && Objects.equals(location, story.location) && Objects.equals(options, story.options) && Objects.equals(gameCode, story.gameCode) && Objects.equals(successRepercussions, story.successRepercussions) && Objects.equals(failureRepercussions, story.failureRepercussions) && Objects.equals(prequelOutcomeDisplay, story.prequelOutcomeDisplay);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(storyId, visited, prompt, authorId, outcomeAuthorId, playerId, selectedOptionId, playerSucceeded, prequelStorySucceeded, prequelStoryId, prequelStoryPlayerId, location, options, gameCode, successRepercussions, failureRepercussions, prequelOutcomeDisplay);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class StoryHelper {
@@ -114,9 +115,9 @@ public class StoryHelper {
         }
 
         List<Story> globalSequelPlayerStories = storyDAO.getGlobalSequelPlayerStories(visitedStoryIds);
-        gameSessionStories.addAll(globalSequelPlayerStories);
+        List<Story> sequelStoriesToSearch = Stream.concat(gameSessionStories.stream(), globalSequelPlayerStories.stream()).toList();
 
-        return gameSessionStories.stream()
+        return sequelStoriesToSearch.stream()
                 .filter(gameSessionStory -> isPlayerSequel(playerId, locationId, gameSessionStory)
                         && visitedStoryIds.contains(gameSessionStory.getPrequelStoryId()))
                 .collect(Collectors.toList());
@@ -128,11 +129,16 @@ public class StoryHelper {
     }
 
     private boolean isPlayerSequel(String playerId, int locationId, Story gameSessionStory) {
-        return gameSessionStory.getPlayerId().isEmpty()
-                && gameSessionStory.getSelectedOptionId().isEmpty()
-                && !gameSessionStory.getPrequelStoryId().isEmpty()
-                && (gameSessionStory.getPrequelStoryPlayerId().equals(playerId)
-                || gameSessionStory.getLocation().getLocationId() == locationId);
+        boolean hasNotBeenAssigned = gameSessionStory.getPlayerId().isEmpty();
+        boolean hasNotBeenPlayed = gameSessionStory.getSelectedOptionId().isEmpty();
+        boolean hasAPrequel = !gameSessionStory.getPrequelStoryId().isEmpty();
+        boolean isASequelForThisPlayer = gameSessionStory.getPrequelStoryPlayerId().equals(playerId);
+        boolean isASequelForThisLocation = gameSessionStory.getLocation() != null && gameSessionStory.getLocation().getLocationId() == locationId;
+
+        return hasNotBeenAssigned
+                && hasNotBeenPlayed
+                && hasAPrequel
+                && (isASequelForThisPlayer || isASequelForThisLocation);
     }
 
     public Story createGlobalStory(Story story) {

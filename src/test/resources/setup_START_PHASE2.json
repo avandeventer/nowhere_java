@@ -6,10 +6,10 @@
       "userName": "Andy",
       "strength": 4,
       "dexterity": 4,
-      "charisma": 4,
-      "intellect": 4,
-      "wealth": 4,
-      "magic": 4,
+      "charisma": 5,
+      "intellect": 5,
+      "wealth": 6,
+      "magic": 6,
       "favor": 4,
       "gameCode": "VJU3CR",
       "firstPlayer": true
@@ -17,13 +17,13 @@
     {
       "authorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
       "userName": "Joe",
-      "strength": 4,
-      "dexterity": 4,
-      "charisma": 4,
-      "intellect": 4,
+      "strength": 5,
+      "dexterity": 7,
+      "charisma": 6,
+      "intellect": 5,
       "wealth": 4,
       "magic": 4,
-      "favor": 4,
+      "favor": 5,
       "gameCode": "VJU3CR",
       "firstPlayer": false
     },
@@ -31,10 +31,10 @@
       "authorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
       "userName": "Byron",
       "strength": 4,
-      "dexterity": 4,
-      "charisma": 4,
-      "intellect": 4,
-      "wealth": 4,
+      "dexterity": 8,
+      "charisma": 5,
+      "intellect": 8,
+      "wealth": 5,
       "magic": 4,
       "favor": 4,
       "gameCode": "VJU3CR",
@@ -43,13 +43,13 @@
     {
       "authorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
       "userName": "Kirsten",
-      "strength": 4,
+      "strength": 5,
       "dexterity": 4,
-      "charisma": 4,
-      "intellect": 4,
+      "charisma": 6,
+      "intellect": 7,
       "wealth": 4,
-      "magic": 4,
-      "favor": 4,
+      "magic": 5,
+      "favor": 5,
       "gameCode": "VJU3CR",
       "firstPlayer": false
     }
@@ -57,110 +57,67 @@
   "gameState": "ROUND1",
   "activePlayerSession": {
     "gameCode": "",
-    "playerId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
-    "playerChoiceOptionId": "",
+    "playerId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+    "playerChoiceOptionId": "a1e1b0c3-9acd-4082-b9f0-3b8a045fe6c2",
     "story": {
-      "storyId": "6c9b1009-c9d5-482c-97ee-dcb4276165d3",
-      "visited": false,
-      "prompt": "jojojojo",
-      "authorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
-      "outcomeAuthorId": "",
-      "playerId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
-      "selectedOptionId": "",
-      "playerSucceeded": false,
+      "storyId": "49f6d698-0b2b-4afa-b259-d1cf2ed5cd14",
+      "visited": true,
+      "prompt": "You meet a Dryad deep in the forest. How do you interact with her?",
+      "authorId": "ADMIN",
+      "outcomeAuthorId": "ADMIN",
+      "playerId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+      "selectedOptionId": "a1e1b0c3-9acd-4082-b9f0-3b8a045fe6c2",
+      "playerSucceeded": true,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
       "prequelStoryPlayerId": "",
       "location": {
-        "locationId": 1,
-        "locationName": "TOWN_SQUARE",
-        "label": "Town Square",
-        "options": [
-          {
-            "optionId": "",
-            "optionText": "Perform",
-            "attemptText": "You dance in the center of the town square for coin. People enjoy your energy and some even drop some coin!",
-            "statRequirement": null,
-            "statDC": 0,
-            "successText": "",
-            "outcomeAuthorId": "",
-            "successResults": [
-              {
-                "impactedStat": "CHARISMA",
-                "statChange": 1
-              },
-              {
-                "impactedStat": "WEALTH",
-                "statChange": 1
-              }
-            ],
-            "failureText": "",
-            "failureResults": null
-          },
-          {
-            "optionId": "",
-            "optionText": "Barter",
-            "attemptText": "You spend the week serving mead to the locals. You make some coin and put in some hard work.",
-            "statRequirement": null,
-            "statDC": 0,
-            "successText": "",
-            "outcomeAuthorId": "",
-            "successResults": [
-              {
-                "impactedStat": "DEXTERITY",
-                "statChange": 1
-              },
-              {
-                "impactedStat": "WEALTH",
-                "statChange": 1
-              }
-            ],
-            "failureText": "",
-            "failureResults": null
-          }
-        ]
+        "locationId": 3,
+        "locationName": "THE_WILDS",
+        "label": null,
+        "options": null
       },
       "options": [
         {
-          "optionId": "31b89219-d038-4987-9d19-920ce1165e44",
-          "optionText": "jojojojo3",
-          "attemptText": "jojojojo3",
-          "statRequirement": "CHARISMA",
-          "statDC": 1,
-          "successText": "bybyyb1",
-          "outcomeAuthorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+          "optionId": "cc78ab48-f16d-4716-9798-b431da74ea14",
+          "optionText": "Ask her to dance",
+          "attemptText": "Ask her to dance",
+          "statRequirement": "DEXTERITY",
+          "statDC": 10,
+          "successText": "She is overjoyed! You dance through the night and she kisses you at sunrise",
+          "outcomeAuthorId": "",
           "successResults": [
             {
-              "impactedStat": "STRENGTH",
-              "statChange": 2
+              "impactedStat": "DEXTERITY",
+              "statChange": 1
             }
           ],
-          "failureText": "bybyyb2",
+          "failureText": "As you dance the dryad becomes more and more sullen in reaction to your clumsy stepping. As the sun sets she morphs into a horrid fae beast. She shrieks and flies into the night.",
           "failureResults": [
             {
-              "impactedStat": "INTELLECT",
+              "impactedStat": "MAGIC",
               "statChange": 1
             }
           ]
         },
         {
-          "optionId": "1cdf829d-f612-4954-93cb-1c8be77a4ef3",
-          "optionText": "jojojojo4",
-          "attemptText": "jojojojo4",
-          "statRequirement": "DEXTERITY",
-          "statDC": 10,
-          "successText": "kiririri1",
-          "outcomeAuthorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+          "optionId": "a1e1b0c3-9acd-4082-b9f0-3b8a045fe6c2",
+          "optionText": "Engage in Meaningful Conversation",
+          "attemptText": "Engage in Meaningful Conversation",
+          "statRequirement": "CHARISMA",
+          "statDC": 5,
+          "successText": "She is surprised, but she perks up. You talk about the beautiful things in life until the sun rises.",
+          "outcomeAuthorId": "",
           "successResults": [
             {
-              "impactedStat": "WEALTH",
-              "statChange": 1
+              "impactedStat": "INTELLECT",
+              "statChange": 2
             }
           ],
-          "failureText": "kiririri2",
+          "failureText": "She is hesitant at first and her hesitation is well founded. Early on you mention your edgy opinions on flowers and no matter what you say she is disappointed. She leaves in a huff.",
           "failureResults": [
             {
-              "impactedStat": "FAVOR",
+              "impactedStat": "CHARISMA",
               "statChange": 1
             }
           ]
@@ -171,16 +128,20 @@
       "failureRepercussions": null,
       "prequelOutcomeDisplay": null
     },
-    "outcomeDisplay": [],
+    "outcomeDisplay": [
+      "Engage in Meaningful Conversation",
+      "She is surprised, but she perks up. You talk about the beautiful things in life until the sun rises.",
+      "You gain 2 intellect"
+    ],
     "setNextPlayerTurn": false
   },
   "activeGameStateSession": {
     "gameCode": null,
     "isPlayerDone": {
-      "1c2b3bf8-3670-4305-8e29-b563b7cacdcd": false,
-      "1d1512ff-7ee0-4924-bc48-1c244b53fb0f": false,
+      "1c2b3bf8-3670-4305-8e29-b563b7cacdcd": true,
+      "1d1512ff-7ee0-4924-bc48-1c244b53fb0f": true,
       "cee79a40-9447-47f0-a0f3-6432bf7f92c2": false,
-      "606ca7b3-da0b-476e-9c31-7004d1e1decd": false
+      "606ca7b3-da0b-476e-9c31-7004d1e1decd": true
     }
   },
   "stories": [
@@ -191,7 +152,7 @@
       "authorId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
       "outcomeAuthorId": "",
       "playerId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
-      "selectedOptionId": "",
+      "selectedOptionId": "43cbc548-1875-42aa-b542-25594be297a1",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -415,7 +376,7 @@
       "authorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
       "outcomeAuthorId": "",
       "playerId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
-      "selectedOptionId": "",
+      "selectedOptionId": "de24c3c3-0166-496f-bd55-56fa1e838249",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -527,7 +488,7 @@
       "authorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
       "outcomeAuthorId": "",
       "playerId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
-      "selectedOptionId": "",
+      "selectedOptionId": "1cdf829d-f612-4954-93cb-1c8be77a4ef3",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -639,7 +600,7 @@
       "authorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
       "outcomeAuthorId": "",
       "playerId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
-      "selectedOptionId": "",
+      "selectedOptionId": "8191a4ca-2e7f-479a-9889-d2a6fa0e1087",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -751,7 +712,7 @@
       "authorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
       "outcomeAuthorId": "",
       "playerId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
-      "selectedOptionId": "",
+      "selectedOptionId": "75987325-08a7-4aa3-806e-349da1ca8a9d",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -863,7 +824,7 @@
       "authorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
       "outcomeAuthorId": "",
       "playerId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
-      "selectedOptionId": "",
+      "selectedOptionId": "23ea6b90-ac5f-4b57-b004-6884616c94e3",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -1087,7 +1048,7 @@
       "authorId": "ADMIN",
       "outcomeAuthorId": "ADMIN",
       "playerId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
-      "selectedOptionId": "",
+      "selectedOptionId": "a1e1b0c3-9acd-4082-b9f0-3b8a045fe6c2",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -1156,7 +1117,7 @@
       "authorId": "DEFAULT",
       "outcomeAuthorId": "DEFAULT",
       "playerId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
-      "selectedOptionId": "",
+      "selectedOptionId": "ba45cd71-3c10-4ed1-a133-cf14003de4c6",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -1261,6 +1222,5 @@
       "failureRepercussions": null,
       "prequelOutcomeDisplay": null
     }
-  ],
-  "nextGameState": "START_PHASE2"
+  ]
 }

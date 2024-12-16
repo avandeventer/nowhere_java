@@ -1,0 +1,112 @@
+{
+  "storyId": "ab02d44f-1fa5-4aef-a248-a741a6a7b198",
+  "visited": false,
+  "prompt": "anana",
+  "authorId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
+  "outcomeAuthorId": "",
+  "playerId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+  "selectedOptionId": "",
+  "playerSucceeded": false,
+  "prequelStorySucceeded": false,
+  "prequelStoryId": "",
+  "prequelStoryPlayerId": "",
+  "location": {
+    "locationId": 5,
+    "locationName": "DISCUSSION_PARLOR",
+    "label": "Discussion Parlor",
+    "options": [
+      {
+        "optionId": "",
+        "optionText": "Hold a Debate",
+        "attemptText": "You spend the week contributing to the town's systems of governance. The rigorous discussion improves your ability to make your voice heard.",
+        "statRequirement": null,
+        "statDC": 0,
+        "successText": "",
+        "outcomeAuthorId": "",
+        "successResults": [
+          {
+            "impactedStat": "INTELLECT",
+            "statChange": 1
+          },
+          {
+            "impactedStat": "CHARISMA",
+            "statChange": 1
+          }
+        ],
+        "failureText": "",
+        "failureResults": null
+      },
+      {
+        "optionId": "",
+        "optionText": "Research",
+        "attemptText": "You spend the week learning about the town's history. You feel better prepared for the road ahead.",
+        "statRequirement": null,
+        "statDC": 0,
+        "successText": "",
+        "outcomeAuthorId": "",
+        "successResults": [
+          {
+            "impactedStat": "MAGIC",
+            "statChange": 1
+          },
+          {
+            "impactedStat": "INTELLECT",
+            "statChange": 1
+          }
+        ],
+        "failureText": "",
+        "failureResults": null
+      }
+    ]
+  },
+  "options": [
+    {
+      "optionId": "fc98977d-1ea2-4fb2-bdeb-dc974f90ec07",
+      "optionText": "ananan1",
+      "attemptText": "ananan1",
+      "statRequirement": "CHARISMA",
+      "statDC": 6,
+      "successText": "ananan1",
+      "outcomeAuthorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
+      "successResults": [
+        {
+          "impactedStat": "STRENGTH",
+          "statChange": 2
+        }
+      ],
+      "failureText": "ananan2",
+      "failureResults": [
+        {
+          "impactedStat": "CHARISMA",
+          "statChange": 2
+        }
+      ]
+    },
+    {
+      "optionId": "43cbc548-1875-42aa-b542-25594be297a1",
+      "optionText": "ananana2",
+      "attemptText": "ananana2",
+      "statRequirement": "STRENGTH",
+      "statDC": 5,
+      "successText": "bybyyb1",
+      "outcomeAuthorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+      "successResults": [
+        {
+          "impactedStat": "INTELLECT",
+          "statChange": 2
+        }
+      ],
+      "failureText": "bybyyb2",
+      "failureResults": [
+        {
+          "impactedStat": "WEALTH",
+          "statChange": 1
+        }
+      ]
+    }
+  ],
+  "gameCode": "VJU3CR",
+  "successRepercussions": null,
+  "failureRepercussions": null,
+  "prequelOutcomeDisplay": null
+}

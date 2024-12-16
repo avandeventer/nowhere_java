@@ -25,8 +25,9 @@ public class StoryDAO {
     private ObjectMapper objectMapper;
 
     @Autowired
-    public StoryDAO(Firestore db) {
+    public StoryDAO(Firestore db, ObjectMapper objectMapper) {
         this.db = db;
+        this.objectMapper = objectMapper;
     }
 
     public Story createStory(Story story) {
@@ -57,6 +58,10 @@ public class StoryDAO {
 
                     if (!story.getPlayerId().isEmpty()) {
                         storyToUpdate.setPlayerId(story.getPlayerId());
+                    }
+
+                    if (story.getLocation() != null && !story.getLocation().getLocationName().isEmpty()) {
+                        storyToUpdate.setLocation(story.getLocation());
                     }
 
                     if (!story.getSelectedOptionId().isEmpty()) {
@@ -112,7 +117,7 @@ public class StoryDAO {
                             storyToUpdate.setOptions(optionsToUpdate);
                         }
                     }
-
+                    story = storyToUpdate;
                     stories.set(i, storyToUpdate);
                     break;
                 }

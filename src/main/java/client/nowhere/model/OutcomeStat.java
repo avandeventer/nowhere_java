@@ -1,5 +1,6 @@
 package client.nowhere.model;
 
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class OutcomeStat {
@@ -33,5 +34,18 @@ public class OutcomeStat {
 
     public void setStatChange(int statChange) {
         this.statChange = statChange;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OutcomeStat that = (OutcomeStat) o;
+        return statChange == that.statChange && impactedStat == that.impactedStat;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(impactedStat, statChange);
     }
 }

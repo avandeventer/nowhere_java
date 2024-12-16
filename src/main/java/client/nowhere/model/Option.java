@@ -2,6 +2,7 @@ package client.nowhere.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -147,5 +148,18 @@ public class Option {
 
     public void setOutcomeAuthorId(String outcomeAuthorId) {
         this.outcomeAuthorId = outcomeAuthorId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Option option = (Option) o;
+        return statDC == option.statDC && Objects.equals(optionId, option.optionId) && Objects.equals(optionText, option.optionText) && Objects.equals(attemptText, option.attemptText) && statRequirement == option.statRequirement && Objects.equals(successText, option.successText) && Objects.equals(outcomeAuthorId, option.outcomeAuthorId) && Objects.equals(successResults, option.successResults) && Objects.equals(failureText, option.failureText) && Objects.equals(failureResults, option.failureResults);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(optionId, optionText, attemptText, statRequirement, statDC, successText, outcomeAuthorId, successResults, failureText, failureResults);
     }
 }

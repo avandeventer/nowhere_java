@@ -1,158 +1,12 @@
-{
-  "gameCode": "VJU3CR",
-  "players": [
-    {
-      "authorId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
-      "userName": "Andy",
-      "strength": 4,
-      "dexterity": 4,
-      "charisma": 5,
-      "intellect": 5,
-      "wealth": 6,
-      "magic": 6,
-      "favor": 4,
-      "gameCode": "VJU3CR",
-      "firstPlayer": true
-    },
-    {
-      "authorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
-      "userName": "Joe",
-      "strength": 5,
-      "dexterity": 7,
-      "charisma": 6,
-      "intellect": 5,
-      "wealth": 4,
-      "magic": 4,
-      "favor": 5,
-      "gameCode": "VJU3CR",
-      "firstPlayer": false
-    },
-    {
-      "authorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
-      "userName": "Byron",
-      "strength": 4,
-      "dexterity": 8,
-      "charisma": 5,
-      "intellect": 8,
-      "wealth": 5,
-      "magic": 4,
-      "favor": 4,
-      "gameCode": "VJU3CR",
-      "firstPlayer": false
-    },
-    {
-      "authorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
-      "userName": "Kirsten",
-      "strength": 5,
-      "dexterity": 4,
-      "charisma": 6,
-      "intellect": 7,
-      "wealth": 4,
-      "magic": 5,
-      "favor": 5,
-      "gameCode": "VJU3CR",
-      "firstPlayer": false
-    }
-  ],
-  "gameState": "ROUND1",
-  "activePlayerSession": {
-    "gameCode": "",
-    "playerId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
-    "playerChoiceOptionId": "a1e1b0c3-9acd-4082-b9f0-3b8a045fe6c2",
-    "story": {
-      "storyId": "49f6d698-0b2b-4afa-b259-d1cf2ed5cd14",
-      "visited": true,
-      "prompt": "You meet a Dryad deep in the forest. How do you interact with her?",
-      "authorId": "ADMIN",
-      "outcomeAuthorId": "ADMIN",
-      "playerId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
-      "selectedOptionId": "a1e1b0c3-9acd-4082-b9f0-3b8a045fe6c2",
-      "playerSucceeded": true,
-      "prequelStorySucceeded": false,
-      "prequelStoryId": "",
-      "prequelStoryPlayerId": "",
-      "location": {
-        "locationId": 3,
-        "locationName": "THE_WILDS",
-        "label": null,
-        "options": null
-      },
-      "options": [
-        {
-          "optionId": "cc78ab48-f16d-4716-9798-b431da74ea14",
-          "optionText": "Ask her to dance",
-          "attemptText": "Ask her to dance",
-          "statRequirement": "DEXTERITY",
-          "statDC": 10,
-          "successText": "She is overjoyed! You dance through the night and she kisses you at sunrise",
-          "outcomeAuthorId": "",
-          "successResults": [
-            {
-              "impactedStat": "DEXTERITY",
-              "statChange": 1
-            }
-          ],
-          "failureText": "As you dance the dryad becomes more and more sullen in reaction to your clumsy stepping. As the sun sets she morphs into a horrid fae beast. She shrieks and flies into the night.",
-          "failureResults": [
-            {
-              "impactedStat": "MAGIC",
-              "statChange": 1
-            }
-          ]
-        },
-        {
-          "optionId": "a1e1b0c3-9acd-4082-b9f0-3b8a045fe6c2",
-          "optionText": "Engage in Meaningful Conversation",
-          "attemptText": "Engage in Meaningful Conversation",
-          "statRequirement": "CHARISMA",
-          "statDC": 5,
-          "successText": "She is surprised, but she perks up. You talk about the beautiful things in life until the sun rises.",
-          "outcomeAuthorId": "",
-          "successResults": [
-            {
-              "impactedStat": "INTELLECT",
-              "statChange": 2
-            }
-          ],
-          "failureText": "She is hesitant at first and her hesitation is well founded. Early on you mention your edgy opinions on flowers and no matter what you say she is disappointed. She leaves in a huff.",
-          "failureResults": [
-            {
-              "impactedStat": "CHARISMA",
-              "statChange": 1
-            }
-          ]
-        }
-      ],
-      "gameCode": "VJU3CR",
-      "successRepercussions": null,
-      "failureRepercussions": null,
-      "prequelOutcomeDisplay": null
-    },
-    "outcomeDisplay": [
-      "Engage in Meaningful Conversation",
-      "She is surprised, but she perks up. You talk about the beautiful things in life until the sun rises.",
-      "You gain 2 intellect"
-    ],
-    "setNextPlayerTurn": false
-  },
-  "activeGameStateSession": {
-    "gameCode": null,
-    "isPlayerDone": {
-      "1c2b3bf8-3670-4305-8e29-b563b7cacdcd": true,
-      "1d1512ff-7ee0-4924-bc48-1c244b53fb0f": true,
-      "cee79a40-9447-47f0-a0f3-6432bf7f92c2": false,
-      "606ca7b3-da0b-476e-9c31-7004d1e1decd": true
-    }
-  },
-  "stories": [
-    {
+[
+  {
       "storyId": "ab02d44f-1fa5-4aef-a248-a741a6a7b198",
       "visited": false,
       "prompt": "anana",
       "authorId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
       "outcomeAuthorId": "",
       "playerId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
-      "selectedOptionId": "43cbc548-1875-42aa-b542-25594be297a1",
+      "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -376,7 +230,7 @@
       "authorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
       "outcomeAuthorId": "",
       "playerId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
-      "selectedOptionId": "de24c3c3-0166-496f-bd55-56fa1e838249",
+      "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -488,7 +342,7 @@
       "authorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
       "outcomeAuthorId": "",
       "playerId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
-      "selectedOptionId": "1cdf829d-f612-4954-93cb-1c8be77a4ef3",
+      "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -600,7 +454,7 @@
       "authorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
       "outcomeAuthorId": "",
       "playerId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
-      "selectedOptionId": "8191a4ca-2e7f-479a-9889-d2a6fa0e1087",
+      "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -712,7 +566,7 @@
       "authorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
       "outcomeAuthorId": "",
       "playerId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
-      "selectedOptionId": "75987325-08a7-4aa3-806e-349da1ca8a9d",
+      "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -824,7 +678,7 @@
       "authorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
       "outcomeAuthorId": "",
       "playerId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
-      "selectedOptionId": "23ea6b90-ac5f-4b57-b004-6884616c94e3",
+      "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -1048,7 +902,7 @@
       "authorId": "ADMIN",
       "outcomeAuthorId": "ADMIN",
       "playerId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
-      "selectedOptionId": "a1e1b0c3-9acd-4082-b9f0-3b8a045fe6c2",
+      "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -1117,7 +971,7 @@
       "authorId": "DEFAULT",
       "outcomeAuthorId": "DEFAULT",
       "playerId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
-      "selectedOptionId": "ba45cd71-3c10-4ed1-a133-cf14003de4c6",
+      "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
@@ -1222,6 +1076,4 @@
       "failureRepercussions": null,
       "prequelOutcomeDisplay": null
     }
-  ],
-  "nextGameState": "START_PHASE2"
-}
+]

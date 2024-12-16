@@ -1,0 +1,1265 @@
+{
+  "gameCode": "VJU3CR",
+  "players": [
+    {
+      "authorId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
+      "userName": "Andy",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "gameCode": "VJU3CR",
+      "firstPlayer": true
+    },
+    {
+      "authorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
+      "userName": "Joe",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "gameCode": "VJU3CR",
+      "firstPlayer": false
+    },
+    {
+      "authorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+      "userName": "Byron",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "gameCode": "VJU3CR",
+      "firstPlayer": false
+    },
+    {
+      "authorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+      "userName": "Kirsten",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "gameCode": "VJU3CR",
+      "firstPlayer": false
+    }
+  ],
+  "gameState": "ROUND1",
+  "activePlayerSession": {
+    "gameCode": "",
+    "playerId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
+    "playerChoiceOptionId": "",
+    "story": {
+      "storyId": "6c9b1009-c9d5-482c-97ee-dcb4276165d3",
+      "visited": false,
+      "prompt": "jojojojo",
+      "authorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
+      "outcomeAuthorId": "",
+      "playerId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": {
+        "locationId": 1,
+        "locationName": "TOWN_SQUARE",
+        "label": "Town Square",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Perform",
+            "attemptText": "You dance in the center of the town square for coin. People enjoy your energy and some even drop some coin!",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "CHARISMA",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Barter",
+            "attemptText": "You spend the week serving mead to the locals. You make some coin and put in some hard work.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "DEXTERITY",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ]
+      },
+      "options": [
+        {
+          "optionId": "31b89219-d038-4987-9d19-920ce1165e44",
+          "optionText": "jojojojo3",
+          "attemptText": "jojojojo3",
+          "statRequirement": "CHARISMA",
+          "statDC": 1,
+          "successText": "bybyyb1",
+          "outcomeAuthorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+          "successResults": [
+            {
+              "impactedStat": "STRENGTH",
+              "statChange": 2
+            }
+          ],
+          "failureText": "bybyyb2",
+          "failureResults": [
+            {
+              "impactedStat": "INTELLECT",
+              "statChange": 1
+            }
+          ]
+        },
+        {
+          "optionId": "1cdf829d-f612-4954-93cb-1c8be77a4ef3",
+          "optionText": "jojojojo4",
+          "attemptText": "jojojojo4",
+          "statRequirement": "DEXTERITY",
+          "statDC": 10,
+          "successText": "kiririri1",
+          "outcomeAuthorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+          "successResults": [
+            {
+              "impactedStat": "WEALTH",
+              "statChange": 1
+            }
+          ],
+          "failureText": "kiririri2",
+          "failureResults": [
+            {
+              "impactedStat": "FAVOR",
+              "statChange": 1
+            }
+          ]
+        }
+      ],
+      "gameCode": "VJU3CR",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null
+    },
+    "outcomeDisplay": [],
+    "setNextPlayerTurn": false
+  },
+  "activeGameStateSession": {
+    "gameCode": null,
+    "isPlayerDone": {
+      "1c2b3bf8-3670-4305-8e29-b563b7cacdcd": false,
+      "1d1512ff-7ee0-4924-bc48-1c244b53fb0f": false,
+      "cee79a40-9447-47f0-a0f3-6432bf7f92c2": false,
+      "606ca7b3-da0b-476e-9c31-7004d1e1decd": false
+    }
+  },
+  "stories": [
+    {
+      "storyId": "ab02d44f-1fa5-4aef-a248-a741a6a7b198",
+      "visited": false,
+      "prompt": "anana",
+      "authorId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
+      "outcomeAuthorId": "",
+      "playerId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": {
+        "locationId": 5,
+        "locationName": "DISCUSSION_PARLOR",
+        "label": "Discussion Parlor",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Hold a Debate",
+            "attemptText": "You spend the week contributing to the town's systems of governance. The rigorous discussion improves your ability to make your voice heard.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "INTELLECT",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "CHARISMA",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Research",
+            "attemptText": "You spend the week learning about the town's history. You feel better prepared for the road ahead.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "MAGIC",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "INTELLECT",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ]
+      },
+      "options": [
+        {
+          "optionId": "fc98977d-1ea2-4fb2-bdeb-dc974f90ec07",
+          "optionText": "ananan1",
+          "attemptText": "ananan1",
+          "statRequirement": "CHARISMA",
+          "statDC": 6,
+          "successText": "ananan1",
+          "outcomeAuthorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
+          "successResults": [
+            {
+              "impactedStat": "STRENGTH",
+              "statChange": 2
+            }
+          ],
+          "failureText": "ananan2",
+          "failureResults": [
+            {
+              "impactedStat": "CHARISMA",
+              "statChange": 2
+            }
+          ]
+        },
+        {
+          "optionId": "43cbc548-1875-42aa-b542-25594be297a1",
+          "optionText": "ananana2",
+          "attemptText": "ananana2",
+          "statRequirement": "STRENGTH",
+          "statDC": 5,
+          "successText": "bybyyb1",
+          "outcomeAuthorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+          "successResults": [
+            {
+              "impactedStat": "INTELLECT",
+              "statChange": 2
+            }
+          ],
+          "failureText": "bybyyb2",
+          "failureResults": [
+            {
+              "impactedStat": "WEALTH",
+              "statChange": 1
+            }
+          ]
+        }
+      ],
+      "gameCode": "VJU3CR",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null
+    },
+    {
+      "storyId": "869b41bc-f284-4241-9555-5bb3c9f57fe4",
+      "visited": false,
+      "prompt": "ananana",
+      "authorId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
+      "outcomeAuthorId": "",
+      "playerId": "",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": {
+        "locationId": 6,
+        "locationName": "FARMLANDS",
+        "label": "Farmlands",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Till the Earth",
+            "attemptText": "You spend the week planting and caring for the plant life. Your standing with nature improves.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "FAVOR",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "STRENGTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Tame the Beasts",
+            "attemptText": "You spend the tending to the beasts and retrieving their pelts and milks. Your body hardens and you get to pet lots of cute critters.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "STRENGTH",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "DEXTERITY",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ]
+      },
+      "options": [
+        {
+          "optionId": "a4a1717b-c3cd-4d37-8ae4-0c7117202e1b",
+          "optionText": "ananana3",
+          "attemptText": "ananana3",
+          "statRequirement": "INTELLECT",
+          "statDC": 5,
+          "successText": "",
+          "outcomeAuthorId": "",
+          "successResults": [
+            {
+              "impactedStat": "CHARISMA",
+              "statChange": 2
+            }
+          ],
+          "failureText": "",
+          "failureResults": [
+            {
+              "impactedStat": "FAVOR",
+              "statChange": 2
+            }
+          ]
+        },
+        {
+          "optionId": "8791b5ae-278c-4330-96d0-f8c4fe2cd3c9",
+          "optionText": "ananana4",
+          "attemptText": "ananana4",
+          "statRequirement": "MAGIC",
+          "statDC": 4,
+          "successText": "",
+          "outcomeAuthorId": "",
+          "successResults": [
+            {
+              "impactedStat": "CHARISMA",
+              "statChange": 2
+            }
+          ],
+          "failureText": "",
+          "failureResults": [
+            {
+              "impactedStat": "DEXTERITY",
+              "statChange": 1
+            }
+          ]
+        }
+      ],
+      "gameCode": "VJU3CR",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null
+    },
+    {
+      "storyId": "40e5ae2b-9a2f-4fbb-97fc-bf4176cd7a48",
+      "visited": false,
+      "prompt": "jojojojo",
+      "authorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
+      "outcomeAuthorId": "",
+      "playerId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": {
+        "locationId": 0,
+        "locationName": "TAVERN",
+        "label": "Tavern",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Drink",
+            "attemptText": "You spend the week drinking. You gain some friends and build a tolerance.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "STRENGTH",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "CHARISMA",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Bartend",
+            "attemptText": "You spend the week serving mead. You are charming and are tipped well!",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "CHARISMA",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ]
+      },
+      "options": [
+        {
+          "optionId": "2e25649f-9590-4aac-8c0c-d4c83411903e",
+          "optionText": "jojojojo1",
+          "attemptText": "jojojojo1",
+          "statRequirement": "CHARISMA",
+          "statDC": 7,
+          "successText": "kiririr1",
+          "outcomeAuthorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+          "successResults": [
+            {
+              "impactedStat": "INTELLECT",
+              "statChange": 2
+            }
+          ],
+          "failureText": "kiririri2",
+          "failureResults": [
+            {
+              "impactedStat": "CHARISMA",
+              "statChange": 2
+            }
+          ]
+        },
+        {
+          "optionId": "de24c3c3-0166-496f-bd55-56fa1e838249",
+          "optionText": "jojojojo2",
+          "attemptText": "jojojojo2",
+          "statRequirement": "WEALTH",
+          "statDC": 5,
+          "successText": "ananan1",
+          "outcomeAuthorId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
+          "successResults": [
+            {
+              "impactedStat": "DEXTERITY",
+              "statChange": 2
+            }
+          ],
+          "failureText": "ananan2",
+          "failureResults": [
+            {
+              "impactedStat": "CHARISMA",
+              "statChange": 1
+            }
+          ]
+        }
+      ],
+      "gameCode": "VJU3CR",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null
+    },
+    {
+      "storyId": "6c9b1009-c9d5-482c-97ee-dcb4276165d3",
+      "visited": false,
+      "prompt": "jojojojo",
+      "authorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
+      "outcomeAuthorId": "",
+      "playerId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": {
+        "locationId": 1,
+        "locationName": "TOWN_SQUARE",
+        "label": "Town Square",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Perform",
+            "attemptText": "You dance in the center of the town square for coin. People enjoy your energy and some even drop some coin!",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "CHARISMA",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Barter",
+            "attemptText": "You spend the week serving mead to the locals. You make some coin and put in some hard work.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "DEXTERITY",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ]
+      },
+      "options": [
+        {
+          "optionId": "31b89219-d038-4987-9d19-920ce1165e44",
+          "optionText": "jojojojo3",
+          "attemptText": "jojojojo3",
+          "statRequirement": "CHARISMA",
+          "statDC": 1,
+          "successText": "bybyyb1",
+          "outcomeAuthorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+          "successResults": [
+            {
+              "impactedStat": "STRENGTH",
+              "statChange": 2
+            }
+          ],
+          "failureText": "bybyyb2",
+          "failureResults": [
+            {
+              "impactedStat": "INTELLECT",
+              "statChange": 1
+            }
+          ]
+        },
+        {
+          "optionId": "1cdf829d-f612-4954-93cb-1c8be77a4ef3",
+          "optionText": "jojojojo4",
+          "attemptText": "jojojojo4",
+          "statRequirement": "DEXTERITY",
+          "statDC": 10,
+          "successText": "kiririri1",
+          "outcomeAuthorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+          "successResults": [
+            {
+              "impactedStat": "WEALTH",
+              "statChange": 1
+            }
+          ],
+          "failureText": "kiririri2",
+          "failureResults": [
+            {
+              "impactedStat": "FAVOR",
+              "statChange": 1
+            }
+          ]
+        }
+      ],
+      "gameCode": "VJU3CR",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null
+    },
+    {
+      "storyId": "3e54bbed-97ec-4291-b8ac-b5b26c26eef6",
+      "visited": false,
+      "prompt": "bybyyb",
+      "authorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+      "outcomeAuthorId": "",
+      "playerId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": {
+        "locationId": 2,
+        "locationName": "APOTHECARY",
+        "label": "Apothecary",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Apprentice",
+            "attemptText": "You spend the week training under the masters of the old magics. You learn a lot and feel your connection to the world increase.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "MAGIC",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "INTELLECT",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Experiment",
+            "attemptText": "You spend the week trying out spells you haven't tried before. You grow your familiarity with magic and see some unexpected results.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "MAGIC",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ]
+      },
+      "options": [
+        {
+          "optionId": "8191a4ca-2e7f-479a-9889-d2a6fa0e1087",
+          "optionText": "bybyyb1",
+          "attemptText": "bybyyb1",
+          "statRequirement": "CHARISMA",
+          "statDC": 8,
+          "successText": "jojojoj1",
+          "outcomeAuthorId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
+          "successResults": [
+            {
+              "impactedStat": "MAGIC",
+              "statChange": 1
+            }
+          ],
+          "failureText": "jojojoj2",
+          "failureResults": [
+            {
+              "impactedStat": "INTELLECT",
+              "statChange": 1
+            }
+          ]
+        },
+        {
+          "optionId": "73d7fe7f-aac6-4c82-b248-7f0336b31836",
+          "optionText": "bybyyb2",
+          "attemptText": "bybyyb2",
+          "statRequirement": "MAGIC",
+          "statDC": 5,
+          "successText": "kiririri1",
+          "outcomeAuthorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+          "successResults": [
+            {
+              "impactedStat": "STRENGTH",
+              "statChange": 2
+            }
+          ],
+          "failureText": "kiririri2",
+          "failureResults": [
+            {
+              "impactedStat": "STRENGTH",
+              "statChange": 1
+            }
+          ]
+        }
+      ],
+      "gameCode": "VJU3CR",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null
+    },
+    {
+      "storyId": "7c04f86f-85b7-478e-917c-be763580b7ad",
+      "visited": false,
+      "prompt": "bybyyb",
+      "authorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+      "outcomeAuthorId": "",
+      "playerId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": {
+        "locationId": 3,
+        "locationName": "THE_WILDS",
+        "label": "The Wilds",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Adventure",
+            "attemptText": "You spend the week wandering in the wilds and avoiding danger. Your footing improves and you even find some treasure.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "DEXTERITY",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Forage",
+            "attemptText": "You spend the week looking for resources for the town. You learn a lot about the forest surrounding your town!",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "INTELLECT",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "DEXTERITY",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ]
+      },
+      "options": [
+        {
+          "optionId": "0880165f-36d4-4edd-b849-19de2ef5538f",
+          "optionText": "bybyyb3",
+          "attemptText": "bybyyb3",
+          "statRequirement": "MAGIC",
+          "statDC": 3,
+          "successText": "ananan1",
+          "outcomeAuthorId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
+          "successResults": [
+            {
+              "impactedStat": "DEXTERITY",
+              "statChange": 1
+            }
+          ],
+          "failureText": "ananan2",
+          "failureResults": [
+            {
+              "impactedStat": "INTELLECT",
+              "statChange": 2
+            }
+          ]
+        },
+        {
+          "optionId": "75987325-08a7-4aa3-806e-349da1ca8a9d",
+          "optionText": "bybyyb4",
+          "attemptText": "bybyyb4",
+          "statRequirement": "INTELLECT",
+          "statDC": 7,
+          "successText": "kiririri1",
+          "outcomeAuthorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+          "successResults": [
+            {
+              "impactedStat": "DEXTERITY",
+              "statChange": 2
+            }
+          ],
+          "failureText": "kiririri2",
+          "failureResults": [
+            {
+              "impactedStat": "DEXTERITY",
+              "statChange": 1
+            }
+          ]
+        }
+      ],
+      "gameCode": "VJU3CR",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null
+    },
+    {
+      "storyId": "0130945b-a1b0-4f10-93c9-ab79159dcc3a",
+      "visited": false,
+      "prompt": "kiririr",
+      "authorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+      "outcomeAuthorId": "",
+      "playerId": "606ca7b3-da0b-476e-9c31-7004d1e1decd",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": {
+        "locationId": 4,
+        "locationName": "RITUAL_GROUNDS",
+        "label": "Ritual Grounds",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Pray",
+            "attemptText": "You spend the week in pious reverie. You feel the glow and self-satisfaction of knowing you are in good standing with your god.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "FAVOR",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "MAGIC",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Help Prepare for the Ritual",
+            "attemptText": "You spend the week helping to erect the display for the harvest ritual. Your body is hardened by the good work and your soul is enriched.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "STRENGTH",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "FAVOR",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ]
+      },
+      "options": [
+        {
+          "optionId": "562c2a25-91b3-40f6-a3b4-67b442b9903a",
+          "optionText": "kiririr1",
+          "attemptText": "kiririr1",
+          "statRequirement": "DEXTERITY",
+          "statDC": 4,
+          "successText": "ananan1",
+          "outcomeAuthorId": "1c2b3bf8-3670-4305-8e29-b563b7cacdcd",
+          "successResults": [
+            {
+              "impactedStat": "WEALTH",
+              "statChange": 1
+            }
+          ],
+          "failureText": "ananan2",
+          "failureResults": [
+            {
+              "impactedStat": "CHARISMA",
+              "statChange": 1
+            }
+          ]
+        },
+        {
+          "optionId": "23ea6b90-ac5f-4b57-b004-6884616c94e3",
+          "optionText": "kiririr2",
+          "attemptText": "kiririr2",
+          "statRequirement": "CHARISMA",
+          "statDC": 3,
+          "successText": "bybyyb1",
+          "outcomeAuthorId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+          "successResults": [
+            {
+              "impactedStat": "CHARISMA",
+              "statChange": 2
+            }
+          ],
+          "failureText": "bybyyb2",
+          "failureResults": [
+            {
+              "impactedStat": "DEXTERITY",
+              "statChange": 2
+            }
+          ]
+        }
+      ],
+      "gameCode": "VJU3CR",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null
+    },
+    {
+      "storyId": "15805086-b591-47cd-b030-26a99d6e2c5c",
+      "visited": false,
+      "prompt": "kiririr",
+      "authorId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+      "outcomeAuthorId": "",
+      "playerId": "",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": {
+        "locationId": 5,
+        "locationName": "DISCUSSION_PARLOR",
+        "label": "Discussion Parlor",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Hold a Debate",
+            "attemptText": "You spend the week contributing to the town's systems of governance. The rigorous discussion improves your ability to make your voice heard.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "INTELLECT",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "CHARISMA",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Research",
+            "attemptText": "You spend the week learning about the town's history. You feel better prepared for the road ahead.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "MAGIC",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "INTELLECT",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ]
+      },
+      "options": [
+        {
+          "optionId": "8c16ce6c-dbe8-46d6-b3ff-cf85646681b0",
+          "optionText": "kiririr3",
+          "attemptText": "kiririr3",
+          "statRequirement": "WEALTH",
+          "statDC": 10,
+          "successText": "",
+          "outcomeAuthorId": "",
+          "successResults": [
+            {
+              "impactedStat": "MAGIC",
+              "statChange": 1
+            }
+          ],
+          "failureText": "",
+          "failureResults": [
+            {
+              "impactedStat": "STRENGTH",
+              "statChange": 1
+            }
+          ]
+        },
+        {
+          "optionId": "29c28764-3110-4014-8ded-c45e7f16b28a",
+          "optionText": "kiririr4",
+          "attemptText": "kiririr4",
+          "statRequirement": "STRENGTH",
+          "statDC": 3,
+          "successText": "",
+          "outcomeAuthorId": "",
+          "successResults": [
+            {
+              "impactedStat": "DEXTERITY",
+              "statChange": 1
+            }
+          ],
+          "failureText": "",
+          "failureResults": [
+            {
+              "impactedStat": "FAVOR",
+              "statChange": 2
+            }
+          ]
+        }
+      ],
+      "gameCode": "VJU3CR",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null
+    },
+    {
+      "storyId": "49f6d698-0b2b-4afa-b259-d1cf2ed5cd14",
+      "visited": true,
+      "prompt": "You meet a Dryad deep in the forest. How do you interact with her?",
+      "authorId": "ADMIN",
+      "outcomeAuthorId": "ADMIN",
+      "playerId": "cee79a40-9447-47f0-a0f3-6432bf7f92c2",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": {
+        "locationId": 3,
+        "locationName": "THE_WILDS",
+        "label": null,
+        "options": null
+      },
+      "options": [
+        {
+          "optionId": "cc78ab48-f16d-4716-9798-b431da74ea14",
+          "optionText": "Ask her to dance",
+          "attemptText": "Ask her to dance",
+          "statRequirement": "DEXTERITY",
+          "statDC": 10,
+          "successText": "She is overjoyed! You dance through the night and she kisses you at sunrise",
+          "outcomeAuthorId": "",
+          "successResults": [
+            {
+              "impactedStat": "DEXTERITY",
+              "statChange": 1
+            }
+          ],
+          "failureText": "As you dance the dryad becomes more and more sullen in reaction to your clumsy stepping. As the sun sets she morphs into a horrid fae beast. She shrieks and flies into the night.",
+          "failureResults": [
+            {
+              "impactedStat": "MAGIC",
+              "statChange": 1
+            }
+          ]
+        },
+        {
+          "optionId": "a1e1b0c3-9acd-4082-b9f0-3b8a045fe6c2",
+          "optionText": "Engage in Meaningful Conversation",
+          "attemptText": "Engage in Meaningful Conversation",
+          "statRequirement": "CHARISMA",
+          "statDC": 5,
+          "successText": "She is surprised, but she perks up. You talk about the beautiful things in life until the sun rises.",
+          "outcomeAuthorId": "",
+          "successResults": [
+            {
+              "impactedStat": "INTELLECT",
+              "statChange": 2
+            }
+          ],
+          "failureText": "She is hesitant at first and her hesitation is well founded. Early on you mention your edgy opinions on flowers and no matter what you say she is disappointed. She leaves in a huff.",
+          "failureResults": [
+            {
+              "impactedStat": "CHARISMA",
+              "statChange": 1
+            }
+          ]
+        }
+      ],
+      "gameCode": "VJU3CR",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null
+    },
+    {
+      "storyId": "86f445e6-511e-460f-a2e9-481d8748f7d0",
+      "visited": true,
+      "prompt": "As you leave and travel upon the road you encounter a beautiful translucent person which begs you for food. How do you proceed?",
+      "authorId": "DEFAULT",
+      "outcomeAuthorId": "DEFAULT",
+      "playerId": "1d1512ff-7ee0-4924-bc48-1c244b53fb0f",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": {
+        "locationId": 4,
+        "locationName": "RITUAL_GROUNDS",
+        "label": "Ritual Grounds",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Pray",
+            "attemptText": "You spend the week in pious reverie. You feel the glow and self-satisfaction of knowing you are in good standing with your god.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "FAVOR",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "MAGIC",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Help Prepare for the Ritual",
+            "attemptText": "You spend the week helping to erect the display for the harvest ritual. Your body is hardened by the good work and your soul is enriched.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "STRENGTH",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "FAVOR",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ]
+      },
+      "options": [
+        {
+          "optionId": "d442f832-16d1-4f0f-9da8-22a1a9053aeb",
+          "optionText": "Try to sing to it",
+          "attemptText": "Try to sing to it",
+          "statRequirement": "CHARISMA",
+          "statDC": 5,
+          "successText": "Your singing encourages the ghostly person. They seem satisfied and join in song with you.",
+          "outcomeAuthorId": "",
+          "successResults": [
+            {
+              "impactedStat": "WEALTH",
+              "statChange": 2
+            }
+          ],
+          "failureText": "They are immediately disgusted by your performance. They disappear before you even finish. In your shame you decide not to go perform any time soon.",
+          "failureResults": [
+            {
+              "impactedStat": "WEALTH",
+              "statChange": 2
+            }
+          ]
+        },
+        {
+          "optionId": "ba45cd71-3c10-4ed1-a133-cf14003de4c6",
+          "optionText": "Offer what you have",
+          "attemptText": "Offer what you have",
+          "statRequirement": "WEALTH",
+          "statDC": 3,
+          "successText": "They devour the food hungrily. You see the genuine gleam in their eyes as they finish, their belly filled. Somewhere in the ether, a force for morality gives you a gift.",
+          "outcomeAuthorId": "",
+          "successResults": [
+            {
+              "impactedStat": "CHARISMA",
+              "statChange": 2
+            }
+          ],
+          "failureText": "They stare at the single grape you procure from your cloak with irony and then hatred. They spit in your face.",
+          "failureResults": [
+            {
+              "impactedStat": "CHARISMA",
+              "statChange": 2
+            }
+          ]
+        }
+      ],
+      "gameCode": "VJU3CR",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null
+    }
+  ]
+}
