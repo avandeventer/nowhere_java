@@ -1,0 +1,3 @@
+gradlew build
+move file to home directory
+gcloud run deploy
