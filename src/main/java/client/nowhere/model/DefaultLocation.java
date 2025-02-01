@@ -21,7 +21,8 @@ public enum DefaultLocation {
                             new OutcomeStat(Stat.CHARISMA, 1),
                             new OutcomeStat(Stat.WEALTH, 1)
                     ))
-            )
+            ),
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
     TOWN_SQUARE( "Town Square",
             Arrays.asList(
@@ -39,7 +40,8 @@ public enum DefaultLocation {
                                     new OutcomeStat(Stat.DEXTERITY, 1),
                                     new OutcomeStat(Stat.WEALTH, 1)
                             ))
-            )
+            ),
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
     APOTHECARY( "Apothecary",
             Arrays.asList(
@@ -57,7 +59,8 @@ public enum DefaultLocation {
                                     new OutcomeStat(Stat.MAGIC, 1),
                                     new OutcomeStat(Stat.values()[ThreadLocalRandom.current().nextInt(Stat.values().length)], 1)
                             ))
-            )
+            ),
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
     THE_WILDS( "The Wilds",
             Arrays.asList(
@@ -75,7 +78,8 @@ public enum DefaultLocation {
                                     new OutcomeStat(Stat.INTELLECT, 1),
                                     new OutcomeStat(Stat.DEXTERITY, 1)
                             ))
-            )
+            ),
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
     RITUAL_GROUNDS( "Ritual Grounds",
             Arrays.asList(
@@ -93,7 +97,8 @@ public enum DefaultLocation {
                                     new OutcomeStat(Stat.STRENGTH, 1),
                                     new OutcomeStat(Stat.FAVOR, 1)
                             ))
-            )
+            ),
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
     DISCUSSION_PARLOR( "Discussion Parlor",
             Arrays.asList(
@@ -111,7 +116,8 @@ public enum DefaultLocation {
                                     new OutcomeStat(Stat.MAGIC, 1),
                                     new OutcomeStat(Stat.INTELLECT, 1)
                             ))
-            )
+            ),
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
     FARMLANDS( "Farmlands",
             Arrays.asList(
@@ -129,15 +135,18 @@ public enum DefaultLocation {
                                     new OutcomeStat(Stat.STRENGTH, 1),
                                     new OutcomeStat(Stat.DEXTERITY, 1)
                             ))
-            )
+            ),
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     );
 
     private final String label;
+    private final String iconDirectory;
     private final List<Option> defaultOptions;
 
-    DefaultLocation(String label, List<Option> defaultOptions) {
+    DefaultLocation(String label, List<Option> defaultOptions, String iconDirectory) {
         this.label = label;
         this.defaultOptions = defaultOptions;
+        this.iconDirectory = iconDirectory;
     }
 
     public List<Option> getDefaultOptions() {
@@ -148,4 +157,7 @@ public enum DefaultLocation {
         return label;
     }
 
+    public String getIconDirectory() {
+        return iconDirectory;
+    }
 }

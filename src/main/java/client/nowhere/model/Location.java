@@ -9,14 +9,16 @@ public class Location {
     private String locationName;
     private String label;
     private List<Option> options;
+    private String iconDirectory;
 
     public Location () {}
 
-    public Location(String locationName, int locationId, List<Option> options, String label) {
+    public Location(String locationName, int locationId, List<Option> options, String label, String iconDirectory) {
         this.locationName = locationName;
         this.locationId = locationId;
         this.options = options;
         this.label = label;
+        this.iconDirectory = iconDirectory;
     }
 
     public int getLocationId() {
@@ -49,6 +51,14 @@ public class Location {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getIconDirectory() {
+        return iconDirectory;
+    }
+
+    public void setIconDirectory(String iconDirectory) {
+        this.iconDirectory = iconDirectory;
     }
 
     @Override
