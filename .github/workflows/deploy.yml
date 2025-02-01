@@ -3,7 +3,7 @@ name: Deploy Java App to GCloud Run
 on:
   push:
     branches:
-      - main  # Adjust this if needed
+      - master
 
 jobs:
   deploy:
