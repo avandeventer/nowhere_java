@@ -39,7 +39,7 @@ jobs:
           ./gradlew build
 
       - name: Configure Docker to use Google Artifact Registry
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev
 
       - name: Build and Push Docker Image
         run: |
