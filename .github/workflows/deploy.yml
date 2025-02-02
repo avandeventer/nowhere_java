@@ -29,6 +29,14 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+=
+      - name: Set GOOGLE_APPLICATION_CREDENTIALS
+        run: echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > $HOME/gcloud-key.json
+
+      - name: Build with Gradle
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="$HOME/gcloud-key.json"
+          ./gradlew build
 
       - name: Configure Docker to use Google Artifact Registry
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
