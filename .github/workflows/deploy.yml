@@ -22,9 +22,6 @@ jobs:
       - name: Grant execute permission for Gradle
         run: chmod +x gradlew
 
-      - name: Build JAR with Gradle
-        run: ./gradlew build
-
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -32,6 +29,9 @@ jobs:
 
       - name: Set GOOGLE_APPLICATION_CREDENTIALS
         run: echo '${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}' > $HOME/gcloud-key.json
+
+      - name: Build JAR with Gradle
+        run: ./gradlew build
 
       - name: Build with Gradle
         run: |
