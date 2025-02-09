@@ -3,10 +3,13 @@ package client.nowhere.dao;
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.GameSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class FirestoreDAOUtil {
@@ -35,4 +38,15 @@ public class FirestoreDAOUtil {
             throw new ResourceException("No data found for the document");
         }
     }
+
+    public static DocumentSnapshot getGameSession(DocumentReference gameSessionRef) throws InterruptedException, ExecutionException {
+        ApiFuture<DocumentSnapshot> future = gameSessionRef.get();
+        DocumentSnapshot document = future.get();
+
+        if (!document.exists()) {
+            throw new ResourceException("Game session does not exist");
+        }
+        return document;
+    }
+
 }

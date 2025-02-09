@@ -1,7 +1,6 @@
 package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
-import client.nowhere.model.Location;
 import client.nowhere.model.Option;
 import client.nowhere.model.Story;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +45,7 @@ public class StoryDAO {
     public Story updateStory(Story story) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(story.getGameCode());
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
 
             for (int i = 0; i < stories.size(); i++) {
@@ -147,21 +146,11 @@ public class StoryDAO {
         return stories;
     }
 
-    private DocumentSnapshot getGameSession(DocumentReference gameSessionRef) throws InterruptedException, ExecutionException {
-        ApiFuture<DocumentSnapshot> future = gameSessionRef.get();
-        DocumentSnapshot document = future.get();
-
-        if (!document.exists()) {
-            throw new ResourceException("Game session does not exist");
-        }
-        return document;
-    }
-
     public List<Story> getAuthorStories(String gameCode, String authorId) {
         List<Story> authorStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
                     .filter(story -> story.getAuthorId().equals(authorId)
@@ -179,7 +168,7 @@ public class StoryDAO {
         List<Story> outcomeAuthorStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             outcomeAuthorStories = stories.stream()
                     .filter(story -> story.getSelectedOptionId().isEmpty() && story.getOptions().stream()
@@ -198,7 +187,7 @@ public class StoryDAO {
         List<Story> playerStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             playerStories = stories.stream()
                     .filter(story -> wasNotWrittenByPlayer(playerId, locationId, story))
@@ -272,7 +261,7 @@ public class StoryDAO {
         List<Story> authorStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
                     .filter(story -> isTestMode || (!story.getPlayerId().isEmpty() && !story.getSelectedOptionId().isEmpty()))
@@ -288,7 +277,7 @@ public class StoryDAO {
         List<Story> authorStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
                     .filter(story ->
@@ -305,7 +294,7 @@ public class StoryDAO {
     public List<Story> getStories(String gameCode) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             return stories;
         } catch (InterruptedException | ExecutionException e) {
@@ -318,7 +307,7 @@ public class StoryDAO {
         List<Story> playerStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             playerStories = stories.stream()
                     .filter(story -> story.getStoryId().equals(storyId))

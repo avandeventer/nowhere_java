@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Component
 public class GameSessionDAO {
@@ -85,7 +84,7 @@ public class GameSessionDAO {
         List<Player> players = new ArrayList<>();
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             players = (List<Player>) FirestoreDAOUtil.mapDocument(objectMapper, gameSession, "players", Player.class);
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("There was an issue retrieving the players for this session. " + e.getMessage());
@@ -93,21 +92,11 @@ public class GameSessionDAO {
         return players;
     }
 
-    private DocumentSnapshot getGameSession(DocumentReference gameSessionRef) throws InterruptedException, ExecutionException {
-        ApiFuture<DocumentSnapshot> future = gameSessionRef.get();
-        DocumentSnapshot document = future.get();
-
-        if (!document.exists()) {
-            throw new ResourceException("Game session does not exist");
-        }
-        return document;
-    }
-
     public GameSession getGame(String gameCode) {
         GameSession gameSession = new GameSession();
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSessionSnapshot = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getGameSession(gameSessionRef);
             gameSession = FirestoreDAOUtil.mapGameSession(gameSessionSnapshot);
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("There was an issue retrieving the game session " + e.getMessage());
@@ -118,7 +107,7 @@ public class GameSessionDAO {
     public Player updatePlayer(Player player) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(player.getGameCode());
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             List<Player> players = (List<Player>) FirestoreDAOUtil.mapDocument(objectMapper, gameSession, "players", Player.class);
             players.stream()
                     .filter(existingPlayer -> existingPlayer.getAuthorId().equals(player.getAuthorId()))

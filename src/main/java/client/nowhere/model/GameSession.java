@@ -11,7 +11,8 @@ public class GameSession {
     ActivePlayerSession activePlayerSession;
     ActiveGameStateSession activeGameStateSession;
     List<Story> stories;
-    
+    AdventureMap adventureMap;
+
     public GameSession() {
         if(this.activeGameStateSession == null) {
             this.activeGameStateSession = new ActiveGameStateSession(this.gameCode);
@@ -22,7 +23,8 @@ public class GameSession {
         this.gameCode = gameCode;
         this.players = new ArrayList<>();
         this.activePlayerSession = new ActivePlayerSession();
-        this.activeGameStateSession = new ActiveGameStateSession();
+        this.activeGameStateSession = new ActiveGameStateSession(gameCode);
+        this.adventureMap = new AdventureMap();
     }
 
     public GameSession(String gameCode, GameState gameState) {
@@ -133,5 +135,13 @@ public class GameSession {
                 return GameState.INIT;
             }
         }
+    }
+
+    public AdventureMap getAdventureMap() {
+        return adventureMap;
+    }
+
+    public void setAdventureMap(AdventureMap adventureMap) {
+        this.adventureMap = adventureMap;
     }
 }

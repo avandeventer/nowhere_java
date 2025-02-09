@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Option {
-
     String optionId = "";
     String optionText = "";
     String attemptText = "";
