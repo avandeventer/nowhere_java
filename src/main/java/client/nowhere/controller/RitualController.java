@@ -1,6 +1,7 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.RitualHelper;
+import client.nowhere.model.RitualOption;
 import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -22,4 +23,11 @@ public class RitualController {
         return ritualHelper.getRitualJobs(gameCode);
     }
 
+    @PutMapping("/ritual")
+    @ResponseBody
+    public RitualOption selectJob(@RequestParam String gameCode,
+                                  @RequestParam String playerId,
+                                  @RequestParam String optionId) {
+        return ritualHelper.selectJob(gameCode, playerId, optionId);
+    }
 }

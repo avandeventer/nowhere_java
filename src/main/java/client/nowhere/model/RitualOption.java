@@ -7,13 +7,17 @@ public class RitualOption extends Option {
 
     private List<StatRequirement> statRequirements;
 
+    private String selectedByPlayerId;
+
     public RitualOption() { }
 
-    public RitualOption (String optionText,
+    public RitualOption (String optionId,
+                   String optionText,
                    String attemptText,
                    List<Stat> stats,
                    List<Integer> difficultyValues,
                    String successText, String failureText) {
+        this.optionId = optionId;
         this.optionText = optionText;
         this.attemptText = attemptText;
         setStatRequirements(stats, difficultyValues);
@@ -48,6 +52,14 @@ public class RitualOption extends Option {
 
     public void setStatRequirements(List<StatRequirement> statRequirements) {
         this.statRequirements = statRequirements;
+    }
+
+    public String getSelectedByPlayerId() {
+        return selectedByPlayerId;
+    }
+
+    public void setSelectedByPlayerId(String selectedByPlayerId) {
+        this.selectedByPlayerId = selectedByPlayerId;
     }
 
     @Override

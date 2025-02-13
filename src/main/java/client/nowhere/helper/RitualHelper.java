@@ -27,4 +27,8 @@ public class RitualHelper {
 
         return ritualStory;
     }
+
+    public RitualOption selectJob(String gameCode, String playerId, String optionId) {
+        return this.ritualDAO.selectJob(gameCode, playerId, optionId);
+    }
 }
