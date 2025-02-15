@@ -2,7 +2,6 @@ package client.nowhere.helper;
 
 import client.nowhere.dao.RitualDAO;
 import client.nowhere.model.*;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -126,6 +126,9 @@ public class GameSession {
                 return GameState.ROUND2;
             }
             case ROUND2 -> {
+                return GameState.RITUAL;
+            }
+            case RITUAL -> {
                 return GameState.WRITE_ENDINGS;
             }
             case WRITE_ENDINGS -> {
