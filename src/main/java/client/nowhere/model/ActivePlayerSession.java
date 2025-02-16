@@ -6,8 +6,10 @@ public class ActivePlayerSession {
     String gameCode = "";
     String playerId = "";
     String playerChoiceOptionId = "";
+    String selectedLocationOptionId = "";
     Story story;
     List<String> outcomeDisplay;
+    List<String> locationOutcomeDisplay;
     boolean setNextPlayerTurn;
 
     public ActivePlayerSession() { }
@@ -66,5 +68,21 @@ public class ActivePlayerSession {
 
     public void setOutcomeDisplay(List<String> outcomeDisplay) {
         this.outcomeDisplay = outcomeDisplay;
+    }
+
+    public String getSelectedLocationOptionId() {
+        return selectedLocationOptionId;
+    }
+
+    public void setSelectedLocationOptionId(String selectedLocationOptionId) {
+        this.selectedLocationOptionId = selectedLocationOptionId;
+    }
+
+    public List<String> getLocationOutcomeDisplay() {
+        return locationOutcomeDisplay;
+    }
+
+    public void setLocationOutcomeDisplay(List<String> locationOutcomeDisplay) {
+        this.locationOutcomeDisplay = locationOutcomeDisplay;
     }
 }

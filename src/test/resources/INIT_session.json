@@ -1,0 +1,852 @@
+{
+  "gameCode": "8VF1B4",
+  "players": [
+    {
+      "authorId": "15a5c916-f68a-4866-ba7f-ebadc167f45c",
+      "userName": "Andy",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "gameCode": "8VF1B4",
+      "firstPlayer": true
+    },
+    {
+      "authorId": "495298ee-b94b-4c10-acb4-02c784dd51ac",
+      "userName": "Joe",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "gameCode": "8VF1B4",
+      "firstPlayer": false
+    },
+    {
+      "authorId": "32da1f60-4342-4aef-9003-8c5135bb8881",
+      "userName": "Kirsten",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "gameCode": "8VF1B4",
+      "firstPlayer": false
+    },
+    {
+      "authorId": "a792272b-15ea-4929-8650-f4c6bf29e704",
+      "userName": "Byron",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "gameCode": "8VF1B4",
+      "firstPlayer": false
+    }
+  ],
+  "gameState": "INIT",
+  "activePlayerSession": {
+    "gameCode": "",
+    "playerId": "",
+    "playerChoiceOptionId": "",
+    "story": null,
+    "outcomeDisplay": null,
+    "setNextPlayerTurn": false
+  },
+  "activeGameStateSession": {
+    "gameCode": "8VF1B4",
+    "isPlayerDone": {}
+  },
+  "stories": null,
+  "adventureMap": {
+    "name": "Nowhere",
+    "adventureId": "a6a6e1ab-de29-4ffb-9028-7c4f90f9d008",
+    "locations": [
+      {
+        "locationId": 0,
+        "locationName": "TAVERN",
+        "label": "Tavern",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Drink",
+            "attemptText": "You spend the week drinking. You gain some friends and build a tolerance.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "STRENGTH",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "CHARISMA",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Bartend",
+            "attemptText": "You spend the week serving mead. You are charming and are tipped well!",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "CHARISMA",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+      },
+      {
+        "locationId": 1,
+        "locationName": "TOWN_SQUARE",
+        "label": "Town Square",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Perform",
+            "attemptText": "You dance in the center of the town square for coin. People enjoy your energy and some even drop some coin!",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "CHARISMA",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Barter",
+            "attemptText": "You spend the week serving mead to the locals. You make some coin and put in some hard work.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "DEXTERITY",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+      },
+      {
+        "locationId": 2,
+        "locationName": "APOTHECARY",
+        "label": "Apothecary",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Apprentice",
+            "attemptText": "You spend the week training under the masters of the old magics. You learn a lot and feel your connection to the world increase.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "MAGIC",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "INTELLECT",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Experiment",
+            "attemptText": "You spend the week trying out spells you haven't tried before. You grow your familiarity with magic and see some unexpected results.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "MAGIC",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+      },
+      {
+        "locationId": 3,
+        "locationName": "THE_WILDS",
+        "label": "The Wilds",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Adventure",
+            "attemptText": "You spend the week wandering in the wilds and avoiding danger. Your footing improves and you even find some treasure.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "DEXTERITY",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "WEALTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Forage",
+            "attemptText": "You spend the week looking for resources for the town. You learn a lot about the forest surrounding your town!",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "INTELLECT",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "DEXTERITY",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+      },
+      {
+        "locationId": 4,
+        "locationName": "RITUAL_GROUNDS",
+        "label": "Ritual Grounds",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Pray",
+            "attemptText": "You spend the week in pious reverie. You feel the glow and self-satisfaction of knowing you are in good standing with your god.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "FAVOR",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "MAGIC",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Help Prepare for the Ritual",
+            "attemptText": "You spend the week helping to erect the display for the harvest ritual. Your body is hardened by the good work and your soul is enriched.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "STRENGTH",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "FAVOR",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+      },
+      {
+        "locationId": 5,
+        "locationName": "DISCUSSION_PARLOR",
+        "label": "Discussion Parlor",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Hold a Debate",
+            "attemptText": "You spend the week contributing to the town's systems of governance. The rigorous discussion improves your ability to make your voice heard.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "INTELLECT",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "CHARISMA",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Research",
+            "attemptText": "You spend the week learning about the town's history. You feel better prepared for the road ahead.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "MAGIC",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "INTELLECT",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+      },
+      {
+        "locationId": 6,
+        "locationName": "FARMLANDS",
+        "label": "Farmlands",
+        "options": [
+          {
+            "optionId": "",
+            "optionText": "Till the Earth",
+            "attemptText": "You spend the week planting and caring for the plant life. Your standing with nature improves.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "FAVOR",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "STRENGTH",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          },
+          {
+            "optionId": "",
+            "optionText": "Tame the Beasts",
+            "attemptText": "You spend the tending to the beasts and retrieving their pelts and milks. Your body hardens and you get to pet lots of cute critters.",
+            "statRequirement": null,
+            "statDC": 0,
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "impactedStat": "STRENGTH",
+                "statChange": 1
+              },
+              {
+                "impactedStat": "DEXTERITY",
+                "statChange": 1
+              }
+            ],
+            "failureText": "",
+            "failureResults": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+      }
+    ],
+    "ritual": {
+      "storyId": "1bb19e44-7325-44a9-a1eb-bfbc210fdb95",
+      "visited": false,
+      "prompt": "",
+      "authorId": "",
+      "outcomeAuthorId": "",
+      "playerId": "",
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStoryPlayerId": "",
+      "location": null,
+      "options": null,
+      "gameCode": "",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null,
+      "ritualOptions": [
+        {
+          "optionId": "0",
+          "optionText": "Holder of the Chant",
+          "attemptText": "You lead the rhythmic chants, setting the ritual's tone.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "Your powerful voice resonates, guiding the ritual to new heights!",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "Your voice wavers, and the chant loses its rhythm.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "CHARISMA",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "CHARISMA",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "STRENGTH",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "STRENGTH",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "1",
+          "optionText": "Lead Dancer",
+          "attemptText": "You work to gather the other dancers around the pyre.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "Your sense of flow and natural athletic artistry spurs the town into a magnificent choreographed display!",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "The other dancers appreciate your efforts, but there is only so many times you can step on other people's toes before they move on to other tasks.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "CHARISMA",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "CHARISMA",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "DEXTERITY",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "DEXTERITY",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "2",
+          "optionText": "Ceremony Herald",
+          "attemptText": "You announce the phases of the ceremony with confidence.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "Your eloquence ensures the ritual runs smoothly and inspires awe!",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "Your words falter, and the crowd grows restless.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "CHARISMA",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "CHARISMA",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "INTELLECT",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "INTELLECT",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "3",
+          "optionText": "King of Fools",
+          "attemptText": "You embrace chaos, playing the trickster within the ritual.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "Your antics bring unexpected wisdom through humor!",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "Your jokes fall flat, and confusion ensues.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "CHARISMA",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "CHARISMA",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "WEALTH",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "WEALTH",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "4",
+          "optionText": "Seer",
+          "attemptText": "You peer into the flames, divining the ritual's deeper meaning.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "A clear vision emerges, guiding the town's future.",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "Your vision is clouded, leaving uncertainty.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "CHARISMA",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "CHARISMA",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "MAGIC",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "MAGIC",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "5",
+          "optionText": "Lord of Misrule",
+          "attemptText": "You orchestrate playful disruption to challenge expectations.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "Your cunning and agility keep the ceremony lively!",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "Your antics cause more chaos than intended.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "DEXTERITY",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "DEXTERITY",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "INTELLECT",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "INTELLECT",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "6",
+          "optionText": "Head of Ritual Consecration",
+          "attemptText": "You ensure the sacred space is properly prepared.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "The ritual ground radiates energy, amplifying the spellwork.",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "The space remains mundane, the energy unshaped.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "DEXTERITY",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "DEXTERITY",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "WEALTH",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "WEALTH",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "7",
+          "optionText": "Spirit Walker",
+          "attemptText": "You move between the seen and unseen, guiding the spirits.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "You dance the border of worlds, bridging the realms.",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "The spirits remain distant, their whispers unheard.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "DEXTERITY",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "DEXTERITY",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "MAGIC",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "MAGIC",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "8",
+          "optionText": "Fire Keeper",
+          "attemptText": "You tend the sacred fire, ensuring its steady glow.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "The flames blaze high, illuminating the ritual with power.",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "The fire sputters, casting uncertain shadows.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "STRENGTH",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "STRENGTH",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "INTELLECT",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "INTELLECT",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "9",
+          "optionText": "Stone Circle Builder",
+          "attemptText": "You work to place and empower the sacred stones.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "The stones resonate with energy, forming a potent circle.",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "The placements feel unbalanced, weakening the ritual.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "STRENGTH",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "STRENGTH",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "WEALTH",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "WEALTH",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "10",
+          "optionText": "Rune Carver",
+          "attemptText": "You inscribe sacred runes to channel energy.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "The runes glow with power, enhancing the ritual’s intent.",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "The symbols lack clarity, and their power falters.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "STRENGTH",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "STRENGTH",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "MAGIC",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "MAGIC",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "11",
+          "optionText": "Feast Lord",
+          "attemptText": "You oversee the sacred meal, ensuring offerings are honored.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "The feast is perfectly balanced, nourishing both body and spirit.",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "The offerings feel lacking, diminishing the ritual’s blessing.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "INTELLECT",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "INTELLECT",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "WEALTH",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "WEALTH",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        },
+        {
+          "optionId": "12",
+          "optionText": "Erysus Evoker",
+          "attemptText": "You call upon the presence of the god Erysus.",
+          "statRequirement": null,
+          "statDC": 0,
+          "successText": "The god's presence fills the space, empowering all present.",
+          "outcomeAuthorId": "",
+          "successResults": null,
+          "failureText": "Your voice falters, and the connection feels weak.",
+          "failureResults": null,
+          "statRequirements": [
+            {
+              "dcStat": "INTELLECT",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "INTELLECT",
+              "dcValue": 4
+            },
+            {
+              "dcStat": "MAGIC",
+              "dcValue": 8
+            },
+            {
+              "dcStat": "MAGIC",
+              "dcValue": 4
+            }
+          ],
+          "selectedByPlayerId": null
+        }
+      ]
+    }
+  },
+  "nextGameState": "START"
+}
