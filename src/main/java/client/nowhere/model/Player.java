@@ -108,6 +108,27 @@ public class Player {
         this.favor = favor;
     }
 
+    public int getStatByEnum (Stat stat) {
+        switch (stat) {
+            case CHARISMA:
+                return this.getCharisma();
+            case STRENGTH:
+                return this.getStrength();
+            case DEXTERITY:
+                return this.getDexterity();
+            case FAVOR:
+                return this.getFavor();
+            case INTELLECT:
+                return this.getIntellect();
+            case MAGIC:
+                return this.getMagic();
+            case WEALTH:
+                return this.getWealth();
+            default:
+                return 0;
+        }
+    }
+
     public void updatePlayer(Player player) {
         this.setStrength(player.getStrength());
         this.setIntellect(player.getIntellect());

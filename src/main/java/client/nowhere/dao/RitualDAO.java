@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -42,35 +41,45 @@ public class RitualDAO {
         return ritualStory;
     }
 
-    public RitualOption selectJob(String gameCode,
-                                  String playerId,
-                                  String optionId
-    ) {
+    public RitualOption selectJob(RitualStory ritualStory) {
         try {
-            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(ritualStory.getGameCode());
             DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             GameSession game = FirestoreDAOUtil.mapGameSession(gameSession);
 
             List<RitualOption> ritualOptions = game.getAdventureMap().getRitual().getRitualOptions();
-            Optional<RitualOption> selectedOption = ritualOptions.stream()
+            RitualOption selectedOption = ritualStory.getRitualOptions().get(0);
+
+            Optional<RitualOption> existingOptionOptional = ritualOptions.stream()
                     .filter(option ->
                             option.getSelectedByPlayerId() == null
-                            && option.getOptionId().equals(optionId)
+                            && option.getOptionId().equals(selectedOption.getOptionId())
                     ).findFirst();
 
-            selectedOption.ifPresent(option -> option.setSelectedByPlayerId(playerId));
-
-            if (!selectedOption.isPresent()) {
-                throw new ResourceException("No available ritual option found");
+            if (!existingOptionOptional.isPresent()) {
+                throw new ResourceException("No matching ritual option found");
             }
 
-            RitualOption ritualOption = selectedOption.get();
-            ritualOption.setSelectedByPlayerId(playerId);
+            RitualOption existingOption = existingOptionOptional.get();
 
-            game.getAdventureMap().getRitual().setRitualOptions(ritualOptions);
+            if (selectedOption.getPointsRewarded() != null) {
+                existingOption.setPointsRewarded(selectedOption.getPointsRewarded());
+            }
+            if (selectedOption.getSelectedByPlayerId() != null) {
+                existingOption.setSelectedByPlayerId(selectedOption.getSelectedByPlayerId());
+            }
+            if (selectedOption.getPlayerSucceeded()) {
+                existingOption.setPlayerSucceeded(selectedOption.getPlayerSucceeded());
+            }
+
+            List<RitualOption> updatedRitualOptions = ritualOptions.stream()
+                    .map(option -> option.getOptionId().equals(existingOption.getOptionId()) ? existingOption : option)
+                    .collect(Collectors.toList());
+
+            game.getAdventureMap().getRitual().setRitualOptions(updatedRitualOptions);
             gameSessionRef.update("adventureMap", game.getAdventureMap());
 
-            return ritualOption;
+            return existingOption;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue updating the ritual", e);

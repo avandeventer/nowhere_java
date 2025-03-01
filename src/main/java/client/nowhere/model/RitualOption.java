@@ -6,8 +6,9 @@ import java.util.stream.Collectors;
 public class RitualOption extends Option {
 
     private List<StatRequirement> statRequirements;
-
     private String selectedByPlayerId;
+    private boolean playerSucceeded;
+    private Integer pointsRewarded = 0;
 
     public RitualOption() { }
 
@@ -62,6 +63,22 @@ public class RitualOption extends Option {
         this.selectedByPlayerId = selectedByPlayerId;
     }
 
+    public boolean getPlayerSucceeded() {
+        return this.playerSucceeded;
+    }
+
+    public void setPlayerSucceeded(boolean playerSucceeded) {
+        this.playerSucceeded = playerSucceeded;
+    }
+
+    public Integer getPointsRewarded() {
+        return pointsRewarded;
+    }
+
+    public void setPointsRewarded(Integer pointsRewarded) {
+        this.pointsRewarded = pointsRewarded;
+    }
+
     @Override
     public String toString() {
         return "RitualOption{" +
@@ -76,6 +93,9 @@ public class RitualOption extends Option {
                 ", failureText='" + failureText + '\'' +
                 ", failureResults=" + failureResults +
                 ", statRequirements=" + statRequirements +
+                ", selectedByPlayerId='" + selectedByPlayerId + '\'' +
+                ", succeeded=" + playerSucceeded +
+                ", pointsRewarded=" + pointsRewarded +
                 '}';
     }
 }

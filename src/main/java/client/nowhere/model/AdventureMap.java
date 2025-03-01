@@ -43,7 +43,7 @@ public class AdventureMap {
     }
 
     public void generateDefaultRitual() {
-        List<Integer> statGradient = Arrays.asList(8, 4);
+        List<Integer> statGradient = Arrays.asList(8, 5);
 
         List<RitualOption> ritualOptions = Arrays.asList(
                 new RitualOption("0", "Holder of the Chant", "You lead the rhythmic chants, setting the ritual's tone.", Arrays.asList(Stat.CHARISMA, Stat.STRENGTH), statGradient, "Your powerful voice resonates, guiding the ritual to new heights!", "Your voice wavers, and the chant loses its rhythm."),
