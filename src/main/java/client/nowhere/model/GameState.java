@@ -15,6 +15,7 @@ public enum GameState {
         WRITE_OPTIONS_AGAIN,
         ROUND2,
         RITUAL,
+        GENERATE_ENDINGS,
         WRITE_ENDINGS,
         FINALE;
 }

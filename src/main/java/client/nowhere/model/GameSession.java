@@ -12,6 +12,8 @@ public class GameSession {
     ActiveGameStateSession activeGameStateSession;
     List<Story> stories;
     AdventureMap adventureMap;
+    boolean didWeSucceed = false;
+    List<Ending> endings;
 
     public GameSession() {
         if(this.activeGameStateSession == null) {
@@ -129,6 +131,9 @@ public class GameSession {
                 return GameState.RITUAL;
             }
             case RITUAL -> {
+                return GameState.GENERATE_ENDINGS;
+            }
+            case GENERATE_ENDINGS -> {
                 return GameState.WRITE_ENDINGS;
             }
             case WRITE_ENDINGS -> {
@@ -146,5 +151,21 @@ public class GameSession {
 
     public void setAdventureMap(AdventureMap adventureMap) {
         this.adventureMap = adventureMap;
+    }
+
+    public boolean getDidWeSucceed() {
+        return didWeSucceed;
+    }
+
+    public void setDidWeSucceed(boolean didWeSucceed) {
+        this.didWeSucceed = didWeSucceed;
+    }
+
+    public List<Ending> getEndings() {
+        return endings;
+    }
+
+    public void setEndings(List<Ending> endings) {
+        this.endings = endings;
     }
 }

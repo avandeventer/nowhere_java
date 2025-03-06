@@ -20,12 +20,8 @@ public class RitualDAO {
     private final Firestore db;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    public RitualDAO(Firestore db, ObjectMapper objectMapper) {
+    public RitualDAO(Firestore db) {
         this.db = db;
-        this.objectMapper = objectMapper;
     }
 
     public RitualStory getRitualJobs(String gameCode) {
@@ -39,6 +35,12 @@ public class RitualDAO {
             System.out.println("There was an issue retrieving the game session " + e.getMessage());
         }
         return ritualStory;
+    }
+
+    public RitualOption getRitualJob(String gameCode, String playerId) {
+        RitualStory ritualJobs = getRitualJobs(gameCode);
+        return ritualJobs.getRitualOptions().stream().filter(ritualOption -> ritualOption.getSelectedByPlayerId().equals(playerId))
+                .findFirst().get();
     }
 
     public RitualOption selectJob(RitualStory ritualStory) {

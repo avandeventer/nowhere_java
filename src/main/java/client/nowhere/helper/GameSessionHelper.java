@@ -1,6 +1,8 @@
 package client.nowhere.helper;
 
+import client.nowhere.dao.EndingDAO;
 import client.nowhere.dao.GameSessionDAO;
+import client.nowhere.dao.RitualDAO;
 import client.nowhere.dao.StoryDAO;
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.*;
@@ -16,13 +18,17 @@ public class GameSessionHelper {
 
     private final GameSessionDAO gameSessionDAO;
     private final StoryDAO storyDAO;
+    private final RitualDAO ritualDAO;
     private final StoryHelper storyHelper;
+    private final EndingDAO endingDAO;
 
     @Autowired
-    public GameSessionHelper(GameSessionDAO gameSessionDAO, StoryHelper storyHelper, StoryDAO storyDAO) {
+    public GameSessionHelper(GameSessionDAO gameSessionDAO, StoryHelper storyHelper, StoryDAO storyDAO, RitualDAO ritualDAO, EndingDAO endingDAO) {
         this.gameSessionDAO = gameSessionDAO;
         this.storyHelper = storyHelper;
         this.storyDAO = storyDAO;
+        this.ritualDAO = ritualDAO;
+        this.endingDAO = endingDAO;
     }
 
     public GameSession createGameSession() {
@@ -65,13 +71,13 @@ public class GameSessionHelper {
                     List<Story> stories = storyDAO.getStories(gameSession.getGameCode());
                     List<Story> storiesWithPrompts = stories.stream().filter(story ->
                             !story.getPlayerId().isEmpty()
-                            && story.getSelectedOptionId().isEmpty()).collect(Collectors.toList());
+                                    && story.getSelectedOptionId().isEmpty()).collect(Collectors.toList());
                     for (Story storyWithPrompt : storiesWithPrompts) {
                         String firstOptionAuthorPicked = "";
                         for (Option option : storyWithPrompt.getOptions()) {
                             String assignedAuthorId;
 
-                            if(!option.getSuccessText().isEmpty() && !option.getFailureText().isEmpty()) {
+                            if (!option.getSuccessText().isEmpty() && !option.getFailureText().isEmpty()) {
                                 continue;
                             }
 
@@ -90,10 +96,30 @@ public class GameSessionHelper {
                     gameSession.setGameStateToNext();
                     break;
                 case START_PHASE2:
-                    players = gameSessionDAO.getPlayers(gameSession.getGameCode());
                     List<Story> playedStories = storyDAO.getPlayedStories(gameSession.getGameCode(), isTestMode);
                     generateStoriesToWrite(gameSession, isTestMode, players, playedStories, true);
-                    gameSession.setGameState(GameState.WRITE_PROMPTS_AGAIN);
+                    gameSession.setGameStateToNext();
+                    break;
+                case GENERATE_ENDINGS:
+                    List<Ending> authorEndings = new ArrayList<>();
+                    for (int authorIndex = 0; authorIndex < players.size(); authorIndex++) {
+                        int playerIndex = authorIndex + 1 >= players.size() ? authorIndex = 0 : authorIndex + 1;
+                        String authorId = players.get(authorIndex).getAuthorId();
+                        String playerId = players.get(playerIndex).getAuthorId();
+
+                        Ending authorEnding = new Ending(authorId, playerId);
+                        List<Story> storiesPlayedByPlayer
+                                = storyDAO.getPlayedStories(gameSession.getGameCode(), false, playerId);
+                        List<String> storyIdsPlayedByPlayer = storiesPlayedByPlayer.stream().map(Story::getStoryId).collect(Collectors.toList());
+                        authorEnding.setAssociatedStoryIds(storyIdsPlayedByPlayer);
+                        RitualOption ritualOption = ritualDAO.getRitualJob(gameSession.getGameCode(), playerId);
+                        authorEnding.setAssociatedRitualOption(ritualOption);
+                        authorEnding.setDidWeSucceed(existingSession.getDidWeSucceed());
+                        authorEndings.add(authorEnding);
+
+                        endingDAO.createEnding(gameSession.getGameCode(), authorEnding);
+                    }
+                    gameSession.setGameStateToNext();
                     break;
             }
         } catch (Exception e) {

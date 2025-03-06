@@ -273,6 +273,12 @@ public class StoryDAO {
         return authorStories;
     }
 
+    public List<Story> getPlayedStories(String gameCode, boolean isTestMode, String playerId) {
+        List<Story> allPlayedStories = getPlayedStories(gameCode, isTestMode);
+        return allPlayedStories.stream()
+                .filter(playedStory -> playedStory.getPlayerId().equals(playerId)).collect(Collectors.toList());
+    }
+
     public List<Story> getPlayedStoriesForAdventure(String gameCode, String playerId) {
         List<Story> authorStories;
         try {
