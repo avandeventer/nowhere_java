@@ -102,6 +102,29 @@ public class GameSessionHelper {
                     break;
                 case GENERATE_ENDINGS:
                     List<Ending> authorEndings = new ArrayList<>();
+
+                    int totalPlayerFavor = players.stream()
+                            .mapToInt(Player::getFavor)
+                            .sum();
+
+                    int totalRitualFavor = existingSession
+                            .getAdventureMap()
+                            .getRitual().getRitualOptions()
+                            .stream()
+                            .mapToInt(RitualOption::getPointsRewarded)
+                            .sum();
+
+                    boolean didWeSucceed = totalPlayerFavor + totalRitualFavor > (14 * players.size());
+                    gameSession.setDidWeSucceed(didWeSucceed);
+
+                    //Per turn per player possible total:
+                    // 1 per turn for location = 4
+                    // player stat start = 4
+                    // 2 per turn max for stories = 8
+                    // 2 x Each Success for Ending Ritual (4) = 8
+                    // Max = 24, Min = 0
+                    // Average = 2 for location + 4 player stat + 8 for ritual = 14 each player
+
                     for (int authorIndex = 0; authorIndex < players.size(); authorIndex++) {
                         int playerIndex = authorIndex + 1 >= players.size() ? authorIndex = 0 : authorIndex + 1;
                         String authorId = players.get(authorIndex).getAuthorId();
