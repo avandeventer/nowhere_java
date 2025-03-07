@@ -9,6 +9,7 @@ public class RitualOption extends Option {
     private String selectedByPlayerId;
     private boolean playerSucceeded;
     private Integer pointsRewarded = 0;
+    private String successMarginText;
 
     public RitualOption() { }
 
@@ -17,7 +18,8 @@ public class RitualOption extends Option {
                    String attemptText,
                    List<Stat> stats,
                    List<Integer> difficultyValues,
-                   String successText, String failureText) {
+                   String successText,
+                     String failureText) {
         this.optionId = optionId;
         this.optionText = optionText;
         this.attemptText = attemptText;
@@ -77,6 +79,14 @@ public class RitualOption extends Option {
 
     public void setPointsRewarded(Integer pointsRewarded) {
         this.pointsRewarded = pointsRewarded;
+    }
+
+    public String getSuccessMarginText() {
+        return successMarginText;
+    }
+
+    public void setSuccessMarginText(String successMarginText) {
+        this.successMarginText = successMarginText;
     }
 
     @Override
