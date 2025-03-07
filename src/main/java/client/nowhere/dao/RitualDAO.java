@@ -74,6 +74,10 @@ public class RitualDAO {
                 existingOption.setPlayerSucceeded(selectedOption.getPlayerSucceeded());
             }
 
+            if (!selectedOption.getSuccessMarginText().isEmpty()) {
+                existingOption.setSuccessMarginText(selectedOption.getSuccessMarginText());
+            }
+
             List<RitualOption> updatedRitualOptions = ritualOptions.stream()
                     .map(option -> option.getOptionId().equals(existingOption.getOptionId()) ? existingOption : option)
                     .collect(Collectors.toList());
