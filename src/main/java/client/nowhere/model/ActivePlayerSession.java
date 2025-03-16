@@ -10,6 +10,7 @@ public class ActivePlayerSession {
     Story story;
     List<String> outcomeDisplay;
     List<String> locationOutcomeDisplay;
+    RitualStory ritualStory;
     boolean setNextPlayerTurn;
 
     public ActivePlayerSession() { }
@@ -86,5 +87,13 @@ public class ActivePlayerSession {
 
     public void setLocationOutcomeDisplay(List<String> locationOutcomeDisplay) {
         this.locationOutcomeDisplay = locationOutcomeDisplay;
+    }
+
+    public RitualStory getRitualStory() {
+        return ritualStory;
+    }
+
+    public void setRitualStory(RitualStory ritualStory) {
+        this.ritualStory = ritualStory;
     }
 }
