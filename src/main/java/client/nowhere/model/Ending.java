@@ -5,7 +5,7 @@ import java.util.List;
 public class Ending {
 
     String playerId;
-    List<String> associatedStoryIds;
+    List<Story> associatedStories;
     String associatedLocationId;
     RitualOption associatedRitualOption;
     String authorId;
@@ -27,12 +27,12 @@ public class Ending {
         this.playerId = playerId;
     }
 
-    public List<String> getAssociatedStoryIds() {
-        return associatedStoryIds;
+    public List<Story> getAssociatedStories() {
+        return associatedStories;
     }
 
-    public void setAssociatedStoryIds(List<String> associatedStoryIds) {
-        this.associatedStoryIds = associatedStoryIds;
+    public void setAssociatedStories(List<Story> associatedStories) {
+        this.associatedStories = associatedStories;
     }
 
     public String getAssociatedLocationId() {

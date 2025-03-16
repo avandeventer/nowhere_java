@@ -56,7 +56,6 @@ public class GameSessionHelper {
             gameStateSession.resetPlayerDoneStatus(players);
             gameSession.setActiveGameStateSession(gameStateSession);
 
-
             switch (gameSession.getGameState()) {
                 case START:
                     generateStoriesToWrite(gameSession, isTestMode, players, new ArrayList<>(), false);
@@ -114,7 +113,7 @@ public class GameSessionHelper {
                             .mapToInt(RitualOption::getPointsRewarded)
                             .sum();
 
-                    boolean didWeSucceed = totalPlayerFavor + totalRitualFavor > (14 * players.size());
+                    boolean didWeSucceed = totalPlayerFavor + totalRitualFavor > (12 * players.size());
                     gameSession.setDidWeSucceed(didWeSucceed);
 
                     //Per turn per player possible total:
@@ -126,18 +125,27 @@ public class GameSessionHelper {
                     // Average = 2 for location + 4 player stat + 8 for ritual = 14 each player
 
                     for (int authorIndex = 0; authorIndex < players.size(); authorIndex++) {
-                        int playerIndex = authorIndex + 1 >= players.size() ? authorIndex = 0 : authorIndex + 1;
+                        int playerIndex = authorIndex + 1 >= players.size() ? 0 : authorIndex + 1;
                         String authorId = players.get(authorIndex).getAuthorId();
                         String playerId = players.get(playerIndex).getAuthorId();
 
                         Ending authorEnding = new Ending(authorId, playerId);
                         List<Story> storiesPlayedByPlayer
                                 = storyDAO.getPlayedStories(gameSession.getGameCode(), false, playerId);
-                        List<String> storyIdsPlayedByPlayer = storiesPlayedByPlayer.stream().map(Story::getStoryId).collect(Collectors.toList());
-                        authorEnding.setAssociatedStoryIds(storyIdsPlayedByPlayer);
+
+                        //Filter this out so it only contains the option that the player picked
+                        storiesPlayedByPlayer.forEach(story ->
+                                story.setOptions(
+                                        story.getOptions().stream()
+                                                .filter(option -> option.getOptionId().equals(story.getSelectedOptionId()))
+                                                .collect(Collectors.toList())
+                                )
+                        );
+
+                        authorEnding.setAssociatedStories(storiesPlayedByPlayer);
                         RitualOption ritualOption = ritualDAO.getRitualJob(gameSession.getGameCode(), playerId);
                         authorEnding.setAssociatedRitualOption(ritualOption);
-                        authorEnding.setDidWeSucceed(existingSession.getDidWeSucceed());
+                        authorEnding.setDidWeSucceed(gameSession.getDidWeSucceed());
                         authorEndings.add(authorEnding);
 
                         endingDAO.createEnding(gameSession.getGameCode(), authorEnding);

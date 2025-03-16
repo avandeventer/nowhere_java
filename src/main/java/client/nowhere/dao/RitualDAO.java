@@ -39,7 +39,9 @@ public class RitualDAO {
 
     public RitualOption getRitualJob(String gameCode, String playerId) {
         RitualStory ritualJobs = getRitualJobs(gameCode);
-        return ritualJobs.getRitualOptions().stream().filter(ritualOption -> ritualOption.getSelectedByPlayerId().equals(playerId))
+        return ritualJobs.getRitualOptions().stream().filter(ritualOption ->
+                ritualOption.getSelectedByPlayerId() != null
+                && ritualOption.getSelectedByPlayerId().equals(playerId))
                 .findFirst().get();
     }
 
