@@ -22,4 +22,8 @@ public class EndingHelper {
     public Ending getPlayerEnding(String gameCode, String playerId) {
         return endingDAO.getPlayerEnding(gameCode, playerId);
     }
+
+    public Ending updateAuthorEnding(String gameCode, Ending ending) {
+        return endingDAO.updateEnding(gameCode, ending);
+    }
 }

@@ -74,4 +74,11 @@ public class Ending {
     public void setDidWeSucceed(boolean didWeSucceed) {
         this.didWeSucceed = didWeSucceed;
     }
+
+    public void updateEnding(Ending ending) {
+        this.setEndingBody(ending.getEndingBody());
+        this.setAssociatedStories(ending.getAssociatedStories());
+        this.setAssociatedLocationId(ending.getAssociatedLocationId());
+        this.setAssociatedRitualOption(ending.getAssociatedRitualOption());
+    }
 }

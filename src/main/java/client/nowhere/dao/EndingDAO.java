@@ -3,12 +3,14 @@ package client.nowhere.dao;
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.Ending;
 import client.nowhere.model.GameSession;
-import client.nowhere.model.Story;
+import client.nowhere.model.Player;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -18,8 +20,12 @@ public class EndingDAO {
     private final Firestore db;
 
     @Autowired
-    public EndingDAO(Firestore db) {
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    public EndingDAO(Firestore db, ObjectMapper objectMapper) {
         this.db = db;
+        this.objectMapper = objectMapper;
     }
 
     public Ending createEnding(String gameCode, Ending ending) {
@@ -90,5 +96,28 @@ public class EndingDAO {
             System.out.println("There was an issue retrieving the game session " + e.getMessage());
         }
         return gameSession;
+    }
+
+    public Ending updateEnding(String gameCode, Ending ending) {
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            List<Ending> endings = (List<Ending>) FirestoreDAOUtil.mapDocument(objectMapper, gameSession, "endings", Ending.class);
+
+            endings.stream()
+                    .filter(existingEnding -> existingEnding
+                            .getAuthorId().equals(ending.getAuthorId()))
+                    .forEach(existingEnding -> {
+                        existingEnding.updateEnding(ending);
+                    });
+
+            ApiFuture<WriteResult> result = gameSessionRef.update("endings", endings);
+            WriteResult asyncResponse = result.get();
+            System.out.println("Update time : " + result.get().toString() + " " + asyncResponse.toString());
+            return ending;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue creating the game session", e);
+        }
     }
 }

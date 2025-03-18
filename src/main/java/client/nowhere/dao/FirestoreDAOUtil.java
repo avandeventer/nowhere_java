@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 public class FirestoreDAOUtil {
+
     public static <T> List<?> mapDocument(ObjectMapper objectMapper, DocumentSnapshot document, String documentPath, Class<T> targetType) {
         if(documentPath.equals("")) {
             document.getData();

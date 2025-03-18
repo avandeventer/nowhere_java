@@ -22,7 +22,15 @@ public class EndingController {
         return endingHelper.getAuthorEnding(gameCode, authorId);
     }
 
-    @PutMapping("/adventure-ending")
+    @PutMapping("/ending")
+    public Ending updateAuthorEnding(
+            @RequestParam String gameCode,
+            @RequestBody Ending ending
+    ) {
+        return endingHelper.updateAuthorEnding(gameCode, ending);
+    }
+
+    @GetMapping("/adventure-ending")
     public Ending getPlayerEnding (
             @RequestParam String gameCode,
             @RequestParam String playerId
