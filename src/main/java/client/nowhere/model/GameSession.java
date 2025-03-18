@@ -137,6 +137,9 @@ public class GameSession {
                 return GameState.WRITE_ENDINGS;
             }
             case WRITE_ENDINGS -> {
+                return GameState.ENDING;
+            }
+            case ENDING -> {
                 return GameState.FINALE;
             }
             default -> {
