@@ -5,6 +5,7 @@ import java.util.List;
 public class Ending {
 
     String playerId;
+    String playerUsername;
     List<Story> associatedStories;
     String associatedLocationId;
     RitualOption associatedRitualOption;
@@ -73,6 +74,14 @@ public class Ending {
 
     public void setDidWeSucceed(boolean didWeSucceed) {
         this.didWeSucceed = didWeSucceed;
+    }
+
+    public String getPlayerUsername() {
+        return playerUsername;
+    }
+
+    public void setPlayerUsername(String playerUsername) {
+        this.playerUsername = playerUsername;
     }
 
     public void updateEnding(Ending ending) {

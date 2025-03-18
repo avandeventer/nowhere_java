@@ -130,6 +130,7 @@ public class GameSessionHelper {
                         String playerId = players.get(playerIndex).getAuthorId();
 
                         Ending authorEnding = new Ending(authorId, playerId);
+                        authorEnding.setPlayerUsername(players.get(playerIndex).getUserName());
                         List<Story> storiesPlayedByPlayer
                                 = storyDAO.getPlayedStories(gameSession.getGameCode(), false, playerId);
 
