@@ -31,8 +31,8 @@ public class GameSessionHelper {
         this.endingDAO = endingDAO;
     }
 
-    public GameSession createGameSession() {
-        return gameSessionDAO.createGameSession(generateSessionCode());
+    public GameSession createGameSession(String userProfileId) {
+        return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId);
     }
 
     public GameSession  updateToNextGameState(String gameCode) {

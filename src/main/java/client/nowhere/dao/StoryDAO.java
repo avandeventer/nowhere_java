@@ -45,7 +45,7 @@ public class StoryDAO {
     public Story updateStory(Story story) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(story.getGameCode());
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
 
             for (int i = 0; i < stories.size(); i++) {
@@ -150,7 +150,7 @@ public class StoryDAO {
         List<Story> authorStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
                     .filter(story -> story.getAuthorId().equals(authorId)
@@ -168,7 +168,7 @@ public class StoryDAO {
         List<Story> outcomeAuthorStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             outcomeAuthorStories = stories.stream()
                     .filter(story -> story.getSelectedOptionId().isEmpty() && story.getOptions().stream()
@@ -187,7 +187,7 @@ public class StoryDAO {
         List<Story> playerStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             playerStories = stories.stream()
                     .filter(story -> wasNotWrittenByPlayer(playerId, locationId, story))
@@ -261,7 +261,7 @@ public class StoryDAO {
         List<Story> authorStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
                     .filter(story -> isTestMode || (!story.getPlayerId().isEmpty() && !story.getSelectedOptionId().isEmpty()))
@@ -283,7 +283,7 @@ public class StoryDAO {
         List<Story> authorStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
                     .filter(story ->
@@ -300,7 +300,7 @@ public class StoryDAO {
     public List<Story> getStories(String gameCode) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             return stories;
         } catch (InterruptedException | ExecutionException e) {
@@ -313,7 +313,7 @@ public class StoryDAO {
         List<Story> playerStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             List<Story> stories = mapStories(gameSession);
             playerStories = stories.stream()
                     .filter(story -> story.getStoryId().equals(storyId))

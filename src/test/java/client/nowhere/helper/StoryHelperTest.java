@@ -3,8 +3,12 @@ package client.nowhere.helper;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import client.nowhere.constants.AuthorConstants;
+import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
+import client.nowhere.dao.UserProfileDAO;
 import client.nowhere.model.AdventureMap;
+import client.nowhere.model.GameSession;
 import client.nowhere.model.Story;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +28,12 @@ class StoryHelperTest {
     @Mock
     private StoryDAO storyDAO;
 
+    @Mock
+    private GameSessionDAO gameSessionDAO;
+
+    @Mock
+    private UserProfileDAO userProfileDAO;
+
     @InjectMocks
     private StoryHelper storyHelper;
 
@@ -38,9 +48,15 @@ class StoryHelperTest {
         String playerId = "PLAYER123";
         int locationId = 1;
 
+        GameSession mockGameSession = new GameSession(gameCode);
+        mockGameSession.setUserProfileId("USER_PROFILE_ID");
+        mockGameSession.setSaveGameId("SAVE_GAME_ID");
+        mockGameSession.setStories(new ArrayList<>());
+
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(mockGameSession);
         when(storyDAO.getStories(gameCode)).thenReturn(new ArrayList<>()); // No game session stories
         when(storyDAO.getPlayerStories(gameCode, playerId, locationId)).thenReturn(new ArrayList<>()); // No player stories
-        when(storyDAO.getGlobalStories(locationId)).thenReturn(new ArrayList<>()); // No global stories
+        when(userProfileDAO.getSaveGameStories(mockGameSession, locationId)).thenReturn(new ArrayList<>()); // No global stories
 
         Story result = storyHelper.getPlayerStory(gameCode, playerId, locationId);
 
@@ -64,8 +80,17 @@ class StoryHelperTest {
         String playerId = "PLAYER123";
         int locationId = 1;
 
+        GameSession mockGameSession = new GameSession(gameCode);
+        mockGameSession.setUserProfileId("USER_PROFILE_ID");
+        mockGameSession.setSaveGameId("SAVE_GAME_ID");
+        mockGameSession.setStories(gameSessionStories);
+
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(mockGameSession);
         when(storyDAO.getStories(gameCode)).thenReturn(gameSessionStories);
-        when(storyDAO.getGlobalSequelPlayerStories(
+        when(userProfileDAO.getSaveGameSequelStories(
+                mockGameSession.getUserProfileId(),
+                mockGameSession.getAdventureMap().getAdventureId(),
+                mockGameSession.getSaveGameId(),
                 gameSessionStories.stream()
                         .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
                         .map(Story::getStoryId)
@@ -124,7 +149,16 @@ class StoryHelperTest {
                         "LOCATION_SEQUEL",
                         true
                 ),
-                // Case 4: No sequels at all, return a default story
+                // Case 4: No sequels in game session, player sequel in global with GLOBAL player author constant
+                Arguments.of(
+                        createStories(
+                                createVisitedStory(playerId)
+                        ),
+                        List.of(createPlayerSequelStory(AuthorConstants.GLOBAL_PLAYER_SEQUEL)),
+                        "PLAYER_SEQUEL",
+                        true
+                ),
+                // Case 5: No sequels at all, return a default story
                 Arguments.of(
                         createStories(
                                 createVisitedStory(playerId)

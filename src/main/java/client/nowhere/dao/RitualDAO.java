@@ -2,7 +2,6 @@ package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
@@ -28,7 +27,7 @@ public class RitualDAO {
         RitualStory ritualStory = new RitualStory();
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             GameSession gameSession = FirestoreDAOUtil.mapGameSession(gameSessionSnapshot);
             ritualStory = gameSession.getAdventureMap().getRitual();
         } catch (InterruptedException | ExecutionException e) {
@@ -48,7 +47,7 @@ public class RitualDAO {
     public RitualOption selectJob(RitualStory ritualStory) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(ritualStory.getGameCode());
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             GameSession game = FirestoreDAOUtil.mapGameSession(gameSession);
 
             List<RitualOption> ritualOptions = game.getAdventureMap().getRitual().getRitualOptions();

@@ -2,6 +2,7 @@ package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.GameSession;
+import client.nowhere.model.UserProfile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
@@ -40,12 +41,20 @@ public class FirestoreDAOUtil {
         }
     }
 
-    public static DocumentSnapshot getGameSession(DocumentReference gameSessionRef) throws InterruptedException, ExecutionException {
-        ApiFuture<DocumentSnapshot> future = gameSessionRef.get();
+    public static <T> UserProfile mapUserProfile(DocumentSnapshot document) {
+        if (document.exists()) {
+            return document.toObject(UserProfile.class);
+        } else {
+            throw new ResourceException("No data found for the document");
+        }
+    }
+
+    public static DocumentSnapshot getDocumentSnapshot(DocumentReference documentReference) throws InterruptedException, ExecutionException {
+        ApiFuture<DocumentSnapshot> future = documentReference.get();
         DocumentSnapshot document = future.get();
 
         if (!document.exists()) {
-            throw new ResourceException("Game session does not exist");
+            throw new ResourceException("Document does not exist");
         }
         return document;
     }

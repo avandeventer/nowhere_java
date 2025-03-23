@@ -6,6 +6,8 @@ import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -19,6 +21,12 @@ public class AdminController {
     @ResponseBody
     public Story create(@RequestBody Story story) {
         return this.storyHelper.createGlobalStory(story);
+    }
+
+    @PutMapping("/story/all")
+    @ResponseBody
+    public List<Story> saveAllGameSessionStories(@RequestParam String gameCode) {
+        return this.storyHelper.saveAllGameSessionStories(gameCode);
     }
 
 }

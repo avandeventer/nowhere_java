@@ -25,8 +25,10 @@ public class GameSessionController {
 
     @PostMapping(value = "/game", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public GameSession create() {
-        GameSession game = this.gameSessionHelper.createGameSession();
+    public GameSession create(@RequestParam(required = false, defaultValue = "c8d068ae-e180-44c9-940c-011ba632cba4") String userProfileId,
+                              @RequestParam(required = false, defaultValue = "a6a6e1ab-de29-4ffb-9028-7c4f90f9d008") String adventureId,
+                              @RequestParam(required = false, defaultValue = "4b8a146a-ccf6-41cf-961a-65096d70bf82\n") String saveGameId) {
+        GameSession game = this.gameSessionHelper.createGameSession(userProfileId);
         return game;
     }
 

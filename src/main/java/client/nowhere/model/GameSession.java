@@ -14,6 +14,8 @@ public class GameSession {
     AdventureMap adventureMap;
     boolean didWeSucceed = false;
     List<Ending> endings;
+    String userProfileId;
+    String saveGameId;
 
     public GameSession() {
         if(this.activeGameStateSession == null) {
@@ -170,5 +172,21 @@ public class GameSession {
 
     public void setEndings(List<Ending> endings) {
         this.endings = endings;
+    }
+
+    public String getUserProfileId() {
+        return userProfileId;
+    }
+
+    public void setUserProfileId(String userProfileId) {
+        this.userProfileId = userProfileId;
+    }
+
+    public String getSaveGameId() {
+        return saveGameId;
+    }
+
+    public void setSaveGameId(String saveGameId) {
+        this.saveGameId = saveGameId;
     }
 }

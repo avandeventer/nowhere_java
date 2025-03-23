@@ -1,5 +1,7 @@
 package client.nowhere.model;
 
+import client.nowhere.constants.AuthorConstants;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -9,22 +11,25 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Story {
 
     private String storyId = "";
-    private boolean visited = false;
     private String prompt = "";
     private String authorId = "";
     private String outcomeAuthorId = "";
-    private String playerId = "";
-    private String selectedOptionId = "";
-    private boolean playerSucceeded = false;
     private boolean prequelStorySucceeded = false;
     private String prequelStoryId = "";
-    private String prequelStoryPlayerId = "";
     private Location location;
     private List<Option> options;
     private String gameCode = "";
     private List<Repercussion> successRepercussions;
     private List<Repercussion> failureRepercussions;
     private List<String> prequelOutcomeDisplay;
+
+    //Temporary player variables
+    private boolean visited = false;
+    private String playerId = "";
+    private String selectedOptionId = "";
+    private boolean playerSucceeded = false;
+    private String prequelStoryPlayerId = "";
+
 
     public Story () {
         this.storyId = UUID.randomUUID().toString();
@@ -108,8 +113,8 @@ public class Story {
         this.randomizeNewStory();
         String creatureEncountered = "";
         this.gameCode = gameCode;
-        this.setAuthorId("DEFAULT");
-        this.setOutcomeAuthorId("DEFAULT");
+        this.setAuthorId(AuthorConstants.DEFAULT);
+        this.setOutcomeAuthorId(AuthorConstants.DEFAULT);
         AdventureMap adventureMap = new AdventureMap();
         this.setLocation(adventureMap.getLocations().get(locationIndex));
 
@@ -360,5 +365,19 @@ public class Story {
     @Override
     public int hashCode() {
         return Objects.hash(storyId, visited, prompt, authorId, outcomeAuthorId, playerId, selectedOptionId, playerSucceeded, prequelStorySucceeded, prequelStoryId, prequelStoryPlayerId, location, options, gameCode, successRepercussions, failureRepercussions, prequelOutcomeDisplay);
+    }
+
+    public void resetPlayerVariables() {
+        this.playerId = "";
+        this.visited = false;
+        this.playerSucceeded = false;
+        this.selectedOptionId = "";
+        this.prequelStoryPlayerId = AuthorConstants.GLOBAL_PLAYER_SEQUEL;
+
+        if (!this.prequelStoryPlayerId.isBlank()) {
+            this.location = new Location();
+        }
+
+
     }
 }

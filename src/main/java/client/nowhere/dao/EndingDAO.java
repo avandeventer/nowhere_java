@@ -3,7 +3,6 @@ package client.nowhere.dao;
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.Ending;
 import client.nowhere.model.GameSession;
-import client.nowhere.model.Player;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
@@ -90,7 +89,7 @@ public class EndingDAO {
         GameSession gameSession = new GameSession();
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             gameSession = FirestoreDAOUtil.mapGameSession(gameSessionSnapshot);
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("There was an issue retrieving the game session " + e.getMessage());
@@ -101,7 +100,7 @@ public class EndingDAO {
     public Ending updateEnding(String gameCode, Ending ending) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             List<Ending> endings = (List<Ending>) FirestoreDAOUtil.mapDocument(objectMapper, gameSession, "endings", Ending.class);
 
             endings.stream()
