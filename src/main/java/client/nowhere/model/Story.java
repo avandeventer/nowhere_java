@@ -372,12 +372,9 @@ public class Story {
         this.visited = false;
         this.playerSucceeded = false;
         this.selectedOptionId = "";
-        this.prequelStoryPlayerId = AuthorConstants.GLOBAL_PLAYER_SEQUEL;
-
         if (!this.prequelStoryPlayerId.isBlank()) {
+            this.prequelStoryPlayerId = AuthorConstants.GLOBAL_PLAYER_SEQUEL;
             this.location = new Location();
         }
-
-
     }
 }
