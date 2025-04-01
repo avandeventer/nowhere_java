@@ -4,6 +4,7 @@ import client.nowhere.dao.EndingDAO;
 import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.RitualDAO;
 import client.nowhere.dao.StoryDAO;
+import client.nowhere.exception.GameStateException;
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -270,14 +271,18 @@ public class GameSessionHelper {
     public Player joinPlayer(Player player) {
         player.setGameCode(player.getGameCode().toUpperCase(Locale.ROOT));
 
-        List<Player> alreadyJoinedPlayers =
-                this.gameSessionDAO.getPlayers(player.getGameCode());
+        GameSession gameSession =
+                this.gameSessionDAO.getGame(player.getGameCode());
+
+        List<Player> alreadyJoinedPlayers = gameSession.getPlayers();
 
         Optional<Player> alreadyJoined = alreadyJoinedPlayers.stream().filter(alreadyJoinedPlayer ->
                 alreadyJoinedPlayer.getUserName().equals(player.getUserName())).collect(Collectors.toList()).stream().findAny();
 
         if(alreadyJoined.isPresent()) {
             return alreadyJoined.get();
+        } else if (gameSession.isAfterGameState(GameState.LOCATION_SELECT)) {
+            throw new GameStateException("New players cannot join after the first game phase has completed.");
         }
 
         if(alreadyJoinedPlayers.size() == 0) {

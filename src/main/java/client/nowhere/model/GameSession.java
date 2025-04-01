@@ -189,4 +189,8 @@ public class GameSession {
     public void setSaveGameId(String saveGameId) {
         this.saveGameId = saveGameId;
     }
+
+    public boolean isAfterGameState(GameState gameState) {
+        return this.getGameState().ordinal() > gameState.ordinal();
+    }
 }

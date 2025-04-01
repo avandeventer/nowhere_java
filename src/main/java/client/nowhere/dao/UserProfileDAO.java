@@ -128,7 +128,8 @@ public class UserProfileDAO {
                 .getSaveGameById(saveGameId)
                 .getGlobalStories();
 
-        return saveGameStories.stream().filter(story -> locationId == story.getLocation().getLocationId())
+        return saveGameStories.stream().filter(story -> locationId == story.getLocation().getLocationId()
+                && story.getPrequelStoryId().isBlank())
                 .collect(Collectors.toList());
     }
 
