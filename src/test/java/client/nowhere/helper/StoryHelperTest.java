@@ -58,7 +58,7 @@ class StoryHelperTest {
         when(storyDAO.getPlayerStories(gameCode, playerId, locationId)).thenReturn(new ArrayList<>()); // No player stories
         when(userProfileDAO.getSaveGameStories(mockGameSession, locationId)).thenReturn(new ArrayList<>()); // No global stories
 
-        Story result = storyHelper.getPlayerStory(gameCode, playerId, locationId);
+        Story result = storyHelper.getPlayerStory(gameCode, playerId, locationId, mockGameSession);
 
         assertNotNull(result);
         assertEquals(gameCode, result.getGameCode());
@@ -98,7 +98,7 @@ class StoryHelperTest {
         ).thenReturn(globalSequelPlayerStories);
 
         // Act
-        Story result = storyHelper.getPlayerStory(gameCode, playerId, locationId);
+        Story result = storyHelper.getPlayerStory(gameCode, playerId, locationId, mockGameSession);
 
         // Assert
         assertNotNull(result);

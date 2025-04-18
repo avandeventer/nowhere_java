@@ -61,7 +61,7 @@ public class StoryController {
         if(gameCode == null || playerId == null) {
             throw new IllegalArgumentException("Either gameCode or playerId must be provided.");
         }
-        return this.storyHelper.getPlayerStory(gameCode, playerId, locationId);
+        return this.storyHelper.storePlayerStory(gameCode, playerId, locationId);
     }
 
     @GetMapping("/adventure/played")

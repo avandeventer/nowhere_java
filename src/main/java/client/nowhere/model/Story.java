@@ -51,15 +51,13 @@ public class Story {
     public Story(
             String gameSessionCode,
             Location location,
-            String outcomeAuthorId,
-            String playerAuthorId
+            String playerId
     ) {
         this.gameCode = gameSessionCode;
         this.storyId = UUID.randomUUID().toString();
         randomizeNewStory();
         this.location = location;
-        this.authorId = playerAuthorId;
-        this.outcomeAuthorId = outcomeAuthorId;
+        this.playerId = playerId;
     }
 
     public Story(

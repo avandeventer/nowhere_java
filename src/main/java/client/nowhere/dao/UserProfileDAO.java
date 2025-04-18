@@ -105,7 +105,7 @@ public class UserProfileDAO {
         return dedupedGameSessionStories;
     }
 
-    public List<Story> getSaveGameSequelStories(String userProfileId, String adventureId, String saveGameId, List<String> storyIds) {
+    public List<Story> getSaveGameSequelStories(String userProfileId, String adventureId, String saveGameId, List<String> prequelStoryIds) {
         UserProfile userProfile = this.get(userProfileId);
 
         List<Story> saveGameStories = userProfile.getMaps()
@@ -113,7 +113,7 @@ public class UserProfileDAO {
                 .getSaveGameById(saveGameId)
                 .getGlobalStories();
 
-        return saveGameStories.stream().filter(story -> storyIds.contains(story.getPrequelStoryId())).collect(Collectors.toList());
+        return saveGameStories.stream().filter(story -> prequelStoryIds.contains(story.getPrequelStoryId())).collect(Collectors.toList());
     }
 
     public List<Story> getSaveGameStories(GameSession gameSession, int locationId) {
@@ -128,8 +128,13 @@ public class UserProfileDAO {
                 .getSaveGameById(saveGameId)
                 .getGlobalStories();
 
+        List<String> allGameSessionStoryIds = gameSession.getStories().stream()
+                .map(Story::getStoryId)
+                .collect(Collectors.toList());
+
         return saveGameStories.stream().filter(story -> locationId == story.getLocation().getLocationId()
-                && story.getPrequelStoryId().isBlank())
+                && story.getPrequelStoryId().isBlank()
+                && !allGameSessionStoryIds.contains(story.getStoryId()))
                 .collect(Collectors.toList());
     }
 

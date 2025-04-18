@@ -32,8 +32,8 @@ public class GameSessionHelper {
         this.endingDAO = endingDAO;
     }
 
-    public GameSession createGameSession(String userProfileId, String saveGameId) {
-        return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, saveGameId);
+    public GameSession createGameSession(String userProfileId, String saveGameId, Integer storiesToWritePerRound) {
+        return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, saveGameId, storiesToWritePerRound);
     }
 
     public GameSession  updateToNextGameState(String gameCode) {
@@ -60,7 +60,7 @@ public class GameSessionHelper {
             switch (gameSession.getGameState()) {
                 case START:
                     generateStoriesToWrite(gameSession, isTestMode, players, new ArrayList<>(), false);
-                    gameSession.setGameState(GameState.WRITE_PROMPTS);
+                    gameSession.setGameStateToNext();
                     break;
                 case GENERATE_WRITE_OPTION_AUTHORS:
                 case GENERATE_WRITE_OPTION_AUTHORS_AGAIN:

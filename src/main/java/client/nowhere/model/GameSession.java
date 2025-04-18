@@ -16,6 +16,7 @@ public class GameSession {
     List<Ending> endings;
     String userProfileId;
     String saveGameId;
+    Integer storiesToWritePerRound = 1;
 
     public GameSession() {
         if(this.activeGameStateSession == null) {
@@ -192,5 +193,17 @@ public class GameSession {
 
     public boolean isAfterGameState(GameState gameState) {
         return this.getGameState().ordinal() > gameState.ordinal();
+    }
+
+    public boolean isDidWeSucceed() {
+        return didWeSucceed;
+    }
+
+    public Integer getStoriesToWritePerRound() {
+        return storiesToWritePerRound;
+    }
+
+    public void setStoriesToWritePerRound(Integer storiesToWritePerRound) {
+        this.storiesToWritePerRound = storiesToWritePerRound;
     }
 }

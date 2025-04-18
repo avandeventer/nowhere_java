@@ -4,13 +4,13 @@ import client.nowhere.constants.AuthorConstants;
 import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
 import client.nowhere.dao.UserProfileDAO;
+import client.nowhere.exception.ResourceException;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class StoryHelper {
@@ -46,97 +46,118 @@ public class StoryHelper {
         return storyDAO.getAuthorStoriesByStoryId(gameCode, storyId);
     }
 
-    public Story getPlayerStory(String gameCode, String playerId, int locationId) {
+    public Story storePlayerStory(String gameCode, String playerId, int locationId) {
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
+
+        List<Story> existingUnwrittenPlayerStories = gameSession.getStories().stream()
+                    .filter(story ->
+                            story.getPlayerId().equals(playerId)
+                            && story.getSelectedOptionId().isBlank()
+                    ).collect(Collectors.toList());
+
+        if(existingUnwrittenPlayerStories.size() >= gameSession.getStoriesToWritePerRound()) {
+            return getPlayerStory(gameCode, playerId, locationId, gameSession);
+        }
+
+        Optional<Location> location = gameSession.getAdventureMap().getLocations().stream().filter(
+                gameSessionLocation ->
+                gameSessionLocation.getLocationId() == locationId).findFirst();
+
+        if (location.isEmpty()) {
+            throw new ResourceException("A location at " + locationId + " does not exist.");
+        }
+
+        Story newStory = new Story(gameCode, location.get(), playerId);
+        newStory.setVisited(true);
+        return storyDAO.createStory(newStory);
+    }
+
+    public Story getPlayerStory(String gameCode, String playerId, int locationId, GameSession gameSession) {
         List<Story> gameSessionStories = gameSession.getStories();
-        List<Story> sequelStories = getSequelStories(gameSession, playerId, locationId);
+        Story selectedStory = getSequelSaveGameStory(gameSession, playerId, locationId);
+
+        if (selectedStory == null) {
+            List<Story> saveGameStories = userProfileDAO.getSaveGameStories(gameSession, locationId);
+
+            if (!saveGameStories.isEmpty()) {
+                for (Story saveGameStory : saveGameStories) {
+                    List<String> gameSessionStoryIds =
+                            gameSessionStories.stream().map(Story::getStoryId).collect(Collectors.toList());
+                    if (!gameSessionStoryIds.contains(saveGameStory.getStoryId())) {
+                        selectedStory = saveGameStory;
+                        selectedStory.setGameCode(gameCode);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (selectedStory == null) {
+            selectedStory = new Story();
+            selectedStory.defaultStory(gameCode, locationId);
+        }
+
         List<String> gameSessionStoryIds =
                 gameSessionStories.stream().map(Story::getStoryId).collect(Collectors.toList());
 
-        Story story = new Story();
-        if(sequelStories.size() == 0) {
-            List<Story> playerStories = storyDAO.getPlayerStories(gameCode, playerId, locationId);
-
-            if(playerStories.size() == 0) {
-//                List<Story> globalStories = storyDAO.getGlobalStories(locationId);
-                List<Story> saveGameStories = userProfileDAO.getSaveGameStories(gameSession, locationId);
-
-                if(saveGameStories.size() == 0) {
-                    story.defaultStory(gameCode, locationId);
-                    storyDAO.createStory(story);
-                } else {
-                    boolean storySelected = false;
-                    for(Story globalStory : saveGameStories) {
-                        if (!gameSessionStoryIds.contains(globalStory.getStoryId())) {
-                            story = globalStory;
-                            story.setGameCode(gameCode);
-                            storyDAO.createStory(story);
-                            storySelected = true;
-                            break;
-                        };
-                    }
-
-                    if(!storySelected) {
-                        story.defaultStory(gameCode, locationId);
-                        storyDAO.createStory(story);
-                    }
-                }
-            } else {
-                story = playerStories.get(0);
-            }
+        if (!gameSessionStoryIds.contains(selectedStory.getStoryId())) {
+            storyDAO.createStory(selectedStory);
         } else {
-            Optional<Story> playerSequelStoryExists = sequelStories.stream()
-                    .filter(sequelStory -> sequelStory.getPrequelStoryPlayerId().equals(playerId) ||
-                            sequelStory.getPrequelStoryPlayerId().equals(AuthorConstants.GLOBAL_PLAYER_SEQUEL)
-                    ).findAny();
-
-            if(playerSequelStoryExists.isPresent()) {
-                story = playerSequelStoryExists.get();
-                AdventureMap adventureMap = new AdventureMap();
-                story.setLocation(adventureMap.getLocations().get(locationId));
-                if (story.getPrequelStoryPlayerId().equals(AuthorConstants.GLOBAL_PLAYER_SEQUEL)) {
-                    story.setPrequelStoryPlayerId(playerId);
-                }
-            } else {
-                story = sequelStories.get(0);
-            }
-
-            if(!gameSessionStoryIds.contains(story.getStoryId())) {
-                storyDAO.createStory(story);
-            }
+            getPlayerStory(gameCode, playerId, locationId, gameSession);
         }
 
-        story.setVisited(true);
-        story.setPlayerId(playerId);
-        storyDAO.updateStory(story);
-        return story;
+        selectedStory.setVisited(true);
+        selectedStory.setPlayerId(playerId);
+        storyDAO.updateStory(selectedStory);
+        return selectedStory;
     }
 
-    public List<Story> getSequelStories(GameSession gameSession, String playerId, int locationId) {
-        List<String> visitedStoryIds = gameSession.getStories().stream()
-                .filter(gameSessionStory -> isVisitedByPlayer(playerId, gameSessionStory))
+    public Story getSequelSaveGameStory(GameSession gameSession, String playerId, int locationId) {
+        List<String> allVisitedStoryIds = gameSession.getStories().stream()
+                .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
                 .map(Story::getStoryId)
                 .collect(Collectors.toList());
 
-        if (visitedStoryIds.size() == 0) {
-            return new ArrayList<>();
+        if (allVisitedStoryIds.size() == 0) {
+            return new Story();
         }
-        //TODO: Might want to readd this in the event I want to set prewritten db stories for all users
-        //List<Story> globalSequelPlayerStories = storyDAO.getGlobalSequelPlayerStories(visitedStoryIds);
+
         List<Story> saveGameSequelStories = userProfileDAO.getSaveGameSequelStories(
                 gameSession.getUserProfileId(),
                 gameSession.getAdventureMap().getAdventureId(),
                 gameSession.getSaveGameId(),
-                visitedStoryIds
+                allVisitedStoryIds
         );
 
-        List<Story> sequelStoriesToSearch = Stream.concat(gameSession.getStories().stream(),
-                saveGameSequelStories.stream()).toList();
-
-        return sequelStoriesToSearch.stream()
-                .filter(gameSessionStory -> isPlayerSequel(playerId, locationId, gameSessionStory)
-                        && visitedStoryIds.contains(gameSessionStory.getPrequelStoryId()))
+        List<String> playerVisitedStoryIds = gameSession.getStories().stream()
+                .filter(gameSessionStory -> isVisitedByPlayer(playerId, gameSessionStory))
+                .map(Story::getStoryId)
                 .collect(Collectors.toList());
+
+        List<String> allGameSessionStoryIds = gameSession.getStories().stream()
+                .map(Story::getStoryId)
+                .collect(Collectors.toList());
+
+        List<Story> sequels = saveGameSequelStories.stream()
+                .filter(saveGameSequelStory -> isPlayerSequelRelevantToThisPlayer(saveGameSequelStory, playerVisitedStoryIds, allGameSessionStoryIds))
+                .collect(Collectors.toList());
+
+        Story selectedSequelStory = sequels.size() > 0 ? sequels.get(0) : null;
+
+        if (selectedSequelStory == null) {
+            List<Story> locationSequels = saveGameSequelStories.stream()
+                    .filter(saveGameSequelStory -> isLocationSequelRelevantToThisPlayer(locationId, saveGameSequelStory, allGameSessionStoryIds))
+                    .collect(Collectors.toList());
+            Random randomGenerator = new Random();
+            int randomSequelStoryIndex = randomGenerator.nextInt(locationSequels.size());
+            selectedSequelStory = locationSequels.get(randomSequelStoryIndex);
+            selectedSequelStory.setLocation(gameSession.getAdventureMap().getLocations().get(locationId));
+            if (selectedSequelStory.getPrequelStoryPlayerId().equals(AuthorConstants.GLOBAL_PLAYER_SEQUEL)) {
+                selectedSequelStory.setPrequelStoryPlayerId(playerId);
+            }
+        }
+
+        return selectedSequelStory;
     }
 
     private boolean isVisitedByPlayer(String playerId, Story gameSessionStory) {
@@ -144,18 +165,24 @@ public class StoryHelper {
                 && !gameSessionStory.getSelectedOptionId().isEmpty();
     }
 
-    private boolean isPlayerSequel(String playerId, int locationId, Story gameSessionStory) {
-        boolean hasNotBeenAssigned = gameSessionStory.getPlayerId().isEmpty();
-        boolean hasNotBeenPlayed = gameSessionStory.getSelectedOptionId().isEmpty();
-        boolean hasAPrequel = !gameSessionStory.getPrequelStoryId().isEmpty();
-        boolean isASequelForThisPlayer = gameSessionStory.getPrequelStoryPlayerId().equals(playerId)
-                || gameSessionStory.getPrequelStoryPlayerId().equals(AuthorConstants.GLOBAL_PLAYER_SEQUEL);
-        boolean isASequelForThisLocation = gameSessionStory.getLocation() != null && gameSessionStory.getLocation().getLocationId() == locationId;
+    private boolean isPlayerSequelRelevantToThisPlayer(Story saveGameSequelStory, List<String> storyIdsPlayedByPlayer, List<String> existingGameSessionStoryIds) {
+        if (existingGameSessionStoryIds.contains(saveGameSequelStory.getStoryId())) {
+            return false;
+        }
 
-        return hasNotBeenAssigned
-                && hasNotBeenPlayed
-                && hasAPrequel
-                && (isASequelForThisPlayer || isASequelForThisLocation);
+        boolean isASequelForThisPlayer = saveGameSequelStory.getPrequelStoryPlayerId().equals(AuthorConstants.GLOBAL_PLAYER_SEQUEL)
+                && storyIdsPlayedByPlayer.contains(saveGameSequelStory.getPrequelStoryId());
+
+        return isASequelForThisPlayer;
+    }
+
+    private boolean isLocationSequelRelevantToThisPlayer(int locationId, Story saveGameSequelStory, List<String> existingGameSessionStoryIds) {
+        if (existingGameSessionStoryIds.contains(saveGameSequelStory.getStoryId())) {
+            return false;
+        }
+
+        boolean isASequelForThisLocation = saveGameSequelStory.getLocation() != null && saveGameSequelStory.getLocation().getLocationId() == locationId;
+        return isASequelForThisLocation;
     }
 
     public Story createGlobalStory(Story story) {

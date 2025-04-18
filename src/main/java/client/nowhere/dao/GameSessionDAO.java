@@ -30,7 +30,7 @@ public class GameSessionDAO {
         this.objectMapper = objectMapper;
     }
 
-    public GameSession createGameSession(String sessionCode, String userProfileId, String saveGameId) {
+    public GameSession createGameSession(String sessionCode, String userProfileId, String saveGameId, Integer storiesToWritePerRound) {
         DocumentReference docRef = db.collection("gameSessions").document(sessionCode);
 
         GameSession gameSession = new GameSession(sessionCode);
@@ -38,6 +38,7 @@ public class GameSessionDAO {
         gameSession.setGameState(GameState.INIT);
         gameSession.setUserProfileId(userProfileId);
         gameSession.setSaveGameId(saveGameId);
+        gameSession.setStoriesToWritePerRound(storiesToWritePerRound);
 
         try {
             ApiFuture<WriteResult> result = docRef.set(gameSession);
