@@ -3,8 +3,8 @@ package client.nowhere.model;
 public enum GameState {
         INIT,
         START,
-        WRITE_PROMPTS,
         LOCATION_SELECT,
+        WRITE_PROMPTS,
         GENERATE_WRITE_OPTION_AUTHORS,
         WRITE_OPTIONS,
         ROUND1,

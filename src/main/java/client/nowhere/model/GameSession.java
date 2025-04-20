@@ -95,15 +95,15 @@ public class GameSession {
     public GameState getNextGameState() {
         switch(this.gameState) {
             case INIT -> {
+                return GameState.LOCATION_SELECT;
+            }
+            case LOCATION_SELECT -> {
                 return GameState.START;
             }
             case START -> {
                 return GameState.WRITE_PROMPTS;
             }
             case WRITE_PROMPTS -> {
-                return GameState.LOCATION_SELECT;
-            }
-            case LOCATION_SELECT -> {
                 return GameState.GENERATE_WRITE_OPTION_AUTHORS;
             }
             case GENERATE_WRITE_OPTION_AUTHORS -> {
@@ -193,10 +193,6 @@ public class GameSession {
 
     public boolean isAfterGameState(GameState gameState) {
         return this.getGameState().ordinal() > gameState.ordinal();
-    }
-
-    public boolean isDidWeSucceed() {
-        return didWeSucceed;
     }
 
     public Integer getStoriesToWritePerRound() {

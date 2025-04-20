@@ -116,7 +116,7 @@ public class UserProfileDAO {
         return saveGameStories.stream().filter(story -> prequelStoryIds.contains(story.getPrequelStoryId())).collect(Collectors.toList());
     }
 
-    public List<Story> getSaveGameStories(GameSession gameSession, int locationId) {
+    public List<Story> getRegularSaveGameStories(GameSession gameSession, int locationId) {
         String userProfileId = gameSession.getUserProfileId();
         String adventureId = gameSession.getAdventureMap().getAdventureId();
         String saveGameId = gameSession.getSaveGameId();

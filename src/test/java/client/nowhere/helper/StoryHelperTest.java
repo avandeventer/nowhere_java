@@ -56,15 +56,14 @@ class StoryHelperTest {
         when(gameSessionDAO.getGame(gameCode)).thenReturn(mockGameSession);
         when(storyDAO.getStories(gameCode)).thenReturn(new ArrayList<>()); // No game session stories
         when(storyDAO.getPlayerStories(gameCode, playerId, locationId)).thenReturn(new ArrayList<>()); // No player stories
-        when(userProfileDAO.getSaveGameStories(mockGameSession, locationId)).thenReturn(new ArrayList<>()); // No global stories
+        when(userProfileDAO.getRegularSaveGameStories(mockGameSession, locationId)).thenReturn(new ArrayList<>()); // No global stories
 
-        Story result = storyHelper.getPlayerStory(gameCode, playerId, locationId, mockGameSession);
+        Story result = storyHelper.storePlayerStory(gameCode, playerId, locationId);
 
         assertNotNull(result);
         assertEquals(gameCode, result.getGameCode());
         assertEquals(locationId, result.getLocation().getLocationId());
         verify(storyDAO).createStory(any(Story.class)); // Ensure a default story was created
-        verify(storyDAO).updateStory(result); // Ensure the story was updated
     }
 
     @ParameterizedTest
@@ -98,7 +97,7 @@ class StoryHelperTest {
         ).thenReturn(globalSequelPlayerStories);
 
         // Act
-        Story result = storyHelper.getPlayerStory(gameCode, playerId, locationId, mockGameSession);
+        Story result = storyHelper.storePlayerStory(gameCode, playerId, locationId);
 
         // Assert
         assertNotNull(result);
@@ -112,7 +111,7 @@ class StoryHelperTest {
             verify(storyDAO, never()).createStory(any(Story.class));
         }
         assertEquals(1, result.getLocation().getLocationId());
-        verify(storyDAO).updateStory(result);
+//        verify(storyDAO).updateStory(result);
     }
 
     static Stream<Arguments> provideSequelStoryScenarios() {
@@ -123,9 +122,9 @@ class StoryHelperTest {
                 Arguments.of(
                         createStories(
                                 createVisitedStory(playerId),
-                                createPlayerSequelStory(playerId)
+                                createUnwrittenStory(playerId)
                         ),
-                        List.of(),
+                        List.of(createPlayerSequelStory()),
                         "PLAYER_SEQUEL",
                         false
                 ),
@@ -133,17 +132,20 @@ class StoryHelperTest {
                 Arguments.of(
                         createStories(
                                 createVisitedStory(playerId),
-                                createLocationSequelStory(),
-                                createPlayerSequelStory(playerId)
+                                createUnwrittenStory(playerId)
                         ),
-                        List.of(),
+                        List.of(
+                                createLocationSequelStory(),
+                                createPlayerSequelStory()
+                        ),
                         "PLAYER_SEQUEL",
                         false
                 ),
                 // Case 3: No sequels in game session, but sequel in global
                 Arguments.of(
                         createStories(
-                                createVisitedStory(playerId)
+                                createVisitedStory(playerId),
+                                createUnwrittenStory(playerId)
                         ),
                         List.of(createLocationSequelStory()),
                         "LOCATION_SEQUEL",
@@ -152,16 +154,18 @@ class StoryHelperTest {
                 // Case 4: No sequels in game session, player sequel in global with GLOBAL player author constant
                 Arguments.of(
                         createStories(
-                                createVisitedStory(playerId)
+                                createVisitedStory(playerId),
+                                createUnwrittenStory(playerId)
                         ),
-                        List.of(createPlayerSequelStory(AuthorConstants.GLOBAL_PLAYER_SEQUEL)),
+                        List.of(createPlayerSequelStory()),
                         "PLAYER_SEQUEL",
                         true
                 ),
                 // Case 5: No sequels at all, return a default story
                 Arguments.of(
                         createStories(
-                                createVisitedStory(playerId)
+                                createVisitedStory(playerId),
+                                createUnwrittenStory(playerId)
                         ),
                         List.of(),
                         "DEFAULT",
@@ -174,6 +178,14 @@ class StoryHelperTest {
         return Arrays.asList(stories);
     }
 
+    private static Story createUnwrittenStory(String playerId) {
+        Story story = new Story();
+        story.setStoryId("UNWRITTEN");
+        story.setPlayerId(playerId);
+        story.setVisited(true);
+        return story;
+    }
+
     private static Story createVisitedStory(String playerId) {
         Story story = new Story();
         story.setStoryId("VISITED");
@@ -183,10 +195,10 @@ class StoryHelperTest {
         return story;
     }
 
-    private static Story createPlayerSequelStory(String playerId) {
+    private static Story createPlayerSequelStory() {
         Story story = new Story();
         story.setStoryId("PLAYER_SEQUEL");
-        story.setPrequelStoryPlayerId(playerId);
+        story.setPrequelStoryPlayerId(AuthorConstants.GLOBAL_PLAYER_SEQUEL);
         story.setPrequelStoryId("VISITED");
         return story;
     }
