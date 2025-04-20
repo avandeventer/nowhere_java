@@ -136,7 +136,7 @@ public class StoryHelper {
                 .map(Story::getStoryId)
                 .collect(Collectors.toList());
 
-        Story selectedSequelStory = getSaveGamePlayerSequelStory(gameSession, playerId, saveGameSequelStories, allGameSessionStoryIds);
+        Story selectedSequelStory = getSaveGamePlayerSequelStory(gameSession, playerId, saveGameSequelStories, allGameSessionStoryIds, locationId);
 
         if (selectedSequelStory == null) {
             selectedSequelStory = getSaveGameLocationSequelStory(gameSession, playerId, locationId, saveGameSequelStories, allGameSessionStoryIds);
@@ -164,7 +164,7 @@ public class StoryHelper {
         return selectedSequelStory;
     }
 
-    private Story getSaveGamePlayerSequelStory(GameSession gameSession, String playerId, List<Story> saveGameSequelStories, List<String> allGameSessionStoryIds) {
+    private Story getSaveGamePlayerSequelStory(GameSession gameSession, String playerId, List<Story> saveGameSequelStories, List<String> allGameSessionStoryIds, int locationId) {
         List<String> playerVisitedStoryIds = gameSession.getStories().stream()
                 .filter(gameSessionStory -> isVisitedByPlayer(playerId, gameSessionStory))
                 .map(Story::getStoryId)
@@ -175,6 +175,14 @@ public class StoryHelper {
                 .collect(Collectors.toList());
 
         Story selectedSequelStory = sequels.size() > 0 ? sequels.get(0) : null;
+        if (selectedSequelStory != null) {
+            Optional<Location> locationOptional = gameSession.getAdventureMap()
+                    .getLocations().stream().filter(existingLocation -> existingLocation.getLocationId() == locationId)
+                    .findFirst();
+
+            locationOptional.ifPresent(selectedSequelStory::setLocation);
+        }
+
         return selectedSequelStory;
     }
 

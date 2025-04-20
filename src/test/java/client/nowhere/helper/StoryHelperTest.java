@@ -111,7 +111,6 @@ class StoryHelperTest {
             verify(storyDAO, never()).createStory(any(Story.class));
         }
         assertEquals(1, result.getLocation().getLocationId());
-//        verify(storyDAO).updateStory(result);
     }
 
     static Stream<Arguments> provideSequelStoryScenarios() {
@@ -126,7 +125,7 @@ class StoryHelperTest {
                         ),
                         List.of(createPlayerSequelStory()),
                         "PLAYER_SEQUEL",
-                        false
+                        true
                 ),
                 // Case 2: Location AND player sequel exist, pick player sequel
                 Arguments.of(
@@ -139,7 +138,7 @@ class StoryHelperTest {
                                 createPlayerSequelStory()
                         ),
                         "PLAYER_SEQUEL",
-                        false
+                        true
                 ),
                 // Case 3: No sequels in game session, but sequel in global
                 Arguments.of(
