@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,13 +19,11 @@ public class GameSessionHelper {
     private final GameSessionDAO gameSessionDAO;
     private final StoryDAO storyDAO;
     private final RitualDAO ritualDAO;
-    private final StoryHelper storyHelper;
     private final EndingDAO endingDAO;
 
     @Autowired
-    public GameSessionHelper(GameSessionDAO gameSessionDAO, StoryHelper storyHelper, StoryDAO storyDAO, RitualDAO ritualDAO, EndingDAO endingDAO) {
+    public GameSessionHelper(GameSessionDAO gameSessionDAO, StoryDAO storyDAO, RitualDAO ritualDAO, EndingDAO endingDAO) {
         this.gameSessionDAO = gameSessionDAO;
-        this.storyHelper = storyHelper;
         this.storyDAO = storyDAO;
         this.ritualDAO = ritualDAO;
         this.endingDAO = endingDAO;
@@ -44,10 +41,6 @@ public class GameSessionHelper {
 
     public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
         GameSession existingSession = gameSessionDAO.getGame(gameSession.getGameCode());
-
-        if(existingSession.getGameState().equals(gameSession.getGameState())) {
-            return existingSession;
-        }
 
         try {
             gameSessionDAO.updateGameSession(gameSession);
@@ -179,19 +172,12 @@ public class GameSessionHelper {
 
         Set<Story> remainingUnwrittenStories = new HashSet<>(unwrittenStories);
 
-        Map<String, List<Story>> eligibleStories = new HashMap<>();
         Map<String, Integer> authorStoryCount = new HashMap<>();
         Map<String, Integer> authorOutcomeCount = new HashMap<>();
         for (Player player : players) {
-            eligibleStories.put(player.getAuthorId(),
-                    unwrittenStories.stream()
-                            .filter(story -> !story.getPlayerId().equals(player.getAuthorId()))
-                            .collect(Collectors.toList()));
-
             authorStoryCount.put(player.getAuthorId(), 0);
             authorOutcomeCount.put(player.getAuthorId(), 0);
         }
-
 
         while (!remainingUnwrittenStories.isEmpty()) {
             for (Story unwrittenStory : new ArrayList<>(remainingUnwrittenStories)) {
@@ -204,11 +190,11 @@ public class GameSessionHelper {
                                 s -> !s.getPlayerId().equals(p.getAuthorId())
                         ))
                         .sorted(Comparator
-                                .comparingInt((Player p) ->
-                                        (int) remainingUnwrittenStories.stream()
-                                                .filter(s -> !s.getPlayerId().equals(p.getAuthorId()))
-                                                .count())
-                                .thenComparingInt(p -> authorStoryCount.get(p.getAuthorId())))
+                                .comparingInt((Player p) -> authorStoryCount.get(p.getAuthorId())) // FEWEST authored stories first
+                                .thenComparingInt(p -> (int) remainingUnwrittenStories.stream()
+                                        .filter(s -> !s.getPlayerId().equals(p.getAuthorId()))
+                                        .count()) // THEN fewest eligible stories
+                        )
                         .collect(Collectors.toList());
 
                 if (eligibleAuthors.isEmpty()) {
@@ -218,29 +204,31 @@ public class GameSessionHelper {
                 Player selectedAuthor = eligibleAuthors.get(0);
                 unwrittenStory.setAuthorId(selectedAuthor.getAuthorId());
 
-                Random rand = new Random();
-                int coinFlip = rand.nextInt(3);
-                boolean shouldGenerateLocationSequelStory = coinFlip == 2 && playedStories.size() > 0;
-                boolean shouldGeneratePlayerSequelStory = coinFlip == 1 && playedStories.size() > 0;
+                if (playedStories.size() > 0) {
+                    Random rand = new Random();
+                    int coinFlip = rand.nextInt(3);
+                    boolean shouldGenerateLocationSequelStory = coinFlip == 2;
+                    boolean shouldGeneratePlayerSequelStory = coinFlip == 1;
 
-                if (shouldGenerateLocationSequelStory || shouldGeneratePlayerSequelStory) {
-                    sequelStory = playedStoryQueue.poll();
-
-                    if (sequelStory != null && sequelStory.getPlayerId().equals(playerId)) {
-                        playedStoryQueue.offer(sequelStory);
-                        sequelStory = playedStoryQueue.poll();
-                    }
-                }
-
-                if (sequelStory != null) {
                     if (shouldGenerateLocationSequelStory || shouldGeneratePlayerSequelStory) {
-                        unwrittenStory.setPrequelStoryId(sequelStory.getStoryId());
-                        unwrittenStory.setPrequelStorySucceeded(sequelStory.isPlayerSucceeded());
+                        sequelStory = playedStoryQueue.poll();
+
+                        if (sequelStory != null && sequelStory.getPlayerId().equals(playerId)) {
+                            playedStoryQueue.offer(sequelStory);
+                            sequelStory = playedStoryQueue.poll();
+                        }
                     }
 
-                    if (shouldGeneratePlayerSequelStory) {
-                        unwrittenStory.setLocation(new Location());
-                        unwrittenStory.setPrequelStoryPlayerId(sequelStory.getPlayerId());
+                    if (sequelStory != null) {
+                        if (shouldGenerateLocationSequelStory || shouldGeneratePlayerSequelStory) {
+                            unwrittenStory.setPrequelStoryId(sequelStory.getStoryId());
+                            unwrittenStory.setPrequelStorySucceeded(sequelStory.isPlayerSucceeded());
+                        }
+
+                        if (shouldGeneratePlayerSequelStory) {
+                            unwrittenStory.setLocation(new Location());
+                            unwrittenStory.setPrequelStoryPlayerId(sequelStory.getPlayerId());
+                        }
                     }
                 }
 
@@ -255,13 +243,6 @@ public class GameSessionHelper {
 
                 storyDAO.updateStory(unwrittenStory);
                 authorStoryCount.put(selectedAuthor.getAuthorId(), authorStoryCount.get(selectedAuthor.getAuthorId()) + 1);
-                for (Player player : players) {
-                    eligibleStories.put(player.getAuthorId(),
-                            unwrittenStories.stream()
-                                    .filter(story -> !story.getPlayerId().equals(player.getAuthorId()))
-                                    .collect(Collectors.toList()));
-                }
-
                 remainingUnwrittenStories.remove(unwrittenStory);
             }
         }

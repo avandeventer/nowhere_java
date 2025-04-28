@@ -6,7 +6,7 @@ import java.util.List;
 public class GameSession {
 
     String gameCode;
-    ArrayList<Player> players;
+    List<Player> players;
     GameState gameState;
     ActivePlayerSession activePlayerSession;
     ActiveGameStateSession activeGameStateSession;
@@ -48,11 +48,11 @@ public class GameSession {
         this.gameCode = gameCode;
     }
 
-    public ArrayList<Player> getPlayers() {
+    public List<Player> getPlayers() {
         return players;
     }
 
-    public void setPlayers(ArrayList<Player> players) {
+    public void setPlayers(List<Player> players) {
         this.players = players;
     }
 
