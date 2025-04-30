@@ -25,10 +25,13 @@ public class GameSessionController {
 
     @PostMapping(value = "/game", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public GameSession create(@RequestParam(required = false, defaultValue = "c8d068ae-e180-44c9-940c-011ba632cba4") String userProfileId,
-                              @RequestParam(required = false, defaultValue = "a6a6e1ab-de29-4ffb-9028-7c4f90f9d008") String adventureId,
-                              @RequestParam(required = false, defaultValue = "4b8a146a-ccf6-41cf-961a-65096d70bf82") String saveGameId) {
-        GameSession game = this.gameSessionHelper.createGameSession(userProfileId, saveGameId);
+    public GameSession create(
+                @RequestParam(required = false, defaultValue = "d0e5fa1e-e22a-4609-8274-e34df7f7c302") String userProfileId,//"c8d068ae-e180-44c9-940c-011ba632cba4") String userProfileId,
+                @RequestParam(required = false, defaultValue = "a6a6e1ab-de29-4ffb-9028-7c4f90f9d008") String adventureId,
+                @RequestParam(required = false, defaultValue = "d9cb0595-86fe-4aac-bfce-918e212a4508") String saveGameId,//"4b8a146a-ccf6-41cf-961a-65096d70bf82") String saveGameId,
+                @RequestParam(required = false, defaultValue = "1") Integer storiesToWritePerRound
+    ) {
+        GameSession game = this.gameSessionHelper.createGameSession(userProfileId, saveGameId, storiesToWritePerRound);
         return game;
     }
 

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,20 +19,18 @@ public class GameSessionHelper {
     private final GameSessionDAO gameSessionDAO;
     private final StoryDAO storyDAO;
     private final RitualDAO ritualDAO;
-    private final StoryHelper storyHelper;
     private final EndingDAO endingDAO;
 
     @Autowired
-    public GameSessionHelper(GameSessionDAO gameSessionDAO, StoryHelper storyHelper, StoryDAO storyDAO, RitualDAO ritualDAO, EndingDAO endingDAO) {
+    public GameSessionHelper(GameSessionDAO gameSessionDAO, StoryDAO storyDAO, RitualDAO ritualDAO, EndingDAO endingDAO) {
         this.gameSessionDAO = gameSessionDAO;
-        this.storyHelper = storyHelper;
         this.storyDAO = storyDAO;
         this.ritualDAO = ritualDAO;
         this.endingDAO = endingDAO;
     }
 
-    public GameSession createGameSession(String userProfileId, String saveGameId) {
-        return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, saveGameId);
+    public GameSession createGameSession(String userProfileId, String saveGameId, Integer storiesToWritePerRound) {
+        return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, saveGameId, storiesToWritePerRound);
     }
 
     public GameSession  updateToNextGameState(String gameCode) {
@@ -45,10 +42,6 @@ public class GameSessionHelper {
     public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
         GameSession existingSession = gameSessionDAO.getGame(gameSession.getGameCode());
 
-        if(existingSession.getGameState().equals(gameSession.getGameState())) {
-            return existingSession;
-        }
-
         try {
             gameSessionDAO.updateGameSession(gameSession);
             List<Player> players = gameSessionDAO.getPlayers(gameSession.getGameCode());
@@ -59,8 +52,8 @@ public class GameSessionHelper {
 
             switch (gameSession.getGameState()) {
                 case START:
-                    generateStoriesToWrite(gameSession, isTestMode, players, new ArrayList<>(), false);
-                    gameSession.setGameState(GameState.WRITE_PROMPTS);
+                    generateStoriesToWrite(gameSession, isTestMode, players, new ArrayList<>());
+                    gameSession.setGameStateToNext();
                     break;
                 case GENERATE_WRITE_OPTION_AUTHORS:
                 case GENERATE_WRITE_OPTION_AUTHORS_AGAIN:
@@ -84,9 +77,9 @@ public class GameSessionHelper {
                             do {
                                 assignedAuthorId = playerAuthorQueue.poll();
                                 playerAuthorQueue.offer(assignedAuthorId);
-                            } while (assignedAuthorId.equals(storyWithPrompt.getPlayerId())
-                                    || assignedAuthorId.equals(storyWithPrompt.getAuthorId())
-                                    || assignedAuthorId.equals(firstOptionAuthorPicked));
+                            } while (Objects.equals(assignedAuthorId, storyWithPrompt.getPlayerId())
+                                    || Objects.equals(assignedAuthorId, storyWithPrompt.getAuthorId())
+                                    || Objects.equals(assignedAuthorId, firstOptionAuthorPicked));
 
                             option.setOutcomeAuthorId(assignedAuthorId);
                             firstOptionAuthorPicked = assignedAuthorId;
@@ -96,8 +89,10 @@ public class GameSessionHelper {
                     gameSession.setGameStateToNext();
                     break;
                 case START_PHASE2:
-                    List<Story> playedStories = storyDAO.getPlayedStories(gameSession.getGameCode(), isTestMode);
-                    generateStoriesToWrite(gameSession, isTestMode, players, playedStories, true);
+                    List<Story> playedStories = gameSession.getStories().stream()
+                            .filter(story -> !story.getPlayerId().isEmpty() && !story.getSelectedOptionId().isEmpty())
+                            .collect(Collectors.toList());
+                    generateStoriesToWrite(gameSession, isTestMode, players, playedStories);
                     gameSession.setGameStateToNext();
                     break;
                 case GENERATE_ENDINGS:
@@ -167,92 +162,89 @@ public class GameSessionHelper {
             GameSession gameSession,
             boolean isTestMode,
             List<Player> players,
-            List<Story> playedStories,
-            boolean isPhaseTwo
+            List<Story> playedStories
     ) {
-        int locationIndex = ThreadLocalRandom.current().nextInt(0, DefaultLocation.values().length);
-        AdventureMap adventureMap = new AdventureMap();
+        List<Story> unwrittenStories = gameSession.getStories().stream()
+                .filter(story -> story.getAuthorId().isEmpty())
+                .collect(Collectors.toList());
+
+        Set<Story> remainingUnwrittenStories = new HashSet<>(unwrittenStories);
+
+        Map<String, Integer> authorStoryCount = new HashMap<>();
+        Map<String, Integer> authorOutcomeCount = new HashMap<>();
+        for (Player player : players) {
+            authorStoryCount.put(player.getAuthorId(), 0);
+            authorOutcomeCount.put(player.getAuthorId(), 0);
+        }
 
         Story sequelStory = new Story();
-
         Queue<Story> playedStoryQueue = new LinkedList<>(playedStories);
+        while (!remainingUnwrittenStories.isEmpty()) {
+            for (Story unwrittenStory : new ArrayList<>(remainingUnwrittenStories)) {
+                String playerId = unwrittenStory.getPlayerId();
 
-        for (int i = 0; i < players.size(); i++) {
-            locationIndex = locationIndex >= DefaultLocation.values().length ? 0 : locationIndex;
+                // Build eligible authors dynamically based on current state
+                List<Player> eligibleAuthors = players.stream()
+                        .filter(p -> !p.getAuthorId().equals(playerId))
+                        .filter(p -> remainingUnwrittenStories.stream().anyMatch(
+                                s -> !s.getPlayerId().equals(p.getAuthorId())
+                        ))
+                        .sorted(Comparator
+                                .comparingInt((Player p) -> authorStoryCount.get(p.getAuthorId())) // FEWEST authored stories first
+                                .thenComparingInt(p -> (int) remainingUnwrittenStories.stream()
+                                        .filter(s -> !s.getPlayerId().equals(p.getAuthorId()))
+                                        .count()) // THEN fewest eligible stories
+                        )
+                        .collect(Collectors.toList());
 
-            Player player = players.get(i);
-
-            Random rand = new Random();
-
-            int coinFlip = rand.nextInt(3);
-            boolean shouldGenerateSequelStory = coinFlip == 2 && isPhaseTwo;
-            boolean shouldGenerateSequelPlayerStory = coinFlip == 1 && isPhaseTwo;
-
-            if (shouldGenerateSequelStory || shouldGenerateSequelPlayerStory) {
-                sequelStory = playedStoryQueue.poll();
-
-                if(sequelStory != null && sequelStory.getPlayerId().equals(player.getAuthorId())) {
-                    playedStoryQueue.offer(sequelStory);
-                    sequelStory = playedStoryQueue.poll();
+                if (eligibleAuthors.isEmpty()) {
+                    continue;
                 }
-            }
 
-            Story storyOne = new Story(
-                    gameSession.getGameCode(),
-                    shouldGenerateSequelPlayerStory ? new Location() : adventureMap.getLocations().get(locationIndex),
-                    "",
-                    player.getAuthorId(),
-                    shouldGenerateSequelStory || shouldGenerateSequelPlayerStory ? sequelStory.getStoryId() : "",
-                    shouldGenerateSequelPlayerStory ? sequelStory.getPlayerId() : "",
-                    shouldGenerateSequelStory && sequelStory.isPlayerSucceeded()
-            );
+                Player selectedAuthor = eligibleAuthors.get(0);
+                unwrittenStory.setAuthorId(selectedAuthor.getAuthorId());
 
-            locationIndex++;
-            locationIndex = locationIndex >= DefaultLocation.values().length ? 0 : locationIndex;
+                if (playedStoryQueue.size() > 0) {
+                    Random rand = new Random();
+                    int coinFlip = rand.nextInt(3);
+                    boolean shouldGenerateLocationSequelStory = coinFlip == 2;
+                    boolean shouldGeneratePlayerSequelStory = coinFlip == 1;
 
-            coinFlip = rand.nextInt(3);
-            shouldGenerateSequelStory = coinFlip == 2 && isPhaseTwo;
-            shouldGenerateSequelPlayerStory = coinFlip == 1 && isPhaseTwo;
+                    if (shouldGenerateLocationSequelStory || shouldGeneratePlayerSequelStory) {
+                        sequelStory = playedStoryQueue.poll();
 
-            if (shouldGenerateSequelStory || shouldGenerateSequelPlayerStory) {
-                sequelStory = playedStoryQueue.poll();
+                        if (sequelStory != null && sequelStory.getPlayerId().equals(playerId)) {
+                            playedStoryQueue.offer(sequelStory);
+                            sequelStory = playedStoryQueue.poll();
+                        }
+                    }
 
-                if(sequelStory.getPlayerId().equals(player.getAuthorId())) {
-                    playedStoryQueue.offer(sequelStory);
-                    sequelStory = playedStoryQueue.poll();
+                    if (sequelStory != null) {
+                        if (shouldGenerateLocationSequelStory || shouldGeneratePlayerSequelStory) {
+                            unwrittenStory.setPrequelStoryId(sequelStory.getStoryId());
+                            unwrittenStory.setPrequelStorySucceeded(sequelStory.isPlayerSucceeded());
+                            unwrittenStory.setPrequelStorySelectedOptionId(sequelStory.getSelectedOptionId());
+                        }
+
+                        if (shouldGeneratePlayerSequelStory) {
+                            unwrittenStory.setPrequelStoryPlayerId(sequelStory.getPlayerId());
+                        }
+                    }
                 }
+
+                if (isTestMode) {
+                    unwrittenStory.setPrompt(UUID.randomUUID().toString());
+                    unwrittenStory.getOptions().get(0).setAttemptText(UUID.randomUUID().toString());
+                    unwrittenStory.getOptions().get(0).setOptionText(UUID.randomUUID().toString());
+
+                    unwrittenStory.getOptions().get(1).setAttemptText(UUID.randomUUID().toString());
+                    unwrittenStory.getOptions().get(1).setOptionText(UUID.randomUUID().toString());
+                }
+
+                storyDAO.updateStory(unwrittenStory);
+                authorStoryCount.put(selectedAuthor.getAuthorId(), authorStoryCount.get(selectedAuthor.getAuthorId()) + 1);
+                remainingUnwrittenStories.remove(unwrittenStory);
             }
-
-            Story storyTwo = new Story(
-                    gameSession.getGameCode(),
-                    shouldGenerateSequelPlayerStory ? new Location() : adventureMap.getLocations().get(locationIndex),
-                    "",
-                    player.getAuthorId(),
-                    shouldGenerateSequelStory || shouldGenerateSequelPlayerStory ? sequelStory.getStoryId() : "",
-                    shouldGenerateSequelPlayerStory ? sequelStory.getPlayerId() : "",
-                    shouldGenerateSequelStory && sequelStory.isPlayerSucceeded()
-            );
-
-            if(isTestMode) {
-                storyOne.setPrompt(UUID.randomUUID().toString());
-                storyOne.getOptions().get(0).setAttemptText(UUID.randomUUID().toString());
-                storyOne.getOptions().get(0).setOptionText(UUID.randomUUID().toString());
-
-                storyOne.getOptions().get(1).setAttemptText(UUID.randomUUID().toString());
-                storyOne.getOptions().get(1).setOptionText(UUID.randomUUID().toString());
-
-                storyTwo.setPrompt(UUID.randomUUID().toString());
-                storyTwo.getOptions().get(0).setAttemptText(UUID.randomUUID().toString());
-                storyTwo.getOptions().get(0).setOptionText(UUID.randomUUID().toString());
-
-                storyTwo.getOptions().get(1).setAttemptText(UUID.randomUUID().toString());
-                storyTwo.getOptions().get(1).setOptionText(UUID.randomUUID().toString());
-            }
-
-            storyHelper.createStory(storyOne);
-            storyHelper.createStory(storyTwo);
-
-            locationIndex++;
         }
     }
 

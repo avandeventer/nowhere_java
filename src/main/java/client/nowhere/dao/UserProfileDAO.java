@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -105,7 +106,7 @@ public class UserProfileDAO {
         return dedupedGameSessionStories;
     }
 
-    public List<Story> getSaveGameSequelStories(String userProfileId, String adventureId, String saveGameId, List<String> storyIds) {
+    public List<Story> getSaveGameSequelStories(String userProfileId, String adventureId, String saveGameId, Map<String, Boolean> allSelectedOptionOutcomes) {
         UserProfile userProfile = this.get(userProfileId);
 
         List<Story> saveGameStories = userProfile.getMaps()
@@ -113,10 +114,13 @@ public class UserProfileDAO {
                 .getSaveGameById(saveGameId)
                 .getGlobalStories();
 
-        return saveGameStories.stream().filter(story -> storyIds.contains(story.getPrequelStoryId())).collect(Collectors.toList());
+        return saveGameStories.stream()
+                .filter(story -> story.getOptions().stream()
+                        .anyMatch(option -> allSelectedOptionOutcomes.get(option.getOptionId()).equals(story.isPrequelStorySucceeded())))
+                .collect(Collectors.toList());
     }
 
-    public List<Story> getSaveGameStories(GameSession gameSession, int locationId) {
+    public List<Story> getRegularSaveGameStories(GameSession gameSession, int locationId) {
         String userProfileId = gameSession.getUserProfileId();
         String adventureId = gameSession.getAdventureMap().getAdventureId();
         String saveGameId = gameSession.getSaveGameId();
@@ -128,8 +132,13 @@ public class UserProfileDAO {
                 .getSaveGameById(saveGameId)
                 .getGlobalStories();
 
+        List<String> allGameSessionStoryIds = gameSession.getStories().stream()
+                .map(Story::getStoryId)
+                .collect(Collectors.toList());
+
         return saveGameStories.stream().filter(story -> locationId == story.getLocation().getLocationId()
-                && story.getPrequelStoryId().isBlank())
+                && story.getPrequelStoryId().isBlank()
+                && !allGameSessionStoryIds.contains(story.getStoryId()))
                 .collect(Collectors.toList());
     }
 
