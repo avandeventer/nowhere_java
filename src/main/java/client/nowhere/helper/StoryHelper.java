@@ -116,12 +116,11 @@ public class StoryHelper {
     }
 
     public Story getSequelSaveGameStory(GameSession gameSession, String playerId, int locationId) {
-        List<String> allVisitedStoryIds = gameSession.getStories().stream()
+        Map<String, Boolean> allSelectedOptionOutcomes = gameSession.getStories().stream()
                 .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
-                .map(Story::getStoryId)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(Story::getSelectedOptionId, Story::isPlayerSucceeded));
 
-        if (allVisitedStoryIds.size() == 0) {
+        if (allSelectedOptionOutcomes.size() == 0) {
             return null;
         }
 
@@ -129,7 +128,7 @@ public class StoryHelper {
                 gameSession.getUserProfileId(),
                 gameSession.getAdventureMap().getAdventureId(),
                 gameSession.getSaveGameId(),
-                allVisitedStoryIds
+                allSelectedOptionOutcomes
         );
 
         List<String> allGameSessionStoryIds = gameSession.getStories().stream()

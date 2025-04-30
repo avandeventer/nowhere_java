@@ -16,6 +16,7 @@ public class Story {
     private String outcomeAuthorId = "";
     private boolean prequelStorySucceeded = false;
     private String prequelStoryId = "";
+    private String prequelStorySelectedOptionId = "";
     private Location location;
     private List<Option> options;
     private String gameCode = "";
@@ -349,6 +350,14 @@ public class Story {
 
     public void setPrequelOutcomeDisplay(List<String> prequelOutcomeDisplay) {
         this.prequelOutcomeDisplay = prequelOutcomeDisplay;
+    }
+
+    public String getPrequelStorySelectedOptionId() {
+        return prequelStorySelectedOptionId;
+    }
+
+    public void setPrequelStorySelectedOptionId(String prequelStorySelectedOptionId) {
+        this.prequelStorySelectedOptionId = prequelStorySelectedOptionId;
     }
 
     @Override

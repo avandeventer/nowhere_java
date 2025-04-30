@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -105,7 +106,7 @@ public class UserProfileDAO {
         return dedupedGameSessionStories;
     }
 
-    public List<Story> getSaveGameSequelStories(String userProfileId, String adventureId, String saveGameId, List<String> prequelStoryIds) {
+    public List<Story> getSaveGameSequelStories(String userProfileId, String adventureId, String saveGameId, Map<String, Boolean> allSelectedOptionOutcomes) {
         UserProfile userProfile = this.get(userProfileId);
 
         List<Story> saveGameStories = userProfile.getMaps()
@@ -113,7 +114,10 @@ public class UserProfileDAO {
                 .getSaveGameById(saveGameId)
                 .getGlobalStories();
 
-        return saveGameStories.stream().filter(story -> prequelStoryIds.contains(story.getPrequelStoryId())).collect(Collectors.toList());
+        return saveGameStories.stream()
+                .filter(story -> story.getOptions().stream()
+                        .anyMatch(option -> allSelectedOptionOutcomes.get(option.getOptionId()).equals(story.isPrequelStorySucceeded())))
+                .collect(Collectors.toList());
     }
 
     public List<Story> getRegularSaveGameStories(GameSession gameSession, int locationId) {

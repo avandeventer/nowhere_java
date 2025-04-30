@@ -97,8 +97,7 @@ class StoryHelperTest {
                 mockGameSession.getSaveGameId(),
                 gameSessionStories.stream()
                         .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
-                        .map(Story::getStoryId)
-                        .collect(Collectors.toList()))
+                        .collect(Collectors.toMap(Story::getSelectedOptionId, Story::isPlayerSucceeded)))
             ).thenReturn(globalSequelPlayerStories);
 
         when(userProfileDAO.getRegularSaveGameStories
@@ -128,8 +127,7 @@ class StoryHelperTest {
                     mockGameSession.getSaveGameId(),
                     gameSessionStories.stream()
                             .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
-                            .map(Story::getStoryId)
-                            .collect(Collectors.toList())
+                            .collect(Collectors.toMap(Story::getSelectedOptionId, Story::isPlayerSucceeded))
             );
         } else {
             verify(userProfileDAO, never()).getSaveGameSequelStories(any(), any(), any(), any());

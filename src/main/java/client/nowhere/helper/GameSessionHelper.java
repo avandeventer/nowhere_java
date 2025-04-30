@@ -77,9 +77,9 @@ public class GameSessionHelper {
                             do {
                                 assignedAuthorId = playerAuthorQueue.poll();
                                 playerAuthorQueue.offer(assignedAuthorId);
-                            } while (assignedAuthorId.equals(storyWithPrompt.getPlayerId())
-                                    || assignedAuthorId.equals(storyWithPrompt.getAuthorId())
-                                    || assignedAuthorId.equals(firstOptionAuthorPicked));
+                            } while (Objects.equals(assignedAuthorId, storyWithPrompt.getPlayerId())
+                                    || Objects.equals(assignedAuthorId, storyWithPrompt.getAuthorId())
+                                    || Objects.equals(assignedAuthorId, firstOptionAuthorPicked));
 
                             option.setOutcomeAuthorId(assignedAuthorId);
                             firstOptionAuthorPicked = assignedAuthorId;
@@ -89,7 +89,9 @@ public class GameSessionHelper {
                     gameSession.setGameStateToNext();
                     break;
                 case START_PHASE2:
-                    List<Story> playedStories = storyDAO.getPlayedStories(gameSession.getGameCode(), isTestMode);
+                    List<Story> playedStories = gameSession.getStories().stream()
+                            .filter(story -> !story.getPlayerId().isEmpty() && !story.getSelectedOptionId().isEmpty())
+                            .collect(Collectors.toList());
                     generateStoriesToWrite(gameSession, isTestMode, players, playedStories);
                     gameSession.setGameStateToNext();
                     break;
@@ -162,10 +164,6 @@ public class GameSessionHelper {
             List<Player> players,
             List<Story> playedStories
     ) {
-        Story sequelStory = new Story();
-
-        Queue<Story> playedStoryQueue = new LinkedList<>(playedStories);
-
         List<Story> unwrittenStories = gameSession.getStories().stream()
                 .filter(story -> story.getAuthorId().isEmpty())
                 .collect(Collectors.toList());
@@ -179,6 +177,8 @@ public class GameSessionHelper {
             authorOutcomeCount.put(player.getAuthorId(), 0);
         }
 
+        Story sequelStory = new Story();
+        Queue<Story> playedStoryQueue = new LinkedList<>(playedStories);
         while (!remainingUnwrittenStories.isEmpty()) {
             for (Story unwrittenStory : new ArrayList<>(remainingUnwrittenStories)) {
                 String playerId = unwrittenStory.getPlayerId();
@@ -204,7 +204,7 @@ public class GameSessionHelper {
                 Player selectedAuthor = eligibleAuthors.get(0);
                 unwrittenStory.setAuthorId(selectedAuthor.getAuthorId());
 
-                if (playedStories.size() > 0) {
+                if (playedStoryQueue.size() > 0) {
                     Random rand = new Random();
                     int coinFlip = rand.nextInt(3);
                     boolean shouldGenerateLocationSequelStory = coinFlip == 2;
@@ -223,10 +223,10 @@ public class GameSessionHelper {
                         if (shouldGenerateLocationSequelStory || shouldGeneratePlayerSequelStory) {
                             unwrittenStory.setPrequelStoryId(sequelStory.getStoryId());
                             unwrittenStory.setPrequelStorySucceeded(sequelStory.isPlayerSucceeded());
+                            unwrittenStory.setPrequelStorySelectedOptionId(sequelStory.getSelectedOptionId());
                         }
 
                         if (shouldGeneratePlayerSequelStory) {
-                            unwrittenStory.setLocation(new Location());
                             unwrittenStory.setPrequelStoryPlayerId(sequelStory.getPlayerId());
                         }
                     }
