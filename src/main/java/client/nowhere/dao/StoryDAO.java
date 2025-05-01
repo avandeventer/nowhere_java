@@ -59,6 +59,10 @@ public class StoryDAO {
                         storyToUpdate.setPlayerId(story.getPlayerId());
                     }
 
+                    if (!story.getAuthorId().isEmpty()) {
+                        storyToUpdate.setAuthorId(story.getAuthorId());
+                    }
+
                     if (story.getLocation() != null && !story.getLocation().getLocationName().isEmpty()) {
                         storyToUpdate.setLocation(story.getLocation());
                     }
