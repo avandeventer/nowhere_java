@@ -158,7 +158,6 @@ public class StoryDAO {
             List<Story> stories = mapStories(gameSession);
             authorStories = stories.stream()
                     .filter(story -> story.getAuthorId().equals(authorId)
-                            && story.getPlayerId().isEmpty()
                             && story.getPrompt().isEmpty())
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
