@@ -79,8 +79,20 @@ public class StoryDAO {
                         storyToUpdate.setPlayerSucceeded(story.isPlayerSucceeded());
                     }
 
+                    if(!story.getPrequelStoryId().isEmpty()) {
+                        storyToUpdate.setPrequelStoryId(story.getPrequelStoryId());
+                    }
+
+                    if(!story.getPrequelStorySelectedOptionId().isEmpty()) {
+                        storyToUpdate.setPrequelStorySelectedOptionId(story.getPrequelStorySelectedOptionId());
+                    }
+
                     if(story.isPrequelStorySucceeded()) {
                         storyToUpdate.setPlayerSucceeded(story.isPrequelStorySucceeded());
+                    }
+
+                    if(!story.getPrequelStoryPlayerId().isEmpty()) {
+                        storyToUpdate.setPrequelStoryPlayerId(story.getPrequelStoryPlayerId());
                     }
 
                     if (story.getOptions() != null && !story.getOptions().isEmpty()) {

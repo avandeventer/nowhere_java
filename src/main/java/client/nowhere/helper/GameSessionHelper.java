@@ -181,7 +181,7 @@ public class GameSessionHelper {
             authorOutcomeCount.put(player.getAuthorId(), 0);
         }
 
-        Story sequelStory = new Story();
+        Story prequelStory = new Story();
         Queue<Story> playedStoryQueue = new LinkedList<>(playedStories);
         while (!remainingUnwrittenStories.isEmpty()) {
             for (Story unwrittenStory : new ArrayList<>(remainingUnwrittenStories)) {
@@ -215,23 +215,23 @@ public class GameSessionHelper {
                     boolean shouldGeneratePlayerSequelStory = coinFlip == 1;
 
                     if (shouldGenerateLocationSequelStory || shouldGeneratePlayerSequelStory) {
-                        sequelStory = playedStoryQueue.poll();
+                        prequelStory = playedStoryQueue.poll();
 
-                        if (sequelStory != null && sequelStory.getPlayerId().equals(playerId)) {
-                            playedStoryQueue.offer(sequelStory);
-                            sequelStory = playedStoryQueue.poll();
+                        if (prequelStory != null && prequelStory.getPlayerId().equals(playerId)) {
+                            playedStoryQueue.offer(prequelStory);
+                            prequelStory = playedStoryQueue.poll();
                         }
                     }
 
-                    if (sequelStory != null) {
+                    if (prequelStory != null) {
                         if (shouldGenerateLocationSequelStory || shouldGeneratePlayerSequelStory) {
-                            unwrittenStory.setPrequelStoryId(sequelStory.getStoryId());
-                            unwrittenStory.setPrequelStorySucceeded(sequelStory.isPlayerSucceeded());
-                            unwrittenStory.setPrequelStorySelectedOptionId(sequelStory.getSelectedOptionId());
+                            unwrittenStory.setPrequelStoryId(prequelStory.getStoryId());
+                            unwrittenStory.setPrequelStorySucceeded(prequelStory.isPlayerSucceeded());
+                            unwrittenStory.setPrequelStorySelectedOptionId(prequelStory.getSelectedOptionId());
                         }
 
                         if (shouldGeneratePlayerSequelStory) {
-                            unwrittenStory.setPrequelStoryPlayerId(sequelStory.getPlayerId());
+                            unwrittenStory.setPrequelStoryPlayerId(prequelStory.getPlayerId());
                         }
                     }
                 }
