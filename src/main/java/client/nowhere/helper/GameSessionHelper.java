@@ -42,6 +42,10 @@ public class GameSessionHelper {
     public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
         GameSession existingSession = gameSessionDAO.getGame(gameSession.getGameCode());
 
+        if(existingSession.getGameState().equals(gameSession.getGameState())) {
+            return existingSession;
+        }
+
         try {
             gameSessionDAO.updateGameSession(gameSession);
             List<Player> players = gameSessionDAO.getPlayers(gameSession.getGameCode());

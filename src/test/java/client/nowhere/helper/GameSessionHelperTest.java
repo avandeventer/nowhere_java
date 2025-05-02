@@ -65,7 +65,7 @@ public class GameSessionHelperTest {
         List<Player> players = createPlayers(playerCount);
         GameSession gameSession = createGameSession(currentGameState, playerIdAssignments, players, playedStoryPlayerIds);
 
-        when(gameSessionDAO.getGame(anyString())).thenReturn(gameSession);
+        when(gameSessionDAO.getGame(anyString())).thenReturn(gameSession, gameSession);
         when(gameSessionDAO.getPlayers(anyString())).thenReturn(players);
         when(gameSessionDAO.updateGameSession(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -115,19 +115,6 @@ public class GameSessionHelperTest {
         long min = authorCounts.values().stream().mapToLong(Long::longValue).min().orElse(0);
         assertTrue(max - min <= 1,
                 "Story authorship should be fairly balanced (difference between most and least is at most 1)");
-    }
-
-    private void getPlayedStories(List<String> playedStoryPlayerIds) {
-        List<Story> playedStories = new ArrayList<>();
-        for (int i = 0; i < playedStoryPlayerIds.size(); i++) {
-            Story s = new Story();
-            s.setStoryId("ssequel" + i);
-            s.setPlayerId(playedStoryPlayerIds.get(i));
-            s.setAuthorId("");
-            s.setSelectedOptionId("1");
-            s.setOptions(Arrays.asList(new Option(), new Option()));
-            playedStories.add(s);
-        }
     }
 
     static Stream<Arguments> provideGameSessionScenarios() {
