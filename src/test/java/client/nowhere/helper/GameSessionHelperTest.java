@@ -14,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,7 +65,7 @@ public class GameSessionHelperTest {
         List<Player> players = createPlayers(playerCount);
         GameSession gameSession = createGameSession(currentGameState, playerIdAssignments, players, playedStoryPlayerIds);
 
-        when(gameSessionDAO.getGame(anyString())).thenReturn(gameSession, gameSession);
+        when(gameSessionDAO.getGame(anyString())).thenAnswer(invocation -> deepCopy(gameSession));
         when(gameSessionDAO.getPlayers(anyString())).thenReturn(players);
         when(gameSessionDAO.updateGameSession(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -206,4 +206,15 @@ public class GameSessionHelperTest {
         session.setStories(stories);
         return session;
     }
+
+    private GameSession deepCopy(GameSession session) {
+        GameSession copy = new GameSession();
+        copy.setGameCode(session.getGameCode());
+        copy.setGameState(session.getGameState());
+        copy.setPlayers(new ArrayList<>(session.getPlayers()));
+        copy.setStories(session.getStories());
+        copy.setActiveGameStateSession(session.getActiveGameStateSession());
+        return copy;
+    }
+
 }
