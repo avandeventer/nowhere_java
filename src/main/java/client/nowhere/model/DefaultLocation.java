@@ -130,7 +130,7 @@ public enum DefaultLocation {
                             )),
                     new Option(
                             "Tame the Beasts",
-                            "You spend the tending to the beasts and retrieving their pelts and milks. Your body hardens and you get to pet lots of cute critters.",
+                            "You spend week the tending to the beasts and retrieving their pelts and milks. Your body hardens and you get to pet lots of cute critters.",
                             Arrays.asList(
                                     new OutcomeStat(Stat.STRENGTH, 1),
                                     new OutcomeStat(Stat.DEXTERITY, 1)
