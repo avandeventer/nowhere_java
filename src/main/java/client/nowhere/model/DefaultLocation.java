@@ -62,7 +62,7 @@ public enum DefaultLocation {
             ),
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
-    THE_WILDS( "The Wilds",
+    THE_WILDS( "Wilds",
             Arrays.asList(
                     new Option(
                             "Adventure",
