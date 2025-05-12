@@ -1,5 +1,6 @@
 package client.nowhere.controller;
 
+import client.nowhere.exception.ValidationException;
 import client.nowhere.helper.UserProfileHelper;
 import client.nowhere.model.GameSession;
 import client.nowhere.model.UserProfile;
@@ -28,6 +29,10 @@ public class UserProfileController {
     @PostMapping(value = "/user-profile", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public UserProfile create(@RequestBody UserProfile userProfile) {
+        if (userProfile.getEmail().isEmpty() || userProfile.getPassword().isEmpty()) {
+            throw new ValidationException("Email and password are required");
+        }
+
         return this.userProfileHelper.create(userProfile);
     }
 }

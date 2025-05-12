@@ -29,6 +29,6 @@ public class UserProfileHelper {
     }
 
     public UserProfile get(String email, String password) {
-        return new UserProfile(email, password);
+        return this.userProfileDAO.get(email, password);
     }
 }

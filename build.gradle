@@ -5,7 +5,6 @@ plugins {
 }
 
 apply plugin: 'application'
-mainClassName = "client.nowhere.GameApplication"
 
 group = 'client'
 version = '0.0.1-SNAPSHOT'
@@ -41,6 +40,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	compileOnly 'com.google.firebase:firebase-admin:1.32.0'
 	implementation 'com.google.firebase:firebase-admin:6.3.0'
+	implementation 'at.favre.lib:bcrypt:0.10.2'
 }
 
 dependencyManagement {

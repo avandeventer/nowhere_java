@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class AdventureMap {
-
     String name;
     String adventureId;
     List<Location> locations;

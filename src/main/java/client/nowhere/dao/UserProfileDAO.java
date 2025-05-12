@@ -1,12 +1,14 @@
 package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
+import client.nowhere.exception.ValidationException;
 import client.nowhere.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
 import java.util.List;
 import java.util.Map;
@@ -31,6 +33,9 @@ public class UserProfileDAO {
     public UserProfile create(UserProfile userProfile) {
         DocumentReference docRef = db.collection("userProfiles").document(userProfile.getId());
 
+        String hashedPassword = BCrypt.withDefaults().hashToString(12, userProfile.getPassword().toCharArray());
+        userProfile.setPassword(hashedPassword);
+
         try {
             ApiFuture<WriteResult> result = docRef.set(userProfile);
             WriteResult asyncResponse = result.get();
@@ -51,6 +56,40 @@ public class UserProfileDAO {
             userProfile = FirestoreDAOUtil.mapUserProfile(gameSessionSnapshot);
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("There was an issue retrieving the game session " + e.getMessage());
+        }
+        return userProfile;
+    }
+
+    public UserProfile get(String email, String inputPassword) {
+        UserProfile userProfile = null;
+        try {
+            CollectionReference userProfilesRef = db.collection("userProfiles");
+
+            // First, query by email
+            ApiFuture<QuerySnapshot> query = userProfilesRef
+                    .whereEqualTo("email", email)
+                    .get();
+
+            QuerySnapshot querySnapshot = query.get();
+
+            if (querySnapshot.isEmpty()) {
+                throw new ValidationException("No profile with that email exists");
+            }
+
+            String hashedPassword = BCrypt.withDefaults().hashToString(12, inputPassword.toCharArray());
+
+            DocumentSnapshot document = querySnapshot.getDocuments().get(0);
+            String storedHashedPassword = document.getString("password");
+
+            BCrypt.Result result = BCrypt.verifyer().verify(inputPassword.toCharArray(), storedHashedPassword);
+
+            if (!result.verified) {
+                throw new ValidationException("Incorrect Password");
+            }
+
+            userProfile = FirestoreDAOUtil.mapUserProfile(document);
+        } catch (InterruptedException | ExecutionException e) {
+            System.out.println("There was an issue retrieving the user profile: " + e.getMessage());
         }
         return userProfile;
     }
