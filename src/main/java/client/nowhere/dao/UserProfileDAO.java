@@ -181,4 +181,38 @@ public class UserProfileDAO {
                 .collect(Collectors.toList());
     }
 
+    public SaveGame upsertSaveGame(String userProfileId, String adventureId, SaveGame saveGame) {
+
+        try {
+            // Fetch user profile from Firestore
+            DocumentReference userProfileRef = db.collection("userProfiles").document(userProfileId);
+            DocumentSnapshot userProfileSnapshot = FirestoreDAOUtil.getDocumentSnapshot(userProfileRef);
+            UserProfile userProfile = FirestoreDAOUtil.mapUserProfile(userProfileSnapshot);
+
+            // Get ProfileAdventureMap and SaveGame
+            ProfileAdventureMap profileAdventureMap = userProfile.getMaps().get(adventureId);
+            if (profileAdventureMap == null) {
+                throw new ResourceException("Adventure map " + adventureId + " not found for user " + userProfileId);
+            }
+
+            SaveGame saveGameToUpsert = new SaveGame(saveGame.getName());
+            if (!saveGame.getId().isEmpty() && profileAdventureMap.getSaveGames().containsKey(saveGame.getId())) {
+                SaveGame existingSaveGame = profileAdventureMap.getSaveGames().get(saveGame.getId());
+                existingSaveGame.setName(saveGame.getName());
+                saveGameToUpsert = existingSaveGame;
+            }
+
+            profileAdventureMap.upsertSaveGame(saveGameToUpsert);
+
+            userProfile.upsertProfileAdventureMap(profileAdventureMap);
+
+            ApiFuture<WriteResult> result = userProfileRef.update("maps", userProfile.getMaps());
+            result.get();
+
+            return saveGameToUpsert;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("Error saving game to profile. User Profile ID: " + userProfileId + ", adventure " + adventureId + ", save game " + saveGame.getId());
+        }
+    }
 }

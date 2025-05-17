@@ -6,11 +6,19 @@ import java.util.UUID;
 
 public class SaveGame {
     String id;
+    String name;
+
     List<Story> globalStories;
 
     public SaveGame() {
         this.id = UUID.randomUUID().toString();
         this.globalStories = new ArrayList<>();
+    }
+
+    public SaveGame(String name) {
+        this.id = UUID.randomUUID().toString();
+        this.globalStories = new ArrayList<>();
+        this.name = name;
     }
 
     public String getId() {
@@ -27,5 +35,13 @@ public class SaveGame {
 
     public void setGlobalStories(List<Story> globalStories) {
         this.globalStories = globalStories;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

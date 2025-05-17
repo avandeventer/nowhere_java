@@ -2,9 +2,8 @@ package client.nowhere.controller;
 
 import client.nowhere.exception.ValidationException;
 import client.nowhere.helper.UserProfileHelper;
-import client.nowhere.model.GameSession;
+import client.nowhere.model.SaveGame;
 import client.nowhere.model.UserProfile;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -34,5 +33,17 @@ public class UserProfileController {
         }
 
         return this.userProfileHelper.create(userProfile);
+    }
+
+    @PostMapping(value = "/save-game", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public SaveGame upsertSaveGame(@RequestParam String userProfileId,
+                                      @RequestParam String adventureId,
+                                      @RequestBody SaveGame saveGame) {
+        if (saveGame.getName().isEmpty() || userProfileId.isEmpty() || adventureId.isEmpty()) {
+            throw new ValidationException("User Profile ID, Adventure ID, and Save Game Name are required");
+        }
+
+        return this.userProfileHelper.upsertSaveGame(userProfileId, adventureId, saveGame);
     }
 }
