@@ -17,6 +17,7 @@ public class GameSession {
     String userProfileId;
     String saveGameId;
     Integer storiesToWritePerRound = 1;
+    Integer storiesToPlayPerRound = 1;
 
     public GameSession() {
         if(this.activeGameStateSession == null) {
@@ -142,5 +143,13 @@ public class GameSession {
 
     public void setStoriesToWritePerRound(Integer storiesToWritePerRound) {
         this.storiesToWritePerRound = storiesToWritePerRound;
+    }
+
+    public Integer getStoriesToPlayPerRound() {
+        return storiesToPlayPerRound;
+    }
+
+    public void setStoriesToPlayPerRound(Integer storiesToPlayPerRound) {
+        this.storiesToPlayPerRound = storiesToPlayPerRound;
     }
 }

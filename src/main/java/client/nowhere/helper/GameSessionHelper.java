@@ -29,8 +29,8 @@ public class GameSessionHelper {
         this.endingDAO = endingDAO;
     }
 
-    public GameSession createGameSession(String userProfileId, String saveGameId, Integer storiesToWritePerRound) {
-        return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, saveGameId, storiesToWritePerRound);
+    public GameSession createGameSession(String userProfileId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound) {
+        return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, saveGameId, storiesToWritePerRound, storiesToPlayPerRound);
     }
 
     public GameSession  updateToNextGameState(String gameCode) {
