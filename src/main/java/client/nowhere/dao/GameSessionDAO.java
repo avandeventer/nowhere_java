@@ -1,6 +1,7 @@
 package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
+import client.nowhere.model.AdventureMap;
 import client.nowhere.model.GameSession;
 import client.nowhere.model.GameState;
 import client.nowhere.model.Player;
@@ -40,6 +41,7 @@ public class GameSessionDAO {
         gameSession.setSaveGameId(saveGameId);
         gameSession.setStoriesToWritePerRound(storiesToWritePerRound);
         gameSession.setStoriesToPlayPerRound(storiesToPlayPerRound);
+        gameSession.setAdventureMap(new AdventureMap());
 
         try {
             ApiFuture<WriteResult> result = docRef.set(gameSession);

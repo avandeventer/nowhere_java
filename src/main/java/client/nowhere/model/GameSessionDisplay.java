@@ -8,6 +8,8 @@ public class GameSessionDisplay {
     String neutralText;
     String failureText;
 
+    public GameSessionDisplay() { }
+
     public GameSessionDisplay(
             String mapDescription,
             String goalDescription,

@@ -91,11 +91,23 @@ public class AdventureMap {
                 "After a night of colors and feasting and prayer, we awaken to fields abundant with new sprouts. The winter has ended and Erysus has looked kindly upon us. " +
                 "We hug and we cry and we begin to work again once more in the fields and those among us who believe set upon their task of preparing to pray again next year before the god who sees our faith and shows us mercy. The almighty Erysus!";
 
+        gameSessionDisplay.neutralText = "And so the ritual lasted long into the night just as it always does. All of the citizens of our little hamlet in the middle of Nowhere did their best to impress Erysus lest she deliver a season where they could provide for their families. " +
+                "It was a long night and some things went better than others and as the sun rises it is unclear how we did. The wind is hollow and the dirt does not seem to bare fruit. Just as the townspeople are preparing to pack up their things and scramble to the local trading post in " +
+                "anticipation of a bare season, someone notices a small patch of crop peaking up from behind the pyre. We may not have excelled, but the glimmer of Erysus' eye shines down upon us. Perhaps we will not starve after all.";
+
         gameSessionDisplay.failureText = "And so the ritual lasted long into the night just as it always does. All of the citizens of our little hamlet in the middle of Nowhere did their best to impress Erysus lest she deliver a season where they could provide for their families. " +
                 "However. The night is filled with folly and, despite the best efforts of the faithful, Erysus seems to have abandoned us come morning. " +
                 "The fields do not sprout, the air remains cold, and children go hungry. The season of winter has ended, but we do not see any change. " +
                 "Those who are faithful begin their task of convincing the community that our ritual next year should be grander, but many in the community lose faith altogether. It will be a year of despair.";
 
+        this.gameSessionDisplay = gameSessionDisplay;
+    }
+
+    public GameSessionDisplay getGameSessionDisplay() {
+        return gameSessionDisplay;
+    }
+
+    public void setGameSessionDisplay(GameSessionDisplay gameSessionDisplay) {
         this.gameSessionDisplay = gameSessionDisplay;
     }
 
