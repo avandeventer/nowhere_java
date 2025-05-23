@@ -155,7 +155,8 @@ public class UserProfileDAO {
 
         return saveGameStories.stream()
                 .filter(story -> story.getOptions().stream()
-                        .anyMatch(option -> allSelectedOptionOutcomes.get(option.getOptionId()).equals(story.isPrequelStorySucceeded())))
+                        .anyMatch(option -> allSelectedOptionOutcomes.containsKey(option.getOptionId()) &&
+                                allSelectedOptionOutcomes.get(option.getOptionId()).equals(story.isPrequelStorySucceeded())))
                 .collect(Collectors.toList());
     }
 
