@@ -265,15 +265,15 @@ public class GameSessionHelper {
                 playedStories
         );
 
-        Map<String, Boolean> saveGameSelectedOptionResults = saveGameSequelStories.stream()
-                .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
-                .collect(Collectors.toMap(Story::getSelectedOptionId, Story::isPlayerSucceeded));
+        Map<String, Boolean> saveGameSequelSelectedOptionResults = saveGameSequelStories.stream()
+                .filter(saveGameSequelStory -> !saveGameSequelStory.getPrequelStorySelectedOptionId().isEmpty())
+                .collect(Collectors.toMap(Story::getPrequelStorySelectedOptionId, Story::isPrequelStorySucceeded));
 
         return playedStories.stream()
                 .filter(
                         playedStory ->
-                                !saveGameSelectedOptionResults.containsKey(playedStory.getSelectedOptionId()) ||
-                                        saveGameSelectedOptionResults.get(playedStory.getSelectedOptionId()) != playedStory.isPlayerSucceeded()
+                                !saveGameSequelSelectedOptionResults.containsKey(playedStory.getSelectedOptionId()) ||
+                                        saveGameSequelSelectedOptionResults.get(playedStory.getSelectedOptionId()) != playedStory.isPlayerSucceeded()
                 ).collect(Collectors.toCollection(LinkedList::new));
     }
 
@@ -285,8 +285,7 @@ public class GameSessionHelper {
             int index = (int) (rnd.nextFloat() * CHARS.length());
             stringBuilder.append(CHARS.charAt(index));
         }
-        String sessionCode = stringBuilder.toString();
-        return sessionCode;
+        return stringBuilder.toString();
     }
 
     public Player joinPlayer(Player player) {
