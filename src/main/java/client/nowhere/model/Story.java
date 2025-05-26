@@ -23,6 +23,8 @@ public class Story {
     private List<Repercussion> successRepercussions;
     private List<Repercussion> failureRepercussions;
     private List<String> prequelOutcomeDisplay;
+    private boolean sequelStory;
+    private boolean saveGameStory;
 
     //Temporary player variables
     private boolean visited = false;
@@ -358,6 +360,22 @@ public class Story {
 
     public void setPrequelStorySelectedOptionId(String prequelStorySelectedOptionId) {
         this.prequelStorySelectedOptionId = prequelStorySelectedOptionId;
+    }
+
+    public boolean isSequelStory() {
+        return sequelStory;
+    }
+
+    public void setSequelStory(boolean sequelStory) {
+        this.sequelStory = sequelStory;
+    }
+
+    public boolean isSaveGameStory() {
+        return saveGameStory;
+    }
+
+    public void setSaveGameStory(boolean saveGameStory) {
+        this.saveGameStory = saveGameStory;
     }
 
     @Override

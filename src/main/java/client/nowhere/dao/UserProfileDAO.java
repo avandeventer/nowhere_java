@@ -145,7 +145,20 @@ public class UserProfileDAO {
         return dedupedGameSessionStories;
     }
 
-    public List<Story> getSaveGameSequelStories(String userProfileId, String adventureId, String saveGameId, Map<String, Boolean> allSelectedOptionOutcomes) {
+    public List<Story> getSaveGameSequelStories(
+            String userProfileId,
+            String adventureId,
+            String saveGameId,
+            List<Story> existingGameSessionStories
+    ) {
+        Map<String, Boolean> allSelectedOptionOutcomes = existingGameSessionStories.stream()
+                .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
+                .collect(Collectors.toMap(Story::getSelectedOptionId, Story::isPlayerSucceeded));
+
+        if (allSelectedOptionOutcomes.size() == 0) {
+            return null;
+        }
+
         UserProfile userProfile = this.get(userProfileId);
 
         List<Story> saveGameStories = userProfile.getMaps()

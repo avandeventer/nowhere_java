@@ -94,9 +94,9 @@ public class StoryHelper {
             selectedStory = getRegularSaveGameStory(gameCode, locationId, gameSession);
         }
 
-        if (selectedStory == null) {
-            selectedStory = new Story();
-            selectedStory.defaultStory(gameCode, locationId);
+        if (selectedStory != null) {
+            selectedStory.setSequelStory(true);
+            selectedStory.setSaveGameStory(true);
         }
 
         return selectedStory;
@@ -116,19 +116,15 @@ public class StoryHelper {
     }
 
     public Story getSequelSaveGameStory(GameSession gameSession, String playerId, int locationId) {
-        Map<String, Boolean> allSelectedOptionOutcomes = gameSession.getStories().stream()
-                .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
-                .collect(Collectors.toMap(Story::getSelectedOptionId, Story::isPlayerSucceeded));
-
-        if (allSelectedOptionOutcomes.size() == 0) {
-            return null;
-        }
+        String userProfileId = gameSession.getUserProfileId();
+        String adventureId = gameSession.getAdventureMap().getAdventureId();
+        String saveGameId = gameSession.getSaveGameId();
 
         List<Story> saveGameSequelStories = userProfileDAO.getSaveGameSequelStories(
-                gameSession.getUserProfileId(),
-                gameSession.getAdventureMap().getAdventureId(),
-                gameSession.getSaveGameId(),
-                allSelectedOptionOutcomes
+                userProfileId,
+                adventureId,
+                saveGameId,
+                gameSession.getStories()
         );
 
         List<String> allGameSessionStoryIds = gameSession.getStories().stream()

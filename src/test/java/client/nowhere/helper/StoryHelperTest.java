@@ -1,7 +1,5 @@
 package client.nowhere.helper;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.matchesPattern;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class StoryHelperTest {
@@ -95,10 +92,8 @@ class StoryHelperTest {
                 mockGameSession.getUserProfileId(),
                 mockGameSession.getAdventureMap().getAdventureId(),
                 mockGameSession.getSaveGameId(),
-                gameSessionStories.stream()
-                        .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
-                        .collect(Collectors.toMap(Story::getSelectedOptionId, Story::isPlayerSucceeded)))
-            ).thenReturn(globalSequelPlayerStories);
+                mockGameSession.getStories()
+            )).thenReturn(globalSequelPlayerStories);
 
         when(userProfileDAO.getRegularSaveGameStories
                 (mockGameSession, locationId)
@@ -125,9 +120,7 @@ class StoryHelperTest {
                     mockGameSession.getUserProfileId(),
                     mockGameSession.getAdventureMap().getAdventureId(),
                     mockGameSession.getSaveGameId(),
-                    gameSessionStories.stream()
-                            .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
-                            .collect(Collectors.toMap(Story::getSelectedOptionId, Story::isPlayerSucceeded))
+                    mockGameSession.getStories()
             );
         } else {
             verify(userProfileDAO, never()).getSaveGameSequelStories(any(), any(), any(), any());
@@ -190,14 +183,14 @@ class StoryHelperTest {
                         true,
                         new ArrayList<>()
                 ),
-                // Case 5: Unwritten stories at max, no sequels at all, return a default story
+                // Case 5: Unwritten stories at max, no sequels at all, defaults to creating another unwritten story
                 Arguments.of(
                         createStories(
                                 createVisitedStory(playerId),
                                 createUnwrittenStory(playerId)
                         ),
                         List.of(),
-                        "DEFAULT",
+                        "",
                         true,
                         new ArrayList<>()
                 ),

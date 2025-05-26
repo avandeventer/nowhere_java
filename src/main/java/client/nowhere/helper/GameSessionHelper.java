@@ -1,9 +1,6 @@
 package client.nowhere.helper;
 
-import client.nowhere.dao.EndingDAO;
-import client.nowhere.dao.GameSessionDAO;
-import client.nowhere.dao.RitualDAO;
-import client.nowhere.dao.StoryDAO;
+import client.nowhere.dao.*;
 import client.nowhere.exception.GameStateException;
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.*;
@@ -20,13 +17,21 @@ public class GameSessionHelper {
     private final StoryDAO storyDAO;
     private final RitualDAO ritualDAO;
     private final EndingDAO endingDAO;
+    private final UserProfileDAO userProfileDAO;
 
     @Autowired
-    public GameSessionHelper(GameSessionDAO gameSessionDAO, StoryDAO storyDAO, RitualDAO ritualDAO, EndingDAO endingDAO) {
+    public GameSessionHelper(
+            GameSessionDAO gameSessionDAO,
+            StoryDAO storyDAO,
+            RitualDAO ritualDAO,
+            EndingDAO endingDAO,
+            UserProfileDAO userProfileDAO
+    ) {
         this.gameSessionDAO = gameSessionDAO;
         this.storyDAO = storyDAO;
         this.ritualDAO = ritualDAO;
         this.endingDAO = endingDAO;
+        this.userProfileDAO = userProfileDAO;
     }
 
     public GameSession createGameSession(String userProfileId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound) {
@@ -168,11 +173,8 @@ public class GameSessionHelper {
             List<Player> players,
             List<Story> playedStories
     ) {
-        List<Story> unwrittenStories = gameSession.getStories().stream()
-                .filter(story -> story.getAuthorId().isEmpty())
-                .collect(Collectors.toList());
-
-        Set<Story> remainingUnwrittenStories = new HashSet<>(unwrittenStories);
+        Set<Story> remainingUnwrittenStories = gameSession.getStories().stream()
+                .filter(story -> story.getAuthorId().isEmpty()).collect(Collectors.toSet());
 
         Map<String, Integer> authorStoryCount = new HashMap<>();
         Map<String, Integer> authorOutcomeCount = new HashMap<>();
@@ -182,7 +184,9 @@ public class GameSessionHelper {
         }
 
         Story prequelStory = new Story();
-        Queue<Story> playedStoryQueue = new LinkedList<>(playedStories);
+
+        Queue<Story> playedStoryQueue = getPlayedStoryQueue(gameSession, playedStories);
+
         while (!remainingUnwrittenStories.isEmpty()) {
             for (Story unwrittenStory : new ArrayList<>(remainingUnwrittenStories)) {
                 String playerId = unwrittenStory.getPlayerId();
@@ -228,6 +232,7 @@ public class GameSessionHelper {
                             unwrittenStory.setPrequelStoryId(prequelStory.getStoryId());
                             unwrittenStory.setPrequelStorySucceeded(prequelStory.isPlayerSucceeded());
                             unwrittenStory.setPrequelStorySelectedOptionId(prequelStory.getSelectedOptionId());
+                            unwrittenStory.setSequelStory(true);
                         }
 
                         if (shouldGeneratePlayerSequelStory) {
@@ -250,6 +255,26 @@ public class GameSessionHelper {
                 remainingUnwrittenStories.remove(unwrittenStory);
             }
         }
+    }
+
+    private Queue<Story> getPlayedStoryQueue(GameSession gameSession, List<Story> playedStories) {
+        List<Story> saveGameSequelStories = userProfileDAO.getSaveGameSequelStories(
+                gameSession.getUserProfileId(),
+                gameSession.getAdventureMap().getAdventureId(),
+                gameSession.getSaveGameId(),
+                playedStories
+        );
+
+        Map<String, Boolean> saveGameSelectedOptionResults = saveGameSequelStories.stream()
+                .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
+                .collect(Collectors.toMap(Story::getSelectedOptionId, Story::isPlayerSucceeded));
+
+        return playedStories.stream()
+                .filter(
+                        playedStory ->
+                                !saveGameSelectedOptionResults.containsKey(playedStory.getSelectedOptionId()) ||
+                                        saveGameSelectedOptionResults.get(playedStory.getSelectedOptionId()) != playedStory.isPlayerSucceeded()
+                ).collect(Collectors.toCollection(LinkedList::new));
     }
 
     private String generateSessionCode() {
