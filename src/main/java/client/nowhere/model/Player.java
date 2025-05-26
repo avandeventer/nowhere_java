@@ -1,5 +1,6 @@
 package client.nowhere.model;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Player {
@@ -13,6 +14,7 @@ public class Player {
     private int wealth = 4;
     private int magic = 4;
     private int favor = 4;
+    private List<PlayerStat> playerStats;
     private String gameCode;
     private boolean isFirstPlayer = false;
 
@@ -106,6 +108,14 @@ public class Player {
 
     public void setFavor(int favor) {
         this.favor = favor;
+    }
+
+    public List<PlayerStat> getPlayerStats() {
+        return playerStats;
+    }
+
+    public void setPlayerStats(List<PlayerStat> playerStats) {
+        this.playerStats = playerStats;
     }
 
     public int getStatByEnum (Stat stat) {

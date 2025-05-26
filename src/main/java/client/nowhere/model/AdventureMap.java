@@ -10,6 +10,7 @@ public class AdventureMap {
     GameSessionDisplay gameSessionDisplay;
     List<Location> locations;
     RitualStory ritual;
+    List<PlayerStat> playerStats;
 
     public AdventureMap() {
         this.name = "Nowhere";
@@ -22,9 +23,11 @@ public class AdventureMap {
             locationId++;
             this.locations.add(townLocale);
         }
-
         generateDefaultGameSessionDisplay();
         generateDefaultRitual();
+
+        this.playerStats = new ArrayList<>();
+        generateDefaultPlayerStats();
     }
 
     public String getName() {
@@ -103,12 +106,28 @@ public class AdventureMap {
         this.gameSessionDisplay = gameSessionDisplay;
     }
 
+    public void generateDefaultPlayerStats() {
+        List<String> playerStatLabels = Arrays.asList( "strength", "dexterity", "charisma", "intellect", "wealth", "magic", "favor");
+        for (String playerStatLabel : playerStatLabels) {
+            PlayerStat playerStat = new PlayerStat(playerStatLabel, 4);
+            this.playerStats.add(playerStat);
+        }
+    }
+
     public GameSessionDisplay getGameSessionDisplay() {
         return gameSessionDisplay;
     }
 
     public void setGameSessionDisplay(GameSessionDisplay gameSessionDisplay) {
         this.gameSessionDisplay = gameSessionDisplay;
+    }
+
+    public List<PlayerStat> getPlayerStats() {
+        return playerStats;
+    }
+
+    public void setPlayerStats(List<PlayerStat> playerStats) {
+        this.playerStats = playerStats;
     }
 
     @Override

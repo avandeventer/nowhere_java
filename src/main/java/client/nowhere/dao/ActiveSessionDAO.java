@@ -29,7 +29,7 @@ public class ActiveSessionDAO {
 
         ActivePlayerSession activeSessionToUpdate = new ActivePlayerSession();
         try {
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             GameSession game = FirestoreDAOUtil.mapGameSession(gameSession);
             activeSessionToUpdate = game.getActivePlayerSession();
             activeSessionToUpdate.update(activeSession);
@@ -45,22 +45,12 @@ public class ActiveSessionDAO {
         return activeSessionToUpdate;
     }
 
-    private DocumentSnapshot getGameSession(DocumentReference gameSessionRef) throws InterruptedException, ExecutionException {
-        ApiFuture<DocumentSnapshot> future = gameSessionRef.get();
-        DocumentSnapshot document = future.get();
-
-        if (!document.exists()) {
-            throw new ResourceException("Game session does not exist");
-        }
-        return document;
-    }
-
     public ActiveGameStateSession update(String gameCode, String authorId, boolean isDone) {
         DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
 
         ActiveGameStateSession activeSessionToUpdate = new ActiveGameStateSession();
         try {
-            DocumentSnapshot gameSession = getGameSession(gameSessionRef);
+            DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             GameSession game = FirestoreDAOUtil.mapGameSession(gameSession);
             activeSessionToUpdate = game.getActiveGameStateSession();
             activeSessionToUpdate.getIsPlayerDone().put(authorId, isDone);

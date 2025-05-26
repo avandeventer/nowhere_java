@@ -41,6 +41,16 @@ public class FirestoreDAOUtil {
         }
     }
 
+    static DocumentSnapshot getGameSession(DocumentReference gameSessionRef) throws InterruptedException, ExecutionException {
+        ApiFuture<DocumentSnapshot> future = gameSessionRef.get();
+        DocumentSnapshot document = future.get();
+
+        if (!document.exists()) {
+            throw new ResourceException("Game session does not exist");
+        }
+        return document;
+    }
+
     public static <T> UserProfile mapUserProfile(DocumentSnapshot document) {
         if (document.exists()) {
             return document.toObject(UserProfile.class);
