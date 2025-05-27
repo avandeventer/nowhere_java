@@ -137,7 +137,7 @@ public class StoryHelper {
         Story selectedSequelStory = getSaveGamePlayerSequelStory(gameSession, playerId, saveGameSequelStories, allGameSessionStoryIds, locationId);
 
         if (selectedSequelStory == null) {
-            selectedSequelStory = getSaveGameLocationSequelStory(gameSession, playerId, locationId, saveGameSequelStories, allGameSessionStoryIds);
+            selectedSequelStory = getSaveGameLocationSequelStory(locationId, saveGameSequelStories, allGameSessionStoryIds);
         }
 
         if (selectedSequelStory != null) {
@@ -147,7 +147,7 @@ public class StoryHelper {
         return selectedSequelStory;
     }
 
-    private Story getSaveGameLocationSequelStory(GameSession gameSession, String playerId, int locationId, List<Story> saveGameSequelStories, List<String> allGameSessionStoryIds) {
+    private Story getSaveGameLocationSequelStory(int locationId, List<Story> saveGameSequelStories, List<String> allGameSessionStoryIds) {
         Story selectedSequelStory = null;
         List<Story> locationSequels = saveGameSequelStories.stream()
                 .filter(saveGameSequelStory -> isLocationSequelRelevantToThisPlayer(locationId, saveGameSequelStory, allGameSessionStoryIds))
@@ -157,10 +157,6 @@ public class StoryHelper {
             Random randomGenerator = new Random();
             int randomSequelStoryIndex = randomGenerator.nextInt(locationSequels.size());
             selectedSequelStory = locationSequels.get(randomSequelStoryIndex);
-            selectedSequelStory.setLocation(gameSession.getAdventureMap().getLocations().get(locationId));
-            if (selectedSequelStory.getPrequelStoryPlayerId().equals(AuthorConstants.GLOBAL_PLAYER_SEQUEL)) {
-                selectedSequelStory.setPrequelStoryPlayerId(playerId);
-            }
         }
 
         return selectedSequelStory;
@@ -183,6 +179,7 @@ public class StoryHelper {
                     .findFirst();
 
             locationOptional.ifPresent(selectedSequelStory::setLocation);
+            selectedSequelStory.setPrequelStoryPlayerId(playerId);
         }
 
         return selectedSequelStory;

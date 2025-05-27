@@ -392,13 +392,13 @@ public class Story {
     }
 
     public void resetPlayerVariables() {
-        this.playerId = "";
-        this.visited = false;
-        this.playerSucceeded = false;
-        this.selectedOptionId = "";
+        setPlayerId("");
+        setVisited(false);
+        setPlayerSucceeded(false);
+        setSelectedOptionId("");
         if (!this.prequelStoryPlayerId.isBlank()) {
-            this.prequelStoryPlayerId = AuthorConstants.GLOBAL_PLAYER_SEQUEL;
-            this.location = new Location();
+            setPrequelStoryPlayerId(AuthorConstants.GLOBAL_PLAYER_SEQUEL);
+            setLocation(new Location());
         }
     }
 }
