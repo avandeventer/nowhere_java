@@ -79,6 +79,14 @@ public class StoryDAO {
                         storyToUpdate.setPlayerSucceeded(story.isPlayerSucceeded());
                     }
 
+                    if(story.isSequelStory()) {
+                        storyToUpdate.setSequelStory(story.isSequelStory());
+                    }
+
+                    if(story.isSaveGameStory()) {
+                        storyToUpdate.setSaveGameStory(story.isSaveGameStory());
+                    }
+
                     if(!story.getPrequelStoryId().isEmpty()) {
                         storyToUpdate.setPrequelStoryId(story.getPrequelStoryId());
                     }
@@ -88,7 +96,7 @@ public class StoryDAO {
                     }
 
                     if(story.isPrequelStorySucceeded()) {
-                        storyToUpdate.setPlayerSucceeded(story.isPrequelStorySucceeded());
+                        storyToUpdate.setPrequelStorySucceeded(story.isPrequelStorySucceeded());
                     }
 
                     if(!story.getPrequelStoryPlayerId().isEmpty()) {

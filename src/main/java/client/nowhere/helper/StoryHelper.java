@@ -95,7 +95,6 @@ public class StoryHelper {
         }
 
         if (selectedStory != null) {
-            selectedStory.setSequelStory(true);
             selectedStory.setSaveGameStory(true);
         }
 
@@ -139,6 +138,10 @@ public class StoryHelper {
 
         if (selectedSequelStory == null) {
             selectedSequelStory = getSaveGameLocationSequelStory(gameSession, playerId, locationId, saveGameSequelStories, allGameSessionStoryIds);
+        }
+
+        if (selectedSequelStory != null) {
+            selectedSequelStory.setSequelStory(true);
         }
 
         return selectedSequelStory;
