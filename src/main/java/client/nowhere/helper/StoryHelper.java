@@ -127,6 +127,10 @@ public class StoryHelper {
                 gameSession.getStories()
         );
 
+        if (saveGameSequelStories.size() == 0) {
+            return null;
+        }
+
         List<String> allGameSessionStoryIds = gameSession.getStories().stream()
                 .map(Story::getStoryId)
                 .collect(Collectors.toList());

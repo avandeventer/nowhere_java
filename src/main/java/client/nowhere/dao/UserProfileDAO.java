@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -156,7 +157,7 @@ public class UserProfileDAO {
                 .collect(Collectors.toMap(Story::getSelectedOptionId, Story::isPlayerSucceeded));
 
         if (allSelectedOptionOutcomes.size() == 0) {
-            return null;
+            return new ArrayList<>();
         }
 
         UserProfile userProfile = this.get(userProfileId);
