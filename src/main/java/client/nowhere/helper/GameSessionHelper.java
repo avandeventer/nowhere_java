@@ -212,35 +212,6 @@ public class GameSessionHelper {
                 Player selectedAuthor = eligibleAuthors.get(0);
                 unwrittenStory.setAuthorId(selectedAuthor.getAuthorId());
 
-                if (playedStoryQueue.size() > 0) {
-                    Random rand = new Random();
-                    int coinFlip = rand.nextInt(3);
-                    boolean shouldGenerateLocationSequelStory = coinFlip == 2;
-                    boolean shouldGeneratePlayerSequelStory = coinFlip == 1;
-
-                    if (shouldGenerateLocationSequelStory || shouldGeneratePlayerSequelStory) {
-                        prequelStory = playedStoryQueue.poll();
-
-                        if (prequelStory != null && prequelStory.getPlayerId().equals(playerId)) {
-                            playedStoryQueue.offer(prequelStory);
-                            prequelStory = playedStoryQueue.poll();
-                        }
-                    }
-
-                    if (prequelStory != null) {
-                        if (shouldGenerateLocationSequelStory || shouldGeneratePlayerSequelStory) {
-                            unwrittenStory.setPrequelStoryId(prequelStory.getStoryId());
-                            unwrittenStory.setPrequelStorySucceeded(prequelStory.isPlayerSucceeded());
-                            unwrittenStory.setPrequelStorySelectedOptionId(prequelStory.getSelectedOptionId());
-                            unwrittenStory.setSequelStory(true);
-                        }
-
-                        if (shouldGeneratePlayerSequelStory) {
-                            unwrittenStory.setPrequelStoryPlayerId(prequelStory.getPlayerId());
-                        }
-                    }
-                }
-
                 if (isTestMode) {
                     unwrittenStory.setPrompt(UUID.randomUUID().toString());
                     unwrittenStory.getOptions().get(0).setAttemptText(UUID.randomUUID().toString());

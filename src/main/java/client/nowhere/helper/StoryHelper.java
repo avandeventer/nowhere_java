@@ -5,6 +5,7 @@ import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
 import client.nowhere.dao.UserProfileDAO;
 import client.nowhere.exception.ResourceException;
+import client.nowhere.factory.MutexFactory;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,12 +19,14 @@ public class StoryHelper {
     private final StoryDAO storyDAO;
     private final GameSessionDAO gameSessionDAO;
     private final UserProfileDAO userProfileDAO;
+    private final MutexFactory<String> mutexFactory;
 
     @Autowired
-    public StoryHelper(StoryDAO storyDAO, GameSessionDAO gameSessionDAO, UserProfileDAO userProfileDAO) {
+    public StoryHelper(StoryDAO storyDAO, GameSessionDAO gameSessionDAO, UserProfileDAO userProfileDAO, MutexFactory<String> mutexFactory) {
         this.storyDAO = storyDAO;
         this.gameSessionDAO = gameSessionDAO;
         this.userProfileDAO = userProfileDAO;
+        this.mutexFactory = mutexFactory;
     }
 
     public Story createStory(Story story) {
@@ -49,32 +52,33 @@ public class StoryHelper {
     public Story storePlayerStory(String gameCode, String playerId, int locationId) {
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
 
-        List<Story> existingUnwrittenPlayerStories = gameSession.getStories() == null || gameSession.getStories().isEmpty()
-                ? new ArrayList<>()
-                : gameSession.getStories().stream()
+        Story playerStory = null;
+        synchronized (mutexFactory.getMutex(gameCode)) {
+            List<Story> existingUnwrittenPlayerStories = gameSession.getStories() == null || gameSession.getStories().isEmpty()
+                    ? new ArrayList<>()
+                    : gameSession.getStories().stream()
                     .filter(story ->
                             story.getPlayerId().equals(playerId)
-                            && story.getSelectedOptionId().isBlank()
-                            && story.getAuthorId().isBlank()
+                                    && story.getSelectedOptionId().isBlank()
+                                    && story.getAuthorId().isBlank()
                     ).collect(Collectors.toList());
 
-        Story playerStory = null;
-        if(existingUnwrittenPlayerStories.size() >= gameSession.getStoriesToWritePerRound()) {
-            playerStory = getSaveGameStoryForPlayer(gameCode, playerId, locationId, gameSession);
-        }
+            if (existingUnwrittenPlayerStories.size() >= gameSession.getStoriesToWritePerRound()) {
+                playerStory = getSaveGameStoryForPlayer(gameCode, playerId, locationId, gameSession);
+            }
 
-        if (playerStory == null) {
-            playerStory = createNewPlayerStory(gameCode, locationId, gameSession);
-        }
+            if (playerStory == null) {
+                playerStory = createNewPlayerStory(gameCode, locationId, gameSession, playerId);
+            }
 
-        playerStory.setPlayerId(playerId);
-        playerStory.setVisited(true);
-        storyDAO.createStory(playerStory);
+            playerStory.setPlayerId(playerId);
+            playerStory.setVisited(true);
+            storyDAO.createStory(playerStory);
+        }
         return playerStory;
     }
 
-    private Story createNewPlayerStory(String gameCode, int locationId, GameSession gameSession) {
-        Story playerStory;
+    private Story createNewPlayerStory(String gameCode, int locationId, GameSession gameSession, String playerId) {
         Optional<Location> location = gameSession.getAdventureMap().getLocations().stream().filter(
                 gameSessionLocation ->
                         gameSessionLocation.getLocationId() == locationId).findFirst();
@@ -83,8 +87,57 @@ public class StoryHelper {
             throw new ResourceException("A location at " + locationId + " does not exist.");
         }
 
-        playerStory = new Story(gameCode, location.get());
+        Story playerStory = new Story(gameCode, location.get());
+
+        List<String> existingSequelIds = gameSession.getStories().stream()
+                .map(Story::getPrequelStoryId)
+                .collect(Collectors.toList());
+
+        List<Story> playedStories = gameSession.getStories().stream()
+                .filter(story ->
+                        !story.getPlayerId().isEmpty()
+                                && !story.getSelectedOptionId().isEmpty()
+                                && !existingSequelIds.contains(story.getStoryId()))
+                .collect(Collectors.toList());
+
+        if (!playedStories.isEmpty()) {
+            Random rand = new Random();
+            int coinFlip = rand.nextInt(3);
+            boolean tryLocationFirst = coinFlip == 2;
+            boolean tryPlayerFirst = coinFlip == 1;
+
+            Optional<Story> prequelStory = Optional.empty();
+
+            if (tryLocationFirst) {
+                prequelStory = findLocationMatch(playedStories, locationId)
+                        .or(() -> findPlayerMatch(playedStories, playerId));
+            } else if (tryPlayerFirst) {
+                prequelStory = findPlayerMatch(playedStories, playerId)
+                        .or(() -> findLocationMatch(playedStories, locationId));
+            }
+
+            prequelStory.ifPresent(foundPrequelStory -> {
+                playerStory.makeSequel(foundPrequelStory.getStoryId(), foundPrequelStory.isPlayerSucceeded(), foundPrequelStory.getSelectedOptionId());
+
+                if (foundPrequelStory.getPlayerId().equals(playerId)) {
+                    playerStory.setPrequelStoryPlayerId(foundPrequelStory.getPlayerId());
+                }
+            });
+        }
+
         return playerStory;
+    }
+
+    private Optional<Story> findPlayerMatch(List<Story> stories, String playerId) {
+        return stories.stream()
+                .filter(story -> story.getPlayerId().equals(playerId))
+                .findFirst();
+    }
+
+    private Optional<Story> findLocationMatch(List<Story> stories, int locationId) {
+        return stories.stream()
+                .filter(story -> story.getLocation().getLocationId() == locationId)
+                .findFirst();
     }
 
     public Story getSaveGameStoryForPlayer(String gameCode, String playerId, int locationId, GameSession gameSession) {

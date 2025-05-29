@@ -17,14 +17,14 @@ public class Story {
     private boolean prequelStorySucceeded = false;
     private String prequelStoryId = "";
     private String prequelStorySelectedOptionId = "";
-    private Location location;
-    private List<Option> options;
     private String gameCode = "";
     private List<Repercussion> successRepercussions;
     private List<Repercussion> failureRepercussions;
     private List<String> prequelOutcomeDisplay;
     private boolean sequelStory;
     private boolean saveGameStory;
+    private List<Option> options;
+    private Location location;
 
     //Temporary player variables
     private boolean visited = false;
@@ -400,5 +400,12 @@ public class Story {
             setPrequelStoryPlayerId(AuthorConstants.GLOBAL_PLAYER_SEQUEL);
             setLocation(new Location());
         }
+    }
+
+    public void makeSequel(String storyId, boolean playerSucceeded, String selectedOptionId) {
+        setPrequelStoryId(storyId);
+        setPrequelStorySucceeded(playerSucceeded);
+        setPrequelStorySelectedOptionId(selectedOptionId);
+        setSequelStory(true);
     }
 }

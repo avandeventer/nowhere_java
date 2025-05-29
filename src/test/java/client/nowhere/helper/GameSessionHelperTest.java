@@ -57,22 +57,14 @@ public class GameSessionHelperTest {
             List<String> playerIdAssignments,
             List<String> playedStoryPlayerIds,
             String testName,
-            GameState currentGameState,
-            List<String> mockSaveGameSequelStoryOptions
+            GameState currentGameState
     ) {
         List<Player> players = createPlayers(playerCount);
-        GameSession gameSession = createGameSession(currentGameState, playerIdAssignments, players, playedStoryPlayerIds, mockSaveGameSequelStoryOptions);
+        GameSession gameSession = createGameSession(currentGameState, playerIdAssignments, players, playedStoryPlayerIds);
 
         when(gameSessionDAO.getGame(anyString())).thenAnswer(invocation -> deepCopy(gameSession));
         when(gameSessionDAO.getPlayers(anyString())).thenReturn(players);
         when(gameSessionDAO.updateGameSession(any())).thenAnswer(invocation -> invocation.getArgument(0));
-        when(userProfileDAO.getSaveGameSequelStories(
-                gameSession.getUserProfileId(),
-                gameSession.getAdventureMap().getAdventureId(),
-                gameSession.getSaveGameId(),
-                gameSession.getStories().stream().filter(story -> !story.getSelectedOptionId().isEmpty()).collect(Collectors.toList())
-            )
-        ).thenReturn(buildSavedSequelStories(mockSaveGameSequelStoryOptions));
 
         GameSession updated = gameSessionHelper.updateToNextGameState("test123");
 
@@ -105,7 +97,6 @@ public class GameSessionHelperTest {
                     .flatMap(story -> story.getOptions().stream())
                     .map(Option::getOptionId)
                     .collect(Collectors.toList());
-            sequelOptionIds.forEach(sequelOptionId -> assertThat(mockSaveGameSequelStoryOptions).doesNotContain(sequelOptionId));
         }
 
         System.out.println("✅ Ran test: " + testName);
@@ -134,56 +125,35 @@ public class GameSessionHelperTest {
                         Arrays.asList("author0", "author1", "author2"),
                         new ArrayList<>(),
                         "Each player owns one story",
-                        LOCATION_SELECT,
-                        new ArrayList<>()
+                        LOCATION_SELECT
                 ),
                 Arguments.of(
                         5,
                         Arrays.asList("author0", "author1", "author0", "author2", "author3", "author4"),
                         new ArrayList<>(),
                         "One player owns two stories",
-                        LOCATION_SELECT,
-                        new ArrayList<>()
+                        LOCATION_SELECT
                 ),
                 Arguments.of(
                         4,
                         Arrays.asList("author0", "author0", "author0", "author1", "author2", "author3"),
                         new ArrayList<>(),
                         "Many stories owned by the same player",
-                        LOCATION_SELECT,
-                        new ArrayList<>()
+                        LOCATION_SELECT
                 ),
                 Arguments.of(
                         4,
                         Arrays.asList("author0", "author1", "author2", "author3", "author0", "author1"),
                         new ArrayList<>(),
                         "More stories than players, unevenly distributed",
-                        LOCATION_SELECT,
-                        new ArrayList<>()
+                        LOCATION_SELECT
                 ),
                 Arguments.of(
                         6,
                         Arrays.asList("author0", "author1", "author2", "author3", "author4", "author5", "author0", "author1", "author2", "author3", "author4", "author5"),
                         new ArrayList<>(),
                         "Multiple stories for each player",
-                        LOCATION_SELECT,
-                        new ArrayList<>()
-                ),
-                Arguments.of(
-                        6,
-                        Arrays.asList("author0", "author1", "author2", "author3", "author4", "author5", "author0", "author1", "author2", "author3", "author4", "author5"),
-                        Arrays.asList("author0", "author1", "author2", "author3", "author4", "author5"),
-                        "Multiple stories for each player, one played story each",
-                        LOCATION_SELECT_AGAIN,
-                        new ArrayList<>(Arrays.asList("someOtherOption1", "someOtherOption2", "someOtherOption3"))
-                ),
-                Arguments.of(
-                        6,
-                        Arrays.asList("author0", "author1", "author2", "author3", "author4", "author5", "author0", "author1", "author2", "author3", "author4", "author5"),
-                        Arrays.asList("author0", "author1", "author2", "author3", "author4", "author5"),
-                        "Multiple stories for each player, one played story each, remove previous sequel stories",
-                        LOCATION_SELECT_AGAIN,
-                        new ArrayList<>(Arrays.asList("o1", "o2", "o3"))
+                        LOCATION_SELECT
                 )
         );
     }
@@ -198,7 +168,7 @@ public class GameSessionHelperTest {
                 }).collect(Collectors.toList());
     }
 
-    private GameSession createGameSession(GameState state, List<String> playerIds, List<Player> players, List<String> playedStoryPlayerIds, List<String> saveGameSequelOptionIds) {
+    private GameSession createGameSession(GameState state, List<String> playerIds, List<Player> players, List<String> playedStoryPlayerIds) {
         GameSession session = new GameSession();
         session.setGameCode("test123");
         session.setGameState(state);
@@ -221,21 +191,14 @@ public class GameSessionHelperTest {
             stories.add(s);
         }
 
-        Queue saveGameOptionIdQueue = new LinkedList(saveGameSequelOptionIds);
-
         for (int i = 0; i < playedStoryPlayerIds.size(); i++) {
             Story s = new Story();
             s.setStoryId("ssequel" + i);
             s.setPlayerId(playedStoryPlayerIds.get(i));
             s.setVisited(true);
             s.setAuthorId(playedStoryPlayerIds.get(i+1 >= playedStoryPlayerIds.size() ? 0 : i+1));
-            Object optionId = saveGameOptionIdQueue.poll();
             s.setOptions(Arrays.asList(new Option(), new Option()));
             s.setSelectedOptionId(s.getOptions().get(0).getOptionId());
-            if (optionId != null) {
-                s.getOptions().get(0).setOptionId(optionId.toString());
-                s.setSelectedOptionId(optionId.toString());
-            }
             stories.add(s);
         }
 
