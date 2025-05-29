@@ -89,11 +89,12 @@ public class StoryHelper {
 
         Story playerStory = new Story(gameCode, location.get());
 
-        List<String> existingSequelIds = gameSession.getStories().stream()
+        List<Story> stories = gameSession.getStories() != null ? gameSession.getStories() : Collections.emptyList();
+        List<String> existingSequelIds = stories.stream()
                 .map(Story::getPrequelStoryId)
                 .collect(Collectors.toList());
 
-        List<Story> playedStories = gameSession.getStories().stream()
+        List<Story> playedStories = stories.stream()
                 .filter(story ->
                         !story.getPlayerId().isEmpty()
                                 && !story.getSelectedOptionId().isEmpty()
