@@ -17,21 +17,18 @@ public class GameSessionHelper {
     private final StoryDAO storyDAO;
     private final RitualDAO ritualDAO;
     private final EndingDAO endingDAO;
-    private final UserProfileDAO userProfileDAO;
 
     @Autowired
     public GameSessionHelper(
             GameSessionDAO gameSessionDAO,
             StoryDAO storyDAO,
             RitualDAO ritualDAO,
-            EndingDAO endingDAO,
-            UserProfileDAO userProfileDAO
+            EndingDAO endingDAO
     ) {
         this.gameSessionDAO = gameSessionDAO;
         this.storyDAO = storyDAO;
         this.ritualDAO = ritualDAO;
         this.endingDAO = endingDAO;
-        this.userProfileDAO = userProfileDAO;
     }
 
     public GameSession createGameSession(String userProfileId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound) {
@@ -183,10 +180,6 @@ public class GameSessionHelper {
             authorOutcomeCount.put(player.getAuthorId(), 0);
         }
 
-        Story prequelStory = new Story();
-
-        Queue<Story> playedStoryQueue = getPlayedStoryQueue(gameSession, playedStories);
-
         while (!remainingUnwrittenStories.isEmpty()) {
             for (Story unwrittenStory : new ArrayList<>(remainingUnwrittenStories)) {
                 String playerId = unwrittenStory.getPlayerId();
@@ -226,26 +219,6 @@ public class GameSessionHelper {
                 remainingUnwrittenStories.remove(unwrittenStory);
             }
         }
-    }
-
-    private Queue<Story> getPlayedStoryQueue(GameSession gameSession, List<Story> playedStories) {
-        List<Story> saveGameSequelStories = userProfileDAO.getSaveGameSequelStories(
-                gameSession.getUserProfileId(),
-                gameSession.getAdventureMap().getAdventureId(),
-                gameSession.getSaveGameId(),
-                playedStories
-        );
-
-        Map<String, Boolean> saveGameSequelSelectedOptionResults = saveGameSequelStories.stream()
-                .filter(saveGameSequelStory -> !saveGameSequelStory.getPrequelStorySelectedOptionId().isEmpty())
-                .collect(Collectors.toMap(Story::getPrequelStorySelectedOptionId, Story::isPrequelStorySucceeded));
-
-        return playedStories.stream()
-                .filter(
-                        playedStory ->
-                                !saveGameSequelSelectedOptionResults.containsKey(playedStory.getSelectedOptionId()) ||
-                                        saveGameSequelSelectedOptionResults.get(playedStory.getSelectedOptionId()) != playedStory.isPlayerSucceeded()
-                ).collect(Collectors.toCollection(LinkedList::new));
     }
 
     private String generateSessionCode() {

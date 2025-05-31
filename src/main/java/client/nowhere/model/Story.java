@@ -378,6 +378,14 @@ public class Story {
         this.saveGameStory = saveGameStory;
     }
 
+    public SequelKey getSequelKey() {
+        return new SequelKey(selectedOptionId, playerSucceeded);
+    }
+
+    public SequelKey getPrequelKey() {
+        return new SequelKey(prequelStorySelectedOptionId, prequelStorySucceeded);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

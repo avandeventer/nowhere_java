@@ -90,32 +90,14 @@ public class StoryHelper {
         Story playerStory = new Story(gameCode, location.get());
 
         List<Story> stories = gameSession.getStories() != null ? gameSession.getStories() : Collections.emptyList();
-        List<String> existingSequelIds = stories.stream()
-                .map(Story::getPrequelStoryId)
-                .collect(Collectors.toList());
 
-        List<Story> playedStories = stories.stream()
-                .filter(story ->
-                        !story.getPlayerId().isEmpty()
-                                && !story.getSelectedOptionId().isEmpty()
-                                && !existingSequelIds.contains(story.getStoryId()))
-                .collect(Collectors.toList());
+        List<Story> playedStories = new ArrayList<>();
+        if (!stories.isEmpty()) {
+            playedStories = getPlayedStories(gameSession, stories);
+        }
 
         if (!playedStories.isEmpty()) {
-            Random rand = new Random();
-            int coinFlip = rand.nextInt(3);
-            boolean tryLocationFirst = coinFlip == 2;
-            boolean tryPlayerFirst = coinFlip == 1;
-
-            Optional<Story> prequelStory = Optional.empty();
-
-            if (tryLocationFirst) {
-                prequelStory = findLocationMatch(playedStories, locationId)
-                        .or(() -> findPlayerMatch(playedStories, playerId));
-            } else if (tryPlayerFirst) {
-                prequelStory = findPlayerMatch(playedStories, playerId)
-                        .or(() -> findLocationMatch(playedStories, locationId));
-            }
+            Optional<Story> prequelStory = getPrequelStory(locationId, playerId, playedStories);
 
             prequelStory.ifPresent(foundPrequelStory -> {
                 playerStory.makeSequel(foundPrequelStory.getStoryId(), foundPrequelStory.isPlayerSucceeded(), foundPrequelStory.getSelectedOptionId());
@@ -127,6 +109,40 @@ public class StoryHelper {
         }
 
         return playerStory;
+    }
+
+    private Optional<Story> getPrequelStory(int locationId, String playerId, List<Story> playedStories) {
+        Random rand = new Random();
+        int coinFlip = rand.nextInt(3);
+        boolean tryLocationFirst = coinFlip == 2;
+        boolean tryPlayerFirst = coinFlip == 1;
+
+        Optional<Story> prequelStory = Optional.empty();
+
+        if (tryLocationFirst) {
+            prequelStory = findLocationMatch(playedStories, locationId)
+                    .or(() -> findPlayerMatch(playedStories, playerId));
+        } else if (tryPlayerFirst) {
+            prequelStory = findPlayerMatch(playedStories, playerId)
+                    .or(() -> findLocationMatch(playedStories, locationId));
+        }
+        return prequelStory;
+    }
+
+    private List<Story> getPlayedStories(GameSession gameSession, List<Story> stories) {
+        List<String> existingSequelIds = stories.stream()
+                .map(Story::getPrequelStoryId)
+                .collect(Collectors.toList());
+
+        List<Story> playedStories = stories.stream()
+                .filter(story ->
+                        !story.getPlayerId().isEmpty()
+                                && !story.getSelectedOptionId().isEmpty()
+                                && !existingSequelIds.contains(story.getStoryId()))
+                .collect(Collectors.toList());
+
+        return playedStories.isEmpty()
+                ? playedStories : filterOutExistingUserProfileSequels(gameSession, playedStories);
     }
 
     private Optional<Story> findPlayerMatch(List<Story> stories, String playerId) {
@@ -237,6 +253,25 @@ public class StoryHelper {
         }
 
         return selectedSequelStory;
+    }
+
+    private List<Story> filterOutExistingUserProfileSequels(GameSession gameSession, List<Story> playedStories) {
+        List<Story> saveGameSequelStories = userProfileDAO.getSaveGameSequelStories(
+                gameSession.getUserProfileId(),
+                gameSession.getAdventureMap().getAdventureId(),
+                gameSession.getSaveGameId(),
+                playedStories
+        );
+
+        Set<SequelKey> existingSaveGameSequelOutcomes = saveGameSequelStories.stream()
+                .filter(story -> !story.getPrequelStorySelectedOptionId().isEmpty())
+                .map(Story::getPrequelKey)
+                .collect(Collectors.toSet());
+
+        return playedStories.stream()
+                .filter(story -> !existingSaveGameSequelOutcomes.contains(story.getSequelKey()))
+                .collect(Collectors.toList());
+
     }
 
     private boolean isVisitedByPlayer(String playerId, Story gameSessionStory) {

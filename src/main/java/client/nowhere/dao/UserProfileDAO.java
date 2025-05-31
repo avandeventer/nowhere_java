@@ -152,9 +152,10 @@ public class UserProfileDAO {
             String saveGameId,
             List<Story> existingGameSessionStories
     ) {
-        Map<String, Boolean> allSelectedOptionOutcomes = existingGameSessionStories.stream()
-                .filter(gameSessionStory -> !gameSessionStory.getSelectedOptionId().isEmpty())
-                .collect(Collectors.toMap(Story::getSelectedOptionId, Story::isPlayerSucceeded));
+        Set<SequelKey> allSelectedOptionOutcomes = existingGameSessionStories.stream()
+                .filter(story -> !story.getSelectedOptionId().isEmpty())
+                .map(Story::getSequelKey)
+                .collect(Collectors.toSet());
 
         if (allSelectedOptionOutcomes.size() == 0) {
             return new ArrayList<>();
@@ -168,9 +169,7 @@ public class UserProfileDAO {
                 .getGlobalStories();
 
         return saveGameStories.stream()
-                .filter(story -> story.getOptions().stream()
-                        .anyMatch(option -> allSelectedOptionOutcomes.containsKey(option.getOptionId()) &&
-                                allSelectedOptionOutcomes.get(option.getOptionId()).equals(story.isPrequelStorySucceeded())))
+                .filter(story -> allSelectedOptionOutcomes.contains(story.getPrequelKey()))
                 .collect(Collectors.toList());
     }
 

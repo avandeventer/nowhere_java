@@ -22,6 +22,7 @@ import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class StoryHelperTest {
@@ -67,7 +68,7 @@ class StoryHelperTest {
         assertNotNull(result);
         assertEquals(gameCode, result.getGameCode());
         assertEquals(locationId, result.getLocation().getLocationId());
-        verify(storyDAO).createStory(any(Story.class)); // Ensure a default story was created
+        verify(storyDAO).createStory(any(Story.class));
     }
 
     @ParameterizedTest
@@ -78,7 +79,8 @@ class StoryHelperTest {
             String expectedStoryId,
             boolean expectSearchForSaveGameSequels,
             List<Story> regularSaveGameStories,
-            boolean expectNewSequelStory
+            boolean expectNewSequelStory,
+            boolean expectNewSequelStoryFiltering
     ) {
         // Arrange
         String gameCode = "GAME123";
@@ -93,10 +95,10 @@ class StoryHelperTest {
         when(gameSessionDAO.getGame(gameCode)).thenReturn(mockGameSession);
         when(storyDAO.getStories(gameCode)).thenReturn(gameSessionStories);
         when(userProfileDAO.getSaveGameSequelStories(
-                mockGameSession.getUserProfileId(),
-                mockGameSession.getAdventureMap().getAdventureId(),
-                mockGameSession.getSaveGameId(),
-                mockGameSession.getStories()
+                eq(mockGameSession.getUserProfileId()),
+                eq(mockGameSession.getAdventureMap().getAdventureId()),
+                eq(mockGameSession.getSaveGameId()),
+                any()
             )).thenReturn(globalSequelPlayerStories);
 
         when(userProfileDAO.getRegularSaveGameStories
@@ -120,11 +122,18 @@ class StoryHelperTest {
         }
 
         if (expectSearchForSaveGameSequels) {
-            verify(userProfileDAO).getSaveGameSequelStories(
+            verify(userProfileDAO, times(1)).getSaveGameSequelStories(
                     mockGameSession.getUserProfileId(),
                     mockGameSession.getAdventureMap().getAdventureId(),
                     mockGameSession.getSaveGameId(),
                     mockGameSession.getStories()
+            );
+        } else if (expectNewSequelStoryFiltering) {
+            verify(userProfileDAO, times(1)).getSaveGameSequelStories(
+                    eq(mockGameSession.getUserProfileId()),
+                    eq(mockGameSession.getAdventureMap().getAdventureId()),
+                    eq(mockGameSession.getSaveGameId()),
+                    any()
             );
         } else {
             verify(userProfileDAO, never()).getSaveGameSequelStories(any(), any(), any(), any());
@@ -155,108 +164,121 @@ class StoryHelperTest {
                 // Case 1: Single sequel story exists
                 Arguments.of(
                         createStories(
-                                createVisitedStory(playerId, 1, "selectedOptionId", "VISITED"),
+                                createVisitedStory(playerId, 1,  "VISITED", new SequelKey("selectedOptionId", false)),
                                 createUnwrittenStory(playerId)
                         ),
-                        List.of(createPlayerSequelStory()),
+                        List.of(createPlayerSequelStory(new SequelKey("selectedOptionId", false))),
                         "PLAYER_SEQUEL",
                         true,
                         new ArrayList<>(),
-                        true
+                        true,
+                        false
                 ),
                 // Case 2: Location AND player sequel exist, pick player sequel
                 Arguments.of(
                         createStories(
-                                createVisitedStory(playerId, 1, "selectedOptionId", "VISITED"),
+                                createVisitedStory(playerId, 1, "VISITED", new SequelKey("selectedOptionId", false)),
                                 createUnwrittenStory(playerId)
                         ),
                         List.of(
-                                createLocationSequelStory(),
-                                createPlayerSequelStory()
+                                createLocationSequelStory(new SequelKey("selectedOptionId", false)),
+                                createPlayerSequelStory(new SequelKey("selectedOptionId", false))
                         ),
                         "PLAYER_SEQUEL",
                         true,
                         new ArrayList<>(),
-                        true
+                        true,
+                        false
                 ),
                 // Case 3: Only location sequel exists
                 Arguments.of(
                         createStories(
-                                createVisitedStory(playerId, 1, "selectedOptionId", "VISITED"),
+                                createVisitedStory(playerId, 1, "VISITED", new SequelKey("selectedOptionId", false)),
                                 createUnwrittenStory(playerId)
                         ),
-                        List.of(createLocationSequelStory()),
+                        List.of(createLocationSequelStory(new SequelKey("selectedOptionId", false))),
                         "LOCATION_SEQUEL",
                         true,
                         new ArrayList<>(),
-                        true
+                        true,
+                        false
                 ),
                 // Case 4: Only player sequel exists
                 Arguments.of(
                         createStories(
-                                createVisitedStory(playerId, 1, "selectedOptionId", "VISITED"),
+                                createVisitedStory(playerId, 1, "VISITED", new SequelKey("selectedOptionId", false)),
                                 createUnwrittenStory(playerId)
                         ),
-                        List.of(createPlayerSequelStory()),
+                        List.of(createPlayerSequelStory(new SequelKey("selectedOptionId", false))),
                         "PLAYER_SEQUEL",
                         true,
                         new ArrayList<>(),
-                        true
+                        true,
+                        false
                 ),
                 // Case 5: Unwritten stories at max, no sequels at all, defaults to creating another unwritten story
                 Arguments.of(
                         createStories(
-                                createVisitedStory(playerId, 1, "selectedOptionId", "VISITED"),
+                                createVisitedStory(playerId, 1, "VISITED", new SequelKey("selectedOptionId", false)),
                                 createUnwrittenStory(playerId)
                         ),
                         List.of(),
                         "",
                         true,
                         new ArrayList<>(),
-                        true
+                        true,
+                        false
                 ),
                 // Case 6: Unwritten stories at max, no sequels available, search for regular save game story
                 Arguments.of(
-                        createStories(createUnwrittenStory(playerId), createVisitedStory(playerId, 1, "selectedOptionId", "VISITED")),
+                        createStories(createUnwrittenStory(playerId), createVisitedStory(playerId, 1, "VISITED", new SequelKey("selectedOptionId", false))),
                         List.of(),
                         "REGULAR_SAVE_GAME",
                         true,
                         List.of(createRegularSaveGameStory(1), createRegularSaveGameStory(1)),
+                        false,
                         false
                 ),
                 // Case 7: No unwritten stories for player yet, new story generated
                 Arguments.of(
-                        createStories(createLocationSequelStory()),
+                        createStories(createLocationSequelStory(new SequelKey("selectedOptionId", true))),
                         List.of(),
                         "",
                         false,
                         new ArrayList<>(),
-                        true
+                        true,
+                        false
                 ),
-                // Case 8: No unwritten stories for player yet, new story generated, prequel of each type available
+                // Case 8: No unwritten stories for player yet, new story generated, in game sequel filtered and save game sequel filtered
                 Arguments.of(
                         createStories(
-                                createVisitedStory("someOtherPlayer", 1, "selectedOptionId", ""),
-                                createVisitedStory(playerId, 2, "selectedOptionId", ""),
-                                createLocationSequelStory()
+                                createVisitedStory("someOtherPlayer", 1, "VISITED1", new SequelKey("selectedOptionId1", false)),
+                                createVisitedStory("someOtherPlayer", 1, "VISITED", new SequelKey("selectedOptionId2", false)),
+                                createVisitedStory(playerId, 2, "VISITED2", new SequelKey("selectedOptionId", true)),
+                                createLocationSequelStory(new SequelKey("selectedOptionId2", false))
                         ),
-                        List.of(),
+                        List.of(
+                                createLocationSequelStory(new SequelKey("selectedOptionId2", true)),
+                                createPlayerSequelStory(new SequelKey("selectedOptionId1", false))
+                        ),
                         "",
                         false,
                         new ArrayList<>(),
+                        true,
                         true
                 ),
                 // Case 9: No unwritten stories for player yet, new story generated, all prequels already used
                 Arguments.of(
                         createStories(
-                                createVisitedStory("someOtherPlayer", 1, "selectedOptionId", "VISITED"),
-                                createVisitedStory(playerId, 2, "selectedOptionId", "VISITED"),
-                                createLocationSequelStory()
+                                createVisitedStory("someOtherPlayer", 1, "VISITED", new SequelKey("selectedOptionId", false)),
+                                createVisitedStory(playerId, 2, "VISITED", new SequelKey("selectedOptionId", true)),
+                                createLocationSequelStory(new SequelKey("selectedOptionId", true))
                         ),
                         List.of(),
                         "",
                         false,
                         new ArrayList<>(),
+                        false,
                         false
                 )
         );
@@ -283,36 +305,37 @@ class StoryHelperTest {
         return story;
     }
 
-    private static Story createVisitedStory(String playerId, int locationId, String selectedOptionId, String storyId) {
+    private static Story createVisitedStory(String playerId, int locationId, String storyId, SequelKey sequelKey) {
         Story story = new Story();
+        story.setStoryId("VISITED");
         if (!storyId.isEmpty()) {
             story.setStoryId(storyId);
         }
+        story.setPrequelStorySucceeded(sequelKey.isSucceeded());
         story.setPlayerId(playerId);
         story.setLocation(new AdventureMap().getLocations().get(locationId));
-        story.setSelectedOptionId(selectedOptionId);
-        if (selectedOptionId.isEmpty()) {
-            story.setSelectedOptionId("OPTION2");
-        }
+        story.setSelectedOptionId(sequelKey.getSelectedOptionId());
         story.setVisited(true);
         return story;
     }
 
-    private static Story createPlayerSequelStory() {
+    private static Story createPlayerSequelStory(SequelKey prequelKey) {
         Story story = new Story();
         story.setStoryId("PLAYER_SEQUEL");
         story.setPrequelStoryPlayerId(AuthorConstants.GLOBAL_PLAYER_SEQUEL);
-        story.setPrequelStorySelectedOptionId("selectedOptionId");
+        story.setPrequelStorySelectedOptionId(prequelKey.getSelectedOptionId());
+        story.setPrequelStorySucceeded(prequelKey.isSucceeded());
         story.setPrequelStoryId("VISITED");
         return story;
     }
 
-    private static Story createLocationSequelStory() {
+    private static Story createLocationSequelStory(SequelKey prequelKey) {
         Story story = new Story();
         story.setStoryId("LOCATION_SEQUEL");
         story.setLocation(new AdventureMap().getLocations().get(1));
         story.setPrequelStoryId("VISITED");
-        story.setPrequelStorySelectedOptionId("selectedOptionId");
+        story.setPrequelStorySelectedOptionId(prequelKey.getSelectedOptionId());
+        story.setPrequelStorySucceeded(prequelKey.isSucceeded());
         story.setOptions(Arrays.asList(new Option(), new Option()));
         story.setSelectedOptionId(story.getOptions().get(0).getOptionId());
         return story;
