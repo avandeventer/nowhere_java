@@ -1,6 +1,7 @@
 package client.nowhere.model;
 
 import client.nowhere.constants.AuthorConstants;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,6 @@ public class Story {
     private String selectedOptionId = "";
     private boolean playerSucceeded = false;
     private String prequelStoryPlayerId = "";
-
 
     public Story () {
         this.storyId = UUID.randomUUID().toString();
@@ -378,10 +378,12 @@ public class Story {
         this.saveGameStory = saveGameStory;
     }
 
+    @JsonIgnore
     public SequelKey getSequelKey() {
         return new SequelKey(selectedOptionId, playerSucceeded);
     }
 
+    @JsonIgnore
     public SequelKey getPrequelKey() {
         return new SequelKey(prequelStorySelectedOptionId, prequelStorySucceeded);
     }
