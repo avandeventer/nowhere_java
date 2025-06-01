@@ -36,4 +36,8 @@ public class UserProfileHelper {
     public SaveGame upsertSaveGame(String userProfileId, String adventureId, SaveGame saveGame) {
         return this.userProfileDAO.upsertSaveGame(userProfileId, adventureId, saveGame);
     }
+
+    public SaveGame getSaveGame(String email, String password, String adventureId, String saveGameId) {
+        return this.userProfileDAO.getSaveGame(email, password, adventureId, saveGameId);
+    }
 }

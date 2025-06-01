@@ -35,6 +35,15 @@ public class UserProfileController {
         return this.userProfileHelper.create(userProfile);
     }
 
+    @GetMapping("/save-game")
+    @ResponseBody
+    public SaveGame get(@RequestParam String email,
+                        @RequestParam String password,
+                        @RequestParam String adventureId,
+                        @RequestParam String saveGameId) {
+        return this.userProfileHelper.getSaveGame(email, password, adventureId, saveGameId);
+    }
+
     @PostMapping(value = "/save-game", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public SaveGame upsertSaveGame(@RequestParam String userProfileId,

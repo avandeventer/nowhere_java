@@ -58,7 +58,7 @@ public class GameSessionHelper {
 
             switch (gameSession.getGameState()) {
                 case START:
-                    generateStoriesToWrite(gameSession, isTestMode, players, new ArrayList<>());
+                    assignStoryAuthors(gameSession, isTestMode, players);
                     gameSession.setGameStateToNext();
                     break;
                 case GENERATE_WRITE_OPTION_AUTHORS:
@@ -95,10 +95,7 @@ public class GameSessionHelper {
                     gameSession.setGameStateToNext();
                     break;
                 case START_PHASE2:
-                    List<Story> playedStories = gameSession.getStories().stream()
-                            .filter(story -> !story.getPlayerId().isEmpty() && !story.getSelectedOptionId().isEmpty())
-                            .collect(Collectors.toList());
-                    generateStoriesToWrite(gameSession, isTestMode, players, playedStories);
+                    assignStoryAuthors(gameSession, isTestMode, players);
                     gameSession.setGameStateToNext();
                     break;
                 case GENERATE_ENDINGS:
@@ -164,11 +161,10 @@ public class GameSessionHelper {
         return gameSessionDAO.updateGameSession(gameSession);
     }
 
-    private void generateStoriesToWrite(
+    private void assignStoryAuthors(
             GameSession gameSession,
             boolean isTestMode,
-            List<Player> players,
-            List<Story> playedStories
+            List<Player> players
     ) {
         Set<Story> remainingUnwrittenStories = gameSession.getStories().stream()
                 .filter(story -> story.getAuthorId().isEmpty()).collect(Collectors.toSet());

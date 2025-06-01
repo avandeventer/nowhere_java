@@ -229,4 +229,9 @@ public class UserProfileDAO {
             throw new ResourceException("Error saving game to profile. User Profile ID: " + userProfileId + ", adventure " + adventureId + ", save game " + saveGame.getId());
         }
     }
+
+    public SaveGame getSaveGame(String email, String password, String adventureId, String saveGameId) {
+        UserProfile userProfile = this.get(email, password);
+        return userProfile.getMaps().get(adventureId).getSaveGameById(saveGameId);
+    }
 }

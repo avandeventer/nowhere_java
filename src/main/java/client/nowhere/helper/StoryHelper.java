@@ -114,18 +114,15 @@ public class StoryHelper {
     private Optional<Story> getPrequelStory(int locationId, String playerId, List<Story> playedStories) {
         Random rand = new Random();
         int coinFlip = rand.nextInt(3);
-        boolean tryLocationFirst = coinFlip == 2;
-        boolean tryPlayerFirst = coinFlip == 1;
+        boolean getSequel = coinFlip > 0;
 
         Optional<Story> prequelStory = Optional.empty();
 
-        if (tryLocationFirst) {
+        if (getSequel) {
             prequelStory = findLocationMatch(playedStories, locationId)
                     .or(() -> findPlayerMatch(playedStories, playerId));
-        } else if (tryPlayerFirst) {
-            prequelStory = findPlayerMatch(playedStories, playerId)
-                    .or(() -> findLocationMatch(playedStories, locationId));
         }
+
         return prequelStory;
     }
 
