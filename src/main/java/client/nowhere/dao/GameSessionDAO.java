@@ -1,10 +1,7 @@
 package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
-import client.nowhere.model.AdventureMap;
-import client.nowhere.model.GameSession;
-import client.nowhere.model.GameState;
-import client.nowhere.model.Player;
+import client.nowhere.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
@@ -134,5 +131,38 @@ public class GameSessionDAO {
     public Player getPlayer(String gameCode, String authorId) {
         List<Player> players = this.getPlayers(gameCode);
         return players.stream().filter(player -> player.getAuthorId().equals(authorId)).findFirst().get();
+    }
+
+    public DocumentReference getGameRef(String gameCode) {
+        return db.collection("gameSessions").document(gameCode);
+    }
+
+    public GameSession getGameInTransaction(String gameCode, Transaction txn) {
+        try {
+            DocumentReference ref = getGameRef(gameCode);
+            DocumentSnapshot snapshot = txn.get(ref).get();
+            if (!snapshot.exists()) {
+                throw new ResourceException("GameSession " + gameCode + " not found");
+            }
+            return snapshot.toObject(GameSession.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to get GameSession in transaction", e);
+        }
+    }
+
+    public void updateStoriesInTransaction(String gameCode, List<Story> stories, Transaction txn) {
+        DocumentReference ref = getGameRef(gameCode);
+        txn.update(ref, "stories", stories);
+    }
+
+    public <T> T runInTransaction(Transaction.Function<T> txnLogic) {
+        try {
+            return db.runTransaction(txnLogic).get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Transaction interrupted", e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException("Transaction failed", e.getCause());
+        }
     }
 }

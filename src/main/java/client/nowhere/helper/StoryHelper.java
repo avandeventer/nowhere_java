@@ -50,10 +50,11 @@ public class StoryHelper {
     }
 
     public Story storePlayerStory(String gameCode, String playerId, int locationId) {
-        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        return gameSessionDAO.runInTransaction(txn -> {
+            Story playerStory = null;
+            GameSession gameSession = gameSessionDAO.getGameInTransaction(gameCode, txn);
+            List<Story> stories = gameSession.getStories() != null ? new ArrayList<>(gameSession.getStories()) : new ArrayList<>();
 
-        Story playerStory = null;
-        synchronized (mutexFactory.getMutex(gameCode)) {
             List<Story> existingUnwrittenPlayerStories = gameSession.getStories() == null || gameSession.getStories().isEmpty()
                     ? new ArrayList<>()
                     : gameSession.getStories().stream()
@@ -73,9 +74,10 @@ public class StoryHelper {
 
             playerStory.setPlayerId(playerId);
             playerStory.setVisited(true);
-            storyDAO.createStory(playerStory);
-        }
-        return playerStory;
+            stories.add(playerStory);
+            gameSessionDAO.updateStoriesInTransaction(gameCode, stories, txn);
+            return playerStory;
+        });
     }
 
     private Story createNewPlayerStory(String gameCode, int locationId, GameSession gameSession, String playerId) {
@@ -102,7 +104,8 @@ public class StoryHelper {
             prequelStory.ifPresent(foundPrequelStory -> {
                 playerStory.makeSequel(foundPrequelStory.getStoryId(), foundPrequelStory.isPlayerSucceeded(), foundPrequelStory.getSelectedOptionId());
 
-                if (foundPrequelStory.getPlayerId().equals(playerId)) {
+                if (foundPrequelStory.getPlayerId().equals(playerId)
+                        && foundPrequelStory.getLocation().getLocationId() != locationId) {
                     playerStory.setPrequelStoryPlayerId(foundPrequelStory.getPlayerId());
                 }
             });
@@ -119,7 +122,7 @@ public class StoryHelper {
         Optional<Story> prequelStory = Optional.empty();
 
         if (getSequel) {
-            prequelStory = findLocationMatch(playedStories, locationId)
+            prequelStory = findLocationMatch(playedStories, locationId, playerId)
                     .or(() -> findPlayerMatch(playedStories, playerId));
         }
 
@@ -148,7 +151,7 @@ public class StoryHelper {
                 .findFirst();
     }
 
-    private Optional<Story> findLocationMatch(List<Story> stories, int locationId) {
+    private Optional<Story> findLocationMatch(List<Story> stories, int locationId, String playerId) {
         return stories.stream()
                 .filter(story -> story.getLocation().getLocationId() == locationId)
                 .findFirst();
