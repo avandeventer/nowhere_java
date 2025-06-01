@@ -9,6 +9,7 @@ import client.nowhere.dao.StoryDAO;
 import client.nowhere.dao.UserProfileDAO;
 import client.nowhere.factory.MutexFactory;
 import client.nowhere.model.*;
+import com.google.cloud.firestore.Transaction;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,7 +59,14 @@ class StoryHelperTest {
         mockGameSession.setSaveGameId("SAVE_GAME_ID");
         mockGameSession.setStories(new ArrayList<>());
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(mockGameSession);
+        when(gameSessionDAO.runInTransaction(any())).thenAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            Transaction.Function<Story> function = invocation.getArgument(0);
+            return function.updateCallback(mock(Transaction.class));
+        });
+
+        when(gameSessionDAO.getGameInTransaction(eq(gameCode), any()))
+                .thenReturn(mockGameSession);
         when(storyDAO.getStories(gameCode)).thenReturn(new ArrayList<>()); // No game session stories
         when(storyDAO.getPlayerStories(gameCode, playerId, locationId)).thenReturn(new ArrayList<>()); // No player stories
         when(userProfileDAO.getRegularSaveGameStories(mockGameSession, locationId)).thenReturn(new ArrayList<>()); // No global stories
@@ -68,7 +76,10 @@ class StoryHelperTest {
         assertNotNull(result);
         assertEquals(gameCode, result.getGameCode());
         assertEquals(locationId, result.getLocation().getLocationId());
-        verify(storyDAO).createStory(any(Story.class));
+
+        List<Story> expectedUpdatedStories = mockGameSession.getStories();
+        expectedUpdatedStories.add(result);
+        verify(gameSessionDAO).updateStoriesInTransaction(eq(gameCode), eq(expectedUpdatedStories), any());
     }
 
     @ParameterizedTest
@@ -92,7 +103,14 @@ class StoryHelperTest {
         mockGameSession.setSaveGameId("SAVE_GAME_ID");
         mockGameSession.setStories(gameSessionStories);
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(mockGameSession);
+        when(gameSessionDAO.runInTransaction(any())).thenAnswer(invocation -> {
+            @SuppressWarnings("unchecked")
+            Transaction.Function<Story> function = invocation.getArgument(0);
+            return function.updateCallback(mock(Transaction.class));
+        });
+
+        when(gameSessionDAO.getGameInTransaction(eq(gameCode), any()))
+                .thenReturn(mockGameSession);
         when(storyDAO.getStories(gameCode)).thenReturn(gameSessionStories);
         when(userProfileDAO.getSaveGameSequelStories(
                 eq(mockGameSession.getUserProfileId()),
@@ -155,6 +173,9 @@ class StoryHelperTest {
             verify(userProfileDAO).getRegularSaveGameStories(mockGameSession, locationId);
         }
         assertEquals(1, result.getLocation().getLocationId());
+        List<Story> expectedUpdatedStories = new ArrayList<>(gameSessionStories);
+        expectedUpdatedStories.add(result);
+        verify(gameSessionDAO).updateStoriesInTransaction(eq(gameCode), eq(expectedUpdatedStories), any());
     }
 
     static Stream<Arguments> provideSequelStoryScenarios() {
