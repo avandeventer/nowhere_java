@@ -7,10 +7,10 @@ import java.util.List;
 public class AdventureMap {
     String name;
     String adventureId;
+    List<StatType> statTypes;
     GameSessionDisplay gameSessionDisplay;
     List<Location> locations;
     RitualStory ritual;
-    List<StatType> statTypes;
 
     public AdventureMap() {
         this.name = "Nowhere";
