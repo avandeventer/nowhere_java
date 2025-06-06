@@ -1,23 +1,25 @@
 package client.nowhere.model;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class OutcomeStat {
-
+    PlayerStat playerStat;
     Stat impactedStat;
     int statChange;
 
     public OutcomeStat () { }
 
-    public OutcomeStat (Stat impactedStat, int statChange) {
-        this.impactedStat = impactedStat;
-        this.statChange = statChange;
+    public OutcomeStat (PlayerStat playerStat) {
+        this.playerStat = playerStat;
     }
 
-    public void randomizeOutcomeStat (int min, int max) {
-        this.impactedStat = Stat.values()[ThreadLocalRandom.current().nextInt(Stat.values().length)];
-        this.statChange = ThreadLocalRandom.current().nextInt(min, max + 1);
+    public void randomizeOutcomeStat (List<StatType> adventureMapStatTypes, int min, int max) {
+        this.playerStat = new PlayerStat(
+                adventureMapStatTypes.get(ThreadLocalRandom.current().nextInt(adventureMapStatTypes.size())),
+                ThreadLocalRandom.current().nextInt(min, max + 1)
+        );
     }
 
     public Stat getImpactedStat() {
@@ -34,6 +36,21 @@ public class OutcomeStat {
 
     public void setStatChange(int statChange) {
         this.statChange = statChange;
+    }
+
+    public PlayerStat getPlayerStat() {
+        if (
+            playerStat == null
+            && impactedStat != null
+        ) {
+            return new PlayerStat(impactedStat.getStatType(), statChange);
+        }
+
+        return playerStat;
+    }
+
+    public void setPlayerStat(PlayerStat playerStat) {
+        this.playerStat = playerStat;
     }
 
     @Override

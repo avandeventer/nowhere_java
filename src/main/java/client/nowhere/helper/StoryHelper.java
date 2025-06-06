@@ -19,17 +19,17 @@ public class StoryHelper {
     private final StoryDAO storyDAO;
     private final GameSessionDAO gameSessionDAO;
     private final UserProfileDAO userProfileDAO;
-    private final MutexFactory<String> mutexFactory;
 
     @Autowired
-    public StoryHelper(StoryDAO storyDAO, GameSessionDAO gameSessionDAO, UserProfileDAO userProfileDAO, MutexFactory<String> mutexFactory) {
+    public StoryHelper(StoryDAO storyDAO, GameSessionDAO gameSessionDAO, UserProfileDAO userProfileDAO) {
         this.storyDAO = storyDAO;
         this.gameSessionDAO = gameSessionDAO;
         this.userProfileDAO = userProfileDAO;
-        this.mutexFactory = mutexFactory;
     }
 
     public Story createStory(Story story) {
+        GameSession gameSession = gameSessionDAO.getGame(story.getGameCode());
+        story.randomizeNewStory(gameSession.getAdventureMap().getStatTypes());
         return storyDAO.createStory(story);
     }
 
@@ -89,7 +89,8 @@ public class StoryHelper {
             throw new ResourceException("A location at " + locationId + " does not exist.");
         }
 
-        Story playerStory = new Story(gameCode, location.get());
+        List<StatType> playerStats = gameSession.getAdventureMap().getStatTypes();
+        Story playerStory = new Story(gameCode, location.get(), playerStats);
 
         List<Story> stories = gameSession.getStories() != null ? gameSession.getStories() : Collections.emptyList();
 

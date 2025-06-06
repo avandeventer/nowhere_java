@@ -14,7 +14,7 @@ public class Player {
     private int wealth = 4;
     private int magic = 4;
     private int favor = 4;
-    private List<PlayerStat> playerStats;
+    private List<StatType> playerStats;
     private String gameCode;
     private boolean isFirstPlayer = false;
 
@@ -110,11 +110,11 @@ public class Player {
         this.favor = favor;
     }
 
-    public List<PlayerStat> getPlayerStats() {
+    public List<StatType> getPlayerStats() {
         return playerStats;
     }
 
-    public void setPlayerStats(List<PlayerStat> playerStats) {
+    public void setPlayerStats(List<StatType> playerStats) {
         this.playerStats = playerStats;
     }
 

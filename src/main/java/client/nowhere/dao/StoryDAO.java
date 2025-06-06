@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -118,8 +117,6 @@ public class StoryDAO {
                                             !inputOption.getOptionText().isEmpty() ?
                                                     inputOption.getOptionText() :
                                                     resultOption.getOptionText(),
-                                            resultOption.getStatRequirement(),
-                                            resultOption.getStatDC(),
                                             !inputOption.getSuccessText().isEmpty() ?
                                                     inputOption.getSuccessText() :
                                                     resultOption.getSuccessText(),
@@ -130,7 +127,8 @@ public class StoryDAO {
                                             resultOption.getFailureResults(),
                                             !inputOption.getOutcomeAuthorId().isEmpty() ?
                                                     inputOption.getOutcomeAuthorId() :
-                                                    resultOption.getOutcomeAuthorId()
+                                                    resultOption.getOutcomeAuthorId(),
+                                            inputOption.getPlayerStatDCs()
                                     );
                                     optionsToUpdate.add(optionToUpdate);
                                 }
