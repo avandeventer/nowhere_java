@@ -9,7 +9,8 @@ import java.util.concurrent.ThreadLocalRandom;
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.PROPERTY,
-        property = "optionType"
+        property = "optionType",
+        defaultImpl = Option.class
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = RitualOption.class, name = "ritual")

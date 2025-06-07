@@ -20,6 +20,7 @@ public class ActivePlayerSessionTest {
                 "    \"ritualOptions\": [\n" +
                 "      {\n" +
                 "        \"optionId\": \"4\",\n" +
+                "        \"optionType\": \"ritual\",\n" +
                 "        \"selectedByPlayerId\": \"406df369-8c63-4962-ae19-a2e120f1c9d6\"\n" +
                 "      }\n" +
                 "    ]\n" +
