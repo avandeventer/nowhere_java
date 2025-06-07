@@ -35,10 +35,6 @@ public class Story {
 
     public Story () {
         this.storyId = UUID.randomUUID().toString();
-        if(this.location != null) {
-            AdventureMap adventureMap = new AdventureMap();
-            this.location = adventureMap.getLocations().get(location.getLocationId());
-        }
     }
 
     public Story (List<Option> options) {
