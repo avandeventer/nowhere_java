@@ -128,7 +128,7 @@ public class StoryDAO {
                                             !inputOption.getOutcomeAuthorId().isEmpty() ?
                                                     inputOption.getOutcomeAuthorId() :
                                                     resultOption.getOutcomeAuthorId(),
-                                            inputOption.getPlayerStatDCs()
+                                            resultOption.getPlayerStatDCs()
                                     );
                                     optionsToUpdate.add(optionToUpdate);
                                 }
