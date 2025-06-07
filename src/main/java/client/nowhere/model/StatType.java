@@ -6,6 +6,8 @@ public class StatType {
 
     private String id;
     private String label;
+    boolean isFavorType = false;
+    String favorEntity;
 
     public StatType() {
         this.label = "";
@@ -22,6 +24,13 @@ public class StatType {
         this.label = label;
     }
 
+    public StatType(String id, String label, boolean isFavorType, String favorEntity) {
+        this.id = id;
+        this.label = label;
+        this.isFavorType = isFavorType;
+        this.favorEntity = favorEntity;
+    }
+
     public String getId() {
         return id;
     }
@@ -36,5 +45,21 @@ public class StatType {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public boolean isFavorType() {
+        return isFavorType;
+    }
+
+    public void setFavorType(boolean favorType) {
+        isFavorType = favorType;
+    }
+
+    public String getFavorEntity() {
+        return favorEntity;
+    }
+
+    public void setFavorEntity(String favorEntity) {
+        this.favorEntity = favorEntity;
     }
 }

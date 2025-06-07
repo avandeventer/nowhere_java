@@ -22,7 +22,7 @@ public enum Stat {
             new StatType("eb687e49-488a-445b-860d-cd924e504a51", "magic")
     ),
     FAVOR (
-            new StatType("cd872364-a893-4b87-9f42-3e30de40a93e", "favor")
+            new StatType("cd872364-a893-4b87-9f42-3e30de40a93e", "favor", true, "Erysus")
     );
 
     private final StatType statType;

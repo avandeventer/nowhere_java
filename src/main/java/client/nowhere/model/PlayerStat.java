@@ -30,5 +30,4 @@ public class PlayerStat {
     public void setValue(int value) {
         this.value = value;
     }
-
 }
