@@ -30,6 +30,7 @@ public class Option {
 
     public Option () {
         this.optionId = UUID.randomUUID().toString();
+        this.playerStatDCs = new ArrayList<>();
     }
 
     public Option (String optionText,
@@ -160,6 +161,10 @@ public class Option {
             return Arrays.asList(new PlayerStat(this.statRequirement.getStatType(), this.statDC));
         }
         return playerStatDCs;
+    }
+
+    public void setPlayerStatDCs(List<PlayerStat> playerStatDCs) {
+        this.playerStatDCs = playerStatDCs;
     }
 
     public void setPlayerStatDC(List<PlayerStat> playerStatDCs) {
