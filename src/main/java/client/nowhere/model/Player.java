@@ -1,5 +1,6 @@
 package client.nowhere.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -116,6 +117,13 @@ public class Player {
 
     public void setPlayerStats(List<PlayerStat> playerStats) {
         this.playerStats = playerStats;
+    }
+
+    public void setBasePlayerStats(List<StatType> playerStats, int baseStat) {
+        this.playerStats = new ArrayList<>();
+        for (StatType statType : playerStats) {
+            this.playerStats.add(new PlayerStat(statType, baseStat));
+        }
     }
 
     public int getStatByEnum (Stat stat) {

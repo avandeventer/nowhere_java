@@ -249,7 +249,7 @@ public class GameSessionHelper {
             player.setFirstPlayer(true);
         }
 
-        player.setPlayerStats(gameSession.getAdventureMap().getPlayerStats());
+        player.setBasePlayerStats(gameSession.getAdventureMap().getStatTypes(), 4);
 
         player.createRandomAuthorId();
         return this.gameSessionDAO.joinGameSession(player);

@@ -1,21 +1,29 @@
 package client.nowhere.model;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "optionType"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = RitualOption.class, name = "ritual")
+})
 public class Option {
     String optionId = "";
     String optionText = "";
     String attemptText = "";
     Stat statRequirement;
     int statDC;
+    List<PlayerStat> playerStatDCs;
     String successText = "";
     String outcomeAuthorId = "";
     List<OutcomeStat> successResults;
-
     String failureText = "";
     List<OutcomeStat> failureResults;
 
@@ -34,37 +42,40 @@ public class Option {
     public Option(String optionId,
                   String optionText,
                   String attemptText,
-                  Stat statRequirement,
-                  int statDC,
                   String successText,
                   List<OutcomeStat> successResults,
                   String failureText,
                   List<OutcomeStat> failureResults,
-                  String outcomeAuthorId) {
+                  String outcomeAuthorId,
+                  List<PlayerStat> playerStatDCs
+    ) {
         this.optionId = optionId;
         this.optionText = optionText;
-        this.statRequirement = statRequirement;
-        this.statDC = statDC;
         this.attemptText = attemptText;
         this.successText = successText;
         this.successResults = successResults;
         this.failureText = failureText;
         this.failureResults = failureResults;
         this.outcomeAuthorId = outcomeAuthorId;
+        this.playerStatDCs = playerStatDCs;
     }
 
-    public void randomizeOptionStats (int minDC, int maxDC) {
+    public void randomizeOptionStats (int minDC, int maxDC, List<StatType> statTypes) {
         this.optionText = "";
-        this.statRequirement = Stat.values()[ThreadLocalRandom.current().nextInt(Stat.values().length - 1)];
-        this.statDC = ThreadLocalRandom.current().nextInt(minDC, maxDC + 1);
+        this.playerStatDCs = Arrays.asList(
+            new PlayerStat(
+                statTypes.get(ThreadLocalRandom.current().nextInt(statTypes.size())),
+                ThreadLocalRandom.current().nextInt(minDC, maxDC + 1)
+            )
+        );
 
         OutcomeStat successStat = new OutcomeStat();
-        successStat.randomizeOutcomeStat(1, 2);
+        successStat.randomizeOutcomeStat(statTypes, 1, 2);
         this.successResults = new ArrayList<>();
         this.successResults.add(successStat);
 
         OutcomeStat failureStat = new OutcomeStat();
-        failureStat.randomizeOutcomeStat(1, 2);
+        failureStat.randomizeOutcomeStat(statTypes, 1, 2);
         this.failureResults = new ArrayList<>();
         this.failureResults.add(failureStat);
     }
@@ -91,14 +102,6 @@ public class Option {
 
     public void setAttemptText(String attemptText) {
         this.attemptText = attemptText;
-    }
-
-    public Stat getStatRequirement() {
-        return statRequirement;
-    }
-
-    public void setStatRequirement(Stat statRequirement) {
-        this.statRequirement = statRequirement;
     }
 
     public int getStatDC() {
@@ -149,16 +152,37 @@ public class Option {
         this.outcomeAuthorId = outcomeAuthorId;
     }
 
+    public List<PlayerStat> getPlayerStatDCs() {
+        if (
+            (this.playerStatDCs == null || this.playerStatDCs.isEmpty())
+            && this.statRequirement != null) {
+            return Arrays.asList(new PlayerStat(this.statRequirement.getStatType(), this.statDC));
+        }
+        return playerStatDCs;
+    }
+
+    public void setPlayerStatDC(List<PlayerStat> playerStatDCs) {
+        this.playerStatDCs = playerStatDCs;
+    }
+
+    public Stat getStatRequirement() {
+        return statRequirement;
+    }
+
+    public void setStatRequirement(Stat statRequirement) {
+        this.statRequirement = statRequirement;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof Option)) return false;
         Option option = (Option) o;
-        return statDC == option.statDC && Objects.equals(optionId, option.optionId) && Objects.equals(optionText, option.optionText) && Objects.equals(attemptText, option.attemptText) && statRequirement == option.statRequirement && Objects.equals(successText, option.successText) && Objects.equals(outcomeAuthorId, option.outcomeAuthorId) && Objects.equals(successResults, option.successResults) && Objects.equals(failureText, option.failureText) && Objects.equals(failureResults, option.failureResults);
+        return optionId.equals(option.optionId) && Objects.equals(optionText, option.optionText) && Objects.equals(attemptText, option.attemptText) && Objects.equals(playerStatDCs, option.playerStatDCs) && Objects.equals(successText, option.successText) && Objects.equals(outcomeAuthorId, option.outcomeAuthorId) && Objects.equals(successResults, option.successResults) && Objects.equals(failureText, option.failureText) && Objects.equals(failureResults, option.failureResults);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(optionId, optionText, attemptText, statRequirement, statDC, successText, outcomeAuthorId, successResults, failureText, failureResults);
+        return Objects.hash(optionId, optionText, attemptText, playerStatDCs, successText, outcomeAuthorId, successResults, failureText, failureResults);
     }
 }
