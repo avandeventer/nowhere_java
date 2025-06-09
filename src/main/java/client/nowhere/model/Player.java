@@ -155,6 +155,7 @@ public class Player {
         this.setWealth(player.getWealth());
         this.setMagic(player.getMagic());
         this.setFavor(player.getFavor());
+        this.setPlayerStats(player.getPlayerStats());
     }
 
     public boolean getFirstPlayer() {
