@@ -46,10 +46,10 @@ public class RitualHelper {
                 RitualOption chosenRitualOption = ritualOptionOptional.get();
 
                 RitualStory existingRitualStories = ritualDAO.getRitualJobs(ritualStory.getGameCode());
-                List<StatRequirement> chosenRitualSuccessRequirements = existingRitualStories
+                List<PlayerStat> chosenRitualSuccessRequirements = existingRitualStories
                         .getRitualOptions().stream().filter(ritualOption ->
                                 ritualOption.getOptionId().equals(chosenRitualOption.getOptionId()))
-                        .findFirst().get().getStatRequirements();
+                        .findFirst().get().getPlayerStatDCs();
 
                 Player chosenPlayer = gameSessionDAO.getPlayer(
                         ritualStory.getGameCode(),
@@ -65,11 +65,14 @@ public class RitualHelper {
         return this.ritualDAO.selectJob(ritualStory);
     }
 
-    private RitualOption determineWhetherPlayerSucceeded(RitualOption chosenRitualOption, Player chosenPlayer, List<StatRequirement> chosenRitualStatRequirements) {
+    private RitualOption determineWhetherPlayerSucceeded(RitualOption chosenRitualOption, Player chosenPlayer, List<PlayerStat> ritualDCs) {
         RitualOption updatedRitualOption = chosenRitualOption;
-        for (StatRequirement statRequirement : chosenRitualStatRequirements) {
-            int playerStat = chosenPlayer.getStatByEnum(statRequirement.getDcStat());
-            if (playerStat >= statRequirement.getDcValue()) {
+        for (PlayerStat ritualDC : ritualDCs) {
+            int playerStatValue = chosenPlayer.getPlayerStats().stream().filter(playerStat
+                    -> playerStat.getStatType().getId().equals(ritualDC.getStatType().getId())).findFirst()
+                    .get().getValue();
+
+            if (playerStatValue >= ritualDC.getValue()) {
                 updatedRitualOption.setPointsRewarded(updatedRitualOption.getPointsRewarded() + 2);
                 updatedRitualOption.setPlayerSucceeded(true);
             }
@@ -77,19 +80,19 @@ public class RitualHelper {
 
         switch (updatedRitualOption.getPointsRewarded()) {
             case 0:
-                updatedRitualOption.setSuccessMarginText("You try to convince yourself that you feel a divine presence as you go about your task, but deep down you know you feel you've contributed nothing.");
+                updatedRitualOption.setSuccessMarginText("Your efforts were in vain");
                 break;
             case 2:
-                updatedRitualOption.setSuccessMarginText("You feel small glimmers of Erysus around you, but you feel her eye drift away to other people. You didn't help the ritual much.");
+                updatedRitualOption.setSuccessMarginText("You feel you didn't help much");
                 break;
             case 4:
-                updatedRitualOption.setSuccessMarginText("As the night continues you feel the presence of Erysus more and more. She looks upon you positively. You've helped a good bit!");
+                updatedRitualOption.setSuccessMarginText("You feel like you helped!");
                 break;
             case 6:
-                updatedRitualOption.setSuccessMarginText("You feel completely enveloped by the love of your god as you complete your duties. As the warmth of the faith in your heart grows you become sure you're of the most important parts of the ritual.");
+                updatedRitualOption.setSuccessMarginText("You helped a good bit!");
                 break;
             case 8:
-                updatedRitualOption.setSuccessMarginText("Divine rapture. Your contributions to the ceremony are noticed by everyone, including and especially Erysus. A liquid warmth spreads in your chest and daggers of ice-y jealousy are shot in your direction from all over town. You are certain you have become one of Erysus' chosen.");
+                updatedRitualOption.setSuccessMarginText("You helped a great deal!");
                 break;
             default:
                 break;
