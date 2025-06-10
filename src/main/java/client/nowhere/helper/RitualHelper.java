@@ -74,8 +74,11 @@ public class RitualHelper {
 
             if (playerStatValue >= ritualDC.getValue()) {
                 updatedRitualOption.setPointsRewarded(updatedRitualOption.getPointsRewarded() + 2);
-                updatedRitualOption.setPlayerSucceeded(true);
             }
+        }
+
+        if (updatedRitualOption.getPointsRewarded() > 2) {
+            updatedRitualOption.setPlayerSucceeded(true);
         }
 
         switch (updatedRitualOption.getPointsRewarded()) {
