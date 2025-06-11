@@ -8,7 +8,7 @@ public class Ending {
     String playerUsername;
     List<Story> associatedStories;
     String associatedLocationId;
-    RitualOption associatedRitualOption;
+    Option associatedRitualOption;
     String authorId;
     String endingBody;
     boolean didWeSucceed;
@@ -60,11 +60,11 @@ public class Ending {
         this.endingBody = endingBody;
     }
 
-    public RitualOption getAssociatedRitualOption() {
+    public Option getAssociatedRitualOption() {
         return associatedRitualOption;
     }
 
-    public void setAssociatedRitualOption(RitualOption associatedRitualOption) {
+    public void setAssociatedRitualOption(Option associatedRitualOption) {
         this.associatedRitualOption = associatedRitualOption;
     }
 

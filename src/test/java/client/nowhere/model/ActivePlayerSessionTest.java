@@ -20,7 +20,6 @@ public class ActivePlayerSessionTest {
                 "    \"ritualOptions\": [\n" +
                 "      {\n" +
                 "        \"optionId\": \"4\",\n" +
-                "        \"optionType\": \"ritual\",\n" +
                 "        \"selectedByPlayerId\": \"406df369-8c63-4962-ae19-a2e120f1c9d6\"\n" +
                 "      }\n" +
                 "    ]\n" +
@@ -34,8 +33,8 @@ public class ActivePlayerSessionTest {
 
         try {
             ActivePlayerSession activePlayerSession = objectMapper.readValue(json, ActivePlayerSession.class);
-            Assert.isInstanceOf(RitualStory.class, activePlayerSession.getRitualStory());
-            Assert.isInstanceOf(RitualOption.class, activePlayerSession.getRitualStory().getRitualOptions().get(0));
+            Assert.isInstanceOf(Story.class, activePlayerSession.getRitualStory());
+            Assert.isInstanceOf(Option.class, activePlayerSession.getRitualStory().getOptions().get(0));
         } catch (JsonProcessingException exception) {
             fail("You should be able to deserialize this as a RitualStory", exception);
         }

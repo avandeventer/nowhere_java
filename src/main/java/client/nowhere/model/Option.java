@@ -1,25 +1,17 @@
 package client.nowhere.model;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.PROPERTY,
-        property = "optionType",
-        defaultImpl = Option.class
-)
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = RitualOption.class, name = "ritual")
-})
 public class Option {
     String optionId = "";
     String optionText = "";
     String attemptText = "";
     Stat statRequirement;
+    List<StatRequirement> statRequirements;
     int statDC;
     List<PlayerStat> playerStatDCs;
     String successText = "";
@@ -27,6 +19,10 @@ public class Option {
     List<OutcomeStat> successResults;
     String failureText = "";
     List<OutcomeStat> failureResults;
+    private String selectedByPlayerId;
+    private boolean playerSucceeded;
+    private Integer pointsRewarded = 0;
+    private String successMarginText;
 
     public Option () {
         this.optionId = UUID.randomUUID().toString();
@@ -60,6 +56,21 @@ public class Option {
         this.failureResults = failureResults;
         this.outcomeAuthorId = outcomeAuthorId;
         this.playerStatDCs = playerStatDCs;
+    }
+
+    public Option (String optionId,
+                         String optionText,
+                         String attemptText,
+                         List<StatType> stats,
+                         List<Integer> difficultyValues,
+                         String successText,
+                         String failureText) {
+        this.optionId = optionId;
+        this.optionText = optionText;
+        this.attemptText = attemptText;
+        setStatRequirements(stats, difficultyValues);
+        this.successText = successText;
+        this.failureText = failureText;
     }
 
     public void randomizeOptionStats (int minDC, int maxDC, List<StatType> statTypes) {
@@ -155,10 +166,16 @@ public class Option {
     }
 
     public List<PlayerStat> getPlayerStatDCs() {
-        if (
-            (this.playerStatDCs == null || this.playerStatDCs.isEmpty())
-            && this.statRequirement != null) {
-            return Arrays.asList(new PlayerStat(this.statRequirement.getStatType(), this.statDC));
+        if (this.playerStatDCs == null || this.playerStatDCs.isEmpty()) {
+            if (this.statRequirement != null) {
+                return Collections.singletonList(new PlayerStat(this.statRequirement.getStatType(), this.statDC));
+            }
+
+            if (this.statRequirements != null && !this.statRequirements.isEmpty()) {
+                return this.statRequirements.stream()
+                        .map(statRequirement -> new PlayerStat(statRequirement.dcStat.getStatType(), statRequirement.dcValue))
+                        .collect(Collectors.toList());
+            }
         }
         return playerStatDCs;
     }
@@ -179,16 +196,64 @@ public class Option {
         this.statRequirement = statRequirement;
     }
 
+    public void setStatRequirements(List<StatType> stats, List<Integer> difficultyValues) {
+        this.playerStatDCs = stats.stream()
+                .flatMap(statType -> difficultyValues.stream()
+                        .map(difficulty -> new PlayerStat(statType, difficulty)))
+                .collect(Collectors.toList());
+    }
+
+    public String getSelectedByPlayerId() {
+        return selectedByPlayerId;
+    }
+
+    public void setSelectedByPlayerId(String selectedByPlayerId) {
+        this.selectedByPlayerId = selectedByPlayerId;
+    }
+
+    public boolean isPlayerSucceeded() {
+        return playerSucceeded;
+    }
+
+    public void setPlayerSucceeded(boolean playerSucceeded) {
+        this.playerSucceeded = playerSucceeded;
+    }
+
+    public Integer getPointsRewarded() {
+        return pointsRewarded;
+    }
+
+    public void setPointsRewarded(Integer pointsRewarded) {
+        this.pointsRewarded = pointsRewarded;
+    }
+
+    public String getSuccessMarginText() {
+        return successMarginText;
+    }
+
+    public void setSuccessMarginText(String successMarginText) {
+        this.successMarginText = successMarginText;
+    }
+
+    @JsonIgnore
+    public List<StatRequirement> getStatRequirements() {
+        return statRequirements;
+    }
+
+    public void setStatRequirements(List<StatRequirement> statRequirements) {
+        this.statRequirements = statRequirements;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Option)) return false;
         Option option = (Option) o;
-        return optionId.equals(option.optionId) && Objects.equals(optionText, option.optionText) && Objects.equals(attemptText, option.attemptText) && Objects.equals(playerStatDCs, option.playerStatDCs) && Objects.equals(successText, option.successText) && Objects.equals(outcomeAuthorId, option.outcomeAuthorId) && Objects.equals(successResults, option.successResults) && Objects.equals(failureText, option.failureText) && Objects.equals(failureResults, option.failureResults);
+        return statDC == option.statDC && playerSucceeded == option.playerSucceeded && optionId.equals(option.optionId) && Objects.equals(optionText, option.optionText) && Objects.equals(attemptText, option.attemptText) && statRequirement == option.statRequirement && Objects.equals(playerStatDCs, option.playerStatDCs) && Objects.equals(successText, option.successText) && Objects.equals(outcomeAuthorId, option.outcomeAuthorId) && Objects.equals(successResults, option.successResults) && Objects.equals(failureText, option.failureText) && Objects.equals(failureResults, option.failureResults) && Objects.equals(selectedByPlayerId, option.selectedByPlayerId) && Objects.equals(pointsRewarded, option.pointsRewarded) && Objects.equals(successMarginText, option.successMarginText);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(optionId, optionText, attemptText, playerStatDCs, successText, outcomeAuthorId, successResults, failureText, failureResults);
+        return Objects.hash(optionId, optionText, attemptText, statRequirement, statDC, playerStatDCs, successText, outcomeAuthorId, successResults, failureText, failureResults, selectedByPlayerId, playerSucceeded, pointsRewarded, successMarginText);
     }
 }

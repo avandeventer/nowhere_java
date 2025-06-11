@@ -1,8 +1,7 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.RitualHelper;
-import client.nowhere.model.RitualOption;
-import client.nowhere.model.RitualStory;
+import client.nowhere.model.Option;
 import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +25,7 @@ public class RitualController {
 
     @PutMapping("/ritual")
     @ResponseBody
-    public RitualOption update(@RequestBody RitualStory ritualStory) {
+    public Option update(@RequestBody Story ritualStory) {
         return ritualHelper.update(ritualStory);
     }
 }

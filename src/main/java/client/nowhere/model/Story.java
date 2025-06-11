@@ -24,7 +24,9 @@ public class Story {
     private boolean sequelStory;
     private boolean saveGameStory;
     private List<Option> options;
+    private List<Option> ritualOptions;
     private Location location;
+    private String optionType;
 
     //Temporary player variables
     private boolean visited = false;
@@ -100,6 +102,10 @@ public class Story {
     }
 
     public List<Option> getOptions() {
+        if (options == null && ritualOptions != null) {
+            return ritualOptions;
+        }
+
         return options;
     }
 
@@ -239,6 +245,26 @@ public class Story {
 
     public void setSaveGameStory(boolean saveGameStory) {
         this.saveGameStory = saveGameStory;
+    }
+
+    //Temporary to correctly deserialize from the old RitualStory object
+    @JsonIgnore
+    public List<Option> getRitualOptions() {
+        return ritualOptions;
+    }
+
+    public void setRitualOptions(List<Option> ritualOptions) {
+        this.ritualOptions = ritualOptions;
+    }
+
+    //Temporary to correctly deserialize from the old RitualStory object
+    @JsonIgnore
+    public String getOptionType() {
+        return optionType;
+    }
+
+    public void setOptionType(String optionType) {
+        this.optionType = optionType;
     }
 
     @JsonIgnore

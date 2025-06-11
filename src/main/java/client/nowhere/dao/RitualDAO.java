@@ -23,8 +23,8 @@ public class RitualDAO {
         this.db = db;
     }
 
-    public RitualStory getRitualJobs(String gameCode) {
-        RitualStory ritualStory = new RitualStory();
+    public Story getRitualJobs(String gameCode) {
+        Story ritualStory = new Story();
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
@@ -36,24 +36,24 @@ public class RitualDAO {
         return ritualStory;
     }
 
-    public RitualOption getRitualJob(String gameCode, String playerId) {
-        RitualStory ritualJobs = getRitualJobs(gameCode);
-        return ritualJobs.getRitualOptions().stream().filter(ritualOption ->
+    public Option getRitualJob(String gameCode, String playerId) {
+        Story ritualJobs = getRitualJobs(gameCode);
+        return ritualJobs.getOptions().stream().filter(ritualOption ->
                 ritualOption.getSelectedByPlayerId() != null
                 && ritualOption.getSelectedByPlayerId().equals(playerId))
                 .findFirst().get();
     }
 
-    public RitualOption selectJob(RitualStory ritualStory) {
+    public Option selectJob(Story ritualStory) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(ritualStory.getGameCode());
             DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             GameSession game = FirestoreDAOUtil.mapGameSession(gameSession);
 
-            List<RitualOption> ritualOptions = game.getAdventureMap().getRitual().getRitualOptions();
-            RitualOption selectedOption = ritualStory.getRitualOptions().get(0);
+            List<Option> ritualOptions = game.getAdventureMap().getRitual().getOptions();
+            Option selectedOption = ritualStory.getOptions().get(0);
 
-            Optional<RitualOption> existingOptionOptional = ritualOptions.stream()
+            Optional<Option> existingOptionOptional = ritualOptions.stream()
                     .filter(option ->
                             option.getSelectedByPlayerId() == null
                             && option.getOptionId().equals(selectedOption.getOptionId())
@@ -63,7 +63,7 @@ public class RitualDAO {
                 throw new ResourceException("No matching ritual option found");
             }
 
-            RitualOption existingOption = existingOptionOptional.get();
+            Option existingOption = existingOptionOptional.get();
 
             if (selectedOption.getPointsRewarded() != null) {
                 existingOption.setPointsRewarded(selectedOption.getPointsRewarded());
@@ -71,19 +71,19 @@ public class RitualDAO {
             if (selectedOption.getSelectedByPlayerId() != null) {
                 existingOption.setSelectedByPlayerId(selectedOption.getSelectedByPlayerId());
             }
-            if (selectedOption.getPlayerSucceeded()) {
-                existingOption.setPlayerSucceeded(selectedOption.getPlayerSucceeded());
+            if (selectedOption.isPlayerSucceeded()) {
+                existingOption.setPlayerSucceeded(selectedOption.isPlayerSucceeded());
             }
 
             if (!selectedOption.getSuccessMarginText().isEmpty()) {
                 existingOption.setSuccessMarginText(selectedOption.getSuccessMarginText());
             }
 
-            List<RitualOption> updatedRitualOptions = ritualOptions.stream()
+            List<Option> updatedRitualOptions = ritualOptions.stream()
                     .map(option -> option.getOptionId().equals(existingOption.getOptionId()) ? existingOption : option)
                     .collect(Collectors.toList());
 
-            game.getAdventureMap().getRitual().setRitualOptions(updatedRitualOptions);
+            game.getAdventureMap().getRitual().setOptions(updatedRitualOptions);
             gameSessionRef.update("adventureMap", game.getAdventureMap());
 
             return existingOption;

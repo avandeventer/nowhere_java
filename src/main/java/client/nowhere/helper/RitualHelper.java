@@ -22,8 +22,8 @@ public class RitualHelper {
         this.gameSessionDAO = gameSessionDAO;
     }
 
-    public RitualStory getRitualJobs(String gameCode) {
-        RitualStory ritualStory = this.ritualDAO.getRitualJobs(gameCode);
+    public Story getRitualJobs(String gameCode) {
+        Story ritualStory = this.ritualDAO.getRitualJobs(gameCode);
 
         if (ritualStory == null) {
             AdventureMap adventureMap = new AdventureMap();
@@ -34,20 +34,20 @@ public class RitualHelper {
         return ritualStory;
     }
 
-    public RitualOption update(RitualStory ritualStory) {
+    public Option update(Story ritualStory) {
 
-        if (ritualStory.getRitualOptions().size() == 1) {
-            Optional<RitualOption> ritualOptionOptional = ritualStory.getRitualOptions()
+        if (ritualStory.getOptions().size() == 1) {
+            Optional<Option> ritualOptionOptional = ritualStory.getOptions()
                     .stream()
                     .filter(option -> !option.getSelectedByPlayerId().isEmpty())
                     .findFirst();
 
             if(ritualOptionOptional.isPresent()) {
-                RitualOption chosenRitualOption = ritualOptionOptional.get();
+                Option chosenRitualOption = ritualOptionOptional.get();
 
-                RitualStory existingRitualStories = ritualDAO.getRitualJobs(ritualStory.getGameCode());
+                Story existingRitualStories = ritualDAO.getRitualJobs(ritualStory.getGameCode());
                 List<PlayerStat> chosenRitualSuccessRequirements = existingRitualStories
-                        .getRitualOptions().stream().filter(ritualOption ->
+                        .getOptions().stream().filter(ritualOption ->
                                 ritualOption.getOptionId().equals(chosenRitualOption.getOptionId()))
                         .findFirst().get().getPlayerStatDCs();
 
@@ -56,17 +56,17 @@ public class RitualHelper {
                         chosenRitualOption.getSelectedByPlayerId()
                 );
 
-                RitualOption updatedOption = determineWhetherPlayerSucceeded(chosenRitualOption, chosenPlayer, chosenRitualSuccessRequirements);
+                Option updatedOption = determineWhetherPlayerSucceeded(chosenRitualOption, chosenPlayer, chosenRitualSuccessRequirements);
 
-                ritualStory.setRitualOptions(Arrays.asList(updatedOption));
+                ritualStory.setOptions(Arrays.asList(updatedOption));
             }
         }
 
         return this.ritualDAO.selectJob(ritualStory);
     }
 
-    private RitualOption determineWhetherPlayerSucceeded(RitualOption chosenRitualOption, Player chosenPlayer, List<PlayerStat> ritualDCs) {
-        RitualOption updatedRitualOption = chosenRitualOption;
+    private Option determineWhetherPlayerSucceeded(Option chosenRitualOption, Player chosenPlayer, List<PlayerStat> ritualDCs) {
+        Option updatedRitualOption = chosenRitualOption;
         for (PlayerStat ritualDC : ritualDCs) {
             int playerStatValue = chosenPlayer.getPlayerStats().stream().filter(playerStat
                     -> playerStat.getStatType().getId().equals(ritualDC.getStatType().getId())).findFirst()

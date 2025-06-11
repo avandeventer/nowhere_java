@@ -107,9 +107,9 @@ public class GameSessionHelper {
 
                     int totalRitualFavor = existingSession
                             .getAdventureMap()
-                            .getRitual().getRitualOptions()
+                            .getRitual().getOptions()
                             .stream()
-                            .mapToInt(RitualOption::getPointsRewarded)
+                            .mapToInt(Option::getPointsRewarded)
                             .sum();
 
                     boolean didWeSucceed = totalPlayerFavor + totalRitualFavor > (12 * players.size());
@@ -143,7 +143,7 @@ public class GameSessionHelper {
                         );
 
                         authorEnding.setAssociatedStories(storiesPlayedByPlayer);
-                        RitualOption ritualOption = ritualDAO.getRitualJob(gameSession.getGameCode(), playerId);
+                        Option ritualOption = ritualDAO.getRitualJob(gameSession.getGameCode(), playerId);
                         authorEnding.setAssociatedRitualOption(ritualOption);
                         authorEnding.setDidWeSucceed(gameSession.getDidWeSucceed());
                         authorEndings.add(authorEnding);
