@@ -2,6 +2,7 @@ package client.nowhere.model;
 
 import client.nowhere.constants.AuthorConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,8 @@ public class Story {
     private boolean sequelStory;
     private boolean saveGameStory;
     private List<Option> options;
+
+    @JsonIgnore
     private List<Option> ritualOptions;
     private Location location;
     private String optionType;
@@ -247,14 +250,15 @@ public class Story {
         this.saveGameStory = saveGameStory;
     }
 
+    @JsonProperty
+    public void setRitualOptions(List<Option> ritualOptions) {
+        this.ritualOptions = ritualOptions;
+    }
+
     //Temporary to correctly deserialize from the old RitualStory object
     @JsonIgnore
     public List<Option> getRitualOptions() {
         return ritualOptions;
-    }
-
-    public void setRitualOptions(List<Option> ritualOptions) {
-        this.ritualOptions = ritualOptions;
     }
 
     //Temporary to correctly deserialize from the old RitualStory object

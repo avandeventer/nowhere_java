@@ -184,10 +184,6 @@ public class Option {
         this.playerStatDCs = playerStatDCs;
     }
 
-    public void setPlayerStatDC(List<PlayerStat> playerStatDCs) {
-        this.playerStatDCs = playerStatDCs;
-    }
-
     public Stat getStatRequirement() {
         return statRequirement;
     }

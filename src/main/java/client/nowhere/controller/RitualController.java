@@ -25,7 +25,7 @@ public class RitualController {
 
     @PutMapping("/ritual")
     @ResponseBody
-    public Option update(@RequestBody Story ritualStory) {
+        public Option update(@RequestBody Story ritualStory) {
         return ritualHelper.update(ritualStory);
     }
 }
