@@ -19,6 +19,14 @@ public class Story {
     private String prequelStoryId = "";
     private String prequelStorySelectedOptionId = "";
     private String gameCode = "";
+
+    //Temporary player variables
+    private boolean visited = false;
+    private String playerId = "";
+    private String selectedOptionId = "";
+    private boolean playerSucceeded = false;
+    private String prequelStoryPlayerId = "";
+
     private List<Repercussion> successRepercussions;
     private List<Repercussion> failureRepercussions;
     private List<String> prequelOutcomeDisplay;
@@ -30,13 +38,6 @@ public class Story {
     private List<Option> ritualOptions;
     private Location location;
     private String optionType;
-
-    //Temporary player variables
-    private boolean visited = false;
-    private String playerId = "";
-    private String selectedOptionId = "";
-    private boolean playerSucceeded = false;
-    private String prequelStoryPlayerId = "";
 
     public Story () {
         this.storyId = UUID.randomUUID().toString();
