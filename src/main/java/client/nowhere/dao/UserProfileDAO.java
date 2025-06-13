@@ -173,7 +173,7 @@ public class UserProfileDAO {
                 .collect(Collectors.toList());
     }
 
-    public List<Story> getRegularSaveGameStories(GameSession gameSession, int locationId) {
+    public List<Story> getRegularSaveGameStories(GameSession gameSession, String locationId) {
         String userProfileId = gameSession.getUserProfileId();
         String adventureId = gameSession.getAdventureMap().getAdventureId();
         String saveGameId = gameSession.getSaveGameId();
@@ -189,7 +189,7 @@ public class UserProfileDAO {
                 .map(Story::getStoryId)
                 .collect(Collectors.toList());
 
-        return saveGameStories.stream().filter(story -> locationId == story.getLocation().getLocationId()
+        return saveGameStories.stream().filter(story -> locationId.equals(story.getLocation().getId())
                 && story.getPrequelStoryId().isBlank()
                 && !allGameSessionStoryIds.contains(story.getStoryId()))
                 .collect(Collectors.toList());

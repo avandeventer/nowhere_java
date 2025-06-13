@@ -205,7 +205,7 @@ public class StoryDAO {
         return outcomeAuthorStories;
     }
 
-    public List<Story> getPlayerStories(String gameCode, String playerId, int locationId) {
+    public List<Story> getPlayerStories(String gameCode, String playerId, String locationId) {
         List<Story> playerStories;
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
@@ -221,11 +221,11 @@ public class StoryDAO {
         return playerStories;
     }
 
-    private boolean wasNotWrittenByPlayer(String playerId, int locationId, Story story) {
+    private boolean wasNotWrittenByPlayer(String playerId, String locationId, Story story) {
         return !story.getAuthorId().equals(playerId)
                 && !story.getOutcomeAuthorId().equals(playerId)
                 && (story.getLocation() != null
-                && story.getLocation().getLocationId() == locationId)
+                && story.getLocation().getId().equals(locationId))
                 && story.getPlayerId().isEmpty()
                 && story.getPrequelStoryPlayerId().isEmpty();
     }

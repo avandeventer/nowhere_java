@@ -43,7 +43,9 @@ public class Story {
         this.storyId = UUID.randomUUID().toString();
         if(this.location != null) {
             AdventureMap adventureMap = new AdventureMap();
-            this.location = adventureMap.getLocations().get(location.getLocationId());
+            this.location = adventureMap.getLocations().stream()
+                    .filter(defaultLocation -> defaultLocation.getId()
+                            .equals(location.getId())).findFirst().get();
         }
     }
 
