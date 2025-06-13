@@ -47,7 +47,7 @@ public class AdventureMapDAO {
 
     public AdventureMap createAdventureMap(AdventureMap adventureMap) {
         try {
-            DocumentReference globalAdventureMapRef = db.collection("stories").document(adventureMap.getAdventureId());
+            DocumentReference globalAdventureMapRef = db.collection("maps").document(adventureMap.getAdventureId());
             ApiFuture<WriteResult> result = globalAdventureMapRef.set(adventureMap);
             WriteResult asyncResponse = result.get();
             System.out.println("Update time : " + result.get().toString());

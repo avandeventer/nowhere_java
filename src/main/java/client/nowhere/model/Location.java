@@ -19,8 +19,11 @@ public class Location {
 
     public Location () {}
 
-    public Location(String locationName, int locationId, List<Option> options, String label, String iconDirectory) {
-        this.id = UUID.randomUUID().toString();
+    public Location(String locationName, int locationId, String id, List<Option> options, String label, String iconDirectory) {
+        this.id = id;
+        if (id.isEmpty()){
+            this.id = UUID.randomUUID().toString();
+        }
         this.locationName = locationName;
         this.locationId = locationId;
         this.options = options;
@@ -40,15 +43,16 @@ public class Location {
         this.id = id;
     }
 
-//    @JsonIgnore
-//    public int getLocationId() {
-//        return locationId;
-//    }
-//
-//    @JsonProperty
-//    public void setLocationId(int locationId) {
-//        this.locationId = locationId;
-//    }
+    @JsonIgnore
+    public int getLocationId() {
+        return locationId;
+    }
+
+    @JsonProperty
+    public void setLocationId(int locationId) {
+        this.locationId = locationId;
+    }
+
 
     public String getLocationName() {
         return locationName;

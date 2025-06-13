@@ -172,7 +172,7 @@ class StoryHelperTest {
         if (regularSaveGameStories.size() > 0) {
             verify(userProfileDAO).getRegularSaveGameStories(mockGameSession, locationId);
         }
-        assertEquals(1, result.getLocation().getId());
+        assertEquals("1", result.getLocation().getId());
         List<Story> expectedUpdatedStories = new ArrayList<>(gameSessionStories);
         expectedUpdatedStories.add(result);
         verify(gameSessionDAO).updateStoriesInTransaction(eq(gameCode), eq(expectedUpdatedStories), any());
