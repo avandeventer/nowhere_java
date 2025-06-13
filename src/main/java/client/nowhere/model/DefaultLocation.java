@@ -5,25 +5,27 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public enum DefaultLocation {
-    TAVERN( "Tavern",
+    TAVERN( "0",
+            "Tavern",
             Arrays.asList(
-            new Option(
-                    "Drink",
-                    "You spend the week drinking. You gain some friends and build a tolerance.",
-                    Arrays.asList(
-                            new OutcomeStat(new PlayerStat(Stat.STRENGTH.getStatType(), 1)),
-                            new OutcomeStat(new PlayerStat(Stat.CHARISMA.getStatType(), 1))
-                    )),
-            new Option(
-                    "Bartend",
-                    "You spend the week serving mead. You are charming and are tipped well!",
-                    Arrays.asList(
-                            new OutcomeStat(new PlayerStat(Stat.CHARISMA.getStatType(), 1)),
-                            new OutcomeStat(new PlayerStat(Stat.WEALTH.getStatType(), 1))
-                    ))
+                new Option(
+                        "Drink",
+                        "You spend the week drinking. You gain some friends and build a tolerance.",
+                        Arrays.asList(
+                                new OutcomeStat(new PlayerStat(Stat.STRENGTH.getStatType(), 1)),
+                                new OutcomeStat(new PlayerStat(Stat.CHARISMA.getStatType(), 1))
+                        )),
+                new Option(
+                        "Bartend",
+                        "You spend the week serving mead. You are charming and are tipped well!",
+                        Arrays.asList(
+                                new OutcomeStat(new PlayerStat(Stat.CHARISMA.getStatType(), 1)),
+                                new OutcomeStat(new PlayerStat(Stat.WEALTH.getStatType(), 1))
+                        ))
             ),
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
-    ),TOWN_SQUARE("Town Square",
+    ),TOWN_SQUARE("1",
+            "Town Square",
             Arrays.asList(
                     new Option(
                             "Perform",
@@ -42,7 +44,8 @@ public enum DefaultLocation {
             ),
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
-    APOTHECARY("Apothecary",
+    APOTHECARY("2",
+            "Apothecary",
             Arrays.asList(
                     new Option(
                             "Apprentice",
@@ -62,7 +65,8 @@ public enum DefaultLocation {
             ),
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
-    THE_WILDS("Wilds",
+    THE_WILDS("3",
+            "Wilds",
             Arrays.asList(
                     new Option(
                             "Adventure",
@@ -81,7 +85,8 @@ public enum DefaultLocation {
             ),
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
-    RITUAL_GROUNDS("Ritual Grounds",
+    RITUAL_GROUNDS("4",
+            "Ritual Grounds",
             Arrays.asList(
                     new Option(
                             "Pray",
@@ -100,7 +105,8 @@ public enum DefaultLocation {
             ),
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
-    DISCUSSION_PARLOR("Discussion Parlor",
+    DISCUSSION_PARLOR("5",
+            "Discussion Parlor",
             Arrays.asList(
                     new Option(
                             "Hold a Debate",
@@ -119,7 +125,8 @@ public enum DefaultLocation {
             ),
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     ),
-    FARMLANDS("Farmlands",
+    FARMLANDS("6",
+            "Farmlands",
             Arrays.asList(
                     new Option(
                             "Till the Earth",
@@ -139,14 +146,20 @@ public enum DefaultLocation {
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
     );
 
+    private final String id;
     private final String label;
     private final String iconDirectory;
     private final List<Option> defaultOptions;
 
-    DefaultLocation(String label, List<Option> defaultOptions, String iconDirectory) {
+    DefaultLocation(String id, String label, List<Option> defaultOptions, String iconDirectory) {
+        this.id = id;
         this.label = label;
         this.defaultOptions = defaultOptions;
         this.iconDirectory = iconDirectory;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public List<Option> getDefaultOptions() {

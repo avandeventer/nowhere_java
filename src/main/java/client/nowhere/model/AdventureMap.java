@@ -17,10 +17,8 @@ public class AdventureMap {
         this.adventureId = "a6a6e1ab-de29-4ffb-9028-7c4f90f9d008";
 
         this.locations = new ArrayList<>();
-        int locationId = 0;
         for(DefaultLocation location : DefaultLocation.values()) {
-            Location townLocale = new Location(location.name(), locationId, location.getDefaultOptions(), location.getLabel(), location.getIconDirectory());
-            locationId++;
+            Location townLocale = new Location(location.name(), location.getId(), location.getDefaultOptions(), location.getLabel(), location.getIconDirectory());
             this.locations.add(townLocale);
         }
 

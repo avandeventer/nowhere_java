@@ -49,7 +49,7 @@ public class StoryHelper {
         return storyDAO.getAuthorStoriesByStoryId(gameCode, storyId);
     }
 
-    public Story storePlayerStory(String gameCode, String playerId, int locationId) {
+    public Story storePlayerStory(String gameCode, String playerId, String locationId) {
         return gameSessionDAO.runInTransaction(txn -> {
             Story playerStory = null;
             GameSession gameSession = gameSessionDAO.getGameInTransaction(gameCode, txn);
@@ -80,10 +80,10 @@ public class StoryHelper {
         });
     }
 
-    private Story createNewPlayerStory(String gameCode, int locationId, GameSession gameSession, String playerId) {
+    private Story createNewPlayerStory(String gameCode, String locationId, GameSession gameSession, String playerId) {
         Optional<Location> location = gameSession.getAdventureMap().getLocations().stream().filter(
                 gameSessionLocation ->
-                        gameSessionLocation.getLocationId() == locationId).findFirst();
+                        gameSessionLocation.getLocationId().equals(locationId)).findFirst();
 
         if (location.isEmpty()) {
             throw new ResourceException("A location at " + locationId + " does not exist.");
@@ -115,7 +115,7 @@ public class StoryHelper {
         return playerStory;
     }
 
-    private Optional<Story> getPrequelStory(int locationId, String playerId, List<Story> playedStories) {
+    private Optional<Story> getPrequelStory(String locationId, String playerId, List<Story> playedStories) {
         Random rand = new Random();
         int coinFlip = rand.nextInt(3);
         boolean getSequel = coinFlip > 0;
@@ -152,13 +152,13 @@ public class StoryHelper {
                 .findFirst();
     }
 
-    private Optional<Story> findLocationMatch(List<Story> stories, int locationId, String playerId) {
+    private Optional<Story> findLocationMatch(List<Story> stories, String locationId, String playerId) {
         return stories.stream()
-                .filter(story -> story.getLocation().getLocationId() == locationId)
+                .filter(story -> story.getLocation().getLocationId().equals(locationId))
                 .findFirst();
     }
 
-    public Story getSaveGameStoryForPlayer(String gameCode, String playerId, int locationId, GameSession gameSession) {
+    public Story getSaveGameStoryForPlayer(String gameCode, String playerId, String locationId, GameSession gameSession) {
         Story selectedStory = getSequelSaveGameStory(gameSession, playerId, locationId);
 
         if (selectedStory == null) {
@@ -172,7 +172,7 @@ public class StoryHelper {
         return selectedStory;
     }
 
-    private Story getRegularSaveGameStory(String gameCode, int locationId, GameSession gameSession) {
+    private Story getRegularSaveGameStory(String gameCode, String locationId, GameSession gameSession) {
         List<Story> saveGameStories = userProfileDAO.getRegularSaveGameStories(gameSession, locationId);
 
         Story selectedSaveGameStory = null;
@@ -185,7 +185,7 @@ public class StoryHelper {
         return selectedSaveGameStory;
     }
 
-    public Story getSequelSaveGameStory(GameSession gameSession, String playerId, int locationId) {
+    public Story getSequelSaveGameStory(GameSession gameSession, String playerId, String locationId) {
         String userProfileId = gameSession.getUserProfileId();
         String adventureId = gameSession.getAdventureMap().getAdventureId();
         String saveGameId = gameSession.getSaveGameId();
@@ -218,7 +218,7 @@ public class StoryHelper {
         return selectedSequelStory;
     }
 
-    private Story getSaveGameLocationSequelStory(int locationId, List<Story> saveGameSequelStories, List<String> allGameSessionStoryIds) {
+    private Story getSaveGameLocationSequelStory(String locationId, List<Story> saveGameSequelStories, List<String> allGameSessionStoryIds) {
         Story selectedSequelStory = null;
         List<Story> locationSequels = saveGameSequelStories.stream()
                 .filter(saveGameSequelStory -> isLocationSequelRelevantToThisPlayer(locationId, saveGameSequelStory, allGameSessionStoryIds))
@@ -233,7 +233,7 @@ public class StoryHelper {
         return selectedSequelStory;
     }
 
-    private Story getSaveGamePlayerSequelStory(GameSession gameSession, String playerId, List<Story> saveGameSequelStories, List<String> allGameSessionStoryIds, int locationId) {
+    private Story getSaveGamePlayerSequelStory(GameSession gameSession, String playerId, List<Story> saveGameSequelStories, List<String> allGameSessionStoryIds, String locationId) {
         List<String> playerVisitedStoryIds = gameSession.getStories().stream()
                 .filter(gameSessionStory -> isVisitedByPlayer(playerId, gameSessionStory))
                 .map(Story::getStoryId)
@@ -246,7 +246,7 @@ public class StoryHelper {
         Story selectedSequelStory = sequels.size() > 0 ? sequels.get(0) : null;
         if (selectedSequelStory != null) {
             Optional<Location> locationOptional = gameSession.getAdventureMap()
-                    .getLocations().stream().filter(existingLocation -> existingLocation.getLocationId() == locationId)
+                    .getLocations().stream().filter(existingLocation -> existingLocation.getLocationId().equals(locationId))
                     .findFirst();
 
             locationOptional.ifPresent(selectedSequelStory::setLocation);
@@ -291,12 +291,12 @@ public class StoryHelper {
         return isASequelForThisPlayer;
     }
 
-    private boolean isLocationSequelRelevantToThisPlayer(int locationId, Story saveGameSequelStory, List<String> existingGameSessionStoryIds) {
+    private boolean isLocationSequelRelevantToThisPlayer(String locationId, Story saveGameSequelStory, List<String> existingGameSessionStoryIds) {
         if (existingGameSessionStoryIds.contains(saveGameSequelStory.getStoryId())) {
             return false;
         }
 
-        boolean isASequelForThisLocation = saveGameSequelStory.getLocation() != null && saveGameSequelStory.getLocation().getLocationId() == locationId;
+        boolean isASequelForThisLocation = saveGameSequelStory.getLocation() != null && saveGameSequelStory.getLocation().getLocationId().equals(locationId);
         return isASequelForThisLocation;
     }
 

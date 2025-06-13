@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class Location {
 
-    private int locationId;
+    private String locationId;
     private String locationName;
     private String label;
     private List<Option> options;
@@ -13,7 +13,7 @@ public class Location {
 
     public Location () {}
 
-    public Location(String locationName, int locationId, List<Option> options, String label, String iconDirectory) {
+    public Location(String locationName, String locationId, List<Option> options, String label, String iconDirectory) {
         this.locationName = locationName;
         this.locationId = locationId;
         this.options = options;
@@ -21,11 +21,11 @@ public class Location {
         this.iconDirectory = iconDirectory;
     }
 
-    public int getLocationId() {
+    public String getLocationId() {
         return locationId;
     }
 
-    public void setLocationId(int locationId) {
+    public void setLocationId(String locationId) {
         this.locationId = locationId;
     }
 
