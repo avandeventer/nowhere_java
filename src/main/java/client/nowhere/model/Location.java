@@ -9,7 +9,6 @@ import java.util.UUID;
 
 public class Location {
 
-    @JsonIgnore
     private int locationId;
     private String id;
     private String locationName;
@@ -43,12 +42,10 @@ public class Location {
         this.id = id;
     }
 
-    @JsonIgnore
     public int getLocationId() {
         return locationId;
     }
 
-    @JsonProperty
     public void setLocationId(int locationId) {
         this.locationId = locationId;
     }
