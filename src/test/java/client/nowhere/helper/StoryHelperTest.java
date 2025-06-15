@@ -52,7 +52,7 @@ class StoryHelperTest {
     void testGetPlayerStory_whenNoSequelOrPlayerOrGlobalStories_createsDefaultStory() {
         String gameCode = "GAME123";
         String playerId = "PLAYER123";
-        String locationId = "1";
+        int locationId = 1;
 
         GameSession mockGameSession = new GameSession(gameCode);
         mockGameSession.setUserProfileId("USER_PROFILE_ID");
@@ -96,7 +96,7 @@ class StoryHelperTest {
         // Arrange
         String gameCode = "GAME123";
         String playerId = "PLAYER123";
-        String locationId = "1";
+        int locationId = 1;
 
         GameSession mockGameSession = new GameSession(gameCode);
         mockGameSession.setUserProfileId("USER_PROFILE_ID");
@@ -311,7 +311,7 @@ class StoryHelperTest {
 
     private static Story createRegularSaveGameStory(int locationId) {
         AdventureMap adventureMap = new AdventureMap();
-        Location defaultLocation = adventureMap.getLocations().stream().filter(location -> location.getLocationId().equals(locationId)).findFirst().get();
+        Location defaultLocation = adventureMap.getLocations().stream().filter(location -> location.getLocationId() == locationId).findFirst().get();
         Story story = new Story();
         story.setStoryId("REGULAR_SAVE_GAME");
         story.setLocation(defaultLocation);

@@ -56,7 +56,7 @@ public class StoryController {
     public Story getPlayerStories(
             @RequestParam String gameCode,
             @RequestParam String playerId,
-            @RequestParam String locationId) {
+            @RequestParam int locationId) {
         if(gameCode == null || playerId == null) {
             throw new IllegalArgumentException("Either gameCode or playerId must be provided.");
         }
