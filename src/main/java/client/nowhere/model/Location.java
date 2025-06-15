@@ -10,6 +10,7 @@ import java.util.UUID;
 public class Location {
 
     private int locationId;
+    private int locationIndex;
     private String id;
     private String locationName;
     private String label;
@@ -81,6 +82,14 @@ public class Location {
 
     public void setIconDirectory(String iconDirectory) {
         this.iconDirectory = iconDirectory;
+    }
+
+    public int getLocationIndex() {
+        return locationIndex;
+    }
+
+    public void setLocationIndex(int locationIndex) {
+        this.locationIndex = locationIndex;
     }
 
     @Override
