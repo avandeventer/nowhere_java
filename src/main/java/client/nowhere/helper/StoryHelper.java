@@ -296,7 +296,9 @@ public class StoryHelper {
             return false;
         }
 
-        boolean isASequelForThisLocation = saveGameSequelStory.getLocation() != null && saveGameSequelStory.getLocation().getId().equals(locationId);
+        boolean isASequelForThisLocation = saveGameSequelStory.getLocation() != null
+                && saveGameSequelStory.getLocation().getId() != null
+                && saveGameSequelStory.getLocation().getId().equals(locationId);
         return isASequelForThisLocation;
     }
 
