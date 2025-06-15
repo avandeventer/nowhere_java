@@ -25,4 +25,11 @@ public class AdventureMapHelper {
     public GameSessionDisplay getGameSessionDisplay(String gameCode) {
         return this.adventureMapDAO.getGameSessionDisplay(gameCode);
     }
+
+    public AdventureMap create(AdventureMap adventureMap) {
+        if (adventureMap.getAdventureId() == null || adventureMap.getAdventureId().isEmpty()) {
+            adventureMap = new AdventureMap();
+        }
+        return this.adventureMapDAO.createAdventureMap(adventureMap);
+    }
 }

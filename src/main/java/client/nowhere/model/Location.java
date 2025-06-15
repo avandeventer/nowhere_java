@@ -1,11 +1,16 @@
 package client.nowhere.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Location {
 
     private int locationId;
+    private String id;
     private String locationName;
     private String label;
     private List<Option> options;
@@ -13,12 +18,28 @@ public class Location {
 
     public Location () {}
 
-    public Location(String locationName, int locationId, List<Option> options, String label, String iconDirectory) {
+    public Location(String locationName, int locationId, String id, List<Option> options, String label, String iconDirectory) {
+        this.id = id;
+        if (id.isEmpty()){
+            this.id = UUID.randomUUID().toString();
+        }
         this.locationName = locationName;
         this.locationId = locationId;
         this.options = options;
         this.label = label;
         this.iconDirectory = iconDirectory;
+    }
+
+    public String getId() {
+        if (id == null && locationId != 0) {
+            return Integer.toString(locationId);
+        }
+
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int getLocationId() {
@@ -28,6 +49,7 @@ public class Location {
     public void setLocationId(int locationId) {
         this.locationId = locationId;
     }
+
 
     public String getLocationName() {
         return locationName;

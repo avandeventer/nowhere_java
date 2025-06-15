@@ -3,6 +3,8 @@ package client.nowhere.model;
 public class GameSessionDisplay {
     String mapDescription;
     String goalDescription;
+    String playerTitle;
+    String playerDescription;
     String endingDescription;
     String successText;
     String neutralText;
@@ -60,4 +62,27 @@ public class GameSessionDisplay {
         this.goalDescription = goalDescription;
     }
 
+    public String getPlayerTitle() {
+        return playerTitle;
+    }
+
+    public void setPlayerTitle(String playerTitle) {
+        this.playerTitle = playerTitle;
+    }
+
+    public String getPlayerDescription() {
+        return playerDescription;
+    }
+
+    public void setPlayerDescription(String playerDescription) {
+        this.playerDescription = playerDescription;
+    }
+
+    public String getEndingDescription() {
+        return endingDescription;
+    }
+
+    public void setEndingDescription(String endingDescription) {
+        this.endingDescription = endingDescription;
+    }
 }

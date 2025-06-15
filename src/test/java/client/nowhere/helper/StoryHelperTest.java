@@ -52,7 +52,7 @@ class StoryHelperTest {
     void testGetPlayerStory_whenNoSequelOrPlayerOrGlobalStories_createsDefaultStory() {
         String gameCode = "GAME123";
         String playerId = "PLAYER123";
-        int locationId = 1;
+        String locationId = "1";
 
         GameSession mockGameSession = new GameSession(gameCode);
         mockGameSession.setUserProfileId("USER_PROFILE_ID");
@@ -75,7 +75,7 @@ class StoryHelperTest {
 
         assertNotNull(result);
         assertEquals(gameCode, result.getGameCode());
-        assertEquals(locationId, result.getLocation().getLocationId());
+        assertEquals(locationId, result.getLocation().getId());
 
         List<Story> expectedUpdatedStories = mockGameSession.getStories();
         expectedUpdatedStories.add(result);
@@ -96,7 +96,7 @@ class StoryHelperTest {
         // Arrange
         String gameCode = "GAME123";
         String playerId = "PLAYER123";
-        int locationId = 1;
+        String locationId = "1";
 
         GameSession mockGameSession = new GameSession(gameCode);
         mockGameSession.setUserProfileId("USER_PROFILE_ID");
@@ -172,7 +172,7 @@ class StoryHelperTest {
         if (regularSaveGameStories.size() > 0) {
             verify(userProfileDAO).getRegularSaveGameStories(mockGameSession, locationId);
         }
-        assertEquals(1, result.getLocation().getLocationId());
+        assertEquals("1", result.getLocation().getId());
         List<Story> expectedUpdatedStories = new ArrayList<>(gameSessionStories);
         expectedUpdatedStories.add(result);
         verify(gameSessionDAO).updateStoriesInTransaction(eq(gameCode), eq(expectedUpdatedStories), any());
@@ -256,7 +256,7 @@ class StoryHelperTest {
                         List.of(),
                         "REGULAR_SAVE_GAME",
                         true,
-                        List.of(createRegularSaveGameStory(1), createRegularSaveGameStory(1)),
+                        List.of(createRegularSaveGameStory("1"), createRegularSaveGameStory("1")),
                         false,
                         false
                 ),
@@ -309,9 +309,9 @@ class StoryHelperTest {
         return Arrays.asList(stories);
     }
 
-    private static Story createRegularSaveGameStory(int locationId) {
+    private static Story createRegularSaveGameStory(String locationId) {
         AdventureMap adventureMap = new AdventureMap();
-        Location defaultLocation = adventureMap.getLocations().stream().filter(location -> location.getLocationId() == locationId).findFirst().get();
+        Location defaultLocation = adventureMap.getLocations().stream().filter(location -> location.getId().equals(locationId)).findFirst().get();
         Story story = new Story();
         story.setStoryId("REGULAR_SAVE_GAME");
         story.setLocation(defaultLocation);

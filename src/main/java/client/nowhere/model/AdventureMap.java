@@ -19,7 +19,7 @@ public class AdventureMap {
         this.locations = new ArrayList<>();
         int locationId = 0;
         for(DefaultLocation location : DefaultLocation.values()) {
-            Location townLocale = new Location(location.name(), locationId, location.getDefaultOptions(), location.getLabel(), location.getIconDirectory());
+            Location townLocale = new Location(location.name(), locationId, Integer.toString(locationId), location.getDefaultOptions(), location.getLabel(), location.getIconDirectory());
             locationId++;
             this.locations.add(townLocale);
         }
@@ -93,6 +93,10 @@ public class AdventureMap {
                 "The ritual at the end of the season will determine whether we will live or die this year. Those who are invested in the well-being of our little hamlet will make choices that please Erysus, but there will still be those among us who choose frivolity.",
                 "Behold! The harvest ritual arrives! Have you prepared appropriately? Choose how you believe you can best impress Erysus."
         );
+
+        gameSessionDisplay.playerTitle = "The Nobodies";
+        gameSessionDisplay.playerDescription = "We are the inhabitants of a small farming village. We spend our days toiling in the fields in hopes of a fruitful season for our children and the nights praying to Erysus. We are devout followers of a God who annually appears to demand that we perform her rites.";
+
         gameSessionDisplay.successText = "And so the ritual lasted long into the night just as it always does. All of the citizens of our little hamlet in the middle of Nowhere did their best to impress Erysus lest she deliver a season where they could provide for their families. " +
                 "After a night of colors and feasting and prayer, we awaken to fields abundant with new sprouts. The winter has ended and Erysus has looked kindly upon us. " +
                 "We hug and we cry and we begin to work again once more in the fields and those among us who believe set upon their task of preparing to pray again next year before the god who sees our faith and shows us mercy. The almighty Erysus!";
