@@ -1,9 +1,7 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.AdventureMapHelper;
-import client.nowhere.model.AdventureMap;
-import client.nowhere.model.GameSessionDisplay;
-import client.nowhere.model.Location;
+import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +20,7 @@ public class AdventureMapController {
 
     @GetMapping("/location")
     @ResponseBody
-    public List<Location> get(@RequestParam String gameCode) {
+    public List<Location> getLocation(@RequestParam String gameCode) {
         return this.adventureMapHelper.getGameLocations(gameCode);
     }
 
@@ -35,6 +33,18 @@ public class AdventureMapController {
     @PostMapping("/adventure-map")
     @ResponseBody
     public AdventureMap post(@RequestBody AdventureMap adventureMap) {
-        return this.adventureMapHelper.create(adventureMap);
+        return this.adventureMapHelper.createGlobal(adventureMap);
+    }
+
+    @PutMapping("/adventure-map")
+    @ResponseBody
+    public AdventureMap update(@RequestBody AdventureMap adventureMap) {
+        return this.adventureMapHelper.updateGlobal(adventureMap);
+    }
+
+    @GetMapping("/adventure-map")
+    @ResponseBody
+    public AdventureMap get(@RequestParam String adventureId) {
+        return this.adventureMapHelper.getGlobal(adventureId);
     }
 }

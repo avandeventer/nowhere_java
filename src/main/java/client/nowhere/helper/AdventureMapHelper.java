@@ -1,9 +1,7 @@
 package client.nowhere.helper;
 
 import client.nowhere.dao.AdventureMapDAO;
-import client.nowhere.model.AdventureMap;
-import client.nowhere.model.GameSessionDisplay;
-import client.nowhere.model.Location;
+import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,10 +24,44 @@ public class AdventureMapHelper {
         return this.adventureMapDAO.getGameSessionDisplay(gameCode);
     }
 
-    public AdventureMap create(AdventureMap adventureMap) {
+    //Global Adventure Map Functions
+    public AdventureMap createGlobal(AdventureMap adventureMap) {
         if (adventureMap.getAdventureId() == null || adventureMap.getAdventureId().isEmpty()) {
             adventureMap = new AdventureMap();
         }
-        return this.adventureMapDAO.createAdventureMap(adventureMap);
+        return this.adventureMapDAO.createGlobal(adventureMap);
+    }
+
+    public AdventureMap getGlobal(String adventureId) {
+        return this.adventureMapDAO.getGlobal(adventureId);
+    }
+
+    public AdventureMap updateGlobal(AdventureMap adventureMap) {
+        return this.adventureMapDAO.updateGlobal(adventureMap);
+    }
+
+    //User Profile Adventure Map Functions
+    public AdventureMap updateGameSessionDisplay(String userProfileId, AdventureMap adventureMap) {
+        return this.adventureMapDAO.updateGameSessionDisplay(userProfileId, adventureMap);
+    }
+
+    public AdventureMap addLocation(String userProfileId, String adventureId, Location location) {
+        return this.adventureMapDAO.addLocation(userProfileId, adventureId, location);
+    }
+
+    public AdventureMap addStatType(String userProfileId, String adventureId, StatType statType) {
+        return this.adventureMapDAO.addStatType(userProfileId, adventureId, statType);
+    }
+
+    public AdventureMap addRitualOption(String userProfileId, String adventureId, Option option) {
+        return this.adventureMapDAO.addRitualOption(userProfileId, adventureId, option);
+    }
+
+    public AdventureMap get(String userProfileId, String adventureId) {
+        return this.adventureMapDAO.get(userProfileId, adventureId);
+    }
+
+    public AdventureMap create(String userProfileId, AdventureMap adventureMap) {
+        return this.adventureMapDAO.create(userProfileId, adventureMap);
     }
 }

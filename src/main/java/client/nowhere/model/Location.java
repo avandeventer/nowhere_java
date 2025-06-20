@@ -10,6 +10,7 @@ import java.util.UUID;
 public class Location {
 
     private int locationId;
+    private String description;
     private int locationIndex;
     private String id;
     private String locationName;
@@ -17,10 +18,13 @@ public class Location {
     private List<Option> options;
     private String iconDirectory;
 
-    public Location () {}
+    public Location () {
+        this.id = UUID.randomUUID().toString();
+    }
 
-    public Location(String locationName, int locationId, String id, List<Option> options, String label, String iconDirectory) {
+    public Location(String locationName, String description, int locationId, String id, List<Option> options, String label, String iconDirectory) {
         this.id = id;
+        this.description = description;
         if (id.isEmpty()){
             this.id = UUID.randomUUID().toString();
         }
@@ -90,6 +94,14 @@ public class Location {
 
     public void setLocationIndex(int locationIndex) {
         this.locationIndex = locationIndex;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

@@ -41,6 +41,21 @@ public class FirestoreDAOUtil {
         }
     }
 
+    public static <T> T mapDatabaseObject(DocumentReference documentReference, Class<T> documentObject) {
+        ApiFuture<DocumentSnapshot> future = documentReference.get();
+
+        try {
+            DocumentSnapshot document = future.get();
+            if (!document.exists()) {
+                throw new ResourceException("Document does not exist");
+            }
+
+            return document.toObject(documentObject);
+        } catch (InterruptedException | ExecutionException exception) {
+            throw new ResourceException("There was an issue retrieving this document");
+        }
+    }
+
     static DocumentSnapshot getGameSession(DocumentReference gameSessionRef) throws InterruptedException, ExecutionException {
         ApiFuture<DocumentSnapshot> future = gameSessionRef.get();
         DocumentSnapshot document = future.get();

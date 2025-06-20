@@ -10,7 +10,16 @@ public class GameSessionDisplay {
     String neutralText;
     String failureText;
 
-    public GameSessionDisplay() { }
+    public GameSessionDisplay() {
+        this.mapDescription = "";
+        this.goalDescription = "";
+        this.playerTitle = "";
+        this.playerDescription = "";
+        this.endingDescription = "";
+        this.successText = "";
+        this.neutralText = "";
+        this.failureText = "";
+    }
 
     public GameSessionDisplay(
             String mapDescription,

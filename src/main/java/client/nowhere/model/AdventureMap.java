@@ -3,6 +3,7 @@ package client.nowhere.model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class AdventureMap {
     String name;
@@ -13,24 +14,25 @@ public class AdventureMap {
     Story ritual;
 
     public AdventureMap() {
-        this.name = "Nowhere";
-        this.adventureId = "a6a6e1ab-de29-4ffb-9028-7c4f90f9d008";
+        this.name = "";
+        this.adventureId = UUID.randomUUID().toString();
 
         this.locations = new ArrayList<>();
-        int locationId = 0;
-        for(DefaultLocation location : DefaultLocation.values()) {
-            Location townLocale = new Location(location.name(), locationId, Integer.toString(locationId), location.getDefaultOptions(), location.getLabel(), location.getIconDirectory());
-            locationId++;
-            this.locations.add(townLocale);
-        }
+//        int locationId = 0;
+//        for(DefaultLocation location : DefaultLocation.values()) {
+//            Location townLocale = new Location(location.name(), location.getDescription(), locationId, Integer.toString(locationId), location.getDefaultOptions(), location.getLabel(), location.getIconDirectory());
+//            locationId++;
+//            this.locations.add(townLocale);
+//        }
 
-        generateDefaultGameSessionDisplay();
-        generateDefaultRitual();
+//        generateDefaultGameSessionDisplay();
+//        generateDefaultRitual();
+        this.ritual = new Story();
 
         this.statTypes = new ArrayList<>();
-        for (Stat defaultStat: Stat.values()) {
-            this.statTypes.add(defaultStat.getStatType());
-        }
+//        for (Stat defaultStat: Stat.values()) {
+//            this.statTypes.add(defaultStat.getStatType());
+//        }
     }
 
     public String getName() {
@@ -53,19 +55,19 @@ public class AdventureMap {
         List<Integer> statGradient = Arrays.asList(9, 6);
 
         List<Option> ritualOptions = Arrays.asList(
-                new Option("0", "Holder of the Chant", "You lead the rhythmic chants, setting the ritual's tone.", Arrays.asList(Stat.CHARISMA.getStatType(), Stat.STRENGTH.getStatType()), statGradient, "Your powerful voice resonates, guiding the ritual to new heights!", "Your voice wavers, and the chant loses its rhythm."),
-                new Option("1", "Lead Dancer", "You work to gather the other dancers around the pyre.", Arrays.asList(Stat.CHARISMA.getStatType(), Stat.DEXTERITY.getStatType()), statGradient, "Your sense of flow and natural athletic artistry spurs the town into a magnificent choreographed display!", "The other dancers appreciate your efforts, but there is only so many times you can step on other people's toes before they move on to other tasks."),
-                new Option("2", "Ceremony Herald", "You announce the phases of the ceremony with confidence.", Arrays.asList(Stat.CHARISMA.getStatType(), Stat.INTELLECT.getStatType()), statGradient, "Your eloquence ensures the ritual runs smoothly and inspires awe!", "Your words falter, and the crowd grows restless."),
-                new Option("3", "King of Fools", "You embrace chaos, playing the trickster within the ritual.", Arrays.asList(Stat.CHARISMA.getStatType(), Stat.WEALTH.getStatType()), statGradient, "Your antics bring unexpected wisdom through humor!", "Your jokes fall flat, and confusion ensues."),
-                new Option("4", "Seer", "You peer into the flames, divining the ritual's deeper meaning.", Arrays.asList(Stat.CHARISMA.getStatType(), Stat.MAGIC.getStatType()), statGradient, "A clear vision emerges, guiding the town's future.", "Your vision is clouded, leaving uncertainty."),
-                new Option("5", "Lord of Misrule", "You orchestrate playful disruption to challenge expectations.", Arrays.asList(Stat.DEXTERITY.getStatType(), Stat.INTELLECT.getStatType()), statGradient, "Your cunning and agility keep the ceremony lively!", "Your antics cause more chaos than intended."),
-                new Option("6", "Head of Ritual Consecration", "You ensure the sacred space is properly prepared.", Arrays.asList(Stat.DEXTERITY.getStatType(), Stat.WEALTH.getStatType()), statGradient, "The ritual ground radiates energy, amplifying the spellwork.", "The space remains mundane, the energy unshaped."),
-                new Option("7", "Spirit Walker", "You move between the seen and unseen, guiding the spirits.", Arrays.asList(Stat.DEXTERITY.getStatType(), Stat.MAGIC.getStatType()), statGradient, "You dance the border of worlds, bridging the realms.", "The spirits remain distant, their whispers unheard."),
-                new Option("8", "Fire Keeper", "You tend the sacred fire, ensuring its steady glow.", Arrays.asList(Stat.STRENGTH.getStatType(), Stat.INTELLECT.getStatType()), statGradient, "The flames blaze high, illuminating the ritual with power.", "The fire sputters, casting uncertain shadows."),
-                new Option("9", "Stone Circle Builder", "You work to place and empower the sacred stones.", Arrays.asList(Stat.STRENGTH.getStatType(), Stat.WEALTH.getStatType()), statGradient, "The stones resonate with energy, forming a potent circle.", "The placements feel unbalanced, weakening the ritual."),
-                new Option("10", "Rune Carver", "You inscribe sacred runes to channel energy.", Arrays.asList(Stat.STRENGTH.getStatType(), Stat.MAGIC.getStatType()), statGradient, "The runes glow with power, enhancing the ritual’s intent.", "The symbols lack clarity, and their power falters."),
-                new Option("11", "Feast Lord", "You oversee the sacred meal, ensuring offerings are honored.", Arrays.asList(Stat.INTELLECT.getStatType(), Stat.WEALTH.getStatType()), statGradient, "The feast is perfectly balanced, nourishing both body and spirit.", "The offerings feel lacking, diminishing the ritual’s blessing."),
-                new Option("12", "Erysus Evoker", "You call upon the presence of the god Erysus.", Arrays.asList(Stat.INTELLECT.getStatType(), Stat.MAGIC.getStatType()), statGradient, "The god's presence fills the space, empowering all present.", "Your voice falters, and the connection feels weak.")
+            new Option("0", "Holder of the Chant", "You lead the rhythmic chants, setting the ritual's tone.", Arrays.asList(Stat.CHARISMA.getStatType(), Stat.STRENGTH.getStatType()), statGradient, "Your powerful voice resonates, guiding the ritual to new heights!", "Your voice wavers, and the chant loses its rhythm."),
+            new Option("1", "Lead Dancer", "You work to gather the other dancers around the pyre.", Arrays.asList(Stat.CHARISMA.getStatType(), Stat.DEXTERITY.getStatType()), statGradient, "Your sense of flow and natural athletic artistry spurs the town into a magnificent choreographed display!", "The other dancers appreciate your efforts, but there is only so many times you can step on other people's toes before they move on to other tasks."),
+            new Option("2", "Ceremony Herald", "You announce the phases of the ceremony with confidence.", Arrays.asList(Stat.CHARISMA.getStatType(), Stat.INTELLECT.getStatType()), statGradient, "Your eloquence ensures the ritual runs smoothly and inspires awe!", "Your words falter, and the crowd grows restless."),
+            new Option("3", "King of Fools", "You embrace chaos, playing the trickster within the ritual.", Arrays.asList(Stat.CHARISMA.getStatType(), Stat.WEALTH.getStatType()), statGradient, "Your antics bring unexpected wisdom through humor!", "Your jokes fall flat, and confusion ensues."),
+            new Option("4", "Seer", "You peer into the flames, divining the ritual's deeper meaning.", Arrays.asList(Stat.CHARISMA.getStatType(), Stat.MAGIC.getStatType()), statGradient, "A clear vision emerges, guiding the town's future.", "Your vision is clouded, leaving uncertainty."),
+            new Option("5", "Lord of Misrule", "You orchestrate playful disruption to challenge expectations.", Arrays.asList(Stat.DEXTERITY.getStatType(), Stat.INTELLECT.getStatType()), statGradient, "Your cunning and agility keep the ceremony lively!", "Your antics cause more chaos than intended."),
+            new Option("6", "Head of Ritual Consecration", "You ensure the sacred space is properly prepared.", Arrays.asList(Stat.DEXTERITY.getStatType(), Stat.WEALTH.getStatType()), statGradient, "The ritual ground radiates energy, amplifying the spellwork.", "The space remains mundane, the energy unshaped."),
+            new Option("7", "Spirit Walker", "You move between the seen and unseen, guiding the spirits.", Arrays.asList(Stat.DEXTERITY.getStatType(), Stat.MAGIC.getStatType()), statGradient, "You dance the border of worlds, bridging the realms.", "The spirits remain distant, their whispers unheard."),
+            new Option("8", "Fire Keeper", "You tend the sacred fire, ensuring its steady glow.", Arrays.asList(Stat.STRENGTH.getStatType(), Stat.INTELLECT.getStatType()), statGradient, "The flames blaze high, illuminating the ritual with power.", "The fire sputters, casting uncertain shadows."),
+            new Option("9", "Stone Circle Builder", "You work to place and empower the sacred stones.", Arrays.asList(Stat.STRENGTH.getStatType(), Stat.WEALTH.getStatType()), statGradient, "The stones resonate with energy, forming a potent circle.", "The placements feel unbalanced, weakening the ritual."),
+            new Option("10", "Rune Carver", "You inscribe sacred runes to channel energy.", Arrays.asList(Stat.STRENGTH.getStatType(), Stat.MAGIC.getStatType()), statGradient, "The runes glow with power, enhancing the ritual’s intent.", "The symbols lack clarity, and their power falters."),
+            new Option("11", "Feast Lord", "You oversee the sacred meal, ensuring offerings are honored.", Arrays.asList(Stat.INTELLECT.getStatType(), Stat.WEALTH.getStatType()), statGradient, "The feast is perfectly balanced, nourishing both body and spirit.", "The offerings feel lacking, diminishing the ritual’s blessing."),
+            new Option("12", "Erysus Evoker", "You call upon the presence of the god Erysus.", Arrays.asList(Stat.INTELLECT.getStatType(), Stat.MAGIC.getStatType()), statGradient, "The god's presence fills the space, empowering all present.", "Your voice falters, and the connection feels weak.")
         );
 
         this.ritual = new Story(ritualOptions);
@@ -111,6 +113,42 @@ public class AdventureMap {
                 "Those who are faithful begin their task of convincing the community that our ritual next year should be grander, but many in the community lose faith altogether. It will be a year of despair.";
 
         this.gameSessionDisplay = gameSessionDisplay;
+    }
+
+    public void updateAdventureMapDisplay(AdventureMap adventureMapUpdates) {
+        if (!adventureMapUpdates.getName().isEmpty()) {
+            setName(adventureMapUpdates.getName());
+        }
+
+        if (adventureMapUpdates.getGameSessionDisplay() != null) {
+            GameSessionDisplay gameSessionDisplayUpdates = adventureMapUpdates.getGameSessionDisplay();
+            GameSessionDisplay existingDisplay = getGameSessionDisplay();
+
+            if (!gameSessionDisplayUpdates.getMapDescription().isEmpty()) {
+                existingDisplay.setMapDescription(gameSessionDisplayUpdates.getMapDescription());
+            }
+            if (!gameSessionDisplayUpdates.getGoalDescription().isEmpty()) {
+                existingDisplay.setGoalDescription(gameSessionDisplayUpdates.getGoalDescription());
+            }
+            if (!gameSessionDisplayUpdates.getPlayerTitle().isEmpty()) {
+                existingDisplay.setPlayerTitle(gameSessionDisplayUpdates.getPlayerTitle());
+            }
+            if (!gameSessionDisplayUpdates.getPlayerDescription().isEmpty()) {
+                existingDisplay.setPlayerDescription(gameSessionDisplayUpdates.getPlayerDescription());
+            }
+            if (!gameSessionDisplayUpdates.getEndingDescription().isEmpty()) {
+                existingDisplay.setEndingDescription(gameSessionDisplayUpdates.getEndingDescription());
+            }
+            if (!gameSessionDisplayUpdates.getSuccessText().isEmpty()) {
+                existingDisplay.setSuccessText(gameSessionDisplayUpdates.getSuccessText());
+            }
+            if (!gameSessionDisplayUpdates.getNeutralText().isEmpty()) {
+                existingDisplay.setNeutralText(gameSessionDisplayUpdates.getNeutralText());
+            }
+            if (!gameSessionDisplayUpdates.getFailureText().isEmpty()) {
+                existingDisplay.setFailureText(gameSessionDisplayUpdates.getFailureText());
+            }
+        }
     }
 
     public GameSessionDisplay getGameSessionDisplay() {

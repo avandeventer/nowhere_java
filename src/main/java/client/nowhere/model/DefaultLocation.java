@@ -22,7 +22,8 @@ public enum DefaultLocation {
                             new OutcomeStat(new PlayerStat(Stat.WEALTH.getStatType(), 1))
                     ))
             ),
-            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+            "The local watering hole. Soldiers returning from The Wilds swap stories while young ruffians play betting games."
     ),TOWN_SQUARE("Town Square",
             Arrays.asList(
                     new Option(
@@ -40,7 +41,8 @@ public enum DefaultLocation {
                                     new OutcomeStat(new PlayerStat(Stat.WEALTH.getStatType(), 1))
                             ))
             ),
-            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+            "The center of our little hamlet. Surprisingly full of hustle and bustle."
     ),
     APOTHECARY("Apothecary",
             Arrays.asList(
@@ -60,7 +62,8 @@ public enum DefaultLocation {
                                             Stat.values()[ThreadLocalRandom.current().nextInt(Stat.values().length)].getStatType(), 1))
                             ))
             ),
-            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+            "A star-marked tower where the town buys their solutions."
     ),
     THE_WILDS("Wilds",
             Arrays.asList(
@@ -79,7 +82,8 @@ public enum DefaultLocation {
                                     new OutcomeStat(new PlayerStat(Stat.DEXTERITY.getStatType(), 1))
                             ))
             ),
-            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+            "The untamed wood beyond town. Adventurers brave the mysterious darkness in search of treasure."
     ),
     RITUAL_GROUNDS("Ritual Grounds",
             Arrays.asList(
@@ -98,7 +102,8 @@ public enum DefaultLocation {
                                     new OutcomeStat(new PlayerStat(Stat.FAVOR.getStatType(), 1))
                             ))
             ),
-            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+            "An intricate series of circles carved into a hard stone obelisk. People place offerings and pray."
     ),
     DISCUSSION_PARLOR("Discussion Parlor",
             Arrays.asList(
@@ -117,7 +122,8 @@ public enum DefaultLocation {
                                     new OutcomeStat(new PlayerStat(Stat.INTELLECT.getStatType(), 1))
                             ))
             ),
-            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+            "A grand hall built with stone. The town elders discuss resource management and policy."
     ),
     FARMLANDS("Farmlands",
             Arrays.asList(
@@ -136,17 +142,21 @@ public enum DefaultLocation {
                                     new OutcomeStat(new PlayerStat(Stat.DEXTERITY.getStatType(), 1))
                             ))
             ),
-            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png"
+            "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+            "A vast plot on the edge of town. Sprouts attempt to make their way to the surface and critters eye them for sustenance."
+
     );
 
     private final String label;
     private final String iconDirectory;
     private final List<Option> defaultOptions;
+    private final String description;
 
-    DefaultLocation(String label, List<Option> defaultOptions, String iconDirectory) {
+    DefaultLocation(String label, List<Option> defaultOptions, String iconDirectory, String description) {
         this.label = label;
         this.defaultOptions = defaultOptions;
         this.iconDirectory = iconDirectory;
+        this.description = description;
     }
 
     public List<Option> getDefaultOptions() {
@@ -159,5 +169,9 @@ public enum DefaultLocation {
 
     public String getIconDirectory() {
         return iconDirectory;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }
