@@ -3,12 +3,14 @@ package client.nowhere.dao;
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.*;
 import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.WriteResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -145,5 +147,19 @@ public class AdventureMapDAO {
             throw new ResourceException("There was an issue creating the game session", e);
         }
         return adventureMap;
+    }
+
+    public List<AdventureMap> getAllGlobal() {
+        CollectionReference globalAdventureMapRef = db.collection("maps");
+        Iterable<DocumentReference> globalMapRefs = globalAdventureMapRef.listDocuments();
+
+        List<AdventureMap> globalAdventureMaps = new ArrayList<>();
+
+        for ( DocumentReference globalMapRef : globalMapRefs) {
+            AdventureMap globalAdventureMap = FirestoreDAOUtil.mapDatabaseObject(globalMapRef, AdventureMap.class);
+            globalAdventureMaps.add(globalAdventureMap);
+        }
+
+        return globalAdventureMaps;
     }
 }

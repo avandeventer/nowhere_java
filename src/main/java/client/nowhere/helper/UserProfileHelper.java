@@ -10,21 +10,29 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class UserProfileHelper {
 
     UserProfileDAO userProfileDAO;
+    AdventureMapDAO adventureMapDAO;
 
     @Autowired
-    public UserProfileHelper(UserProfileDAO userProfileDAO) {
+    public UserProfileHelper(UserProfileDAO userProfileDAO, AdventureMapDAO adventureMapDAO) {
         this.userProfileDAO = userProfileDAO;
+        this.adventureMapDAO = adventureMapDAO;
     }
 
     public UserProfile create(UserProfile userProfile) {
-        ProfileAdventureMap profileAdventureMap = new ProfileAdventureMap(new AdventureMap());
+        List<AdventureMap> adventureMaps = adventureMapDAO.getAllGlobal();
+
         HashMap<String, ProfileAdventureMap> profileAdventureHashMap = new HashMap<>();
-        profileAdventureHashMap.put(profileAdventureMap.getAdventureMap().getAdventureId(), profileAdventureMap);
+        for (AdventureMap adventureMap : adventureMaps) {
+            ProfileAdventureMap profileAdventureMap = new ProfileAdventureMap(adventureMap);
+            profileAdventureHashMap.put(profileAdventureMap.getAdventureMap().getAdventureId(), profileAdventureMap);
+        }
+
         userProfile.setMaps(profileAdventureHashMap);
         return this.userProfileDAO.create(userProfile);
     }

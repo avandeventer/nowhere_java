@@ -5,6 +5,8 @@ import static org.mockito.Mockito.*;
 
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.AdventureMap;
+import client.nowhere.model.DefaultLocation;
+import client.nowhere.model.Location;
 import client.nowhere.model.Story;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
@@ -113,7 +115,11 @@ public class StoryDAOTest {
         Story storyToUpdate = new Story();
         storyToUpdate.setGameCode(gameCode);
         storyToUpdate.setStoryId(storyIdToUpdate);
-        storyToUpdate.setLocation(new AdventureMap().getLocations().get(3));
+
+        DefaultLocation location = DefaultLocation.valueOf("APOTHECARY");
+        Location townLocale = new Location(location.name(), location.getDescription(), 3, "3", location.getDefaultOptions(), location.getLabel(), location.getIconDirectory());
+
+        storyToUpdate.setLocation(townLocale);
         storyToUpdate.setVisited(true);
         storyToUpdate.setPlayerId(playerId);
 
@@ -126,7 +132,11 @@ public class StoryDAOTest {
             assertNotNull(updatedStory);
             assertEquals(false, updatedStory.isPlayerSucceeded());
             assertEquals(playerId, updatedStory.getPlayerId());
-            assertEquals(new AdventureMap().getLocations().get(3), updatedStory.getLocation());
+
+            DefaultLocation defaultLocation = DefaultLocation.valueOf("APOTHECARY");
+            Location apothecary = new Location(defaultLocation.name(), defaultLocation.getDescription(), 3, "3", defaultLocation.getDefaultOptions(), defaultLocation.getLabel(), defaultLocation.getIconDirectory());
+
+            assertEquals(apothecary, updatedStory.getLocation());
 
             File rawUpdatedStories = new File("src/test/resources/WRITE_OPTIONS_AGAIN_stories_updated.json");
             List<Story> expectedStories = objectMapper.readValue(
