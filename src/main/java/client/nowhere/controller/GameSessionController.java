@@ -32,7 +32,7 @@ public class GameSessionController {
                 @RequestParam(required = false, defaultValue = "1") Integer storiesToWritePerRound,
                 @RequestParam(required = false, defaultValue =  "1") Integer storiesToPlayPerRound
     ) {
-        GameSession game = this.gameSessionHelper.createGameSession(userProfileId, saveGameId, storiesToWritePerRound, storiesToPlayPerRound);
+        GameSession game = this.gameSessionHelper.createGameSession(userProfileId, adventureId, saveGameId, storiesToWritePerRound, storiesToPlayPerRound);
         return game;
     }
 

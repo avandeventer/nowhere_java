@@ -5,7 +5,8 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public enum DefaultLocation {
-    TAVERN( "Tavern",
+    TAVERN( "0",
+            "Tavern",
             Arrays.asList(
             new Option(
                     "Drink",
@@ -24,7 +25,8 @@ public enum DefaultLocation {
             ),
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
             "The local watering hole. Soldiers returning from The Wilds swap stories while young ruffians play betting games."
-    ),TOWN_SQUARE("Town Square",
+    ),TOWN_SQUARE("1",
+            "Town Square",
             Arrays.asList(
                     new Option(
                             "Perform",
@@ -44,7 +46,8 @@ public enum DefaultLocation {
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
             "The center of our little hamlet. Surprisingly full of hustle and bustle."
     ),
-    APOTHECARY("Apothecary",
+    APOTHECARY("2",
+            "Apothecary",
             Arrays.asList(
                     new Option(
                             "Apprentice",
@@ -65,7 +68,8 @@ public enum DefaultLocation {
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
             "A star-marked tower where the town buys their solutions."
     ),
-    THE_WILDS("Wilds",
+    THE_WILDS("3",
+            "Wilds",
             Arrays.asList(
                     new Option(
                             "Adventure",
@@ -85,7 +89,8 @@ public enum DefaultLocation {
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
             "The untamed wood beyond town. Adventurers brave the mysterious darkness in search of treasure."
     ),
-    RITUAL_GROUNDS("Ritual Grounds",
+    RITUAL_GROUNDS("4",
+            "Ritual Grounds",
             Arrays.asList(
                     new Option(
                             "Pray",
@@ -105,7 +110,8 @@ public enum DefaultLocation {
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
             "An intricate series of circles carved into a hard stone obelisk. People place offerings and pray."
     ),
-    DISCUSSION_PARLOR("Discussion Parlor",
+    DISCUSSION_PARLOR("5",
+            "Discussion Parlor",
             Arrays.asList(
                     new Option(
                             "Hold a Debate",
@@ -125,7 +131,8 @@ public enum DefaultLocation {
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
             "A grand hall built with stone. The town elders discuss resource management and policy."
     ),
-    FARMLANDS("Farmlands",
+    FARMLANDS("6",
+            "Farmlands",
             Arrays.asList(
                     new Option(
                             "Till the Earth",
@@ -144,19 +151,24 @@ public enum DefaultLocation {
             ),
             "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
             "A vast plot on the edge of town. Sprouts attempt to make their way to the surface and critters eye them for sustenance."
-
     );
 
     private final String label;
     private final String iconDirectory;
     private final List<Option> defaultOptions;
     private final String description;
+    private final Location location;
 
-    DefaultLocation(String label, List<Option> defaultOptions, String iconDirectory, String description) {
+    DefaultLocation(String id, String label, List<Option> defaultOptions, String iconDirectory, String description) {
         this.label = label;
         this.defaultOptions = defaultOptions;
         this.iconDirectory = iconDirectory;
         this.description = description;
+        this.location = new Location(id, label, description, defaultOptions, iconDirectory);
+    }
+
+    public Location getLocation() {
+        return location;
     }
 
     public List<Option> getDefaultOptions() {

@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 public class GameSessionHelper {
 
     private final GameSessionDAO gameSessionDAO;
+    private final AdventureMapDAO adventureMapDAO;
     private final StoryDAO storyDAO;
     private final RitualDAO ritualDAO;
     private final EndingDAO endingDAO;
@@ -21,18 +22,21 @@ public class GameSessionHelper {
     @Autowired
     public GameSessionHelper(
             GameSessionDAO gameSessionDAO,
+            AdventureMapDAO adventureMapDAO,
             StoryDAO storyDAO,
             RitualDAO ritualDAO,
             EndingDAO endingDAO
     ) {
         this.gameSessionDAO = gameSessionDAO;
+        this.adventureMapDAO = adventureMapDAO;
         this.storyDAO = storyDAO;
         this.ritualDAO = ritualDAO;
         this.endingDAO = endingDAO;
     }
 
-    public GameSession createGameSession(String userProfileId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound) {
-        return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, saveGameId, storiesToWritePerRound, storiesToPlayPerRound);
+    public GameSession createGameSession(String userProfileId, String adventureId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound) {
+        AdventureMap adventureMap = adventureMapDAO.get(userProfileId, adventureId);
+        return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, adventureMap, saveGameId, storiesToWritePerRound, storiesToPlayPerRound);
     }
 
     public GameSession  updateToNextGameState(String gameCode) {
@@ -58,6 +62,7 @@ public class GameSessionHelper {
 
             switch (gameSession.getGameState()) {
                 case START:
+                case START_PHASE2:
                     assignStoryAuthors(gameSession, isTestMode, players);
                     gameSession.setGameStateToNext();
                     break;
@@ -92,10 +97,6 @@ public class GameSessionHelper {
                         }
                         storyDAO.updateStory(storyWithPrompt);
                     }
-                    gameSession.setGameStateToNext();
-                    break;
-                case START_PHASE2:
-                    assignStoryAuthors(gameSession, isTestMode, players);
                     gameSession.setGameStateToNext();
                     break;
                 case GENERATE_ENDINGS:

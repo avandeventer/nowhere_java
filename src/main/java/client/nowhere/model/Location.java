@@ -12,8 +12,10 @@ public class Location {
     private int locationId;
     private String description;
     private int locationIndex;
-    private String id;
+
+    @JsonIgnore
     private String locationName;
+    private String id;
     private String label;
     private List<Option> options;
     private String iconDirectory;
@@ -22,14 +24,12 @@ public class Location {
         this.id = UUID.randomUUID().toString();
     }
 
-    public Location(String locationName, String description, int locationId, String id, List<Option> options, String label, String iconDirectory) {
+    public Location(String id, String label, String description, List<Option> options, String iconDirectory) {
         this.id = id;
         this.description = description;
         if (id.isEmpty()){
             this.id = UUID.randomUUID().toString();
         }
-        this.locationName = locationName;
-        this.locationId = locationId;
         this.options = options;
         this.label = label;
         this.iconDirectory = iconDirectory;
@@ -53,15 +53,6 @@ public class Location {
 
     public void setLocationId(int locationId) {
         this.locationId = locationId;
-    }
-
-
-    public String getLocationName() {
-        return locationName;
-    }
-
-    public void setLocationName(String locationName) {
-        this.locationName = locationName;
     }
 
     public List<Option> getOptions() {
@@ -104,16 +95,26 @@ public class Location {
         this.description = description;
     }
 
+    @JsonIgnore
+    public String getLocationName() {
+        return locationName;
+    }
+
+    @JsonProperty
+    public void setLocationName(String locationName) {
+        this.locationName = locationName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Location location = (Location) o;
-        return locationId == location.locationId && Objects.equals(locationName, location.locationName) && Objects.equals(label, location.label) && Objects.equals(options, location.options);
+        return locationId == location.locationId && Objects.equals(label, location.label) && Objects.equals(options, location.options);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(locationId, locationName, label, options);
+        return Objects.hash(locationId, label, options);
     }
 }

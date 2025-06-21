@@ -116,8 +116,7 @@ public class StoryDAOTest {
         storyToUpdate.setGameCode(gameCode);
         storyToUpdate.setStoryId(storyIdToUpdate);
 
-        DefaultLocation location = DefaultLocation.valueOf("APOTHECARY");
-        Location townLocale = new Location(location.name(), location.getDescription(), 3, "3", location.getDefaultOptions(), location.getLabel(), location.getIconDirectory());
+        Location townLocale = DefaultLocation.valueOf("APOTHECARY").getLocation();
 
         storyToUpdate.setLocation(townLocale);
         storyToUpdate.setVisited(true);
@@ -130,13 +129,10 @@ public class StoryDAOTest {
 
             // Assert
             assertNotNull(updatedStory);
-            assertEquals(false, updatedStory.isPlayerSucceeded());
+            assertFalse(updatedStory.isPlayerSucceeded());
             assertEquals(playerId, updatedStory.getPlayerId());
 
-            DefaultLocation defaultLocation = DefaultLocation.valueOf("APOTHECARY");
-            Location apothecary = new Location(defaultLocation.name(), defaultLocation.getDescription(), 3, "3", defaultLocation.getDefaultOptions(), defaultLocation.getLabel(), defaultLocation.getIconDirectory());
-
-            assertEquals(apothecary, updatedStory.getLocation());
+            assertEquals(townLocale, updatedStory.getLocation());
 
             File rawUpdatedStories = new File("src/test/resources/WRITE_OPTIONS_AGAIN_stories_updated.json");
             List<Story> expectedStories = objectMapper.readValue(
