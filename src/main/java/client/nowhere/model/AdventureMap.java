@@ -1,9 +1,8 @@
 package client.nowhere.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class AdventureMap {
     String name;
@@ -165,6 +164,32 @@ public class AdventureMap {
 
     public void setStatTypes(List<StatType> statTypes) {
         this.statTypes = statTypes;
+    }
+
+    public void updateStatTypes(List<StatType> statTypes) {
+        Map<String, StatType> statTypeMap = this.statTypes.stream()
+                .collect(Collectors.toMap(StatType::getId, Function.identity()));
+
+        for (StatType statType : statTypes) {
+            if (!statType.getId().isEmpty() && !statType.getLabel().isEmpty()) {
+                statTypeMap.put(statType.getId(), statType);
+            }
+        }
+
+        this.statTypes = new ArrayList<>(statTypeMap.values());
+    }
+
+    public void updateLocations(List<Location> locations) {
+        Map<String, Location> locationMap = this.locations.stream()
+                .collect(Collectors.toMap(Location::getId, Function.identity()));
+
+        for (Location location : locations) {
+            if (!location.getId().isEmpty() && !location.getLabel().isEmpty()) {
+                locationMap.put(location.getId(), location);
+            }
+        }
+
+        this.locations = new ArrayList<>(locationMap.values());
     }
 
     @Override

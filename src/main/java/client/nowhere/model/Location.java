@@ -35,6 +35,14 @@ public class Location {
         this.iconDirectory = iconDirectory;
     }
 
+    public Location(String id, String label) {
+        this.id = id;
+        if (id.isEmpty()){
+            this.id = UUID.randomUUID().toString();
+        }
+        this.label = label;
+    }
+
     public String getId() {
         if (id == null && locationId != 0) {
             return Integer.toString(locationId);

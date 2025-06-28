@@ -42,7 +42,7 @@ public class AdventureMapHelper {
 
     //User Profile Adventure Map Functions
     public AdventureMap updateGameSessionDisplay(String userProfileId, AdventureMap adventureMap) {
-        return this.adventureMapDAO.updateGameSessionDisplay(userProfileId, adventureMap);
+        return this.adventureMapDAO.updateAdventureMap(userProfileId, adventureMap);
     }
 
     public AdventureMap addLocation(String userProfileId, String adventureId, Location location) {

@@ -1,5 +1,6 @@
 package client.nowhere.model;
 
+import java.util.Objects;
 import java.util.UUID;
 
 public class StatType {
@@ -70,5 +71,18 @@ public class StatType {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StatType)) return false;
+        StatType statType = (StatType) o;
+        return isFavorType == statType.isFavorType && id.equals(statType.id) && label.equals(statType.label) && Objects.equals(description, statType.description) && Objects.equals(favorEntity, statType.favorEntity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, label, isFavorType, description, favorEntity);
     }
 }

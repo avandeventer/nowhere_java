@@ -75,9 +75,11 @@ public class AdventureMapDAO {
         return adventureMapUpdates;
     }
 
-    public AdventureMap updateGameSessionDisplay(String userProfileId, AdventureMap adventureMapUpdates) {
+    public AdventureMap updateAdventureMap(String userProfileId, AdventureMap adventureMapUpdates) {
         AdventureMap existingAdventureMap = get(userProfileId, adventureMapUpdates.getAdventureId());
         existingAdventureMap.updateAdventureMapDisplay(adventureMapUpdates);
+        existingAdventureMap.updateStatTypes(adventureMapUpdates.getStatTypes());
+        existingAdventureMap.updateLocations(adventureMapUpdates.getLocations());
         update(userProfileId, existingAdventureMap);
         return existingAdventureMap;
     }
