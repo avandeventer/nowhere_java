@@ -41,7 +41,11 @@ public class AdventureMapHelper {
     }
 
     //User Profile Adventure Map Functions
-    public AdventureMap updateGameSessionDisplay(String userProfileId, AdventureMap adventureMap) {
+    public AdventureMap create(String userProfileId, AdventureMap adventureMap) {
+        return this.adventureMapDAO.create(userProfileId, adventureMap);
+    }
+
+    public AdventureMap updateAdventureMap(String userProfileId, AdventureMap adventureMap) {
         return this.adventureMapDAO.updateAdventureMap(userProfileId, adventureMap);
     }
 
@@ -59,9 +63,5 @@ public class AdventureMapHelper {
 
     public AdventureMap get(String userProfileId, String adventureId) {
         return this.adventureMapDAO.get(userProfileId, adventureId);
-    }
-
-    public AdventureMap create(String userProfileId, AdventureMap adventureMap) {
-        return this.adventureMapDAO.create(userProfileId, adventureMap);
     }
 }

@@ -14,6 +14,7 @@ public class AdventureMap {
 
     public AdventureMap() {
         this.name = "";
+
         this.adventureId = UUID.randomUUID().toString();
 
         this.locations = new ArrayList<>();
@@ -78,6 +79,9 @@ public class AdventureMap {
 
     public void setAdventureId(String adventureId) {
         this.adventureId = adventureId;
+        if (this.adventureId == null || this.adventureId.isEmpty()) {
+            this.adventureId = UUID.randomUUID().toString();
+        }
     }
 
     public Story getRitual() {

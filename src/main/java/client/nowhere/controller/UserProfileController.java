@@ -73,7 +73,7 @@ public class UserProfileController {
             @PathVariable String userProfileId,
             @RequestBody AdventureMap adventureMap
     ) {
-        return this.adventureMapHelper.updateGameSessionDisplay(userProfileId, adventureMap);
+        return this.adventureMapHelper.updateAdventureMap(userProfileId, adventureMap);
     }
 
     @PutMapping("/user-profile/{userProfileId}/adventure-map/{adventureId}/location")
