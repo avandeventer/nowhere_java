@@ -7,6 +7,7 @@ public class StatType {
     private String id;
     private String label;
     boolean isFavorType = false;
+    String description;
     String favorEntity;
 
     public StatType() {
@@ -61,5 +62,13 @@ public class StatType {
 
     public void setFavorEntity(String favorEntity) {
         this.favorEntity = favorEntity;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
