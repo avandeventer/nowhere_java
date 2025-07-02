@@ -80,6 +80,7 @@ public class AdventureMapDAO {
         existingAdventureMap.updateAdventureMapDisplay(adventureMapUpdates);
         existingAdventureMap.updateStatTypes(adventureMapUpdates.getStatTypes());
         existingAdventureMap.updateLocations(adventureMapUpdates.getLocations());
+        existingAdventureMap.updateRitualOptions(adventureMapUpdates.getRitual());
         update(userProfileId, existingAdventureMap);
         return existingAdventureMap;
     }

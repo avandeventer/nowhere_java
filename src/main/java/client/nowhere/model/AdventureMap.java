@@ -196,6 +196,19 @@ public class AdventureMap {
         this.locations = new ArrayList<>(locationMap.values());
     }
 
+    public void updateRitualOptions(Story ritual) {
+        Map<String, Option> ritualOptionMap = this.ritual.getOptions().stream()
+                .collect(Collectors.toMap(Option::getOptionId, Function.identity()));
+
+        for (Option option : ritual.getOptions()) {
+            if (!option.getOptionId().isEmpty() && !option.getOptionText().isEmpty()) {
+                ritualOptionMap.put(option.getOptionId(), option);
+            }
+        }
+
+        this.ritual.setOptions(new ArrayList<>(ritualOptionMap.values()));
+    }
+
     @Override
     public String toString() {
         return "AdventureMap{" +
