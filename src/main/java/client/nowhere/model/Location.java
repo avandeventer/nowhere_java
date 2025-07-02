@@ -80,7 +80,7 @@ public class Location {
     }
 
     public String getIconDirectory() {
-        if (this.iconDirectory.isEmpty()) {
+        if (this.iconDirectory == null || this.iconDirectory.isEmpty()) {
             setIconDirectory("https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png");
         }
         return iconDirectory;
