@@ -197,6 +197,9 @@ public class AdventureMap {
     }
 
     public void updateRitualOptions(Story ritual) {
+        if (this.ritual.getOptions() == null) {
+            this.ritual.setOptions(new ArrayList<>());
+        }
         Map<String, Option> ritualOptionMap = this.ritual.getOptions().stream()
                 .collect(Collectors.toMap(Option::getOptionId, Function.identity()));
 
