@@ -242,8 +242,8 @@ public class GameSessionHelper {
 
         if(alreadyJoined.isPresent()) {
             return alreadyJoined.get();
-        } else if (gameSession.isAfterGameState(GameState.LOCATION_SELECT)) {
-            throw new GameStateException("New players cannot join after the first game phase has completed.");
+        } else if (gameSession.isAfterGameState(GameState.WRITE_PROMPTS)) {
+            throw new GameStateException("New players cannot join after locations have been selected.");
         }
 
         if(alreadyJoinedPlayers.size() == 0) {
