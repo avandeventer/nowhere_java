@@ -42,7 +42,6 @@ public class ActiveSessionHelper {
 
         if (
             !activeGameStateSession.getIsPlayerDoneWithTurn().get(currentTurnPlayerId)
-            && !activeGameStateSession.getIsPlayerDone().get(currentTurnPlayerId)
         ) {
             return activePlayerSession;
         }

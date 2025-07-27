@@ -62,6 +62,10 @@ public class GameSessionHelper {
             gameStateSession.resetPlayerDoneWithTurn(players);
             gameSession.setActiveGameStateSession(gameStateSession);
 
+            ActivePlayerSession activePlayerSession = new ActivePlayerSession();
+            activePlayerSession.resetActivePlayerSession();
+            gameSession.setActivePlayerSession(activePlayerSession);
+
             switch (gameSession.getGameState()) {
                 case START:
                 case START_PHASE2:
