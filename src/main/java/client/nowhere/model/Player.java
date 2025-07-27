@@ -1,8 +1,7 @@
 package client.nowhere.model;
 
-import com.google.cloud.Timestamp;
-
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,7 +19,7 @@ public class Player {
     private List<PlayerStat> playerStats;
     private String gameCode;
     private boolean isFirstPlayer = false;
-    private Timestamp joinedAt;
+    private Date joinedAt;
 
     public Player() { }
 
@@ -169,11 +168,11 @@ public class Player {
         this.isFirstPlayer = isFirstPlayer;
     }
 
-    public Timestamp getJoinedAt() {
+    public Date getJoinedAt() {
         return this.joinedAt;
     }
 
-    public void setJoinedAt(Timestamp now) {
+    public void setJoinedAt(Date now) {
         this.joinedAt = now;
     }
 }
