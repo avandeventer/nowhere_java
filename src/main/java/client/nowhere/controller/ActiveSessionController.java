@@ -23,11 +23,18 @@ public class ActiveSessionController {
         return this.activeSessionHelper.update(activeSession);
     }
 
+    @PutMapping("/activePlayerSession/next")
+    @ResponseBody
+    public ActivePlayerSession nextPlayerTurn(@RequestParam String gameCode) {
+        return this.activeSessionHelper.nextPlayerTurn(gameCode);
+    }
+
     @PutMapping("/activeGameStateSession")
     @ResponseBody
     public ActiveGameStateSession updateGameStateSession(@RequestParam String gameCode,
                                                          @RequestParam String authorId,
-                                                         @RequestParam boolean isDone) {
-        return this.activeSessionHelper.update(gameCode, authorId, isDone);
+                                                         @RequestParam boolean isDone,
+                                                         @RequestParam boolean isDoneWithTurn) {
+        return this.activeSessionHelper.update(gameCode, authorId, isDone, isDoneWithTurn);
     }
 }

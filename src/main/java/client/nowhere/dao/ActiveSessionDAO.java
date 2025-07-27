@@ -45,7 +45,7 @@ public class ActiveSessionDAO {
         return activeSessionToUpdate;
     }
 
-    public ActiveGameStateSession update(String gameCode, String authorId, boolean isDone) {
+    public ActiveGameStateSession update(String gameCode, String authorId, boolean isDone, boolean isDoneWithTurn) {
         DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
 
         ActiveGameStateSession activeSessionToUpdate = new ActiveGameStateSession();
@@ -53,7 +53,14 @@ public class ActiveSessionDAO {
             DocumentSnapshot gameSession = FirestoreDAOUtil.getGameSession(gameSessionRef);
             GameSession game = FirestoreDAOUtil.mapGameSession(gameSession);
             activeSessionToUpdate = game.getActiveGameStateSession();
-            activeSessionToUpdate.getIsPlayerDone().put(authorId, isDone);
+
+            if (isDoneWithTurn) {
+                activeSessionToUpdate.getIsPlayerDoneWithTurn().put(authorId, true);
+            }
+
+            if (isDone) {
+                activeSessionToUpdate.getIsPlayerDone().put(authorId, true);
+            }
 
             ApiFuture<WriteResult> result = gameSessionRef.update("activeGameStateSession", activeSessionToUpdate);
             WriteResult asyncResponse = result.get();

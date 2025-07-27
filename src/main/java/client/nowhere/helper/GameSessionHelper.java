@@ -4,6 +4,7 @@ import client.nowhere.dao.*;
 import client.nowhere.exception.GameStateException;
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.*;
+import com.google.cloud.Timestamp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -58,6 +59,7 @@ public class GameSessionHelper {
             ActiveGameStateSession gameStateSession =
                     gameSession.getActiveGameStateSession();
             gameStateSession.resetPlayerDoneStatus(players);
+            gameStateSession.resetPlayerDoneWithTurn(players);
             gameSession.setActiveGameStateSession(gameStateSession);
 
             switch (gameSession.getGameState()) {
@@ -253,6 +255,7 @@ public class GameSessionHelper {
         player.setBasePlayerStats(gameSession.getAdventureMap().getStatTypes(), 4);
 
         player.createRandomAuthorId();
+        player.setJoinedAt(Timestamp.now());
         return this.gameSessionDAO.joinGameSession(player);
     }
 

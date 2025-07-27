@@ -1,5 +1,6 @@
 package client.nowhere.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ActivePlayerSession {
@@ -91,6 +92,16 @@ public class ActivePlayerSession {
 
     public Story getRitualStory() {
         return ritualStory;
+    }
+
+    public void resetActivePlayerSession() {
+        this.story = new Story();
+        this.playerChoiceOptionId = "";
+        this.outcomeDisplay = new ArrayList<>();
+        this.playerId = "";
+        this.setNextPlayerTurn = false;
+        this.selectedLocationOptionId = "";
+        this.locationOutcomeDisplay = new ArrayList<>();
     }
 
     public void setRitualStory(Story ritualStory) {
