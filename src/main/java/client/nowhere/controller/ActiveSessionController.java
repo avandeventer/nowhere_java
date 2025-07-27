@@ -33,8 +33,7 @@ public class ActiveSessionController {
     @ResponseBody
     public ActiveGameStateSession updateGameStateSession(@RequestParam String gameCode,
                                                          @RequestParam String authorId,
-                                                         @RequestParam boolean isDone,
-                                                         @RequestParam boolean isDoneWithTurn) {
-        return this.activeSessionHelper.update(gameCode, authorId, isDone, isDoneWithTurn);
+                                                         @RequestParam boolean isDone) {
+        return this.activeSessionHelper.update(gameCode, authorId, isDone, false);
     }
 }
