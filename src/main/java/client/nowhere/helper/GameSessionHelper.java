@@ -55,7 +55,7 @@ public class GameSessionHelper {
 
         try {
             gameSessionDAO.updateGameSession(gameSession);
-            List<Player> players = gameSessionDAO.getPlayers(gameSession.getGameCode());
+            List<Player> players = existingSession.getPlayers();
             ActiveGameStateSession gameStateSession =
                     gameSession.getActiveGameStateSession();
             gameStateSession.resetPlayerDoneStatus(players);

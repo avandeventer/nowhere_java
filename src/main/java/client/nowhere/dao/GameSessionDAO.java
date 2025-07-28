@@ -84,15 +84,8 @@ public class GameSessionDAO {
     }
 
     public List<Player> getPlayers(String gameCode) {
-        List<Player> players = new ArrayList<>();
-        try {
-            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
-            players = (List<Player>) FirestoreDAOUtil.mapDocument(objectMapper, gameSession, "players", Player.class);
-        } catch (InterruptedException | ExecutionException e) {
-            System.out.println("There was an issue retrieving the players for this session. " + e.getMessage());
-        }
-        return players;
+        GameSession game = getGame(gameCode);
+        return game.getPlayers();
     }
 
     public GameSession getGame(String gameCode) {
@@ -109,22 +102,20 @@ public class GameSessionDAO {
 
     public Player updatePlayer(Player player) {
         try {
-            DocumentReference gameSessionRef = db.collection("gameSessions").document(player.getGameCode());
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
-            List<Player> players = (List<Player>) FirestoreDAOUtil.mapDocument(objectMapper, gameSession, "players", Player.class);
+            GameSession gameSession = getGame(player.getGameCode());
+            List<Player> players = gameSession.getPlayers();
             players.stream()
                     .filter(existingPlayer -> existingPlayer.getAuthorId().equals(player.getAuthorId()))
-                    .forEach(existingPlayer -> {
-                        existingPlayer.updatePlayer(player);
-                    });
-
+                    .forEach(existingPlayer -> existingPlayer.updatePlayer(player));
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(player.getGameCode());
             ApiFuture<WriteResult> result = gameSessionRef.update("players", players);
             WriteResult asyncResponse = result.get();
-            System.out.println("Update time : " + result.get().toString());
+            System.out.println("Update time : " + asyncResponse.toString());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            throw new ResourceException("There was an issue creating the game session", e);
+            throw new ResourceException("There was an issue updating the player", e);
         }
+
         return player;
     }
 
