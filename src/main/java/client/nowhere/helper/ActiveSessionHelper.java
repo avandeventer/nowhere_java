@@ -40,10 +40,12 @@ public class ActiveSessionHelper {
 
         String currentTurnPlayerId = activePlayerSession.getPlayerId();
 
-        List<Player> playersInCurrentTurnOrder = getPlayersInCurrentTurnOrder(gameSession, currentTurnPlayerId);
-
-        if (activePlayerSession.getPlayerId().isEmpty()) {
-            activePlayerSession.setPlayerId(playersInCurrentTurnOrder.get(0).getAuthorId());
+        if (currentTurnPlayerId.isEmpty()) {
+            currentTurnPlayerId = gameSession.getPlayers().stream()
+                    .min(Comparator.comparing(Player::getJoinedAt)).get().getAuthorId();
+            activePlayerSession.setPlayerId(currentTurnPlayerId);
+            activePlayerSession.setGameCode(gameCode);
+            activeSessionDAO.update(activePlayerSession);
         }
 
         if (!activeGameStateSession.getIsPlayerDoneWithTurn().get(currentTurnPlayerId)) {
@@ -53,6 +55,8 @@ public class ActiveSessionHelper {
         if (activeGameStateSession.getIsPlayerDoneWithTurn().values().stream().allMatch(doneWithTurn -> doneWithTurn)) {
             activeGameStateSession.resetPlayerDoneWithTurn(gameSession.getPlayers());
         }
+
+        List<Player> playersInCurrentTurnOrder = getPlayersInCurrentTurnOrder(gameSession, currentTurnPlayerId);
 
         for (Player nextPlayer : playersInCurrentTurnOrder) {
             String nextPlayerId = nextPlayer.getAuthorId();
