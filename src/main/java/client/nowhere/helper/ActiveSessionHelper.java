@@ -69,6 +69,7 @@ public class ActiveSessionHelper {
                 activePlayerSession.resetActivePlayerSession();
                 activePlayerSession.setPlayerId(nextPlayerId);
                 this.activeSessionDAO.update(activePlayerSession);
+                break;
             }
         }
 
