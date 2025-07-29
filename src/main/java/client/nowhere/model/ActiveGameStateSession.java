@@ -7,12 +7,10 @@ import java.util.Map;
 public class ActiveGameStateSession {
 
     String gameCode;
-    Map<String, Boolean> isPlayerDoneWithTurn;
     Map<String, Boolean> isPlayerDone;
 
     public ActiveGameStateSession() {
         this.isPlayerDone = new HashMap<>();
-        this.isPlayerDoneWithTurn = new HashMap<>();
     }
 
     public ActiveGameStateSession(String gameCode) {
@@ -39,16 +37,6 @@ public class ActiveGameStateSession {
         }
     }
 
-    public void resetPlayerDoneWithTurn(List<Player> players) {
-        if (this.isPlayerDoneWithTurn == null) {
-            this.isPlayerDoneWithTurn = new HashMap<>();
-        }
-
-        for(Player player : players) {
-            this.isPlayerDoneWithTurn.put(player.getAuthorId(), false);
-        }
-    }
-
     public String getGameCode() {
         return gameCode;
     }
@@ -58,13 +46,5 @@ public class ActiveGameStateSession {
     }
 
     public void update(ActiveGameStateSession activeSession) { }
-
-    public Map<String, Boolean> getIsPlayerDoneWithTurn() {
-        return isPlayerDoneWithTurn;
-    }
-
-    public void setIsPlayerDoneWithTurn(Map<String, Boolean> isPlayerDoneWithTurn) {
-        this.isPlayerDoneWithTurn = isPlayerDoneWithTurn;
-    }
 
 }

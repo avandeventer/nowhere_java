@@ -23,8 +23,10 @@ public class ActiveSessionHelper {
 
     public ActivePlayerSession update(ActivePlayerSession activeSession) {
         if (activeSession.isSetNextPlayerTurn() && !activeSession.getPlayerId().isEmpty()) {
-            //setting isDone to false here ensures it's not updated
-            this.update(activeSession.getGameCode(), activeSession.getPlayerId(), false, true);
+            GameSession gameSession = gameSessionHelper.getGame(activeSession.getGameCode());
+            ActivePlayerSession existingActiveSession = gameSession.getActivePlayerSession();
+            activeSession.setIsPlayerDoneWithTurn(existingActiveSession.getIsPlayerDoneWithTurn());
+            activeSession.getIsPlayerDoneWithTurn().put(activeSession.getPlayerId(), true);
         }
         return this.activeSessionDAO.update(activeSession);
     }
@@ -37,7 +39,6 @@ public class ActiveSessionHelper {
         GameSession gameSession = this.gameSessionHelper.getGame(gameCode);
         ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
         activePlayerSession.setGameCode(gameCode);
-        ActiveGameStateSession activeGameStateSession = gameSession.getActiveGameStateSession();
 
         String currentTurnPlayerId = activePlayerSession.getPlayerId();
 
@@ -50,12 +51,12 @@ public class ActiveSessionHelper {
             activeSessionDAO.update(activePlayerSession);
         }
 
-        if (!activeGameStateSession.getIsPlayerDoneWithTurn().get(currentTurnPlayerId)) {
+        if (!activePlayerSession.getIsPlayerDoneWithTurn().get(currentTurnPlayerId)) {
             return activePlayerSession;
         }
 
-        if (activeGameStateSession.getIsPlayerDoneWithTurn().values().stream().allMatch(doneWithTurn -> doneWithTurn)) {
-            activeGameStateSession.resetPlayerDoneWithTurn(gameSession.getPlayers());
+        if (activePlayerSession.getIsPlayerDoneWithTurn().values().stream().allMatch(doneWithTurn -> doneWithTurn)) {
+            activePlayerSession.resetPlayerDoneWithTurn(gameSession.getPlayers());
         }
 
         List<Player> playersInCurrentTurnOrder = getPlayersInCurrentTurnOrder(gameSession, currentTurnPlayerId);
@@ -63,10 +64,9 @@ public class ActiveSessionHelper {
         for (Player nextPlayer : playersInCurrentTurnOrder) {
             String nextPlayerId = nextPlayer.getAuthorId();
 
-            boolean turnDone = activeGameStateSession.getIsPlayerDoneWithTurn().get(nextPlayerId);
-            boolean roundDone = activeGameStateSession.getIsPlayerDone().get(nextPlayerId);
+            boolean turnDone = activePlayerSession.getIsPlayerDoneWithTurn().get(nextPlayerId);
 
-            if (!turnDone && !roundDone) {
+            if (!turnDone) {
                 activePlayerSession.resetActivePlayerSession();
                 activePlayerSession.setPlayerId(nextPlayerId);
                 activePlayerSession.setSetNextPlayerTurn(false);

@@ -1,7 +1,9 @@
 package client.nowhere.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ActivePlayerSession {
     String gameCode = "";
@@ -13,8 +15,11 @@ public class ActivePlayerSession {
     List<String> locationOutcomeDisplay;
     Story ritualStory;
     boolean setNextPlayerTurn;
+    Map<String, Boolean> isPlayerDoneWithTurn;
 
-    public ActivePlayerSession() { }
+    public ActivePlayerSession() {
+        this.isPlayerDoneWithTurn = new HashMap<>();
+    }
 
     public String getPlayerId() {
         return playerId;
@@ -41,6 +46,7 @@ public class ActivePlayerSession {
         this.selectedLocationOptionId = updatedSession.selectedLocationOptionId;
         this.locationOutcomeDisplay = updatedSession.getLocationOutcomeDisplay();
         this.setNextPlayerTurn = updatedSession.isSetNextPlayerTurn();
+        this.isPlayerDoneWithTurn = updatedSession.getIsPlayerDoneWithTurn();
     }
 
     public Story getStory() {
@@ -95,6 +101,10 @@ public class ActivePlayerSession {
         return ritualStory;
     }
 
+    public void setRitualStory(Story ritualStory) {
+        this.ritualStory = ritualStory;
+    }
+
     public void resetActivePlayerSession() {
         this.story = new Story();
         this.playerChoiceOptionId = "";
@@ -105,7 +115,21 @@ public class ActivePlayerSession {
         this.locationOutcomeDisplay = new ArrayList<>();
     }
 
-    public void setRitualStory(Story ritualStory) {
-        this.ritualStory = ritualStory;
+    public void resetPlayerDoneWithTurn(List<Player> players) {
+        if (this.isPlayerDoneWithTurn == null) {
+            this.isPlayerDoneWithTurn = new HashMap<>();
+        }
+
+        for(Player player : players) {
+            this.isPlayerDoneWithTurn.put(player.getAuthorId(), false);
+        }
+    }
+
+    public Map<String, Boolean> getIsPlayerDoneWithTurn() {
+        return isPlayerDoneWithTurn;
+    }
+
+    public void setIsPlayerDoneWithTurn(Map<String, Boolean> isPlayerDoneWithTurn) {
+        this.isPlayerDoneWithTurn = isPlayerDoneWithTurn;
     }
 }

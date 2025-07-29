@@ -54,10 +54,6 @@ public class ActiveSessionDAO {
             GameSession game = FirestoreDAOUtil.mapGameSession(gameSession);
             activeSessionToUpdate = game.getActiveGameStateSession();
 
-            if (isDoneWithTurn) {
-                activeSessionToUpdate.getIsPlayerDoneWithTurn().put(authorId, true);
-            }
-
             if (isDone) {
                 activeSessionToUpdate.getIsPlayerDone().put(authorId, true);
             }
@@ -71,7 +67,6 @@ public class ActiveSessionDAO {
             throw new ResourceException("There was an issue reading the game session", e);
         }
         return activeSessionToUpdate;
-
     }
 
     public ActiveGameStateSession update(ActiveGameStateSession activeGameStateSession) {

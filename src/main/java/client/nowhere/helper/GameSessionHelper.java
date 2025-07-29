@@ -59,10 +59,10 @@ public class GameSessionHelper {
             ActiveGameStateSession gameStateSession =
                     gameSession.getActiveGameStateSession();
             gameStateSession.resetPlayerDoneStatus(players);
-            gameStateSession.resetPlayerDoneWithTurn(players);
             gameSession.setActiveGameStateSession(gameStateSession);
 
             ActivePlayerSession activePlayerSession = new ActivePlayerSession();
+            activePlayerSession.resetPlayerDoneWithTurn(players);
             activePlayerSession.resetActivePlayerSession();
             gameSession.setActivePlayerSession(activePlayerSession);
 
