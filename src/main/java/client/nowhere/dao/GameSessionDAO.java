@@ -70,6 +70,7 @@ public class GameSessionDAO {
         Map<String, Object> updates = new HashMap<>();
         updates.put("gameState", gameSession.getGameState());
         updates.put("activeGameStateSession", gameSession.getActiveGameStateSession());
+        updates.put("activePlayerSession", gameSession.getActivePlayerSession());
 
         try {
             ApiFuture<WriteResult> result = gameSessionRef.update(updates);
