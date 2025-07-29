@@ -40,6 +40,7 @@ public class ActivePlayerSession {
         this.setNextPlayerTurn = updatedSession.setNextPlayerTurn;
         this.selectedLocationOptionId = updatedSession.selectedLocationOptionId;
         this.locationOutcomeDisplay = updatedSession.getLocationOutcomeDisplay();
+        this.setNextPlayerTurn = updatedSession.isSetNextPlayerTurn();
     }
 
     public Story getStory() {

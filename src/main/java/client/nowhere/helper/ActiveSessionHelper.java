@@ -46,6 +46,7 @@ public class ActiveSessionHelper {
                     .min(Comparator.comparing(Player::getJoinedAt)).get().getAuthorId();
             activePlayerSession.setPlayerId(currentTurnPlayerId);
             activePlayerSession.setGameCode(gameCode);
+            activePlayerSession.setSetNextPlayerTurn(false);
             activeSessionDAO.update(activePlayerSession);
         }
 
@@ -68,6 +69,7 @@ public class ActiveSessionHelper {
             if (!turnDone && !roundDone) {
                 activePlayerSession.resetActivePlayerSession();
                 activePlayerSession.setPlayerId(nextPlayerId);
+                activePlayerSession.setSetNextPlayerTurn(false);
                 this.activeSessionDAO.update(activePlayerSession);
                 break;
             }
