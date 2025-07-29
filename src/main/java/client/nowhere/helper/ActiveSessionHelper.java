@@ -36,6 +36,7 @@ public class ActiveSessionHelper {
     public ActivePlayerSession nextPlayerTurn(String gameCode) {
         GameSession gameSession = this.gameSessionHelper.getGame(gameCode);
         ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
+        activePlayerSession.setGameCode(gameCode);
         ActiveGameStateSession activeGameStateSession = gameSession.getActiveGameStateSession();
 
         String currentTurnPlayerId = activePlayerSession.getPlayerId();
