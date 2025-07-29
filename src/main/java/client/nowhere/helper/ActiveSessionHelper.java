@@ -27,6 +27,8 @@ public class ActiveSessionHelper {
             ActivePlayerSession existingActiveSession = gameSession.getActivePlayerSession();
             activeSession.setIsPlayerDoneWithTurn(existingActiveSession.getIsPlayerDoneWithTurn());
             activeSession.getIsPlayerDoneWithTurn().put(activeSession.getPlayerId(), true);
+            this.activeSessionDAO.update(activeSession);
+            activeSession = nextPlayerTurn(activeSession.getGameCode());
         }
         return this.activeSessionDAO.update(activeSession);
     }
@@ -48,7 +50,7 @@ public class ActiveSessionHelper {
             activePlayerSession.setPlayerId(currentTurnPlayerId);
             activePlayerSession.setGameCode(gameCode);
             activePlayerSession.setSetNextPlayerTurn(false);
-            activeSessionDAO.update(activePlayerSession);
+//            activeSessionDAO.update(activePlayerSession);
         }
 
         if (!activePlayerSession.getIsPlayerDoneWithTurn().get(currentTurnPlayerId)) {
@@ -70,7 +72,7 @@ public class ActiveSessionHelper {
                 activePlayerSession.resetActivePlayerSession();
                 activePlayerSession.setPlayerId(nextPlayerId);
                 activePlayerSession.setSetNextPlayerTurn(false);
-                this.activeSessionDAO.update(activePlayerSession);
+//                this.activeSessionDAO.update(activePlayerSession);
                 break;
             }
         }
