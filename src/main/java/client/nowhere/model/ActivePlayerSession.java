@@ -46,7 +46,10 @@ public class ActivePlayerSession {
         this.selectedLocationOptionId = updatedSession.selectedLocationOptionId;
         this.locationOutcomeDisplay = updatedSession.getLocationOutcomeDisplay();
         this.setNextPlayerTurn = updatedSession.isSetNextPlayerTurn();
-        if (this.isPlayerDoneWithTurn.size() > 0) {
+        if (
+            updatedSession.getIsPlayerDoneWithTurn() != null
+            && updatedSession.getIsPlayerDoneWithTurn().size() > 0
+        ) {
             this.isPlayerDoneWithTurn = updatedSession.getIsPlayerDoneWithTurn();
         }
     }
