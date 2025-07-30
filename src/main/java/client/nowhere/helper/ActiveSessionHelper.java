@@ -23,12 +23,7 @@ public class ActiveSessionHelper {
 
     public ActivePlayerSession update(ActivePlayerSession activeSession) {
         if (activeSession.isSetNextPlayerTurn() && !activeSession.getPlayerId().isEmpty()) {
-            GameSession gameSession = gameSessionHelper.getGame(activeSession.getGameCode());
-            ActivePlayerSession existingActiveSession = gameSession.getActivePlayerSession();
-            activeSession.setIsPlayerDoneWithTurn(existingActiveSession.getIsPlayerDoneWithTurn());
-            activeSession.getIsPlayerDoneWithTurn().put(activeSession.getPlayerId(), true);
-            this.activeSessionDAO.update(activeSession);
-            activeSession = nextPlayerTurn(activeSession.getGameCode());
+            activeSession = nextPlayerTurn(activeSession.getGameCode(), activeSession.getPlayerId());
         }
         return this.activeSessionDAO.update(activeSession);
     }
@@ -37,25 +32,18 @@ public class ActiveSessionHelper {
         return this.activeSessionDAO.update(gameCode, authorId, isDone, isDoneWithTurn);
     }
 
-    public ActivePlayerSession nextPlayerTurn(String gameCode) {
-        GameSession gameSession = this.gameSessionHelper.getGame(gameCode);
+    public ActivePlayerSession nextPlayerTurn(String gameCode, String currentTurnPlayerId) {
+        GameSession gameSession = gameSessionHelper.getGame(gameCode);
         ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
         activePlayerSession.setGameCode(gameCode);
 
-        String currentTurnPlayerId = activePlayerSession.getPlayerId();
-
-        if (currentTurnPlayerId.isEmpty()) {
-            currentTurnPlayerId = gameSession.getPlayers().stream()
-                    .min(Comparator.comparing(Player::getJoinedAt)).get().getAuthorId();
-            activePlayerSession.setPlayerId(currentTurnPlayerId);
-            activePlayerSession.setGameCode(gameCode);
-            activePlayerSession.setSetNextPlayerTurn(false);
-//            activeSessionDAO.update(activePlayerSession);
-        }
-
-        if (!activePlayerSession.getIsPlayerDoneWithTurn().get(currentTurnPlayerId)) {
+        if (
+            !activePlayerSession.getPlayerId().equals(currentTurnPlayerId)
+        ) {
             return activePlayerSession;
         }
+
+        activePlayerSession.getIsPlayerDoneWithTurn().put(currentTurnPlayerId, true);
 
         if (activePlayerSession.getIsPlayerDoneWithTurn().values().stream().allMatch(doneWithTurn -> doneWithTurn)) {
             activePlayerSession.resetPlayerDoneWithTurn(gameSession.getPlayers());
@@ -72,12 +60,24 @@ public class ActiveSessionHelper {
                 activePlayerSession.resetActivePlayerSession();
                 activePlayerSession.setPlayerId(nextPlayerId);
                 activePlayerSession.setSetNextPlayerTurn(false);
-//                this.activeSessionDAO.update(activePlayerSession);
                 break;
             }
         }
 
         return activePlayerSession;
+    }
+
+    public ActivePlayerSession setFirstPlayerTurn(String gameCode) {
+        GameSession gameSession = this.gameSessionHelper.getGame(gameCode);
+        ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
+        activePlayerSession.setGameCode(gameCode);
+
+        String firstPlayerTurnId = gameSession.getPlayers().stream()
+                .min(Comparator.comparing(Player::getJoinedAt)).get().getAuthorId();
+        activePlayerSession.setPlayerId(firstPlayerTurnId);
+        activePlayerSession.setGameCode(gameCode);
+        activePlayerSession.setSetNextPlayerTurn(false);
+        return activeSessionDAO.update(activePlayerSession);
     }
 
     private List<Player> getPlayersInCurrentTurnOrder(GameSession gameSession, String currentTurnPlayerId) {

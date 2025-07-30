@@ -105,6 +105,11 @@ public class GameSessionHelper {
                     }
                     gameSession.setGameStateToNext();
                     break;
+                case ROUND1:
+                case ROUND2:
+                case RITUAL:
+                case ENDING:
+                    activePlayerSession.setFirstPlayerTurn(players);
                 case GENERATE_ENDINGS:
                     List<Ending> authorEndings = new ArrayList<>();
 

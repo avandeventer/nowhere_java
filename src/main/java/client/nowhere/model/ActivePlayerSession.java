@@ -1,9 +1,6 @@
 package client.nowhere.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ActivePlayerSession {
     String gameCode = "";
@@ -52,6 +49,13 @@ public class ActivePlayerSession {
         ) {
             this.isPlayerDoneWithTurn = updatedSession.getIsPlayerDoneWithTurn();
         }
+    }
+
+    public void setFirstPlayerTurn(List<Player> players) {
+        String firstPlayerTurnId = players.stream()
+                .min(Comparator.comparing(Player::getJoinedAt)).get().getAuthorId();
+        setPlayerId(firstPlayerTurnId);
+        setSetNextPlayerTurn(false);
     }
 
     public Story getStory() {

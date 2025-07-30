@@ -25,8 +25,11 @@ public class ActiveSessionController {
 
     @PutMapping("/activePlayerSession/next")
     @ResponseBody
-    public ActivePlayerSession nextPlayerTurn(@RequestParam String gameCode) {
-        return this.activeSessionHelper.nextPlayerTurn(gameCode);
+    public ActivePlayerSession nextPlayerTurn(
+            @RequestParam String gameCode,
+            @RequestParam String currentTurnPlayerId
+    ) {
+        return this.activeSessionHelper.nextPlayerTurn(gameCode, currentTurnPlayerId);
     }
 
     @PutMapping("/activeGameStateSession")
