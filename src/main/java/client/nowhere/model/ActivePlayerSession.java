@@ -55,7 +55,6 @@ public class ActivePlayerSession {
         String firstPlayerTurnId = players.stream()
                 .min(Comparator.comparing(Player::getJoinedAt)).get().getAuthorId();
         setPlayerId(firstPlayerTurnId);
-        setSetNextPlayerTurn(false);
     }
 
     public Story getStory() {

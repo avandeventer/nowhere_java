@@ -110,6 +110,7 @@ public class GameSessionHelper {
                 case RITUAL:
                 case ENDING:
                     activePlayerSession.setFirstPlayerTurn(players);
+                    break;
                 case GENERATE_ENDINGS:
                     List<Ending> authorEndings = new ArrayList<>();
 
