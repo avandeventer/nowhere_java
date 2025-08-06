@@ -11,14 +11,14 @@ public class Option {
     String optionText = "";
     String attemptText = "";
     Stat statRequirement;
-    List<StatRequirement> statRequirements;
+    List<StatRequirement> statRequirements = new ArrayList<>();
     int statDC;
-    List<PlayerStat> playerStatDCs;
+    List<PlayerStat> playerStatDCs = new ArrayList<>();
     String successText = "";
     String outcomeAuthorId = "";
-    List<OutcomeStat> successResults;
+    List<OutcomeStat> successResults = new ArrayList<>();
     String failureText = "";
-    List<OutcomeStat> failureResults;
+    List<OutcomeStat> failureResults = new ArrayList<>();
     private String selectedByPlayerId;
     private boolean playerSucceeded;
     private Integer pointsRewarded = 0;
@@ -27,6 +27,8 @@ public class Option {
     public Option () {
         this.optionId = UUID.randomUUID().toString();
         this.playerStatDCs = new ArrayList<>();
+        this.successResults = new ArrayList<>();
+        this.failureResults = new ArrayList<>();
     }
 
     public Option (String optionText,
@@ -143,6 +145,9 @@ public class Option {
     }
 
     public List<OutcomeStat> getSuccessResults() {
+        if (this.successResults == null) {
+            return new ArrayList<>();
+        }
         return successResults;
     }
 
@@ -159,6 +164,9 @@ public class Option {
     }
 
     public List<OutcomeStat> getFailureResults() {
+        if (this.failureResults == null) {
+            return new ArrayList<>();
+        }
         return failureResults;
     }
 
