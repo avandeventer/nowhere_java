@@ -3,9 +3,8 @@ package client.nowhere.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Location {
 
@@ -114,6 +113,24 @@ public class Location {
     @JsonProperty
     public void setLocationName(String locationName) {
         this.locationName = locationName;
+    }
+
+    @JsonIgnore
+    public StatType getPrimaryStat() {
+        if (this.options == null || this.options.size() == 0) {
+            return new StatType();
+        }
+
+        return options.stream()
+                .flatMap(option -> option.getSuccessResults().stream())
+                .map(outcomeStat -> outcomeStat.getPlayerStat().getStatType())
+                .collect(Collectors.groupingBy(
+                        statType -> statType,
+                        Collectors.counting()
+                )).entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .get();
     }
 
     @Override

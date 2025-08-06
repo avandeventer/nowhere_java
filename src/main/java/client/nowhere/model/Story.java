@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class Story {
 
@@ -313,5 +314,19 @@ public class Story {
         setPrequelStorySucceeded(playerSucceeded);
         setPrequelStorySelectedOptionId(selectedOptionId);
         setSequelStory(true);
+    }
+
+    @JsonIgnore
+    public boolean isAFavorStory() {
+        if (this.options == null || this.options.size() == 0) {
+            return false;
+        }
+
+        return options.stream()
+                .flatMap(option -> Stream.concat(
+                        option.getSuccessResults().stream(),
+                        option.getFailureResults().stream()
+                ))
+                .anyMatch(outcomeStat -> outcomeStat.getPlayerStat().getStatType().isFavorType());
     }
 }

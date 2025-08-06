@@ -73,6 +73,15 @@ public class Option {
         this.failureText = failureText;
     }
 
+    public Option (
+            List<StatType> stats,
+            List<Integer> difficultyValues
+    ) {
+        this.optionId = UUID.randomUUID().toString();
+        setStatRequirements(stats, difficultyValues);
+    }
+
+
     public void randomizeOptionStats (int minDC, int maxDC, List<StatType> statTypes) {
         this.optionText = "";
         this.playerStatDCs = Arrays.asList(

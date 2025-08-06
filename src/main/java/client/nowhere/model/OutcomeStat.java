@@ -3,6 +3,7 @@ package client.nowhere.model;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 public class OutcomeStat {
     PlayerStat playerStat;
@@ -16,8 +17,10 @@ public class OutcomeStat {
     }
 
     public void randomizeOutcomeStat (List<StatType> adventureMapStatTypes, int min, int max) {
+        List<StatType> nonFavorAdventureMapStatTypes = adventureMapStatTypes.stream().filter(statType -> !statType.isFavorType).collect(Collectors.toList());
+
         this.playerStat = new PlayerStat(
-                adventureMapStatTypes.get(ThreadLocalRandom.current().nextInt(adventureMapStatTypes.size())),
+                nonFavorAdventureMapStatTypes.get(ThreadLocalRandom.current().nextInt(nonFavorAdventureMapStatTypes.size())),
                 ThreadLocalRandom.current().nextInt(min, max + 1)
         );
     }

@@ -1,7 +1,9 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.StoryHelper;
+import client.nowhere.model.RepercussionOutput;
 import client.nowhere.model.ResponseObject;
+import client.nowhere.model.SequelKey;
 import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +55,7 @@ public class StoryController {
 
     @GetMapping("/adventure")
     @ResponseBody
-    public Story getPlayerStories(
+    public Story adventure(
             @RequestParam String gameCode,
             @RequestParam String playerId,
             @RequestParam String locationId) {
@@ -61,6 +63,13 @@ public class StoryController {
             throw new IllegalArgumentException("Either gameCode or playerId must be provided.");
         }
         return this.storyHelper.storePlayerStory(gameCode, playerId, locationId);
+    }
+
+    @PutMapping("/adventure/repercussions")
+    @ResponseBody
+    public RepercussionOutput triggerAdventureRepercussions(
+            @RequestBody Story story) {
+        return this.storyHelper.triggerRepercussions(story);
     }
 
     @GetMapping("/adventure/played")

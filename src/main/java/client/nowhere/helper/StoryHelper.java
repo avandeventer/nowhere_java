@@ -342,4 +342,51 @@ public class StoryHelper {
 
         return userProfileDAO.saveGameToUserProfile(gameSessionStories, userProfileId, adventureId, saveGameId);
     }
+
+    public RepercussionOutput triggerRepercussions(Story story) {
+        Story updatedStory = updateStory(story);
+        RepercussionOutput repercussionOutput = new RepercussionOutput();
+
+        if (updatedStory.isAFavorStory() || !updatedStory.getPrequelStoryId().equals("")) {
+            List<Integer> statGradient = Arrays.asList(9, 6);
+            Story endingRitualOptions = new Story();
+            endingRitualOptions.makeSequel(story.getStoryId(), story.isPlayerSucceeded(), story.getSelectedOptionId());
+            Option chosenOption = updatedStory.getOptions().stream()
+                    .filter(option ->
+                            option.getOptionId().equals(updatedStory.getSelectedOptionId())).findFirst().get();
+            StatType chosenOptionStatDC = chosenOption.getPlayerStatDCs().get(0).getStatType();
+
+            StatType outcomeStat = getOutcomeStat(chosenOption, updatedStory.getLocation(), story.isPlayerSucceeded());
+
+            Option unchosenStoryOption = updatedStory.getOptions().stream()
+                    .filter(option ->
+                            !option.getOptionId().equals(updatedStory.getSelectedOptionId())).findFirst().get();
+            StatType unchosenOptionStatDC = unchosenStoryOption.getPlayerStatDCs().get(0).getStatType();
+
+            List<Option> ritualOptions = Arrays.asList(
+                    new Option(
+                            Arrays.asList(chosenOptionStatDC, outcomeStat), statGradient
+                    ),
+                    new Option(
+                            Arrays.asList(chosenOptionStatDC, unchosenOptionStatDC), statGradient
+                    )
+            );
+
+            endingRitualOptions.setOptions(ritualOptions);
+            repercussionOutput.setEnding(endingRitualOptions);
+        }
+        return repercussionOutput;
+    }
+
+    private StatType getOutcomeStat(Option chosenOption, Location location, boolean playerSucceeded) {
+        StatType outcomeStat = chosenOption.getFailureResults().get(0).getPlayerStat().getStatType();
+        if (playerSucceeded) {
+            outcomeStat = chosenOption.getSuccessResults().get(0).getPlayerStat().getStatType();
+        }
+
+        if (outcomeStat.isFavorType()) {
+            outcomeStat = location.getPrimaryStat();
+        }
+        return outcomeStat;
+    }
 }
