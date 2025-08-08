@@ -9,6 +9,7 @@ public class SaveGame {
     String name;
 
     List<Story> globalStories;
+    List<Story> globalRituals;
 
     public SaveGame() {
         this.id = UUID.randomUUID().toString();
@@ -43,5 +44,13 @@ public class SaveGame {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Story> getGlobalRituals() {
+        return globalRituals;
+    }
+
+    public void setGlobalRituals(List<Story> globalRituals) {
+        this.globalRituals = globalRituals;
     }
 }

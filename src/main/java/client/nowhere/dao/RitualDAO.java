@@ -2,9 +2,8 @@ package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.*;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -93,4 +92,17 @@ public class RitualDAO {
         }
     }
 
+
+    public Story create(Story ritualStory) {
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(ritualStory.getGameCode());
+            ApiFuture<WriteResult> result = gameSessionRef.update("rituals", FieldValue.arrayUnion(ritualStory));
+            WriteResult asyncResponse = result.get();
+            System.out.println("Update time : " + result.get().toString());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue creating the game session", e);
+        }
+        return ritualStory;
+    }
 }

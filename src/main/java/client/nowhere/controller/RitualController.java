@@ -23,6 +23,12 @@ public class RitualController {
         return ritualHelper.getRitualJobs(gameCode);
     }
 
+    @PostMapping("/ritual")
+    @ResponseBody
+    public Story create(@RequestBody Story ritualStory) {
+        return ritualHelper.create(ritualStory);
+    }
+
     @PutMapping("/ritual")
     @ResponseBody
     public Option update(@RequestBody Story ritualStory) {

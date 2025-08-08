@@ -14,6 +14,7 @@ public class GameSession {
     AdventureMap adventureMap;
     boolean didWeSucceed = false;
     List<Ending> endings;
+    List<Story> rituals;
     String userProfileId;
     String saveGameId;
     Integer storiesToWritePerRound = 1;
@@ -151,5 +152,13 @@ public class GameSession {
 
     public void setStoriesToPlayPerRound(Integer storiesToPlayPerRound) {
         this.storiesToPlayPerRound = storiesToPlayPerRound;
+    }
+
+    public List<Story> getRituals() {
+        return rituals;
+    }
+
+    public void setRituals(List<Story> rituals) {
+        this.rituals = rituals;
     }
 }

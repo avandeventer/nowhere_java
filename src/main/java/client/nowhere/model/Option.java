@@ -12,7 +12,7 @@ public class Option {
     String attemptText = "";
     Stat statRequirement;
     List<StatRequirement> statRequirements = new ArrayList<>();
-    int statDC;
+    int statDC = 0;
     List<PlayerStat> playerStatDCs = new ArrayList<>();
     String successText = "";
     String outcomeAuthorId = "";
@@ -20,9 +20,9 @@ public class Option {
     String failureText = "";
     List<OutcomeStat> failureResults = new ArrayList<>();
     private String selectedByPlayerId;
-    private boolean playerSucceeded;
+    private boolean playerSucceeded = false;
     private Integer pointsRewarded = 0;
-    private String successMarginText;
+    private String successMarginText = "";
 
     public Option () {
         this.optionId = UUID.randomUUID().toString();

@@ -103,4 +103,8 @@ public class RitualHelper {
 
         return updatedRitualOption;
     }
+
+    public Story create(Story ritualStory) {
+        return this.ritualDAO.create(ritualStory);
+    }
 }
