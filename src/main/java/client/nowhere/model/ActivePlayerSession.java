@@ -13,6 +13,7 @@ public class ActivePlayerSession {
     Story ritualStory;
     boolean setNextPlayerTurn;
     Map<String, Boolean> isPlayerDoneWithTurn;
+    RepercussionOutput repercusssions;
 
     public ActivePlayerSession() {
         this.isPlayerDoneWithTurn = new HashMap<>();
@@ -39,10 +40,10 @@ public class ActivePlayerSession {
         this.playerId = updatedSession.getPlayerId();
         this.story = updatedSession.getStory();
         this.outcomeDisplay = updatedSession.getOutcomeDisplay();
-        this.setNextPlayerTurn = updatedSession.setNextPlayerTurn;
-        this.selectedLocationOptionId = updatedSession.selectedLocationOptionId;
-        this.locationOutcomeDisplay = updatedSession.getLocationOutcomeDisplay();
         this.setNextPlayerTurn = updatedSession.isSetNextPlayerTurn();
+        this.selectedLocationOptionId = updatedSession.getSelectedLocationOptionId();
+        this.locationOutcomeDisplay = updatedSession.getLocationOutcomeDisplay();
+        this.repercusssions = updatedSession.getRepercusssions();
         if (
             updatedSession.getIsPlayerDoneWithTurn() != null
             && updatedSession.getIsPlayerDoneWithTurn().size() > 0
@@ -139,5 +140,13 @@ public class ActivePlayerSession {
 
     public void setIsPlayerDoneWithTurn(Map<String, Boolean> isPlayerDoneWithTurn) {
         this.isPlayerDoneWithTurn = isPlayerDoneWithTurn;
+    }
+
+    public RepercussionOutput getRepercusssions() {
+        return repercusssions;
+    }
+
+    public void setRepercusssions(RepercussionOutput repercusssions) {
+        this.repercusssions = repercusssions;
     }
 }
