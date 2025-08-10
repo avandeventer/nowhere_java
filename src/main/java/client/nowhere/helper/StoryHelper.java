@@ -350,6 +350,7 @@ public class StoryHelper {
         if (updatedStory.isAFavorStory() || !updatedStory.getPrequelStoryId().equals("")) {
             List<Integer> statGradient = Arrays.asList(9, 6);
             Story endingRitualOptions = new Story();
+            endingRitualOptions.setAuthorId(updatedStory.getPlayerId());
             endingRitualOptions.makeSequel(story.getStoryId(), story.isPlayerSucceeded(), story.getSelectedOptionId());
             Option chosenOption = updatedStory.getOptions().stream()
                     .filter(option ->
