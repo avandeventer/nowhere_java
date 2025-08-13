@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class RitualHelper {
@@ -23,16 +24,8 @@ public class RitualHelper {
         this.gameSessionDAO = gameSessionDAO;
     }
 
-    public Story getRitualJobs(String gameCode) {
-        Story ritualStory = this.ritualDAO.getRitualJobs(gameCode);
-
-        if (ritualStory == null) {
-            AdventureMap adventureMap = new AdventureMap();
-            adventureMap.generateDefaultRitual();
-            ritualStory = adventureMap.getRitual();
-        }
-
-        return ritualStory;
+    public List<Story> getRitual(String gameCode) {
+        return this.ritualDAO.getRitualJobs(gameCode);
     }
 
     public Option update(Story ritualStory) {
@@ -46,9 +39,13 @@ public class RitualHelper {
             if(ritualOptionOptional.isPresent()) {
                 Option chosenRitualOption = ritualOptionOptional.get();
 
-                Story existingRitualStories = ritualDAO.getRitualJobs(ritualStory.getGameCode());
-                List<PlayerStat> chosenRitualSuccessRequirements = existingRitualStories
-                        .getOptions().stream().filter(ritualOption ->
+                List<Story> existingRitualStories = ritualDAO.getRitualJobs(ritualStory.getGameCode());
+                List<Option> rituals = existingRitualStories
+                        .stream().flatMap(story -> story.getOptions().stream())
+                        .collect(Collectors.toList());
+
+                List<PlayerStat> chosenRitualSuccessRequirements = rituals
+                        .stream().filter(ritualOption ->
                                 ritualOption.getOptionId().equals(chosenRitualOption.getOptionId()))
                         .findFirst().get().getPlayerStatDCs();
 

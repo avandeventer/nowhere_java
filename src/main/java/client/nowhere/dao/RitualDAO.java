@@ -7,6 +7,7 @@ import com.google.cloud.firestore.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -22,24 +23,25 @@ public class RitualDAO {
         this.db = db;
     }
 
-    public Story getRitualJobs(String gameCode) {
-        Story ritualStory = new Story();
+    public List<Story> getRitualJobs(String gameCode) {
+        List<Story> ritualArtifacts = new ArrayList<>();
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             GameSession gameSession = FirestoreDAOUtil.mapGameSession(gameSessionSnapshot);
-            ritualStory = gameSession.getAdventureMap().getRitual();
+            ritualArtifacts = gameSession.getRituals();
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("There was an issue retrieving the game session " + e.getMessage());
         }
-        return ritualStory;
+        return ritualArtifacts;
     }
 
     public Option getRitualJob(String gameCode, String playerId) {
-        Story ritualJobs = getRitualJobs(gameCode);
-        return ritualJobs.getOptions().stream().filter(ritualOption ->
-                ritualOption.getSelectedByPlayerId() != null
-                && ritualOption.getSelectedByPlayerId().equals(playerId))
+        List<Story> rituals = getRitualJobs(gameCode);
+        List<Option> ritualOptions = rituals.stream().flatMap(story -> story.getOptions().stream()).collect(Collectors.toList());
+        return ritualOptions.stream().filter(ritual ->
+                ritual.getSelectedByPlayerId() != null
+                && ritual.getSelectedByPlayerId().equals(playerId))
                 .findFirst().get();
     }
 
@@ -95,10 +97,20 @@ public class RitualDAO {
 
     public Story create(Story ritualStory) {
         try {
-            DocumentReference gameSessionRef = db.collection("gameSessions").document(ritualStory.getGameCode());
-            ApiFuture<WriteResult> result = gameSessionRef.update("rituals", FieldValue.arrayUnion(ritualStory));
+            List<Story> ritualStories = getRitualJobs(ritualStory.getGameCode());
+
+            ritualStories = ritualStories.stream()
+                    .filter(s -> !s.getStoryId().equals(ritualStory.getStoryId()))
+                    .collect(Collectors.toList());
+
+            ritualStories.add(ritualStory);
+
+            DocumentReference gameSessionRef = db.collection("gameSessions")
+                    .document(ritualStory.getGameCode());
+
+            ApiFuture<WriteResult> result = gameSessionRef.update("rituals", ritualStories);
             WriteResult asyncResponse = result.get();
-            System.out.println("Update time : " + result.get().toString());
+            System.out.println("Update time: " + asyncResponse);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue creating the game session", e);

@@ -6,6 +6,8 @@ import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @CrossOrigin(maxAge = 3600)
 @RestController
 public class RitualController {
@@ -19,8 +21,8 @@ public class RitualController {
 
     @GetMapping("/ritual")
     @ResponseBody
-    public Story get(@RequestParam String gameCode) {
-        return ritualHelper.getRitualJobs(gameCode);
+    public List<Story> get(@RequestParam String gameCode) {
+        return ritualHelper.getRitual(gameCode);
     }
 
     @PostMapping("/ritual")
