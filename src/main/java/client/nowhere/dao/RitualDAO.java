@@ -51,7 +51,10 @@ public class RitualDAO {
             DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             GameSession game = FirestoreDAOUtil.mapGameSession(gameSession);
 
-            List<Option> ritualOptions = game.getAdventureMap().getRitual().getOptions();
+            List<Option> ritualOptions = game.getRituals().stream()
+                    .flatMap(story -> story.getOptions().stream())
+                    .collect(Collectors.toList());
+
             Option selectedOption = ritualStory.getOptions().get(0);
 
             Optional<Option> existingOptionOptional = ritualOptions.stream()
@@ -80,12 +83,24 @@ public class RitualDAO {
                 existingOption.setSuccessMarginText(selectedOption.getSuccessMarginText());
             }
 
-            List<Option> updatedRitualOptions = ritualOptions.stream()
-                    .map(option -> option.getOptionId().equals(existingOption.getOptionId()) ? existingOption : option)
-                    .collect(Collectors.toList());
+            List<Story> rituals = game.getRituals();
 
-            game.getAdventureMap().getRitual().setOptions(updatedRitualOptions);
-            gameSessionRef.update("adventureMap", game.getAdventureMap());
+            for (Story ritual : rituals) {
+                for (Option opt : ritual.getOptions()) {
+                    if (opt.getOptionId().equals(existingOption.getOptionId())) {
+                        List<Option> updatedOptions = ritual.getOptions().stream()
+                                .map(o -> o.getOptionId()
+                                        .equals(existingOption.getOptionId())
+                                        ? existingOption : o)
+                                .collect(Collectors.toList());
+
+                        ritual.setOptions(updatedOptions);
+                        break;
+                    }
+                }
+            }
+
+            gameSessionRef.update("rituals", game.getRituals());
 
             return existingOption;
         } catch (InterruptedException | ExecutionException e) {
