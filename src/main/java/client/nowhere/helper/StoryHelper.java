@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Component
@@ -100,6 +101,16 @@ public class StoryHelper {
         }
 
         if (!playedStories.isEmpty()) {
+            long numberOfFavorStories = stories.stream().filter(Story::isAFavorStory).count();
+            if (gameSession.getPlayers().size() <= numberOfFavorStories / 2) {
+                Optional<StatType> favorStatOptional = playerStats.stream().filter(StatType::isFavorType).findFirst();
+                if (favorStatOptional.isPresent()) {
+                    int outcomeValue = ThreadLocalRandom.current().nextInt(1, 2 + 1);
+                    PlayerStat playerStat = new PlayerStat(favorStatOptional.get(), outcomeValue);
+                    playerStory.getOptions().get(0).getSuccessResults().set(0, new OutcomeStat(playerStat));
+                }
+            }
+
             Optional<Story> prequelStory = getPrequelStory(locationId, playerId, playedStories);
 
             prequelStory.ifPresent(foundPrequelStory -> {
@@ -347,7 +358,7 @@ public class StoryHelper {
         Story updatedStory = updateStory(story);
         RepercussionOutput repercussionOutput = new RepercussionOutput();
 
-        if (updatedStory.isAFavorStory() || !updatedStory.getPrequelStoryId().equals("")) {
+        if (updatedStory.isAFavorStory()) {
             List<Integer> statGradient = Arrays.asList(9, 6);
             Story endingRitualOptions = new Story();
             endingRitualOptions.setGameCode(story.getGameCode());

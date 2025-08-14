@@ -16,13 +16,9 @@ public class OutcomeStat {
         this.playerStat = playerStat;
     }
 
-    public void randomizeOutcomeStat (List<StatType> adventureMapStatTypes, int min, int max) {
-        List<StatType> nonFavorAdventureMapStatTypes = adventureMapStatTypes.stream().filter(statType -> !statType.isFavorType).collect(Collectors.toList());
-
-        this.playerStat = new PlayerStat(
-                nonFavorAdventureMapStatTypes.get(ThreadLocalRandom.current().nextInt(nonFavorAdventureMapStatTypes.size())),
-                ThreadLocalRandom.current().nextInt(min, max + 1)
-        );
+    //This constructor randomizes player stats
+    public OutcomeStat (List<StatType> adventureMapStatTypes, int min, int max) {
+        this.playerStat = new PlayerStat(adventureMapStatTypes, min, max);
     }
 
     public Stat getImpactedStat() {

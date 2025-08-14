@@ -86,20 +86,18 @@ public class Option {
 
     public void randomizeOptionStats (int minDC, int maxDC, List<StatType> statTypes) {
         this.optionText = "";
-        this.playerStatDCs = Arrays.asList(
-            new PlayerStat(
-                statTypes.get(ThreadLocalRandom.current().nextInt(statTypes.size())),
-                ThreadLocalRandom.current().nextInt(minDC, maxDC + 1)
-            )
+
+        List<StatType> nonFavorAdventureMapStatTypes = statTypes.stream().filter(statType -> !statType.isFavorType).collect(Collectors.toList());
+
+        this.playerStatDCs = Collections.singletonList(
+                new PlayerStat(nonFavorAdventureMapStatTypes, minDC, maxDC)
         );
 
-        OutcomeStat successStat = new OutcomeStat();
-        successStat.randomizeOutcomeStat(statTypes, 1, 2);
+        OutcomeStat successStat = new OutcomeStat(statTypes, 1, 2);
         this.successResults = new ArrayList<>();
         this.successResults.add(successStat);
 
-        OutcomeStat failureStat = new OutcomeStat();
-        failureStat.randomizeOutcomeStat(statTypes, 1, 2);
+        OutcomeStat failureStat = new OutcomeStat(statTypes, 1, 2);
         this.failureResults = new ArrayList<>();
         this.failureResults.add(failureStat);
     }
