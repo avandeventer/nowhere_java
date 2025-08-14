@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Story {
@@ -64,6 +65,7 @@ public class Story {
         int minDC = 1;
         int maxDC = 10;
 
+        this.options = new ArrayList<>();
         Option optionOne = new Option();
         optionOne.randomizeOptionStats(minDC, maxDC, statTypes);
 
@@ -74,15 +76,17 @@ public class Story {
         if(optionOne.getPlayerStatDCs().get(0).getValue() <= 3) {
             minDC = 3;
         }
+        options.add(optionOne);
 
         Option optionTwo = new Option();
 
         do {
+            if (!isAFavorStory()) {
+                statTypes = statTypes.stream().filter(statType -> !statType.isFavorType).collect(Collectors.toList());
+            }
             optionTwo.randomizeOptionStats(minDC, maxDC, statTypes);
         } while (optionTwo.getPlayerStatDCs().get(0).getStatType() == optionOne.getPlayerStatDCs().get(0).getStatType());
 
-        this.options = new ArrayList<>();
-        options.add(optionOne);
         options.add(optionTwo);
     }
 

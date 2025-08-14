@@ -17,6 +17,7 @@ public class ActivePlayerSession {
 
     public ActivePlayerSession() {
         this.isPlayerDoneWithTurn = new HashMap<>();
+        this.repercussions = new RepercussionOutput();
     }
 
     public String getPlayerId() {

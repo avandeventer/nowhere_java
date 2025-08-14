@@ -32,6 +32,7 @@ public class GameSession {
         this.activePlayerSession = new ActivePlayerSession();
         this.activeGameStateSession = new ActiveGameStateSession(gameCode);
         this.adventureMap = new AdventureMap();
+        this.rituals = new ArrayList<>();
     }
 
     public GameSession(String gameCode, GameState gameState) {

@@ -19,6 +19,11 @@ public class PlayerStat {
         this.value = ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
+    public PlayerStat(StatType statType, int min, int max) {
+        this.statType = statType;
+        this.value = ThreadLocalRandom.current().nextInt(min, max + 1);
+    }
+
     public PlayerStat(StatType statType, int value) {
         this.statType = statType;
         this.value = value;

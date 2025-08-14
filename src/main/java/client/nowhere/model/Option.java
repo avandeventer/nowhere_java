@@ -3,7 +3,6 @@ package client.nowhere.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class Option {
@@ -94,12 +93,26 @@ public class Option {
         );
 
         OutcomeStat successStat = new OutcomeStat(statTypes, 1, 2);
-        this.successResults = new ArrayList<>();
-        this.successResults.add(successStat);
+        StatType randomSuccessSuccessStat = successStat.getPlayerStat().getStatType();
+        if (randomSuccessSuccessStat.isFavorType) {
+            this.randomizeFavorOutcomes(nonFavorAdventureMapStatTypes, randomSuccessSuccessStat);
+        } else {
+            this.successResults = new ArrayList<>();
+            this.successResults.add(successStat);
+            OutcomeStat failureStat = new OutcomeStat(nonFavorAdventureMapStatTypes, 1, 2);
+            this.failureResults = new ArrayList<>();
+            this.failureResults.add(failureStat);
+        }
+    }
 
-        OutcomeStat failureStat = new OutcomeStat(statTypes, 1, 2);
+    public void randomizeFavorOutcomes(List<StatType> nonFavorAdventureMapStatTypes, StatType favorStat) {
+        this.successResults = new ArrayList<>();
+        this.successResults.add(new OutcomeStat(favorStat, 1, 2));
+        this.successResults.add(new OutcomeStat(nonFavorAdventureMapStatTypes, 1, 2));
+
         this.failureResults = new ArrayList<>();
-        this.failureResults.add(failureStat);
+        this.failureResults.add(new OutcomeStat(favorStat, 1, 2));
+        this.failureResults.add(new OutcomeStat(nonFavorAdventureMapStatTypes, 1, 2));
     }
 
     public String getOptionId() {

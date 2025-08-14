@@ -17,6 +17,11 @@ public class OutcomeStat {
     }
 
     //This constructor randomizes player stats
+    public OutcomeStat (StatType statType, int min, int max) {
+        this.playerStat = new PlayerStat(statType, min, max);
+    }
+
+    //This constructor randomizes player stats
     public OutcomeStat (List<StatType> adventureMapStatTypes, int min, int max) {
         this.playerStat = new PlayerStat(adventureMapStatTypes, min, max);
     }

@@ -5,13 +5,11 @@ import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
 import client.nowhere.dao.UserProfileDAO;
 import client.nowhere.exception.ResourceException;
-import client.nowhere.factory.MutexFactory;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Component
@@ -102,13 +100,15 @@ public class StoryHelper {
 
         if (!playedStories.isEmpty()) {
             long numberOfFavorStories = stories.stream().filter(Story::isAFavorStory).count();
-            if (gameSession.getPlayers().size() <= numberOfFavorStories / 2) {
+            int requiredFavorStories = (gameSession.getPlayers().size() + 1) / 2;
+            if (numberOfFavorStories < requiredFavorStories && !playerStory.isAFavorStory()) {
                 Optional<StatType> favorStatOptional = playerStats.stream().filter(StatType::isFavorType).findFirst();
-                if (favorStatOptional.isPresent()) {
-                    int outcomeValue = ThreadLocalRandom.current().nextInt(1, 2 + 1);
-                    PlayerStat playerStat = new PlayerStat(favorStatOptional.get(), outcomeValue);
-                    playerStory.getOptions().get(0).getSuccessResults().set(0, new OutcomeStat(playerStat));
-                }
+                favorStatOptional.ifPresent(statType -> playerStory.getOptions().forEach(option ->
+                    option.randomizeFavorOutcomes(
+                        playerStats.stream().filter(stat -> !stat.isFavorType()).collect(Collectors.toList()),
+                        statType
+                    )
+                ));
             }
 
             Optional<Story> prequelStory = getPrequelStory(locationId, playerId, playedStories);
@@ -392,14 +392,18 @@ public class StoryHelper {
     }
 
     private StatType getOutcomeStat(Option chosenOption, Location location, boolean playerSucceeded) {
-        StatType outcomeStat = chosenOption.getFailureResults().get(0).getPlayerStat().getStatType();
+        List<OutcomeStat> statResults = chosenOption.getFailureResults();
         if (playerSucceeded) {
-            outcomeStat = chosenOption.getSuccessResults().get(0).getPlayerStat().getStatType();
+            statResults = chosenOption.getSuccessResults();
         }
 
-        if (outcomeStat.isFavorType()) {
-            outcomeStat = location.getPrimaryStat();
+        Optional<OutcomeStat> statResult = statResults.stream().filter(outcomeStat -> !outcomeStat.getPlayerStat().getStatType().isFavorType())
+                .findFirst();
+
+        if (statResult.isPresent()) {
+            return statResult.get().getPlayerStat().getStatType();
         }
-        return outcomeStat;
+
+        return location.getPrimaryStat();
     }
 }
