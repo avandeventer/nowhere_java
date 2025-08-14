@@ -385,6 +385,11 @@ public class StoryHelper {
                     )
             );
 
+            for (Option ritualOption : ritualOptions) {
+                ritualOption.setSuccessText("You can feel your body swell with pride as you realize you are doing well. Your friends cheer!");
+                ritualOption.setFailureText("You try your best, but you just don't have the skills to wield your sacred artifact properly");
+            }
+
             endingRitualOptions.setOptions(ritualOptions);
             repercussionOutput.setEnding(endingRitualOptions);
         }
