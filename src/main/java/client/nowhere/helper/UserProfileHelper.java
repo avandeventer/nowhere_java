@@ -48,4 +48,8 @@ public class UserProfileHelper {
     public SaveGame getSaveGame(String email, String password, String adventureId, String saveGameId) {
         return this.userProfileDAO.getSaveGame(email, password, adventureId, saveGameId);
     }
+
+    public void deleteSaveGame(String userProfileId, String adventureId, String saveGameId) {
+        this.userProfileDAO.deleteSaveGame(userProfileId, adventureId, saveGameId);
+    }
 }

@@ -234,4 +234,31 @@ public class UserProfileDAO {
         UserProfile userProfile = this.get(email, password);
         return userProfile.getMaps().get(adventureId).getSaveGameById(saveGameId);
     }
-}
+
+    public void deleteSaveGame(String userProfileId, String adventureId, String saveGameId) {
+        try {
+            DocumentReference userProfileRef = db.collection("userProfiles").document(userProfileId);
+            DocumentSnapshot userProfileSnapshot = FirestoreDAOUtil.getDocumentSnapshot(userProfileRef);
+            UserProfile userProfile = FirestoreDAOUtil.mapUserProfile(userProfileSnapshot);
+
+            ProfileAdventureMap profileAdventureMap = userProfile.getMaps().get(adventureId);
+            if (profileAdventureMap == null) {
+                throw new ResourceException("Adventure map " + adventureId + " not found for user " + userProfileId);
+            }
+
+            if (!profileAdventureMap.getSaveGames().containsKey(saveGameId)) {
+                throw new ResourceException("Save game " + saveGameId + " not found for adventure " + adventureId + " in user " + userProfileId);
+            }
+
+            profileAdventureMap.getSaveGames().remove(saveGameId);
+
+            userProfile.upsertProfileAdventureMap(profileAdventureMap);
+
+            ApiFuture<WriteResult> result = userProfileRef.update("maps", userProfile.getMaps());
+            result.get();
+
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("Error deleting save game from profile. User Profile ID: " + userProfileId + ", adventure " + adventureId + ", save game " + saveGameId);
+        }
+    }}

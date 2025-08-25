@@ -58,6 +58,18 @@ public class UserProfileController {
         return this.userProfileHelper.upsertSaveGame(userProfileId, adventureId, saveGame);
     }
 
+    @DeleteMapping(value = "/save-game", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public void deleteSaveGame(@RequestParam String userProfileId,
+                                   @RequestParam String adventureId,
+                                   @RequestParam String saveGameId) {
+        if (saveGameId.isEmpty() || userProfileId.isEmpty() || adventureId.isEmpty()) {
+            throw new ValidationException("User Profile ID, Adventure ID, and Save Game Name are required");
+        }
+
+        this.userProfileHelper.deleteSaveGame(userProfileId, adventureId, saveGameId);
+    }
+
     @PostMapping("/user-profile/{userProfileId}/adventure-map")
     @ResponseBody
     public AdventureMap createAdventureMap(
@@ -65,6 +77,15 @@ public class UserProfileController {
             @RequestBody AdventureMap adventureMap
     ) {
         return this.adventureMapHelper.create(userProfileId, adventureMap);
+    }
+
+    @DeleteMapping("/user-profile/adventure-map")
+    @ResponseBody
+    public void deleteAdventureMap(
+            @RequestParam String userProfileId,
+            @RequestParam String adventureId
+    ) {
+        this.adventureMapHelper.delete(userProfileId, adventureId);
     }
 
     @PutMapping("/user-profile/{userProfileId}/adventure-map")

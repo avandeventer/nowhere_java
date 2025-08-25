@@ -80,7 +80,6 @@ public class AdventureMapDAO {
         existingAdventureMap.updateAdventureMapDisplay(adventureMapUpdates);
         existingAdventureMap.updateStatTypes(adventureMapUpdates.getStatTypes());
         existingAdventureMap.updateLocations(adventureMapUpdates.getLocations());
-        existingAdventureMap.updateRitualOptions(adventureMapUpdates.getRitual());
         update(userProfileId, existingAdventureMap);
         return existingAdventureMap;
     }
@@ -165,4 +164,26 @@ public class AdventureMapDAO {
 
         return globalAdventureMaps;
     }
+
+    public void delete(String userProfileId, String adventureId) {
+        try {
+            DocumentReference globalAdventureMapRef = db.collection("userProfiles").document(userProfileId);
+            UserProfile userProfile = FirestoreDAOUtil.mapDatabaseObject(globalAdventureMapRef, UserProfile.class);
+
+            if (userProfile.getMaps() != null && userProfile.getMaps().containsKey(adventureId)) {
+                userProfile.getMaps().remove(adventureId);
+
+                ApiFuture<WriteResult> result = globalAdventureMapRef.set(userProfile);
+                WriteResult asyncResponse = result.get();
+                System.out.println("Deleted adventure map with ID: " + adventureId +
+                        ", Update time: " + asyncResponse.getUpdateTime());
+            } else {
+                System.out.println("No adventure map found with ID: " + adventureId);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue deleting the adventure map", e);
+        }
+    }
+
 }

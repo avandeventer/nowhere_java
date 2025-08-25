@@ -64,4 +64,8 @@ public class AdventureMapHelper {
     public AdventureMap get(String userProfileId, String adventureId) {
         return this.adventureMapDAO.get(userProfileId, adventureId);
     }
+
+    public void delete(String userProfileId, String adventureId) {
+        this.adventureMapDAO.delete(userProfileId, adventureId);
+    }
 }
