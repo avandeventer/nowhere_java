@@ -21,6 +21,7 @@ public class Story {
     private String prequelStoryId = "";
     private String prequelStorySelectedOptionId = "";
     private String gameCode = "";
+    private boolean isMainPlotStory = false;
 
     //Temporary player variables
     private boolean visited = false;
@@ -80,10 +81,13 @@ public class Story {
 
         Option optionTwo = new Option();
 
+        if (isAFavorStory()) {
+            setMainPlotStory(true);
+        } else {
+            statTypes = statTypes.stream().filter(statType -> !statType.isFavorType).collect(Collectors.toList());
+        }
+
         do {
-            if (!isAFavorStory()) {
-                statTypes = statTypes.stream().filter(statType -> !statType.isFavorType).collect(Collectors.toList());
-            }
             optionTwo.randomizeOptionStats(minDC, maxDC, statTypes);
         } while (optionTwo.getPlayerStatDCs().get(0).getStatType() == optionOne.getPlayerStatDCs().get(0).getStatType());
 
@@ -271,6 +275,14 @@ public class Story {
 
     public void setOptionType(String optionType) {
         this.optionType = optionType;
+    }
+
+    public boolean isMainPlotStory() {
+        return isMainPlotStory;
+    }
+
+    public void setMainPlotStory(boolean mainPlotStory) {
+        isMainPlotStory = mainPlotStory;
     }
 
     @JsonIgnore

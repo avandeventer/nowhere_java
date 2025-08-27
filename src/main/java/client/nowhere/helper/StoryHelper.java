@@ -99,9 +99,10 @@ public class StoryHelper {
         }
 
         if (!playedStories.isEmpty()) {
-            long numberOfFavorStories = stories.stream().filter(Story::isAFavorStory).count();
+            long numberOfFavorStories = stories.stream().filter(Story::isMainPlotStory).count();
             int requiredFavorStories = (gameSession.getPlayers().size() + 1) / 2;
-            if (numberOfFavorStories < requiredFavorStories && !playerStory.isAFavorStory()) {
+            if (numberOfFavorStories < requiredFavorStories && !playerStory.isMainPlotStory()) {
+                playerStory.setMainPlotStory(true);
                 Optional<StatType> favorStatOptional = playerStats.stream().filter(StatType::isFavorType).findFirst();
                 favorStatOptional.ifPresent(statType -> playerStory.getOptions().forEach(option ->
                     option.randomizeFavorOutcomes(
@@ -178,6 +179,9 @@ public class StoryHelper {
 
         if (selectedStory != null) {
             selectedStory.setSaveGameStory(true);
+            if (selectedStory.isAFavorStory()) {
+                selectedStory.setMainPlotStory(true);
+            }
         }
 
         return selectedStory;

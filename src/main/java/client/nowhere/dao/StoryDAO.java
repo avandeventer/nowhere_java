@@ -105,6 +105,10 @@ public class StoryDAO {
                         storyToUpdate.setPrequelStoryPlayerId(story.getPrequelStoryPlayerId());
                     }
 
+                    if(story.isMainPlotStory()) {
+                        storyToUpdate.setMainPlotStory(story.isMainPlotStory());
+                    }
+
                     if (story.getOptions() != null && !story.getOptions().isEmpty()) {
                         List<Option> optionsToUpdate = new ArrayList<>();
 
