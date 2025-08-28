@@ -28,8 +28,13 @@ public class ActiveSessionHelper {
         return this.activeSessionDAO.update(activeSession);
     }
 
-    public ActiveGameStateSession update(String gameCode, String authorId, boolean isDone, boolean isDoneWithTurn) {
-        return this.activeSessionDAO.update(gameCode, authorId, isDone, isDoneWithTurn);
+    public void update(String gameCode, GameState gamePhase, String authorId, boolean isDone) {
+        boolean gameProgressionNeeded = this.activeSessionDAO.update(gameCode, gamePhase, authorId, isDone);
+        
+        if (gameProgressionNeeded) {
+            System.out.println("All players are done, progressing game state via GameSessionHelper");
+            this.gameSessionHelper.updateToNextGameState(gameCode);
+        }
     }
 
     public ActivePlayerSession nextPlayerTurn(String gameCode, String currentTurnPlayerId) {

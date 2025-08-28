@@ -3,6 +3,9 @@ package client.nowhere.controller;
 import client.nowhere.helper.ActiveSessionHelper;
 import client.nowhere.model.ActiveGameStateSession;
 import client.nowhere.model.ActivePlayerSession;
+import client.nowhere.model.GameState;
+import client.nowhere.exception.GameStateException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,9 +37,21 @@ public class ActiveSessionController {
 
     @PutMapping("/activeGameStateSession")
     @ResponseBody
-    public ActiveGameStateSession updateGameStateSession(@RequestParam String gameCode,
+    public void updateGameStateSession(@RequestParam String gameCode,
+                                                         @RequestParam String gamePhase,
                                                          @RequestParam String authorId,
                                                          @RequestParam boolean isDone) {
-        return this.activeSessionHelper.update(gameCode, authorId, isDone, false);
+        if (gamePhase == null || gamePhase.trim().isEmpty()) {
+            throw new GameStateException("Game phase parameter cannot be null or empty");
+        }
+        
+        try {
+            GameState gameStateEnum = GameState.valueOf(gamePhase.toUpperCase().trim());
+            System.out.println("Processing player done update - Game: " + gameCode + ", Phase: " + gameStateEnum + ", Player: " + authorId + ", Done: " + isDone);
+            this.activeSessionHelper.update(gameCode, gameStateEnum, authorId, isDone);
+        } catch (IllegalArgumentException e) {
+            throw new GameStateException("Invalid game phase: " + gamePhase + ". Valid phases: " + 
+                java.util.Arrays.toString(GameState.values()));
+        }
     }
 }

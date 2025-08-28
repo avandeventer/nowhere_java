@@ -167,8 +167,8 @@ public class GameSessionHelper {
                     break;
             }
         } catch (Exception e) {
-            System.out.println("Story creation stopped");
-            throw new ResourceException("Story creation failure", e);
+            System.out.println("Game State transition stopped");
+            throw new ResourceException("Game State update failure", e);
         }
 
         return gameSessionDAO.updateGameSession(gameSession);
