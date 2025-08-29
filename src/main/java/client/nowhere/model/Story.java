@@ -21,7 +21,7 @@ public class Story {
     private String prequelStoryId = "";
     private String prequelStorySelectedOptionId = "";
     private String gameCode = "";
-    private boolean isMainPlotStory = false;
+    private boolean mainPlotStory = false;
 
     //Temporary player variables
     private boolean visited = false;
@@ -278,11 +278,11 @@ public class Story {
     }
 
     public boolean isMainPlotStory() {
-        return isMainPlotStory;
+        return mainPlotStory;
     }
 
-    public void setMainPlotStory(boolean mainPlotStory) {
-        isMainPlotStory = mainPlotStory;
+    public void setMainPlotStory(boolean isMainPlotStory) {
+        this.mainPlotStory = isMainPlotStory;
     }
 
     @JsonIgnore
