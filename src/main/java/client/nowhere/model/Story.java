@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,9 +67,12 @@ public class Story {
         int minDC = 1;
         int maxDC = 10;
 
+        List<StatType> nonFavorAdventureMapStatTypes = statTypes.stream().filter(statType -> !statType.isFavorType).collect(Collectors.toList());
+
         this.options = new ArrayList<>();
         Option optionOne = new Option();
-        optionOne.randomizeOptionStats(minDC, maxDC, statTypes);
+        optionOne.randomizeStatDCs(minDC, maxDC, statTypes);
+        optionOne.randomizeOptionOutcomes(nonFavorAdventureMapStatTypes);
 
         if(optionOne.getPlayerStatDCs().get(0).getValue() >= 7) {
             maxDC = 6;
@@ -81,17 +85,23 @@ public class Story {
 
         Option optionTwo = new Option();
 
-        if (isAFavorStory()) {
-            setMainPlotStory(true);
-        } else {
-            statTypes = statTypes.stream().filter(statType -> !statType.isFavorType).collect(Collectors.toList());
-        }
+        optionTwo.randomizeOptionOutcomes(nonFavorAdventureMapStatTypes);
 
         do {
-            optionTwo.randomizeOptionStats(minDC, maxDC, statTypes);
+            optionTwo.randomizeStatDCs(minDC, maxDC, nonFavorAdventureMapStatTypes);
         } while (optionTwo.getPlayerStatDCs().get(0).getStatType() == optionOne.getPlayerStatDCs().get(0).getStatType());
 
         options.add(optionTwo);
+    }
+
+    public void setToMainPlotStory(List<StatType> playerStats) {
+        this.setMainPlotStory(true);
+        Optional<StatType> favorStatOptional = playerStats.stream().filter(StatType::isFavorType).findFirst();
+        favorStatOptional.ifPresent(statType ->  {
+            List<StatType> nonFavorPlayerStats = playerStats.stream().filter(stat -> !stat.isFavorType()).collect(Collectors.toList());
+            this.getOptions().get(0).randomizeFavorOutcomes(nonFavorPlayerStats, statType, true);
+            this.getOptions().get(1).randomizeFavorOutcomes(nonFavorPlayerStats, statType, false);
+        });
     }
 
     public String getStoryId() {

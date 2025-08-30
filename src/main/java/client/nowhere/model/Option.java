@@ -82,36 +82,34 @@ public class Option {
         setStatRequirements(stats, difficultyValues);
     }
 
-
-    public void randomizeOptionStats (int minDC, int maxDC, List<StatType> statTypes) {
+    public void randomizeStatDCs(int minDC, int maxDC, List<StatType> statTypes) {
         this.optionText = "";
 
-        List<StatType> nonFavorAdventureMapStatTypes = statTypes.stream().filter(statType -> !statType.isFavorType).collect(Collectors.toList());
-
         this.playerStatDCs = Collections.singletonList(
-                new PlayerStat(nonFavorAdventureMapStatTypes, minDC, maxDC)
+                new PlayerStat(statTypes, minDC, maxDC)
         );
-
-        OutcomeStat successStat = new OutcomeStat(statTypes, 1, 2);
-        StatType randomSuccessSuccessStat = successStat.getPlayerStat().getStatType();
-        if (randomSuccessSuccessStat.isFavorType) {
-            this.randomizeFavorOutcomes(nonFavorAdventureMapStatTypes, randomSuccessSuccessStat);
-        } else {
-            this.successResults = new ArrayList<>();
-            this.successResults.add(successStat);
-            OutcomeStat failureStat = new OutcomeStat(nonFavorAdventureMapStatTypes, 1, 2);
-            this.failureResults = new ArrayList<>();
-            this.failureResults.add(failureStat);
-        }
     }
 
-    public void randomizeFavorOutcomes(List<StatType> nonFavorAdventureMapStatTypes, StatType favorStat) {
+
+    public void randomizeOptionOutcomes (List<StatType> statTypes) {
+        OutcomeStat successStat = new OutcomeStat(statTypes, 1, 2);
         this.successResults = new ArrayList<>();
-        this.successResults.add(new OutcomeStat(favorStat, 1, 2));
+        this.successResults.add(successStat);
+        OutcomeStat failureStat = new OutcomeStat(statTypes, 1, 2);
+        this.failureResults = new ArrayList<>();
+        this.failureResults.add(failureStat);
+    }
+
+    public void randomizeFavorOutcomes(List<StatType> nonFavorAdventureMapStatTypes, StatType favorStat, boolean sideWithFavorEntity) {
+        this.successResults = new ArrayList<>();
+
+        int minStatChange = sideWithFavorEntity ? 1 : -1;
+        int maxStatChange = sideWithFavorEntity ? 2 : -2;
+        this.successResults.add(new OutcomeStat(favorStat, minStatChange, maxStatChange));
         this.successResults.add(new OutcomeStat(nonFavorAdventureMapStatTypes, 1, 2));
 
         this.failureResults = new ArrayList<>();
-        this.failureResults.add(new OutcomeStat(favorStat, 1, 2));
+        this.failureResults.add(new OutcomeStat(favorStat, minStatChange, maxStatChange));
         this.failureResults.add(new OutcomeStat(nonFavorAdventureMapStatTypes, 1, 2));
     }
 

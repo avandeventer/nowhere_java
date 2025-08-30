@@ -98,20 +98,21 @@ public class StoryHelper {
             playedStories = getPlayedStories(gameSession, stories);
         }
 
-        if (!playedStories.isEmpty()) {
-            long numberOfFavorStories = stories.stream().filter(Story::isMainPlotStory).count();
-            int requiredFavorStories = (gameSession.getPlayers().size() + 1) / 2;
-            if (numberOfFavorStories < requiredFavorStories && !playerStory.isMainPlotStory()) {
-                playerStory.setMainPlotStory(true);
-                Optional<StatType> favorStatOptional = playerStats.stream().filter(StatType::isFavorType).findFirst();
-                favorStatOptional.ifPresent(statType -> playerStory.getOptions().forEach(option ->
-                    option.randomizeFavorOutcomes(
-                        playerStats.stream().filter(stat -> !stat.isFavorType()).collect(Collectors.toList()),
-                        statType
-                    )
-                ));
+        long numberOfFavorStories = stories.stream().filter(Story::isMainPlotStory).count();
+        int requiredFavorStories = (gameSession.getPlayers().size() + 1) / 2;
+        if (numberOfFavorStories < requiredFavorStories && !playerStory.isMainPlotStory()) {
+            if (!playedStories.isEmpty()) {
+                playerStory.setToMainPlotStory(playerStats);
+            } else {
+                Random random = new Random();
+                int ceilingForRandomNumber = gameSession.getPlayers().size() - 1;
+                if (random.nextInt(ceilingForRandomNumber) == 0) {
+                    playerStory.setToMainPlotStory(playerStats);
+                }
             }
+        }
 
+        if (!playedStories.isEmpty()) {
             Optional<Story> prequelStory = getPrequelStory(locationId, playerId, playedStories);
 
             prequelStory.ifPresent(foundPrequelStory -> {
