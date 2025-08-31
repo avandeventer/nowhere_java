@@ -71,7 +71,7 @@ public class Story {
 
         this.options = new ArrayList<>();
         Option optionOne = new Option();
-        optionOne.randomizeStatDCs(minDC, maxDC, statTypes);
+        optionOne.randomizeStatDCs(minDC, maxDC, nonFavorAdventureMapStatTypes);
         optionOne.randomizeOptionOutcomes(nonFavorAdventureMapStatTypes);
 
         if(optionOne.getPlayerStatDCs().get(0).getValue() >= 7) {
