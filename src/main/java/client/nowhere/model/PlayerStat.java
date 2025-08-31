@@ -19,9 +19,10 @@ public class PlayerStat {
         this.value = ThreadLocalRandom.current().nextInt(min, max + 1);
     }
 
-    public PlayerStat(StatType statType, int min, int max) {
+    public PlayerStat(StatType statType, int min, int max, boolean sideWith) {
         this.statType = statType;
         this.value = ThreadLocalRandom.current().nextInt(min, max + 1);
+        this.value = sideWith ? this.value : this.value * -1;
     }
 
     public PlayerStat(StatType statType, int value) {

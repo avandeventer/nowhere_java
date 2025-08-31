@@ -103,13 +103,11 @@ public class Option {
     public void randomizeFavorOutcomes(List<StatType> nonFavorAdventureMapStatTypes, StatType favorStat, boolean sideWithFavorEntity) {
         this.successResults = new ArrayList<>();
 
-        int minStatChange = sideWithFavorEntity ? 1 : -1;
-        int maxStatChange = sideWithFavorEntity ? 2 : -2;
-        this.successResults.add(new OutcomeStat(favorStat, minStatChange, maxStatChange));
+        this.successResults.add(new OutcomeStat(favorStat, 1, 2, sideWithFavorEntity));
         this.successResults.add(new OutcomeStat(nonFavorAdventureMapStatTypes, 1, 2));
 
         this.failureResults = new ArrayList<>();
-        this.failureResults.add(new OutcomeStat(favorStat, minStatChange, maxStatChange));
+        this.failureResults.add(new OutcomeStat(favorStat, 1, 2, sideWithFavorEntity));
         this.failureResults.add(new OutcomeStat(nonFavorAdventureMapStatTypes, 1, 2));
     }
 

@@ -17,8 +17,8 @@ public class OutcomeStat {
     }
 
     //This constructor randomizes player stats
-    public OutcomeStat (StatType statType, int min, int max) {
-        this.playerStat = new PlayerStat(statType, min, max);
+    public OutcomeStat (StatType statType, int min, int max, boolean sideWith) {
+        this.playerStat = new PlayerStat(statType, min, max, sideWith);
     }
 
     //This constructor randomizes player stats
