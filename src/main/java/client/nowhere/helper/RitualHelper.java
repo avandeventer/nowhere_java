@@ -56,7 +56,7 @@ public class RitualHelper {
 
                 Option updatedOption = determineWhetherPlayerSucceeded(chosenRitualOption, chosenPlayer, chosenRitualSuccessRequirements);
 
-                updatedOption.setAttemptText(attemptText);
+                // updatedOption.setAttemptText(attemptText);
 
                 ritualStory.setOptions(Collections.singletonList(updatedOption));
             }
@@ -72,8 +72,8 @@ public class RitualHelper {
                     -> playerStat.getStatType().getId().equals(ritualDC.getStatType().getId())).findFirst()
                     .get().getValue();
 
-            if (playerStatValue >= ritualDC.getValue()) {
-                updatedRitualOption.setPointsRewarded(updatedRitualOption.getPointsRewarded() + 2);
+            if (playerStatValue < ritualDC.getValue()) {
+                updatedRitualOption.setPointsRewarded(0);
             }
         }
 
