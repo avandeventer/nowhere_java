@@ -364,39 +364,41 @@ public class StoryHelper {
         RepercussionOutput repercussionOutput = new RepercussionOutput();
 
         if (updatedStory.isAFavorStory()) {
-            List<Integer> statGradient = Arrays.asList(9, 6);
-            Story endingRitualOptions = new Story();
-            endingRitualOptions.setGameCode(story.getGameCode());
-            endingRitualOptions.setAuthorId(updatedStory.getPlayerId());
-            endingRitualOptions.makeSequel(story.getStoryId(), story.isPlayerSucceeded(), story.getSelectedOptionId());
-            Option chosenOption = updatedStory.getOptions().stream()
-                    .filter(option ->
-                            option.getOptionId().equals(updatedStory.getSelectedOptionId())).findFirst().get();
-            StatType chosenOptionStatDC = chosenOption.getPlayerStatDCs().get(0).getStatType();
+            updatedStory.setNewStoryId();
+            updatedStory.resetPlayerVariables();
+            updatedStory.setGameCode(story.getGameCode());
+            updatedStory.setAuthorId(updatedStory.getAuthorId());
+            updatedStory.makeSequel(story.getStoryId(), story.isPlayerSucceeded(), story.getSelectedOptionId());
+            updatedStory.getOptions().forEach(option -> {
+                option.setPointsRewarded(option.getPlayerStatDCs().get(0).getValue());
+            });
+            // Option chosenOption = updatedStory.getOptions().stream()
+            //         .filter(option ->
+            //                 option.getOptionId().equals(updatedStory.getSelectedOptionId())).findFirst().get();
+            // StatType chosenOptionStatDC = chosenOption.getPlayerStatDCs().get(0).getStatType();
 
-            StatType outcomeStat = getOutcomeStat(chosenOption, updatedStory.getLocation(), story.isPlayerSucceeded());
+            // StatType outcomeStat = getOutcomeStat(chosenOption, updatedStory.getLocation(), story.isPlayerSucceeded());
 
-            Option unchosenStoryOption = updatedStory.getOptions().stream()
-                    .filter(option ->
-                            !option.getOptionId().equals(updatedStory.getSelectedOptionId())).findFirst().get();
-            StatType unchosenOptionStatDC = unchosenStoryOption.getPlayerStatDCs().get(0).getStatType();
+            // Option unchosenStoryOption = updatedStory.getOptions().stream()
+            //         .filter(option ->
+            //                 !option.getOptionId().equals(updatedStory.getSelectedOptionId())).findFirst().get();
+            // StatType unchosenOptionStatDC = unchosenStoryOption.getPlayerStatDCs().get(0).getStatType();
 
-            List<Option> ritualOptions = Arrays.asList(
-                    new Option(
-                            Arrays.asList(chosenOptionStatDC, outcomeStat), statGradient
-                    ),
-                    new Option(
-                            Arrays.asList(chosenOptionStatDC, unchosenOptionStatDC), statGradient
-                    )
-            );
+            // List<Option> ritualOptions = Arrays.asList(
+            //         new Option(
+            //                 Arrays.asList(chosenOptionStatDC, outcomeStat), statGradient
+            //         ),
+            //         new Option(
+            //                 Arrays.asList(chosenOptionStatDC, unchosenOptionStatDC), statGradient
+            //         )
+            // );
 
-            for (Option ritualOption : ritualOptions) {
-                ritualOption.setSuccessText("You can feel your body swell with pride as you realize you are doing well. Your friends cheer!");
-                ritualOption.setFailureText("You try your best, but you just don't have the skills to wield your sacred artifact properly");
-            }
+            // for (Option ritualOption : ritualOptions) {
+            //     ritualOption.setSuccessText("You can feel your body swell with pride as you realize you are doing well. Your friends cheer!");
+            //     ritualOption.setFailureText("You try your best, but you just don't have the skills to wield your sacred artifact properly");
+            // }
 
-            endingRitualOptions.setOptions(ritualOptions);
-            repercussionOutput.setEnding(endingRitualOptions);
+            repercussionOutput.setEnding(updatedStory);
         }
         return repercussionOutput;
     }

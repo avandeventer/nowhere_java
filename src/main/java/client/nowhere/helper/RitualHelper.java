@@ -56,17 +56,6 @@ public class RitualHelper {
 
                 Option updatedOption = determineWhetherPlayerSucceeded(chosenRitualOption, chosenPlayer, chosenRitualSuccessRequirements);
 
-                String attemptText = "You muster up all your energy and you wield ";
-                if (!updatedOption.getOptionText().startsWith("The")
-                    && !updatedOption.getOptionText().startsWith("the")
-                    && !updatedOption.getOptionText().startsWith("A ")
-                    && !updatedOption.getOptionText().startsWith("a ")
-                    && !updatedOption.getOptionText().startsWith("An ")
-                    && !updatedOption.getOptionText().startsWith("an ")
-                ) {
-                    attemptText = attemptText + "the";
-                }
-
                 updatedOption.setAttemptText(attemptText);
 
                 ritualStory.setOptions(Collections.singletonList(updatedOption));
