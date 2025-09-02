@@ -8,6 +8,7 @@ public class ActivePlayerSession {
     String playerChoiceOptionId = "";
     String selectedLocationOptionId = "";
     Story story;
+    Location location;
     List<String> outcomeDisplay;
     List<String> locationOutcomeDisplay;
     Story ritualStory;
@@ -40,6 +41,7 @@ public class ActivePlayerSession {
         this.playerChoiceOptionId = updatedSession.getPlayerChoiceOptionId();
         this.playerId = updatedSession.getPlayerId();
         this.story = updatedSession.getStory();
+        this.location = updatedSession.getLocation();
         this.outcomeDisplay = updatedSession.getOutcomeDisplay();
         this.setNextPlayerTurn = updatedSession.isSetNextPlayerTurn();
         this.selectedLocationOptionId = updatedSession.getSelectedLocationOptionId();
@@ -65,6 +67,14 @@ public class ActivePlayerSession {
 
     public void setStory(Story story) {
         this.story = story;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public String getGameCode() {
@@ -117,6 +127,7 @@ public class ActivePlayerSession {
 
     public void resetActivePlayerSession() {
         this.story = new Story();
+        this.location = null;
         this.playerChoiceOptionId = "";
         this.outcomeDisplay = new ArrayList<>();
         this.playerId = "";
