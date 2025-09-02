@@ -57,6 +57,7 @@ class StoryHelperTest {
         mockGameSession.setUserProfileId("USER_PROFILE_ID");
         mockGameSession.setSaveGameId("SAVE_GAME_ID");
         mockGameSession.setStories(new ArrayList<>());
+        mockGameSession.setPlayers(Arrays.asList(new Player(), new Player(), new Player(), new Player()));
         mockGameSession.getAdventureMap().setStatTypes(
                 Arrays.stream(Stat.values())
                         .map(Stat::getStatType).collect(Collectors.toList())
@@ -109,6 +110,7 @@ class StoryHelperTest {
         mockGameSession.setUserProfileId("USER_PROFILE_ID");
         mockGameSession.setSaveGameId("SAVE_GAME_ID");
         mockGameSession.setStories(gameSessionStories);
+        mockGameSession.setPlayers(Arrays.asList(new Player(), new Player(), new Player(), new Player()));
         mockGameSession.getAdventureMap().setStatTypes(
                 Arrays.stream(Stat.values())
                 .map(Stat::getStatType).collect(Collectors.toList())

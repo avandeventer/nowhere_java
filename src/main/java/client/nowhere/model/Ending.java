@@ -15,6 +15,10 @@ public class Ending {
 
     public Ending() { }
 
+    public Ending(String playerId) {
+        this.playerId = playerId;
+    }
+
     public Ending(String authorId, String playerId) {
         this.authorId = authorId;
         this.playerId = playerId;

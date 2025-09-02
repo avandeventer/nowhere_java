@@ -155,8 +155,8 @@ public class GameSessionHelper {
                         );
 
                         authorEnding.setAssociatedStories(storiesPlayedByPlayer);
-                        Option ritual = ritualDAO.getRitualJob(gameSession.getGameCode(), playerId);
-                        authorEnding.setAssociatedRitualOption(ritual);
+                        // Option ritual = ritualDAO.getRitualJob(gameSession.getGameCode(), playerId);
+                        // authorEnding.setAssociatedRitualOption(ritual);
                         authorEnding.setDidWeSucceed(gameSession.getDidWeSucceed());
                         authorEndings.add(authorEnding);
 
