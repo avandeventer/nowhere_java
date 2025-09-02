@@ -49,17 +49,17 @@ public class RitualHelper {
                         .stream().flatMap(story -> story.getOptions().stream())
                         .collect(Collectors.toList());
 
-                List<PlayerStat> chosenRitualSuccessRequirements = rituals
+                Option chosenRitual = rituals
                         .stream().filter(ritualOption ->
                                 ritualOption.getOptionId().equals(chosenRitualOption.getOptionId()))
-                        .findFirst().get().getPlayerStatDCs();
+                        .findFirst().get();
 
                 Player chosenPlayer = gameSessionDAO.getPlayer(
                         ritualStory.getGameCode(),
                         chosenRitualOption.getSelectedByPlayerId()
                 );
 
-                Option updatedOption = determineWhetherPlayerSucceeded(chosenRitualOption, chosenPlayer, chosenRitualSuccessRequirements);
+                Option updatedOption = determineWhetherPlayerSucceeded(chosenRitual, chosenPlayer);
                 GameSession gameSession = gameSessionDAO.getGame(ritualStory.getGameCode());
                 gameSession.setTotalPointsTowardsVictory(gameSession.getTotalPointsTowardsVictory() + updatedOption.getPointsRewarded());
                 gameSessionDAO.updateGameSession(gameSession);
@@ -72,33 +72,32 @@ public class RitualHelper {
         return ritualStory.getOptions().get(0); //this.ritualDAO.selectJob(ritualStory);
     }
 
-    private Option determineWhetherPlayerSucceeded(Option chosenRitualOption, Player chosenPlayer, List<PlayerStat> ritualDCs) {
-        Option updatedRitualOption = chosenRitualOption;
-        for (PlayerStat ritualDC : ritualDCs) {
+    private Option determineWhetherPlayerSucceeded(Option chosenRitualOption, Player chosenPlayer) {
+        for (PlayerStat ritualDC : chosenRitualOption.getPlayerStatDCs()) {
             int playerStatValue = chosenPlayer.getPlayerStats().stream().filter(playerStat
                     -> playerStat.getStatType().getId().equals(ritualDC.getStatType().getId())).findFirst()
                     .get().getValue();
 
             if (playerStatValue < ritualDC.getValue()) {
-                updatedRitualOption.setPointsRewarded(0);
+                chosenRitualOption.setPointsRewarded(0);
             }
         }
 
-        if (updatedRitualOption.getPointsRewarded() > 2) {
-            updatedRitualOption.setPlayerSucceeded(true);
+        if (chosenRitualOption.getPointsRewarded() > 2) {
+            chosenRitualOption.setPlayerSucceeded(true);
         }
 
-        switch (updatedRitualOption.getPointsRewarded()) {
-            case 0 -> updatedRitualOption.setSuccessMarginText("Your efforts were in vain");
-            case 1, 2, -1, -2 -> updatedRitualOption.setSuccessMarginText("You feel you didn't help much");
-            case 3, 4, -3, -4 -> updatedRitualOption.setSuccessMarginText("You feel like you helped!");
-            case 5, 6, -5, -6 -> updatedRitualOption.setSuccessMarginText("You helped a good bit!");
-            case 7, 8, -7, -8 -> updatedRitualOption.setSuccessMarginText("You helped a great deal!");
-            case 9, 10, -9, -10 -> updatedRitualOption.setSuccessMarginText("You helped a tremendous amount!");
-            default -> updatedRitualOption.setSuccessMarginText("You did something unexpected!");
+        switch (chosenRitualOption.getPointsRewarded()) {
+            case 0 -> chosenRitualOption.setSuccessMarginText("Your efforts were in vain");
+            case 1, 2, -1, -2 -> chosenRitualOption.setSuccessMarginText("You feel you didn't help much");
+            case 3, 4, -3, -4 -> chosenRitualOption.setSuccessMarginText("You feel like you helped!");
+            case 5, 6, -5, -6 -> chosenRitualOption.setSuccessMarginText("You helped a good bit!");
+            case 7, 8, -7, -8 -> chosenRitualOption.setSuccessMarginText("You helped a great deal!");
+            case 9, 10, -9, -10 -> chosenRitualOption.setSuccessMarginText("You helped a tremendous amount!");
+            default -> chosenRitualOption.setSuccessMarginText("You did something unexpected!");
         }
 
-        return updatedRitualOption;
+        return chosenRitualOption;
     }
 
     public Story create(Story ritualStory) {
