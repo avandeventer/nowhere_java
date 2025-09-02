@@ -102,9 +102,8 @@ public class Story {
         this.setMainPlotStory(true);
         Optional<StatType> favorStatOptional = playerStats.stream().filter(StatType::isFavorType).findFirst();
         favorStatOptional.ifPresent(statType ->  {
-            List<StatType> nonFavorPlayerStats = playerStats.stream().filter(stat -> !stat.isFavorType()).collect(Collectors.toList());
-            this.getOptions().get(0).randomizeFavorOutcomes(nonFavorPlayerStats, statType, true);
-            this.getOptions().get(1).randomizeFavorOutcomes(nonFavorPlayerStats, statType, false);
+            this.getOptions().get(0).randomizeFavorOutcomes(statType, true);
+            this.getOptions().get(1).randomizeFavorOutcomes(statType, false);
         });
     }
 

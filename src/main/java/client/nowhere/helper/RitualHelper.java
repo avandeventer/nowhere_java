@@ -6,7 +6,6 @@ import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -62,6 +61,7 @@ public class RitualHelper {
             }
         }
 
+        
         return this.ritualDAO.selectJob(ritualStory);
     }
 
@@ -86,15 +86,19 @@ public class RitualHelper {
                 updatedRitualOption.setSuccessMarginText("Your efforts were in vain");
                 break;
             case 2:
+            case -2:
                 updatedRitualOption.setSuccessMarginText("You feel you didn't help much");
                 break;
             case 4:
+            case -4:
                 updatedRitualOption.setSuccessMarginText("You feel like you helped!");
                 break;
             case 6:
+            case -6:
                 updatedRitualOption.setSuccessMarginText("You helped a good bit!");
                 break;
             case 8:
+            case -8:
                 updatedRitualOption.setSuccessMarginText("You helped a great deal!");
                 break;
             default:

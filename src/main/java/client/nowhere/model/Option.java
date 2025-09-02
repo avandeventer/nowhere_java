@@ -100,15 +100,15 @@ public class Option {
         this.failureResults.add(failureStat);
     }
 
-    public void randomizeFavorOutcomes(List<StatType> nonFavorAdventureMapStatTypes, StatType favorStat, boolean sideWithFavorEntity) {
+    public void randomizeFavorOutcomes(StatType favorStat, boolean sideWithFavorEntity) {
         this.successResults = new ArrayList<>();
 
         this.successResults.add(new OutcomeStat(favorStat, 1, 2, sideWithFavorEntity));
-        this.successResults.add(new OutcomeStat(nonFavorAdventureMapStatTypes, 1, 2));
+        this.successResults.add(new OutcomeStat(getPlayerStatDCs().get(0).getStatType(), 1, 2, true));
 
         this.failureResults = new ArrayList<>();
         this.failureResults.add(new OutcomeStat(favorStat, 1, 2, sideWithFavorEntity));
-        this.failureResults.add(new OutcomeStat(nonFavorAdventureMapStatTypes, 1, 2));
+        this.failureResults.add(new OutcomeStat(getPlayerStatDCs().get(0).getStatType(), 1, 2, true));
     }
 
     public String getOptionId() {

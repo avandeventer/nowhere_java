@@ -99,7 +99,7 @@ public class StoryHelper {
         }
 
         long numberOfFavorStories = stories.stream().filter(Story::isMainPlotStory).count();
-        int requiredFavorStories = (gameSession.getPlayers().size() + 1) / 2;
+        int requiredFavorStories = (gameSession.getPlayers().size() + 2) / 2;
         if (numberOfFavorStories < requiredFavorStories && !playerStory.isMainPlotStory()) {
             if (!playedStories.isEmpty()) {
                 playerStory.setToMainPlotStory(playerStats);
@@ -369,8 +369,12 @@ public class StoryHelper {
             updatedStory.setGameCode(story.getGameCode());
             updatedStory.setAuthorId(updatedStory.getAuthorId());
             updatedStory.makeSequel(story.getStoryId(), story.isPlayerSucceeded(), story.getSelectedOptionId());
-            updatedStory.getOptions().forEach(option -> {
-                option.setPointsRewarded(option.getPlayerStatDCs().get(0).getValue());
+            updatedStory.getOptions().forEach(option -> {                
+                int dispositionChange = 1;
+                if (option.getSuccessResults().stream().anyMatch(result -> result.getPlayerStat().getValue() < 0)) {
+                    dispositionChange = -1;
+                }
+                option.setPointsRewarded(option.getPlayerStatDCs().get(0).getValue() * dispositionChange);
             });
             // Option chosenOption = updatedStory.getOptions().stream()
             //         .filter(option ->
