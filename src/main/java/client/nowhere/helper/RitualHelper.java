@@ -60,15 +60,16 @@ public class RitualHelper {
                 );
 
                 Option updatedOption = determineWhetherPlayerSucceeded(chosenRitualOption, chosenPlayer, chosenRitualSuccessRequirements);
-
-                // updatedOption.setAttemptText(attemptText);
+                GameSession gameSession = gameSessionDAO.getGame(ritualStory.getGameCode());
+                gameSession.setTotalPointsTowardsVictory(gameSession.getTotalPointsTowardsVictory() + updatedOption.getPointsRewarded());
+                gameSessionDAO.updateGameSession(gameSession);
 
                 ritualStory.setOptions(Collections.singletonList(updatedOption));
             }
         }
 
-        
-        return this.ritualDAO.selectJob(ritualStory);
+
+        return ritualStory.getOptions().get(0); //this.ritualDAO.selectJob(ritualStory);
     }
 
     private Option determineWhetherPlayerSucceeded(Option chosenRitualOption, Player chosenPlayer, List<PlayerStat> ritualDCs) {

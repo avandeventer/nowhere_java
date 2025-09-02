@@ -117,14 +117,10 @@ public class GameSessionHelper {
                             .mapToInt(Player::getFavor)
                             .sum();
 
-                    int totalRitualFavor = existingSession
-                            .getAdventureMap()
-                            .getRitual().getOptions()
-                            .stream()
-                            .mapToInt(Option::getPointsRewarded)
-                            .sum();
+                    int totalRitualFavor = gameSession.getTotalPointsTowardsVictory();
+                    gameSession.setTotalPointsTowardsVictory(totalRitualFavor + totalPlayerFavor);
 
-                    boolean didWeSucceed = totalPlayerFavor + totalRitualFavor > (12 * players.size());
+                    boolean didWeSucceed = gameSession.getTotalPointsTowardsVictory() > (12 * players.size());
                     gameSession.setDidWeSucceed(didWeSucceed);
 
                     //Per turn per player possible total:
@@ -134,6 +130,13 @@ public class GameSessionHelper {
                     // 2 x Each Success for Ending Ritual (4) = 8
                     // Max = 24, Min = 0
                     // Average = 2 for location + 4 player stat + 8 for ritual = 14 each player
+
+                    //Per turn per player possible total (with single turn and negative values):
+                    // 1 per turn for location = 2
+                    // player stat start = 4
+                    // 1 per turn max for stories = 4
+                    // 1-10 for rituals (one high and one low) = average = 5
+                    //Average =
 
                     for (int authorIndex = 0; authorIndex < players.size(); authorIndex++) {
                         int playerIndex = authorIndex + 1 >= players.size() ? 0 : authorIndex + 1;

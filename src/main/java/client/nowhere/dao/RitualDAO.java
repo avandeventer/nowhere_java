@@ -58,9 +58,7 @@ public class RitualDAO {
             Option selectedOption = ritualStory.getOptions().get(0);
 
             Optional<Option> existingOptionOptional = ritualOptions.stream()
-                    .filter(option ->
-                            option.getSelectedByPlayerId() == null
-                            && option.getOptionId().equals(selectedOption.getOptionId())
+                    .filter(option -> option.getOptionId().equals(selectedOption.getOptionId())
                     ).findFirst();
 
             if (!existingOptionOptional.isPresent()) {

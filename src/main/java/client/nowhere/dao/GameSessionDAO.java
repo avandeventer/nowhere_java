@@ -71,6 +71,7 @@ public class GameSessionDAO {
         updates.put("gameState", gameSession.getGameState());
         updates.put("activeGameStateSession", gameSession.getActiveGameStateSession());
         updates.put("activePlayerSession", gameSession.getActivePlayerSession());
+        updates.put("totalPointsTowardsVictory", gameSession.getTotalPointsTowardsVictory());
 
         try {
             ApiFuture<WriteResult> result = gameSessionRef.update(updates);

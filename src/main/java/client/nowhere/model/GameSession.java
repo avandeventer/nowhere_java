@@ -13,6 +13,7 @@ public class GameSession {
     List<Story> stories;
     AdventureMap adventureMap;
     boolean didWeSucceed = false;
+    int totalPointsTowardsVictory = 0;
     List<Ending> endings;
     List<Story> rituals;
     String userProfileId;
@@ -161,5 +162,13 @@ public class GameSession {
 
     public void setRituals(List<Story> rituals) {
         this.rituals = rituals;
+    }
+
+    public int getTotalPointsTowardsVictory() {
+        return totalPointsTowardsVictory;
+    }
+
+    public void setTotalPointsTowardsVictory(int totalPointsTowardsVictory) {
+        this.totalPointsTowardsVictory = totalPointsTowardsVictory;
     }
 }
