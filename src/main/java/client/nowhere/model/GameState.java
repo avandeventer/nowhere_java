@@ -2,18 +2,21 @@ package client.nowhere.model;
 
 public enum GameState {
         INIT,
-        START,
+        PREAMBLE,
         LOCATION_SELECT,
+        GENERATE_WRITE_PROMPT_AUTHORS,
         WRITE_PROMPTS,
         GENERATE_WRITE_OPTION_AUTHORS,
         WRITE_OPTIONS,
         ROUND1,
-        START_PHASE2,
+        GENERATE_WRITE_PROMPT_AUTHORS_AGAIN,
+        PREAMBLE_AGAIN,
         WRITE_PROMPTS_AGAIN,
         LOCATION_SELECT_AGAIN,
         GENERATE_WRITE_OPTION_AUTHORS_AGAIN,
         WRITE_OPTIONS_AGAIN,
         ROUND2,
+        ENDING_PREAMBLE,
         RITUAL,
         GENERATE_ENDINGS,
         WRITE_ENDINGS,
@@ -23,12 +26,15 @@ public enum GameState {
         public GameState getNextGameState() {
                 switch (this) {
                         case INIT -> {
+                                return GameState.PREAMBLE;
+                        }
+                        case PREAMBLE -> {
                                 return GameState.LOCATION_SELECT;
                         }
                         case LOCATION_SELECT -> {
-                                return GameState.START;
+                                return GameState.GENERATE_WRITE_PROMPT_AUTHORS;
                         }
-                        case START -> {
+                        case GENERATE_WRITE_PROMPT_AUTHORS -> {
                                 return GameState.WRITE_PROMPTS;
                         }
                         case WRITE_PROMPTS -> {
@@ -41,12 +47,15 @@ public enum GameState {
                                 return GameState.ROUND1;
                         }
                         case ROUND1 -> {
+                                return GameState.PREAMBLE_AGAIN;
+                        }
+                        case PREAMBLE_AGAIN -> {
                                 return GameState.LOCATION_SELECT_AGAIN;
                         }
                         case LOCATION_SELECT_AGAIN -> {
-                                return GameState.START_PHASE2;
+                                return GameState.GENERATE_WRITE_PROMPT_AUTHORS_AGAIN;
                         }
-                        case START_PHASE2 -> {
+                        case GENERATE_WRITE_PROMPT_AUTHORS_AGAIN -> {
                                 return GameState.WRITE_PROMPTS_AGAIN;
                         }
                         case WRITE_PROMPTS_AGAIN -> {
@@ -59,6 +68,9 @@ public enum GameState {
                                 return GameState.ROUND2;
                         }
                         case ROUND2 -> {
+                                return GameState.ENDING_PREAMBLE;
+                        }
+                        case ENDING_PREAMBLE -> {
                                 return GameState.RITUAL;
                         }
                         case RITUAL -> {

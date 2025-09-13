@@ -66,8 +66,8 @@ public class GameSessionHelper {
             gameSession.setActivePlayerSession(activePlayerSession);
 
             switch (gameSession.getGameState()) {
-                case START:
-                case START_PHASE2:
+                case GENERATE_WRITE_PROMPT_AUTHORS:
+                case GENERATE_WRITE_PROMPT_AUTHORS_AGAIN:
                     assignStoryAuthors(gameSession, isTestMode, players);
                     gameSession.setGameStateToNext();
                     break;
@@ -166,6 +166,8 @@ public class GameSessionHelper {
                         endingDAO.createEnding(gameSession.getGameCode(), authorEnding);
                     }
                     gameSession.setGameStateToNext();
+                    break;
+                default:
                     break;
             }
         } catch (Exception e) {
