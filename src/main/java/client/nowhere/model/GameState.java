@@ -2,6 +2,17 @@ package client.nowhere.model;
 
 public enum GameState {
         INIT,
+        WHERE_ARE_WE,
+        WHERE_ARE_WE_VOTE,
+        WHO_ARE_WE,
+        WHO_ARE_WE_VOTE,
+        WHAT_IS_OUR_GOAL,
+        WHAT_IS_OUR_GOAL_VOTE,
+        WHAT_ARE_WE_CAPABLE_OF,
+        WHAT_ARE_WE_CAPABLE_OF_VOTE,
+        WHERE_CAN_WE_GO,
+        GENERATE_OCCUPATION_AUTHORS,
+        WHAT_OCCUPATIONS_ARE_THERE,
         PREAMBLE,
         LOCATION_SELECT,
         GENERATE_WRITE_PROMPT_AUTHORS,

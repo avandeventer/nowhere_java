@@ -35,7 +35,7 @@ public class GameSessionHelper {
     }
 
     public GameSession createGameSession(String userProfileId, String adventureId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound) {
-        AdventureMap adventureMap = adventureMapDAO.get(userProfileId, adventureId);
+        AdventureMap adventureMap = adventureId.isEmpty() ? null : adventureMapDAO.get(userProfileId, adventureId);
         return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, adventureMap, saveGameId, storiesToWritePerRound, storiesToPlayPerRound);
     }
 
@@ -66,6 +66,10 @@ public class GameSessionHelper {
             gameSession.setActivePlayerSession(activePlayerSession);
 
             switch (gameSession.getGameState()) {
+                case WHERE_ARE_WE:
+                    if (gameSession.getAdventureMap() != null && !gameSession.getAdventureMap().getAdventureId().isEmpty()) {
+                        gameSession.skipAdventureMapCreateMode();
+                    }
                 case GENERATE_WRITE_PROMPT_AUTHORS:
                 case GENERATE_WRITE_PROMPT_AUTHORS_AGAIN:
                     assignStoryAuthors(gameSession, isTestMode, players);

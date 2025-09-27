@@ -171,4 +171,8 @@ public class GameSession {
     public void setTotalPointsTowardsVictory(int totalPointsTowardsVictory) {
         this.totalPointsTowardsVictory = totalPointsTowardsVictory;
     }
+
+    public void skipAdventureMapCreateMode() {
+        this.gameState = GameState.PREAMBLE;
+    }
 }
