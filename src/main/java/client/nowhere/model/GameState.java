@@ -2,6 +2,7 @@ package client.nowhere.model;
 
 public enum GameState {
         INIT,
+        GENRE_VOTE,
         WHERE_ARE_WE,
         WHERE_ARE_WE_VOTE,
         WHO_ARE_WE,
