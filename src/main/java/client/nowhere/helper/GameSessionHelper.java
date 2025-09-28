@@ -4,6 +4,7 @@ import client.nowhere.dao.*;
 import client.nowhere.exception.GameStateException;
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.*;
+import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +36,7 @@ public class GameSessionHelper {
     }
 
     public GameSession createGameSession(String userProfileId, String adventureId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound) {
-        AdventureMap adventureMap = adventureId.isEmpty() ? null : adventureMapDAO.get(userProfileId, adventureId);
+        AdventureMap adventureMap = StringUtil.isNullOrEmpty(adventureId) ? null : adventureMapDAO.get(userProfileId, adventureId);
         return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, adventureMap, saveGameId, storiesToWritePerRound, storiesToPlayPerRound);
     }
 
@@ -70,6 +71,7 @@ public class GameSessionHelper {
                     if (gameSession.getAdventureMap() != null && !gameSession.getAdventureMap().getAdventureId().isEmpty()) {
                         gameSession.skipAdventureMapCreateMode();
                     }
+                    break;
                 case GENERATE_WRITE_PROMPT_AUTHORS:
                 case GENERATE_WRITE_PROMPT_AUTHORS_AGAIN:
                     assignStoryAuthors(gameSession, isTestMode, players);

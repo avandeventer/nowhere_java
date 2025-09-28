@@ -37,6 +37,39 @@ public enum GameState {
         public GameState getNextGameState() {
                 switch (this) {
                         case INIT -> {
+                                return GameState.WHERE_ARE_WE;
+                        }
+                        case WHERE_ARE_WE -> {
+                                return GameState.WHERE_ARE_WE_VOTE;
+                        }
+                        case WHERE_ARE_WE_VOTE -> {
+                                return GameState.WHO_ARE_WE;
+                        }
+                        case WHO_ARE_WE -> {
+                                return GameState.WHO_ARE_WE_VOTE;
+                        }
+                        case WHO_ARE_WE_VOTE -> {
+                                return GameState.WHAT_IS_OUR_GOAL;
+                        }
+                        case WHAT_IS_OUR_GOAL -> {
+                                return GameState.WHAT_IS_OUR_GOAL_VOTE;
+                        }
+                        case WHAT_IS_OUR_GOAL_VOTE -> {
+                                return GameState.WHAT_ARE_WE_CAPABLE_OF;
+                        }
+                        case WHAT_ARE_WE_CAPABLE_OF -> {
+                                return GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE;
+                        }
+                        case WHAT_ARE_WE_CAPABLE_OF_VOTE -> {
+                                return GameState.WHERE_CAN_WE_GO;
+                        }
+                        case WHERE_CAN_WE_GO -> {
+                                return GameState.GENERATE_OCCUPATION_AUTHORS;
+                        }
+                        case GENERATE_OCCUPATION_AUTHORS -> {
+                                return GameState.WHAT_OCCUPATIONS_ARE_THERE;
+                        }
+                        case WHAT_OCCUPATIONS_ARE_THERE -> {
                                 return GameState.PREAMBLE;
                         }
                         case PREAMBLE -> {
