@@ -201,4 +201,23 @@ public class CollaborativeTextDAO {
         }
     }
 
+    /**
+     * Updates an existing CollaborativeTextPhase atomically.
+     * @param gameCode The game code
+     * @param phaseId The phase ID
+     * @param phase The CollaborativeTextPhase object with updated data
+     * @return The updated CollaborativeTextPhase
+     */
+    public CollaborativeTextPhase updateCollaborativeTextPhaseAtomically(String gameCode, String phaseId, CollaborativeTextPhase phase) {
+        try {
+            return db.runTransaction(transaction -> {
+                // Update the phase in Firestore
+                updateCollaborativeTextPhaseInTransaction(gameCode, phaseId, phase, transaction);
+                return phase;
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            throw new ResourceException("Failed to update collaborative text phase atomically", e);
+        }
+    }
 }

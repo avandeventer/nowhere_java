@@ -5,6 +5,8 @@ import client.nowhere.helper.CollaborativeTextHelper;
 import client.nowhere.model.*;
 import client.nowhere.exception.GameStateException;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,5 +87,17 @@ public class ActiveSessionController {
     @ResponseBody
     public String getWinningSubmission(@RequestParam String gameCode) {
         return this.collaborativeTextHelper.calculateWinningSubmission(gameCode);
+    }
+
+    @GetMapping("/collaborativeText/available")
+    @ResponseBody
+    public List<TextSubmission> getAvailableSubmissions(@RequestParam String gameCode, @RequestParam String playerId) {
+        return this.collaborativeTextHelper.getAvailableSubmissionsForPlayer(gameCode, playerId);
+    }
+
+    @PostMapping("/collaborativeText/view")
+    @ResponseBody
+    public void recordSubmissionView(@RequestParam String gameCode, @RequestParam String playerId, @RequestParam String submissionId) {
+        this.collaborativeTextHelper.recordSubmissionView(gameCode, playerId, submissionId);
     }
 }

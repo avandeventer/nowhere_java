@@ -127,6 +127,47 @@ public class CollaborativeTextHelper {
         return calculateWinnerFromVotes(phase);
     }
 
+    public List<TextSubmission> getAvailableSubmissionsForPlayer(String gameCode, String playerId) {
+        GameSession gameSession = getGameSession(gameCode);
+        String phaseId = getPhaseIdForGameState(gameSession.getGameState());
+
+        if (phaseId == null) {
+            throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
+        }
+        
+        // Retrieve the phase (non-atomically for reads)
+        CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+        if (phase == null) {
+            throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
+        }
+
+        // Get available submissions for the player (max 2 views per submission)
+        int maxViews = 2;
+        return phase.getAvailableSubmissionsForPlayer(playerId, maxViews);
+    }
+
+    public void recordSubmissionView(String gameCode, String playerId, String submissionId) {
+        GameSession gameSession = getGameSession(gameCode);
+        String phaseId = getPhaseIdForGameState(gameSession.getGameState());
+
+        if (phaseId == null) {
+            throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
+        }
+        
+        // Retrieve the phase (non-atomically for reads)
+        CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+        if (phase == null) {
+            throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
+        }
+
+        // Record the view (max 2 views per submission)
+        int maxViews = 2;
+        phase.recordSubmissionView(playerId, submissionId, maxViews);
+        
+        // Update the phase in the database
+        collaborativeTextDAO.updateCollaborativeTextPhaseAtomically(gameCode, phaseId, phase);
+    }
+
     // ===== SUBMISSION CREATION LOGIC =====
 
     /**
