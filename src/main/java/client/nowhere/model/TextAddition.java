@@ -1,16 +1,16 @@
 package client.nowhere.model;
 
-import java.time.LocalDateTime;
+import com.google.cloud.Timestamp;
 
 public class TextAddition {
     private String additionId;
     private String authorId;
     private String addedText;
-    private LocalDateTime addedAt;
+    private Timestamp addedAt;
     private String submissionId; // Reference to the original submission
 
     public TextAddition() {
-        this.addedAt = LocalDateTime.now();
+        this.addedAt = Timestamp.now();
     }
 
     public TextAddition(String additionId, String authorId, String addedText, String submissionId) {
@@ -31,8 +31,8 @@ public class TextAddition {
     public String getAddedText() { return addedText; }
     public void setAddedText(String addedText) { this.addedText = addedText; }
 
-    public LocalDateTime getAddedAt() { return addedAt; }
-    public void setAddedAt(LocalDateTime addedAt) { this.addedAt = addedAt; }
+    public Timestamp getAddedAt() { return addedAt; }
+    public void setAddedAt(Timestamp addedAt) { this.addedAt = addedAt; }
 
     public String getSubmissionId() { return submissionId; }
     public void setSubmissionId(String submissionId) { this.submissionId = submissionId; }

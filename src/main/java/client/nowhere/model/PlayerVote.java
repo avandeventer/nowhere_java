@@ -1,16 +1,16 @@
 package client.nowhere.model;
 
-import java.time.LocalDateTime;
+import com.google.cloud.Timestamp;
 
 public class PlayerVote {
     private String voteId;
     private String playerId;
     private String submissionId;
     private int ranking; // 1 = best, 2 = second, 3 = third
-    private LocalDateTime votedAt;
+    private Timestamp votedAt;
 
     public PlayerVote() {
-        this.votedAt = LocalDateTime.now();
+        this.votedAt = Timestamp.now();
     }
 
     public PlayerVote(String voteId, String playerId, String submissionId, int ranking) {
@@ -34,6 +34,6 @@ public class PlayerVote {
     public int getRanking() { return ranking; }
     public void setRanking(int ranking) { this.ranking = ranking; }
 
-    public LocalDateTime getVotedAt() { return votedAt; }
-    public void setVotedAt(LocalDateTime votedAt) { this.votedAt = votedAt; }
+    public Timestamp getVotedAt() { return votedAt; }
+    public void setVotedAt(Timestamp votedAt) { this.votedAt = votedAt; }
 }

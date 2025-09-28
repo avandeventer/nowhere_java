@@ -1,6 +1,6 @@
 package client.nowhere.model;
 
-import java.time.LocalDateTime;
+import com.google.cloud.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,16 +10,16 @@ public class TextSubmission {
     private String originalText;
     private String currentText; // This gets modified as players add to it
     private List<TextAddition> additions;
-    private LocalDateTime createdAt;
-    private LocalDateTime lastModified;
+    private Timestamp createdAt;
+    private Timestamp lastModified;
     private boolean isFinalized;
     private int totalVotes;
     private double averageRanking;
 
     public TextSubmission() {
         this.additions = new ArrayList<>();
-        this.createdAt = LocalDateTime.now();
-        this.lastModified = LocalDateTime.now();
+        this.createdAt = Timestamp.now();
+        this.lastModified = Timestamp.now();
         this.isFinalized = false;
         this.totalVotes = 0;
         this.averageRanking = 0.0;
@@ -46,17 +46,17 @@ public class TextSubmission {
     public String getCurrentText() { return currentText; }
     public void setCurrentText(String currentText) { 
         this.currentText = currentText; 
-        this.lastModified = LocalDateTime.now();
+        this.lastModified = Timestamp.now();
     }
 
     public List<TextAddition> getAdditions() { return additions; }
     public void setAdditions(List<TextAddition> additions) { this.additions = additions; }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public Timestamp getCreatedAt() { return createdAt; }
+    public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
 
-    public LocalDateTime getLastModified() { return lastModified; }
-    public void setLastModified(LocalDateTime lastModified) { this.lastModified = lastModified; }
+    public Timestamp getLastModified() { return lastModified; }
+    public void setLastModified(Timestamp lastModified) { this.lastModified = lastModified; }
 
     public boolean isFinalized() { return isFinalized; }
     public void setFinalized(boolean finalized) { isFinalized = finalized; }
@@ -71,7 +71,7 @@ public class TextSubmission {
     public void addTextAddition(TextAddition addition) {
         this.additions.add(addition);
         this.currentText += " " + addition.getAddedText();
-        this.lastModified = LocalDateTime.now();
+        this.lastModified = Timestamp.now();
     }
 
     public void incrementVotes() {

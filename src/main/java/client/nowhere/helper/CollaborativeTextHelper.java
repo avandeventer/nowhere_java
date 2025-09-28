@@ -7,7 +7,7 @@ import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import com.google.cloud.Timestamp;
 import java.util.List;
 import java.util.UUID;
 
@@ -181,8 +181,8 @@ public class CollaborativeTextHelper {
         newSubmission.setAuthorId(textAddition.getAuthorId());
         newSubmission.setOriginalText(""); // Empty as requested
         newSubmission.setCurrentText(textAddition.getAddedText());
-        newSubmission.setCreatedAt(LocalDateTime.now());
-        newSubmission.setLastModified(LocalDateTime.now());
+        newSubmission.setCreatedAt(Timestamp.now());
+        newSubmission.setLastModified(Timestamp.now());
         
         // Add the text addition to the new submission
         newSubmission.addTextAddition(textAddition);
@@ -218,8 +218,8 @@ public class CollaborativeTextHelper {
         newSubmission.setAuthorId(textAddition.getAuthorId()); // Use the new author's ID
         newSubmission.setOriginalText(parentSubmission.getCurrentText()); // Base text from parent
         newSubmission.setCurrentText(newCurrentText);
-        newSubmission.setCreatedAt(LocalDateTime.now());
-        newSubmission.setLastModified(LocalDateTime.now());
+        newSubmission.setCreatedAt(Timestamp.now());
+        newSubmission.setLastModified(Timestamp.now());
         
         // Add the new addition to the new submission
         newSubmission.addTextAddition(textAddition);

@@ -1,7 +1,7 @@
 package client.nowhere.model;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
+import com.google.cloud.Timestamp;
 
 /**
  * Tracks how many times a player has viewed a specific submission.
@@ -11,8 +11,8 @@ public class SubmissionView {
     private String viewId;
     private String playerId;
     private String submissionId;
-    private LocalDateTime firstViewedAt;
-    private LocalDateTime lastViewedAt;
+    private Timestamp firstViewedAt;
+    private Timestamp lastViewedAt;
     private int viewCount;
     private boolean isExhausted; // true when this player has seen this submission enough times
 
@@ -21,8 +21,8 @@ public class SubmissionView {
     public SubmissionView(String playerId, String submissionId) {
         this.playerId = playerId;
         this.submissionId = submissionId;
-        this.firstViewedAt = LocalDateTime.now();
-        this.lastViewedAt = LocalDateTime.now();
+        this.firstViewedAt = Timestamp.now();
+        this.lastViewedAt = Timestamp.now();
         this.viewCount = 1;
         this.isExhausted = false;
     }
@@ -52,19 +52,19 @@ public class SubmissionView {
         this.submissionId = submissionId;
     }
 
-    public LocalDateTime getFirstViewedAt() {
+    public Timestamp getFirstViewedAt() {
         return firstViewedAt;
     }
 
-    public void setFirstViewedAt(LocalDateTime firstViewedAt) {
+    public void setFirstViewedAt(Timestamp firstViewedAt) {
         this.firstViewedAt = firstViewedAt;
     }
 
-    public LocalDateTime getLastViewedAt() {
+    public Timestamp getLastViewedAt() {
         return lastViewedAt;
     }
 
-    public void setLastViewedAt(LocalDateTime lastViewedAt) {
+    public void setLastViewedAt(Timestamp lastViewedAt) {
         this.lastViewedAt = lastViewedAt;
     }
 
@@ -90,7 +90,7 @@ public class SubmissionView {
      */
     public void recordView(int maxViews) {
         this.viewCount++;
-        this.lastViewedAt = LocalDateTime.now();
+        this.lastViewedAt = Timestamp.now();
         this.isExhausted = this.viewCount >= maxViews;
     }
 
