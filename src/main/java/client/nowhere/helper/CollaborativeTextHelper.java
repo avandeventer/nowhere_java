@@ -222,6 +222,7 @@ public class CollaborativeTextHelper {
         newSubmission.setLastModified(Timestamp.now());
         
         // Add the new addition to the new submission
+        newSubmission.setAdditions(parentSubmission.getAdditions());
         newSubmission.addTextAddition(textAddition);
         
         return newSubmission;
