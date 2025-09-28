@@ -32,23 +32,20 @@ public class GameSessionController {
                 @RequestParam(required = false, defaultValue = "1") Integer storiesToWritePerRound,
                 @RequestParam(required = false, defaultValue =  "1") Integer storiesToPlayPerRound
     ) {
-        GameSession game = this.gameSessionHelper.createGameSession(userProfileId, adventureId, saveGameId, storiesToWritePerRound, storiesToPlayPerRound);
-        return game;
+        return this.gameSessionHelper.createGameSession(userProfileId, adventureId, saveGameId, storiesToWritePerRound, storiesToPlayPerRound);
     }
 
     @PutMapping(value = "/game", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public GameSession update(@RequestParam(required = false) boolean isTestMode,
                               @RequestBody GameSession gameSession) {
-        GameSession game = this.gameSessionHelper.updateGameSession(gameSession, isTestMode);
-        return game;
+        return this.gameSessionHelper.updateGameSession(gameSession, isTestMode);
     }
 
     @PutMapping(value = "/game/next", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public GameSession nextGameState(@RequestParam String gameCode) {
-        GameSession game = this.gameSessionHelper.updateToNextGameState(gameCode);
-        return game;
+        return this.gameSessionHelper.updateToNextGameState(gameCode);
     }
 
 }

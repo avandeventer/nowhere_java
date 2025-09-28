@@ -268,11 +268,13 @@ public class GameSessionHelper {
             throw new GameStateException("New players cannot join after locations have been selected.");
         }
 
-        if(alreadyJoinedPlayers.size() == 0) {
+        if(alreadyJoinedPlayers.isEmpty()) {
             player.setFirstPlayer(true);
         }
 
-        player.setBasePlayerStats(gameSession.getAdventureMap().getStatTypes(), 4);
+        if (gameSession.getAdventureMap() != null) {
+            player.setBasePlayerStats(gameSession.getAdventureMap().getStatTypes(), 4);
+        }
 
         player.createRandomAuthorId();
         player.setJoinedAt(new Date());
