@@ -1,7 +1,9 @@
 package client.nowhere.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameSession {
 
@@ -20,11 +22,15 @@ public class GameSession {
     String saveGameId;
     Integer storiesToWritePerRound = 1;
     Integer storiesToPlayPerRound = 1;
+    
+    // Collaborative text phases for world-building
+    Map<String, CollaborativeTextPhase> collaborativeTextPhases;
 
     public GameSession() {
         if(this.activeGameStateSession == null) {
             this.activeGameStateSession = new ActiveGameStateSession(this.gameCode);
         }
+        this.collaborativeTextPhases = new HashMap<>();
     }
 
     public GameSession(String gameCode) {
@@ -34,6 +40,7 @@ public class GameSession {
         this.activeGameStateSession = new ActiveGameStateSession(gameCode);
         this.adventureMap = new AdventureMap();
         this.rituals = new ArrayList<>();
+        this.collaborativeTextPhases = new HashMap<>();
     }
 
     public GameSession(String gameCode, GameState gameState) {
@@ -170,6 +177,22 @@ public class GameSession {
 
     public void setTotalPointsTowardsVictory(int totalPointsTowardsVictory) {
         this.totalPointsTowardsVictory = totalPointsTowardsVictory;
+    }
+
+    public Map<String, CollaborativeTextPhase> getCollaborativeTextPhases() {
+        return collaborativeTextPhases;
+    }
+
+    public void setCollaborativeTextPhases(Map<String, CollaborativeTextPhase> collaborativeTextPhases) {
+        this.collaborativeTextPhases = collaborativeTextPhases;
+    }
+
+    public CollaborativeTextPhase getCollaborativeTextPhase(String phaseId) {
+        return collaborativeTextPhases.get(phaseId);
+    }
+
+    public void addCollaborativeTextPhase(CollaborativeTextPhase phase) {
+        this.collaborativeTextPhases.put(phase.getPhaseId(), phase);
     }
 
     public void skipAdventureMapCreateMode() {
