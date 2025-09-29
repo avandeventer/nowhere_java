@@ -123,6 +123,11 @@ public class CollaborativeTextPhase {
     public List<TextSubmission> getAvailableSubmissionsForPlayer(String playerId, int maxViews) {
         return submissions.stream()
                 .filter(submission -> {
+                    // Don't show player's own submissions
+                    if (submission.getAuthorId().equals(playerId)) {
+                        return false;
+                    }
+                    
                     String viewKey = playerId + "_" + submission.getSubmissionId();
                     SubmissionView view = submissionViews.get(viewKey);
                     
