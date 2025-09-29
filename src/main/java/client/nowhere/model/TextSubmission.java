@@ -70,7 +70,7 @@ public class TextSubmission {
     // Helper methods
     public void addTextAddition(TextAddition addition) {
         this.additions.add(addition);
-        this.currentText += " " + addition.getAddedText();
+//        this.currentText += " " + addition.getAddedText();
         this.lastModified = Timestamp.now();
     }
 
