@@ -9,6 +9,8 @@ import com.google.cloud.firestore.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -218,6 +220,42 @@ public class CollaborativeTextDAO {
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
             throw new ResourceException("Failed to update collaborative text phase atomically", e);
+        }
+    }
+
+    /**
+     * Gets available submissions for a player and records views atomically
+     * @param gameCode The game code
+     * @param phaseId The phase ID
+     * @param playerId The player requesting submissions
+     * @param requestedCount Number of submissions requested
+     * @return List of available submissions
+     */
+    public List<TextSubmission> getAvailableSubmissionsForPlayerAtomically(String gameCode, String phaseId, String playerId, int requestedCount) {
+        try {
+            return db.runTransaction((Transaction.Function<List<TextSubmission>>) transaction -> {
+                // Get the current phase
+                CollaborativeTextPhase phase = getCollaborativeTextPhaseInTransaction(gameCode, phaseId, transaction);
+                if (phase == null) {
+                    return new ArrayList<>();
+                }
+                
+                // Get available submissions
+                List<TextSubmission> availableSubmissions = phase.getAvailableSubmissionsForPlayer(playerId, requestedCount);
+                
+                // Record views for each submission returned
+                for (TextSubmission submission : availableSubmissions) {
+                    phase.recordSubmissionView(submission.getSubmissionId(), playerId);
+                }
+                
+                // Update the phase with new view records
+                updateCollaborativeTextPhaseInTransaction(gameCode, phaseId, phase, transaction);
+                
+                return availableSubmissions;
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            throw new ResourceException("Failed to get available submissions atomically", e);
         }
     }
 }

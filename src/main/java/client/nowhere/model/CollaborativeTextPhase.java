@@ -14,7 +14,7 @@ public class CollaborativeTextPhase {
     private List<String> playersWhoSubmitted;
     private List<String> playersWhoVoted;
     private String finalResult; // The winning text that goes to GameSessionDisplay
-    private Map<String, SubmissionView> submissionViews; // Key: playerId_submissionId
+    private Map<String, List<String>> submissionViews; // submissionId -> List of playerIds who viewed it // Key: playerId_submissionId
     private boolean isComplete;
 
     public enum PhaseType {
@@ -66,8 +66,8 @@ public class CollaborativeTextPhase {
     public boolean isComplete() { return isComplete; }
     public void setComplete(boolean complete) { isComplete = complete; }
 
-    public Map<String, SubmissionView> getSubmissionViews() { return submissionViews; }
-    public void setSubmissionViews(Map<String, SubmissionView> submissionViews) { this.submissionViews = submissionViews; }
+    public Map<String, List<String>> getSubmissionViews() { return submissionViews; }
+    public void setSubmissionViews(Map<String, List<String>> submissionViews) { this.submissionViews = submissionViews; }
 
     // Helper methods
     public void addSubmission(TextSubmission submission) {
@@ -78,7 +78,7 @@ public class CollaborativeTextPhase {
     }
 
     public void addPlayerVote(PlayerVote vote) {
-        this.playerVotes.computeIfAbsent(vote.getPlayerId(), playerId -> new ArrayList<>()).add(vote);
+        this.playerVotes.computeIfAbsent(vote.getPlayerId(), k -> new ArrayList<>()).add(vote);
         if (!this.playersWhoVoted.contains(vote.getPlayerId())) {
             this.playersWhoVoted.add(vote.getPlayerId());
         }
@@ -96,31 +96,14 @@ public class CollaborativeTextPhase {
                 .orElse(null);
     }
 
-    /**
-     * Records that a player has viewed a submission.
-     * @param playerId The player who viewed the submission
-     * @param submissionId The submission that was viewed
-     * @param maxViews Maximum number of times a player can view a submission
-     */
-    public void recordSubmissionView(String playerId, String submissionId, int maxViews) {
-        String viewKey = playerId + "_" + submissionId;
-        SubmissionView view = submissionViews.get(viewKey);
-        
-        if (view == null) {
-            view = new SubmissionView(playerId, submissionId);
-            submissionViews.put(viewKey, view);
-        } else {
-            view.recordView(maxViews);
-        }
-    }
 
     /**
      * Gets submissions that a player can still view (not exhausted).
      * @param playerId The player requesting submissions
-     * @param maxViews Maximum number of times a player can view a submission
+     * @param requestedCount Number of submissions requested
      * @return List of submissions available to the player
      */
-    public List<TextSubmission> getAvailableSubmissionsForPlayer(String playerId, int maxViews) {
+    public List<TextSubmission> getAvailableSubmissionsForPlayer(String playerId, int requestedCount) {
         return submissions.stream()
                 .filter(submission -> {
                     // Don't show player's own submissions
@@ -128,25 +111,32 @@ public class CollaborativeTextPhase {
                         return false;
                     }
                     
-                    String viewKey = playerId + "_" + submission.getSubmissionId();
-                    SubmissionView view = submissionViews.get(viewKey);
+                    String submissionId = submission.getSubmissionId();
+                    List<String> viewers = submissionViews.getOrDefault(submissionId, new ArrayList<>());
                     
-                    // If no view record exists, or view count is below max, it's available
-                    return view == null || view.getViewCount() < maxViews;
+                    // If 2 or more players have viewed this submission, it's exhausted
+                    return viewers.size() < 2;
                 })
+                .limit(requestedCount)
                 .toList();
     }
 
     /**
-     * Checks if a player has exhausted their views for a specific submission.
-     * @param playerId The player
-     * @param submissionId The submission
-     * @param maxViews Maximum number of times a player can view a submission
-     * @return true if the player has viewed this submission too many times
+     * Records a view for a submission by a player.
+     * @param submissionId The submission being viewed
+     * @param playerId The player viewing the submission
+     * @return true if the view was recorded, false if the player already viewed this submission
      */
-    public boolean isSubmissionExhaustedForPlayer(String playerId, String submissionId, int maxViews) {
-        String viewKey = playerId + "_" + submissionId;
-        SubmissionView view = submissionViews.get(viewKey);
-        return view != null && view.getViewCount() >= maxViews;
+    public boolean recordSubmissionView(String submissionId, String playerId) {
+        List<String> viewers = submissionViews.computeIfAbsent(submissionId, k -> new ArrayList<>());
+        
+        // Check if player already viewed this submission
+        if (viewers.contains(playerId)) {
+            return false; // Already viewed
+        }
+        
+        // Add player to viewers list
+        viewers.add(playerId);
+        return true; // View recorded
     }
 }

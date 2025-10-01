@@ -91,13 +91,8 @@ public class ActiveSessionController {
 
     @GetMapping("/collaborativeText/available")
     @ResponseBody
-    public List<TextSubmission> getAvailableSubmissions(@RequestParam String gameCode, @RequestParam String playerId) {
-        return this.collaborativeTextHelper.getAvailableSubmissionsForPlayer(gameCode, playerId);
+    public List<TextSubmission> getAvailableSubmissions(@RequestParam String gameCode, @RequestParam String playerId, @RequestParam(defaultValue = "2") int requestedCount) {
+        return this.collaborativeTextHelper.getAvailableSubmissionsForPlayer(gameCode, playerId, requestedCount);
     }
 
-    @PostMapping("/collaborativeText/view")
-    @ResponseBody
-    public void recordSubmissionView(@RequestParam String gameCode, @RequestParam String playerId, @RequestParam String submissionId) {
-        this.collaborativeTextHelper.recordSubmissionView(gameCode, playerId, submissionId);
-    }
 }
