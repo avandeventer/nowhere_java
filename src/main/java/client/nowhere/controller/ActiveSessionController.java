@@ -15,12 +15,10 @@ import org.springframework.web.bind.annotation.*;
 public class ActiveSessionController {
 
     private final ActiveSessionHelper activeSessionHelper;
-    private final CollaborativeTextHelper collaborativeTextHelper;
 
     @Autowired
-    public ActiveSessionController(ActiveSessionHelper activeSessionHelper, CollaborativeTextHelper collaborativeTextHelper) {
+    public ActiveSessionController(ActiveSessionHelper activeSessionHelper) {
         this.activeSessionHelper = activeSessionHelper;
-        this.collaborativeTextHelper = collaborativeTextHelper;
     }
 
     @PutMapping("/activePlayerSession")
@@ -57,42 +55,4 @@ public class ActiveSessionController {
                 java.util.Arrays.toString(GameState.values()));
         }
     }
-
-    // ===== COLLABORATIVE TEXT ENDPOINTS =====
-
-    /**
-     * Unified endpoint for text submissions - accepts only TextAddition objects
-     * - If submissionId is provided: creates a new submission branching from the parent
-     * - If submissionId is null/empty: creates a new submission with empty originalText
-     */
-    @PostMapping("/collaborativeText")
-    @ResponseBody
-    public CollaborativeTextPhase submitTextAddition(@RequestBody TextAddition textAddition, @RequestParam String gameCode) {
-        return this.collaborativeTextHelper.submitTextAddition(gameCode, textAddition);
-    }
-
-    @PostMapping("/collaborativeText/vote")
-    @ResponseBody
-    public CollaborativeTextPhase submitPlayerVote(@RequestBody PlayerVote playerVote, @RequestParam String gameCode) {
-        return this.collaborativeTextHelper.submitPlayerVote(gameCode, playerVote);
-    }
-
-    @GetMapping("/collaborativeText")
-    @ResponseBody
-    public CollaborativeTextPhase getCollaborativeTextPhase(@RequestParam String gameCode) {
-        return this.collaborativeTextHelper.getCollaborativeTextPhase(gameCode);
-    }
-
-    @GetMapping("/collaborativeText/winner")
-    @ResponseBody
-    public String getWinningSubmission(@RequestParam String gameCode) {
-        return this.collaborativeTextHelper.calculateWinningSubmission(gameCode);
-    }
-
-    @GetMapping("/collaborativeText/available")
-    @ResponseBody
-    public List<TextSubmission> getAvailableSubmissions(@RequestParam String gameCode, @RequestParam String playerId, @RequestParam(defaultValue = "2") int requestedCount) {
-        return this.collaborativeTextHelper.getAvailableSubmissionsForPlayer(gameCode, playerId, requestedCount);
-    }
-
 }

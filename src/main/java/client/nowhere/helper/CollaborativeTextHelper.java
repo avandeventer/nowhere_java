@@ -274,4 +274,58 @@ public class CollaborativeTextHelper {
             .map(TextSubmission::getCurrentText)
             .orElse(null);
     }
+
+    /**
+     * Gets submissions for voting phase (excludes player's own submissions)
+     * @param gameCode The game code
+     * @param playerId The player requesting submissions
+     * @return List of submissions ordered by phase
+     */
+    public List<TextSubmission> getVotingSubmissionsForPlayer(String gameCode, String playerId) {
+        GameSession gameSession = getGameSession(gameCode);
+        String phaseId = getPhaseIdForGameState(gameSession.getGameState());
+
+        if (phaseId == null) {
+            throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
+        }
+        
+        // Retrieve the phase
+        CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+        if (phase == null) {
+            throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
+        }
+
+        // Return all submissions except player's own, ordered by creation time
+        return phase.getSubmissions().stream()
+                .filter(submission -> !submission.getAuthorId().equals(playerId))
+                .sorted((s1, s2) -> s1.getCreatedAt().compareTo(s2.getCreatedAt()))
+                .toList();
+    }
+
+    /**
+     * Submits multiple player votes for voting phase
+     * @param gameCode The game code
+     * @param playerVotes List of player votes with rankings
+     * @return Updated collaborative text phase
+     */
+    public CollaborativeTextPhase submitPlayerVotes(String gameCode, List<PlayerVote> playerVotes) {
+        if (playerVotes == null || playerVotes.isEmpty()) {
+            throw new ValidationException("Player votes cannot be null or empty");
+        }
+
+        GameSession gameSession = getGameSession(gameCode);
+        String phaseId = getPhaseIdForGameState(gameSession.getGameState());
+
+        if (phaseId == null) {
+            throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
+        }
+
+        // Submit each vote atomically
+        for (PlayerVote vote : playerVotes) {
+            collaborativeTextDAO.addVoteAtomically(gameCode, phaseId, vote);
+        }
+
+        // Return updated phase
+        return collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+    }
 }
