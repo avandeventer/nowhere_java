@@ -304,8 +304,8 @@ public class CollaborativeTextHelper {
                     if (additionsComparison != 0) {
                         return additionsComparison;
                     }
-                    // If additions are equal, sort by creation time (ascending - oldest first)
-                    return s1.getCreatedAt().compareTo(s2.getCreatedAt());
+                    // If additions are equal, sort by creation time (descending - newest first)
+                    return s2.getCreatedAt().compareTo(s1.getCreatedAt());
                 })
                 .limit(5)
                 .toList();
