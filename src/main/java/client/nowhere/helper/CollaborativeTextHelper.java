@@ -295,10 +295,19 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
         }
 
-        // Return all submissions except player's own, ordered by creation time
+        // Return top 5 submissions except player's own, ordered by most additions first, then by creation time
         return phase.getSubmissions().stream()
                 .filter(submission -> !submission.getAuthorId().equals(playerId))
-                .sorted((s1, s2) -> s1.getCreatedAt().compareTo(s2.getCreatedAt()))
+                .sorted((s1, s2) -> {
+                    // First sort by number of additions (descending - most additions first)
+                    int additionsComparison = Integer.compare(s2.getAdditions().size(), s1.getAdditions().size());
+                    if (additionsComparison != 0) {
+                        return additionsComparison;
+                    }
+                    // If additions are equal, sort by creation time (ascending - oldest first)
+                    return s1.getCreatedAt().compareTo(s2.getCreatedAt());
+                })
+                .limit(5)
                 .toList();
     }
 
