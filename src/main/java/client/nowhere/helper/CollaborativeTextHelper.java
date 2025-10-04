@@ -214,10 +214,10 @@ public class CollaborativeTextHelper {
 
     private String getPhaseIdForGameState(GameState gameState) {
         return switch (gameState) {
-            case WHERE_ARE_WE, WHERE_ARE_WE_VOTE -> "WHERE_ARE_WE";
-            case WHO_ARE_WE, WHO_ARE_WE_VOTE -> "WHO_ARE_WE";
-            case WHAT_IS_OUR_GOAL, WHAT_IS_OUR_GOAL_VOTE -> "WHAT_IS_OUR_GOAL";
-            case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE -> "WHAT_ARE_WE_CAPABLE_OF";
+            case WHERE_ARE_WE, WHERE_ARE_WE_VOTE, WHERE_ARE_WE_VOTE_WINNER -> "WHERE_ARE_WE";
+            case WHO_ARE_WE, WHO_ARE_WE_VOTE, WHO_ARE_WE_VOTE_WINNER -> "WHO_ARE_WE";
+            case WHAT_IS_OUR_GOAL, WHAT_IS_OUR_GOAL_VOTE, WHAT_IS_OUR_GOAL_VOTE_WINNER -> "WHAT_IS_OUR_GOAL";
+            case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE, WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> "WHAT_ARE_WE_CAPABLE_OF";
             default -> null;
         };
     }
