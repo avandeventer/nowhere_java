@@ -46,7 +46,7 @@ public class CollaborativeTextController {
 
     @GetMapping("/collaborativeText/winner")
     @ResponseBody
-    public String getWinningSubmission(@RequestParam String gameCode) {
+    public TextSubmission getWinningSubmission(@RequestParam String gameCode) {
         return this.collaborativeTextHelper.calculateWinningSubmission(gameCode);
     }
 

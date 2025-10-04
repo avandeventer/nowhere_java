@@ -70,6 +70,8 @@ public class GameSessionHelper {
                 case WHERE_ARE_WE:
                     if (gameSession.getAdventureMap() != null && !gameSession.getAdventureMap().getAdventureId().isEmpty()) {
                         gameSession.skipAdventureMapCreateMode();
+                    } else {
+                        gameSession.setAdventureMap(new AdventureMap());
                     }
                     break;
                 case GENERATE_WRITE_PROMPT_AUTHORS:

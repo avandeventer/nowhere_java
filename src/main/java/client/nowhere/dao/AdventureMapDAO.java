@@ -46,6 +46,27 @@ public class AdventureMapDAO {
         }
     }
 
+    public void updateGameSessionDisplay(String gameCode, GameSessionDisplay display) {
+        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+        try {
+            // Get the current game session
+            GameSession gameSession = FirestoreDAOUtil.mapGameSession(FirestoreDAOUtil.getGameSession(gameSessionRef));
+            
+            // Update the GameSessionDisplay in the AdventureMap
+            if (gameSession.getAdventureMap() == null) {
+                gameSession.setAdventureMap(new AdventureMap());
+            }
+            gameSession.getAdventureMap().setGameSessionDisplay(display);
+            
+            // Update the game session in Firestore
+            ApiFuture<WriteResult> result = gameSessionRef.set(gameSession);
+            result.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue updating the game session display", e);
+        }
+    }
+
     public AdventureMap createGlobal(AdventureMap adventureMap) {
         try {
             DocumentReference globalAdventureMapRef = db.collection("maps").document(adventureMap.getAdventureId());

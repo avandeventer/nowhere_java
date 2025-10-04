@@ -1,5 +1,6 @@
 package client.nowhere.helper;
 
+import client.nowhere.dao.AdventureMapDAO;
 import client.nowhere.dao.CollaborativeTextDAO;
 import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.exception.ValidationException;
@@ -16,11 +17,13 @@ public class CollaborativeTextHelper {
 
     private final GameSessionDAO gameSessionDAO;
     private final CollaborativeTextDAO collaborativeTextDAO;
+    private final AdventureMapDAO adventureMapDAO;
 
     @Autowired
-    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO) {
+    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO) {
         this.gameSessionDAO = gameSessionDAO;
         this.collaborativeTextDAO = collaborativeTextDAO;
+        this.adventureMapDAO = adventureMapDAO;
     }
 
     // ===== PUBLIC API METHODS =====
@@ -111,7 +114,7 @@ public class CollaborativeTextHelper {
         return collaborativeTextDAO.addVoteAtomically(gameCode, phaseId, playerVote);
     }
 
-    public String calculateWinningSubmission(String gameCode) {
+    public TextSubmission calculateWinningSubmission(String gameCode) {
         GameSession gameSession = getGameSession(gameCode);
         String phaseId = getPhaseIdForGameState(gameSession.getGameState());
         if (phaseId == null) {
@@ -124,7 +127,14 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
         }
 
-        return calculateWinnerFromVotes(phase);
+        TextSubmission winningSubmission = calculateWinnerFromVotes(phase);
+        
+        // Store the winning submission in GameSessionDisplay
+        if (winningSubmission != null) {
+            updateGameSessionDisplayWithWinningSubmission(gameCode, phaseId, winningSubmission);
+        }
+        
+        return winningSubmission;
     }
 
     public List<TextSubmission> getAvailableSubmissionsForPlayer(String gameCode, String playerId, int requestedCount) {
@@ -250,7 +260,7 @@ public class CollaborativeTextHelper {
 
     // ===== VOTE CALCULATION METHODS =====
 
-    private String calculateWinnerFromVotes(CollaborativeTextPhase phase) {
+    private TextSubmission calculateWinnerFromVotes(CollaborativeTextPhase phase) {
         // Calculate average ranking for each submission
         for (TextSubmission submission : phase.getSubmissions()) {
             List<PlayerVote> votesForSubmission = phase.getPlayerVotes().values().stream()
@@ -271,7 +281,6 @@ public class CollaborativeTextHelper {
         return phase.getSubmissions().stream()
             .filter(submission -> submission.getAverageRanking() > 0)
             .min((s1, s2) -> Double.compare(s1.getAverageRanking(), s2.getAverageRanking()))
-            .map(TextSubmission::getCurrentText)
             .orElse(null);
     }
 
@@ -336,5 +345,41 @@ public class CollaborativeTextHelper {
 
         // Return updated phase
         return collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+    }
+
+    /**
+     * Updates the GameSessionDisplay with the winning submission for the given phase
+     */
+    private void updateGameSessionDisplayWithWinningSubmission(String gameCode, String phaseId, TextSubmission winningSubmission) {
+        try {
+            // Get the current GameSessionDisplay
+            GameSessionDisplay display = adventureMapDAO.getGameSessionDisplay(gameCode);
+            if (display == null) {
+                display = new GameSessionDisplay();
+            }
+
+            // Update the appropriate field based on the phase
+            switch (phaseId) {
+                case "WHERE_ARE_WE" -> {
+                    display.setMapDescription(winningSubmission.getCurrentText());
+                    display.setWhereAreWeSubmission(winningSubmission);
+                }
+                case "WHO_ARE_WE" -> {
+                    display.setPlayerDescription(winningSubmission.getCurrentText());
+                    display.setWhoAreWeSubmission(winningSubmission);
+                }
+                case "WHAT_IS_OUR_GOAL" -> {
+                    display.setGoalDescription(winningSubmission.getCurrentText());
+                    display.setWhatIsOurGoalSubmission(winningSubmission);
+                }
+                // WHAT_ARE_WE_CAPABLE_OF will be added later as requested
+            }
+
+            // Update the GameSessionDisplay in the database
+            adventureMapDAO.updateGameSessionDisplay(gameCode, display);
+        } catch (Exception e) {
+            // Log error but don't fail the main operation
+            System.err.println("Failed to update GameSessionDisplay with winning submission: " + e.getMessage());
+        }
     }
 }

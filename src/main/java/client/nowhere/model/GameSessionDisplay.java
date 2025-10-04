@@ -9,6 +9,11 @@ public class GameSessionDisplay {
     String successText;
     String neutralText;
     String failureText;
+    
+    // New TextSubmission fields for collaborative text phases
+    TextSubmission whereAreWeSubmission;
+    TextSubmission whoAreWeSubmission;
+    TextSubmission whatIsOurGoalSubmission;
 
     public GameSessionDisplay() {
         this.mapDescription = "";
@@ -19,6 +24,9 @@ public class GameSessionDisplay {
         this.successText = "";
         this.neutralText = "";
         this.failureText = "";
+        this.whereAreWeSubmission = null;
+        this.whoAreWeSubmission = null;
+        this.whatIsOurGoalSubmission = null;
     }
 
     public GameSessionDisplay(
@@ -93,5 +101,30 @@ public class GameSessionDisplay {
 
     public void setEndingDescription(String endingDescription) {
         this.endingDescription = endingDescription;
+    }
+
+    // Getters and setters for TextSubmission fields
+    public TextSubmission getWhereAreWeSubmission() {
+        return whereAreWeSubmission;
+    }
+
+    public void setWhereAreWeSubmission(TextSubmission whereAreWeSubmission) {
+        this.whereAreWeSubmission = whereAreWeSubmission;
+    }
+
+    public TextSubmission getWhoAreWeSubmission() {
+        return whoAreWeSubmission;
+    }
+
+    public void setWhoAreWeSubmission(TextSubmission whoAreWeSubmission) {
+        this.whoAreWeSubmission = whoAreWeSubmission;
+    }
+
+    public TextSubmission getWhatIsOurGoalSubmission() {
+        return whatIsOurGoalSubmission;
+    }
+
+    public void setWhatIsOurGoalSubmission(TextSubmission whatIsOurGoalSubmission) {
+        this.whatIsOurGoalSubmission = whatIsOurGoalSubmission;
     }
 }
