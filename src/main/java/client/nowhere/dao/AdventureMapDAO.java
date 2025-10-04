@@ -39,7 +39,9 @@ public class AdventureMapDAO {
         DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
         try {
             GameSession gameSession = FirestoreDAOUtil.mapGameSession(FirestoreDAOUtil.getGameSession(gameSessionRef));
-            return gameSession.getAdventureMap().getGameSessionDisplay();
+            return gameSession.getAdventureMap() == null
+                    ? new GameSessionDisplay()
+                    : gameSession.getAdventureMap().getGameSessionDisplay();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue reading the game session for locations", e);

@@ -70,8 +70,6 @@ public class GameSessionHelper {
                 case WHERE_ARE_WE:
                     if (gameSession.getAdventureMap() != null && !gameSession.getAdventureMap().getAdventureId().isEmpty()) {
                         gameSession.skipAdventureMapCreateMode();
-                    } else {
-                        gameSession.setAdventureMap(new AdventureMap());
                     }
                     break;
                 case GENERATE_WRITE_PROMPT_AUTHORS:
@@ -88,7 +86,7 @@ public class GameSessionHelper {
                     List<Story> stories = storyDAO.getStories(gameSession.getGameCode());
                     List<Story> storiesWithPrompts = stories.stream().filter(story ->
                             !story.getPlayerId().isEmpty()
-                                    && story.getSelectedOptionId().isEmpty()).collect(Collectors.toList());
+                                    && story.getSelectedOptionId().isEmpty()).toList();
                     for (Story storyWithPrompt : storiesWithPrompts) {
                         String firstOptionAuthorPicked = "";
                         for (Option option : storyWithPrompt.getOptions()) {
