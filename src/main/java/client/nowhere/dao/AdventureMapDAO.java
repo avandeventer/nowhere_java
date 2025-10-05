@@ -114,12 +114,20 @@ public class AdventureMapDAO {
         return existingAdventureMap;
     }
 
-    public AdventureMap addStatType(String userProfileId, String adventureId, StatType statType) {
+    public AdventureMap addStatTypeGlobal(String userProfileId, String adventureId, StatType statType) {
         AdventureMap existingAdventureMap = get(userProfileId, adventureId);
         existingAdventureMap.getStatTypes().add(statType);
         update(userProfileId, existingAdventureMap);
         return existingAdventureMap;
     }
+
+    public AdventureMap addStatTypes(String gameCode, List<StatType> statTypes) {
+        AdventureMap existingAdventureMap = get(gameCode);
+        existingAdventureMap.getStatTypes().addAll(statTypes);
+        updateSessionAdventureMap(gameCode, existingAdventureMap);
+        return existingAdventureMap;
+    }
+
 
     public AdventureMap addRitualOption(String userProfileId, String adventureId, Option ritualOption) {
         AdventureMap existingAdventureMap = get(userProfileId, adventureId);
@@ -143,12 +151,35 @@ public class AdventureMapDAO {
         return adventureMap;
     }
 
+    public AdventureMap get(String gameCode) {
+        DocumentReference gameSessionAdventureMapRef = db.collection("gameSessions").document(gameCode);
+        GameSession gameSession = FirestoreDAOUtil.mapDatabaseObject(gameSessionAdventureMapRef, GameSession.class);
+        AdventureMap adventureMap = gameSession.getAdventureMap();
+        System.out.println("Update time : " + adventureMap.toString());
+        return adventureMap;
+    }
+
     public AdventureMap update(String userProfileId, AdventureMap updatedAdventureMap) {
         try {
             DocumentReference globalAdventureMapRef = db.collection("userProfiles").document(userProfileId);
             UserProfile userProfile = FirestoreDAOUtil.mapDatabaseObject(globalAdventureMapRef, UserProfile.class);
             userProfile.getMaps().get(updatedAdventureMap.getAdventureId()).setAdventureMap(updatedAdventureMap);
             ApiFuture<WriteResult> result = globalAdventureMapRef.set(userProfile);
+            WriteResult asyncResponse = result.get();
+            System.out.println("Update time : " + result.get().toString());
+            return updatedAdventureMap;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue creating the game session", e);
+        }
+    }
+
+    public AdventureMap updateSessionAdventureMap(String gameCode, AdventureMap updatedAdventureMap) {
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            GameSession gameSession = FirestoreDAOUtil.mapDatabaseObject(gameSessionRef, GameSession.class);
+            gameSession.setAdventureMap(updatedAdventureMap);
+            ApiFuture<WriteResult> result = gameSessionRef.set(gameSession);
             WriteResult asyncResponse = result.get();
             System.out.println("Update time : " + result.get().toString());
             return updatedAdventureMap;

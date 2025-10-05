@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.cloud.Timestamp;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -225,6 +227,7 @@ public class CollaborativeTextHelper {
     private String getPhaseIdForGameState(GameState gameState) {
         return switch (gameState) {
             case WHERE_ARE_WE, WHERE_ARE_WE_VOTE, WHERE_ARE_WE_VOTE_WINNER -> "WHERE_ARE_WE";
+            case WHAT_DO_WE_FEAR, WHAT_DO_WE_FEAR_VOTE, WHAT_DO_WE_FEAR_VOTE_WINNER -> "WHAT_DO_WE_FEAR";
             case WHO_ARE_WE, WHO_ARE_WE_VOTE, WHO_ARE_WE_VOTE_WINNER -> "WHO_ARE_WE";
             case WHAT_IS_OUR_GOAL, WHAT_IS_OUR_GOAL_VOTE, WHAT_IS_OUR_GOAL_VOTE_WINNER -> "WHAT_IS_OUR_GOAL";
             case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE, WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> "WHAT_ARE_WE_CAPABLE_OF";
@@ -244,6 +247,7 @@ public class CollaborativeTextHelper {
     private String getQuestionForGameState(GameState gameState) {
         return switch (gameState) {
             case WHERE_ARE_WE, WHERE_ARE_WE_VOTE -> "Where are we?";
+            case WHAT_DO_WE_FEAR, WHAT_DO_WE_FEAR_VOTE -> "What do we fear?";
             case WHO_ARE_WE, WHO_ARE_WE_VOTE -> "Who are we?";
             case WHAT_IS_OUR_GOAL, WHAT_IS_OUR_GOAL_VOTE -> "What is our goal?";
             case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE -> "What are we capable of?";
@@ -253,6 +257,7 @@ public class CollaborativeTextHelper {
 
     private boolean isVotingPhase(GameState gameState) {
         return gameState == GameState.WHERE_ARE_WE_VOTE ||
+               gameState == GameState.WHAT_DO_WE_FEAR_VOTE ||
                gameState == GameState.WHO_ARE_WE_VOTE ||
                gameState == GameState.WHAT_IS_OUR_GOAL_VOTE ||
                gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE;
@@ -305,6 +310,11 @@ public class CollaborativeTextHelper {
         }
 
         // Return top 5 submissions except player's own, ordered by most additions first, then by creation time
+        // For WHAT_DO_WE_FEAR, return all submissions; for WHAT_ARE_WE_CAPABLE_OF, return top 6; for others, return top 5
+        boolean isWhatDoWeFear = phaseId.equals("WHAT_DO_WE_FEAR");
+        boolean isWhatAreWeCapableOf = phaseId.equals("WHAT_ARE_WE_CAPABLE_OF");
+        int limit = isWhatDoWeFear ? Integer.MAX_VALUE : (isWhatAreWeCapableOf ? 6 : 5);
+        
         return phase.getSubmissions().stream()
                 .filter(submission -> !submission.getAuthorId().equals(playerId))
                 .sorted((s1, s2) -> {
@@ -316,7 +326,7 @@ public class CollaborativeTextHelper {
                     // If additions are equal, sort by creation time (descending - newest first)
                     return s2.getCreatedAt().compareTo(s1.getCreatedAt());
                 })
-                .limit(5)
+                .limit(limit)
                 .toList();
     }
 
@@ -364,6 +374,11 @@ public class CollaborativeTextHelper {
                     display.setMapDescription(winningSubmission.getCurrentText());
                     display.setWhereAreWeSubmission(winningSubmission);
                 }
+                case "WHAT_DO_WE_FEAR" -> {
+                    // Create a PlayerStat entry for WHAT_DO_WE_FEAR
+                    createPlayerStatForFearPhase(gameCode, winningSubmission);
+                    System.out.println("WHAT_DO_WE_FEAR winning submission: " + winningSubmission.getCurrentText());
+                }
                 case "WHO_ARE_WE" -> {
                     display.setPlayerDescription(winningSubmission.getCurrentText());
                     display.setWhoAreWeSubmission(winningSubmission);
@@ -372,7 +387,10 @@ public class CollaborativeTextHelper {
                     display.setGoalDescription(winningSubmission.getCurrentText());
                     display.setWhatIsOurGoalSubmission(winningSubmission);
                 }
-                // WHAT_ARE_WE_CAPABLE_OF will be added later as requested
+                case "WHAT_ARE_WE_CAPABLE_OF" -> {
+                    // Create PlayerStat entries for WHAT_ARE_WE_CAPABLE_OF (top 6)
+                    createPlayerStatsForCapablePhase(gameCode, phaseId);
+                }
             }
 
             // Update the GameSessionDisplay in the database
@@ -380,6 +398,104 @@ public class CollaborativeTextHelper {
         } catch (Exception e) {
             // Log error but don't fail the main operation
             System.err.println("Failed to update GameSessionDisplay with winning submission: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Creates a PlayerStat entry for WHAT_DO_WE_FEAR phase
+     */
+    private void createPlayerStatForFearPhase(String gameCode, TextSubmission winningSubmission) {
+        try {
+            // Get the game session to access the adventure map
+            GameSession gameSession = getGameSession(gameCode);
+            if (gameSession.getAdventureMap() == null) {
+                gameSession.setAdventureMap(new AdventureMap());
+            }
+
+            // Create a StatType for the fear entity
+            StatType fearStatType = new StatType();
+            fearStatType.setLabel("favor");
+            fearStatType.setFavorType(true);
+            fearStatType.setFavorEntity(winningSubmission.getCurrentText());
+
+            // Add to the adventure map's player stats
+            if (gameSession.getAdventureMap().getStatTypes() == null) {
+                gameSession.getAdventureMap().setStatTypes(new ArrayList<>());
+            }
+            gameSession.getAdventureMap().getStatTypes().add(fearStatType);
+
+            List<String> existingStatTypeLabels = gameSession.getAdventureMap().getStatTypes().stream().map(StatType::getFavorEntity).toList();
+            if (existingStatTypeLabels.contains(fearStatType.getFavorEntity())) {
+                return;
+            }
+
+            adventureMapDAO.addStatTypes(gameSession.getGameCode(), List.of(fearStatType));
+        } catch (Exception e) {
+            System.err.println("Failed to create PlayerStat for WHAT_DO_WE_FEAR: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Creates PlayerStat entries for WHAT_ARE_WE_CAPABLE_OF phase (top 6)
+     */
+    private void createPlayerStatsForCapablePhase(String gameCode, String phaseId) {
+        try {
+            // Get the collaborative text phase to get all submissions
+            CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+            if (phase == null || phase.getSubmissions().isEmpty()) {
+                return;
+            }
+
+            // Get the game session to access the adventure map
+            GameSession gameSession = getGameSession(gameCode);
+            if (gameSession.getAdventureMap() == null) {
+                gameSession.setAdventureMap(new AdventureMap());
+            }
+
+            // Calculate rankings for all submissions
+            for (TextSubmission submission : phase.getSubmissions()) {
+                List<PlayerVote> votesForSubmission = phase.getPlayerVotes().values().stream()
+                    .flatMap(List::stream)
+                    .filter(vote -> vote.getSubmissionId().equals(submission.getSubmissionId()))
+                    .toList();
+
+                if (!votesForSubmission.isEmpty()) {
+                    double averageRanking = votesForSubmission.stream()
+                        .mapToInt(PlayerVote::getRanking)
+                        .average()
+                        .orElse(0.0);
+                    submission.setAverageRanking(averageRanking);
+                }
+            }
+
+            // Get top 6 submissions (lowest average ranking = best)
+            List<TextSubmission> topSubmissions = phase.getSubmissions().stream()
+                .filter(submission -> submission.getAverageRanking() > 0)
+                .sorted(Comparator.comparingDouble(TextSubmission::getAverageRanking))
+                .limit(6)
+                .toList();
+
+            // Create PlayerStat entries for each winning submission
+            if (gameSession.getAdventureMap().getStatTypes() == null) {
+                gameSession.getAdventureMap().setStatTypes(new ArrayList<>());
+            }
+
+            List<StatType> statTypes = new ArrayList<>();
+            List<String> existingStatTypeLabels = gameSession.getAdventureMap().getStatTypes().stream().map(StatType::getLabel).toList();
+            for (TextSubmission submission : topSubmissions) {
+                StatType capableStatType = new StatType();
+                capableStatType.setLabel(submission.getCurrentText());
+                capableStatType.setFavorType(false);
+                capableStatType.setFavorEntity("");
+                if (!existingStatTypeLabels.contains(submission.getCurrentText())) {
+                    statTypes.add(capableStatType);
+                }
+            }
+
+            // Update the game session
+            adventureMapDAO.addStatTypes(gameSession.getGameCode(), statTypes);
+        } catch (Exception e) {
+            System.err.println("Failed to create PlayerStats for WHAT_ARE_WE_CAPABLE_OF: " + e.getMessage());
         }
     }
 }

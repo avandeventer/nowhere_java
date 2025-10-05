@@ -2,10 +2,12 @@ package client.nowhere.model;
 
 public enum GameState {
         INIT,
-        GENRE_VOTE,
         WHERE_ARE_WE,
         WHERE_ARE_WE_VOTE,
         WHERE_ARE_WE_VOTE_WINNER,
+        WHAT_DO_WE_FEAR,
+        WHAT_DO_WE_FEAR_VOTE,
+        WHAT_DO_WE_FEAR_VOTE_WINNER,
         WHO_ARE_WE,
         WHO_ARE_WE_VOTE,
         WHO_ARE_WE_VOTE_WINNER,
@@ -51,6 +53,15 @@ public enum GameState {
                                 return GameState.WHERE_ARE_WE_VOTE_WINNER;
                         }
                         case WHERE_ARE_WE_VOTE_WINNER -> {
+                                return GameState.WHAT_DO_WE_FEAR;
+                        }
+                        case WHAT_DO_WE_FEAR -> {
+                                return GameState.WHAT_DO_WE_FEAR_VOTE;
+                        }
+                        case WHAT_DO_WE_FEAR_VOTE -> {
+                                return GameState.WHAT_DO_WE_FEAR_VOTE_WINNER;
+                        }
+                        case WHAT_DO_WE_FEAR_VOTE_WINNER -> {
                                 return GameState.WHO_ARE_WE;
                         }
                         case WHO_ARE_WE -> {

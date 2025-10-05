@@ -54,7 +54,7 @@ public class AdventureMapHelper {
     }
 
     public AdventureMap addStatType(String userProfileId, String adventureId, StatType statType) {
-        return this.adventureMapDAO.addStatType(userProfileId, adventureId, statType);
+        return this.adventureMapDAO.addStatTypeGlobal(userProfileId, adventureId, statType);
     }
 
     public AdventureMap addRitualOption(String userProfileId, String adventureId, Option option) {

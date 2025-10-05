@@ -2,13 +2,11 @@ package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
 import client.nowhere.model.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,12 +18,8 @@ public class GameSessionDAO {
     private final Firestore db;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    public GameSessionDAO(Firestore db, ObjectMapper objectMapper) {
+    public GameSessionDAO(Firestore db) {
         this.db = db;
-        this.objectMapper = objectMapper;
     }
 
     public GameSession createGameSession(String sessionCode, String userProfileId, AdventureMap adventureMap, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound) {
