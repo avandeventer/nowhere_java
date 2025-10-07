@@ -422,7 +422,6 @@ public class CollaborativeTextHelper {
             if (gameSession.getAdventureMap().getStatTypes() == null) {
                 gameSession.getAdventureMap().setStatTypes(new ArrayList<>());
             }
-            gameSession.getAdventureMap().getStatTypes().add(fearStatType);
 
             List<String> existingStatTypeLabels = gameSession.getAdventureMap().getStatTypes().stream().map(StatType::getFavorEntity).toList();
             if (existingStatTypeLabels.contains(fearStatType.getFavorEntity())) {
