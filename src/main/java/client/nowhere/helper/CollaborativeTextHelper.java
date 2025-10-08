@@ -116,7 +116,7 @@ public class CollaborativeTextHelper {
         return collaborativeTextDAO.addVoteAtomically(gameCode, phaseId, playerVote);
     }
 
-    public TextSubmission calculateWinningSubmission(String gameCode) {
+    public List<TextSubmission> calculateWinningSubmission(String gameCode) {
         GameSession gameSession = getGameSession(gameCode);
         String phaseId = getPhaseIdForGameState(gameSession.getGameState());
         if (phaseId == null) {
@@ -129,14 +129,14 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
         }
 
-        TextSubmission winningSubmission = calculateWinnerFromVotes(phase);
+        List<TextSubmission> winningSubmissions = calculateWinnersFromVotes(phase, gameSession.getGameState());
         
-        // Store the winning submission in GameSessionDisplay
-        if (winningSubmission != null) {
-            updateGameSessionDisplayWithWinningSubmission(gameCode, phaseId, winningSubmission);
+        // Store the winning submissions in GameSessionDisplay
+        if (!winningSubmissions.isEmpty()) {
+            updateGameSessionDisplayWithWinningSubmissions(gameCode, phaseId, winningSubmissions);
         }
         
-        return winningSubmission;
+        return winningSubmissions;
     }
 
     public List<TextSubmission> getAvailableSubmissionsForPlayer(String gameCode, String playerId, int requestedCount) {
@@ -265,7 +265,7 @@ public class CollaborativeTextHelper {
 
     // ===== VOTE CALCULATION METHODS =====
 
-    private TextSubmission calculateWinnerFromVotes(CollaborativeTextPhase phase) {
+    private List<TextSubmission> calculateWinnersFromVotes(CollaborativeTextPhase phase, GameState gameState) {
         // Calculate average ranking for each submission
         for (TextSubmission submission : phase.getSubmissions()) {
             List<PlayerVote> votesForSubmission = phase.getPlayerVotes().values().stream()
@@ -282,11 +282,22 @@ public class CollaborativeTextHelper {
             }
         }
 
-        // Find submission with the lowest average ranking (best ranking)
-        return phase.getSubmissions().stream()
-            .filter(submission -> submission.getAverageRanking() > 0)
-            .min((s1, s2) -> Double.compare(s1.getAverageRanking(), s2.getAverageRanking()))
-            .orElse(null);
+        // For WHAT_ARE_WE_CAPABLE_OF, return top 6 submissions
+        if (gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS) {
+            return phase.getSubmissions().stream()
+                .filter(submission -> submission.getAverageRanking() > 0)
+                .sorted(Comparator.comparingDouble(TextSubmission::getAverageRanking))
+                .limit(6)
+                .toList();
+        } else {
+            // For other phases, return the single best submission
+            TextSubmission winner = phase.getSubmissions().stream()
+                .filter(submission -> submission.getAverageRanking() > 0)
+                .min((s1, s2) -> Double.compare(s1.getAverageRanking(), s2.getAverageRanking()))
+                .orElse(null);
+            
+            return winner != null ? List.of(winner) : List.of();
+        }
     }
 
     /**
@@ -360,7 +371,7 @@ public class CollaborativeTextHelper {
     /**
      * Updates the GameSessionDisplay with the winning submission for the given phase
      */
-    private void updateGameSessionDisplayWithWinningSubmission(String gameCode, String phaseId, TextSubmission winningSubmission) {
+    private void updateGameSessionDisplayWithWinningSubmissions(String gameCode, String phaseId, List<TextSubmission> winningSubmissions) {
         try {
             // Get the current GameSessionDisplay
             GameSessionDisplay display = adventureMapDAO.getGameSessionDisplay(gameCode);
@@ -371,25 +382,36 @@ public class CollaborativeTextHelper {
             // Update the appropriate field based on the phase
             switch (phaseId) {
                 case "WHERE_ARE_WE" -> {
-                    display.setMapDescription(winningSubmission.getCurrentText());
-                    display.setWhereAreWeSubmission(winningSubmission);
+                    if (!winningSubmissions.isEmpty()) {
+                        TextSubmission winningSubmission = winningSubmissions.getFirst();
+                        display.setMapDescription(winningSubmission.getCurrentText());
+                        display.setWhereAreWeSubmission(winningSubmission);
+                    }
                 }
                 case "WHAT_DO_WE_FEAR" -> {
-                    // Create a PlayerStat entry for WHAT_DO_WE_FEAR
-                    createPlayerStatForFearPhase(gameCode, winningSubmission);
-                    System.out.println("WHAT_DO_WE_FEAR winning submission: " + winningSubmission.getCurrentText());
+                    if (!winningSubmissions.isEmpty()) {
+                        // Create a PlayerStat entry for WHAT_DO_WE_FEAR
+                        createPlayerStatForFearPhase(gameCode, winningSubmissions.getFirst());
+                        System.out.println("WHAT_DO_WE_FEAR winning submission: " + winningSubmissions.getFirst().getCurrentText());
+                    }
                 }
                 case "WHO_ARE_WE" -> {
-                    display.setPlayerDescription(winningSubmission.getCurrentText());
-                    display.setWhoAreWeSubmission(winningSubmission);
+                    if (!winningSubmissions.isEmpty()) {
+                        TextSubmission winningSubmission = winningSubmissions.getFirst();
+                        display.setPlayerDescription(winningSubmission.getCurrentText());
+                        display.setWhoAreWeSubmission(winningSubmission);
+                    }
                 }
                 case "WHAT_IS_COMING" -> {
-                    display.setGoalDescription(winningSubmission.getCurrentText());
-                    display.setWhatIsOurGoalSubmission(winningSubmission);
+                    if (!winningSubmissions.isEmpty()) {
+                        TextSubmission winningSubmission = winningSubmissions.getFirst();
+                        display.setGoalDescription(winningSubmission.getCurrentText());
+                        display.setWhatIsOurGoalSubmission(winningSubmission);
+                    }
                 }
                 case "WHAT_ARE_WE_CAPABLE_OF" -> {
                     // Create PlayerStat entries for WHAT_ARE_WE_CAPABLE_OF (top 6)
-                    createPlayerStatsForCapablePhase(gameCode, phaseId);
+                    createPlayerStatsForCapablePhase(gameCode, phaseId, winningSubmissions);
                 }
             }
 
@@ -397,8 +419,12 @@ public class CollaborativeTextHelper {
             adventureMapDAO.updateGameSessionDisplay(gameCode, display);
         } catch (Exception e) {
             // Log error but don't fail the main operation
-            System.err.println("Failed to update GameSessionDisplay with winning submission: " + e.getMessage());
+            System.err.println("Failed to update GameSessionDisplay with winning submissions: " + e.getMessage());
         }
+    }
+
+    private void updateGameSessionDisplayWithWinningSubmission(String gameCode, String phaseId, TextSubmission winningSubmission) {
+        updateGameSessionDisplayWithWinningSubmissions(gameCode, phaseId, List.of(winningSubmission));
     }
 
     /**
@@ -437,42 +463,13 @@ public class CollaborativeTextHelper {
     /**
      * Creates PlayerStat entries for WHAT_ARE_WE_CAPABLE_OF phase (top 6)
      */
-    private void createPlayerStatsForCapablePhase(String gameCode, String phaseId) {
+    private void createPlayerStatsForCapablePhase(String gameCode, String phaseId, List<TextSubmission> winningSubmissions) {
         try {
-            // Get the collaborative text phase to get all submissions
-            CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
-            if (phase == null || phase.getSubmissions().isEmpty()) {
-                return;
-            }
-
             // Get the game session to access the adventure map
             GameSession gameSession = getGameSession(gameCode);
             if (gameSession.getAdventureMap() == null) {
                 gameSession.setAdventureMap(new AdventureMap());
             }
-
-            // Calculate rankings for all submissions
-            for (TextSubmission submission : phase.getSubmissions()) {
-                List<PlayerVote> votesForSubmission = phase.getPlayerVotes().values().stream()
-                    .flatMap(List::stream)
-                    .filter(vote -> vote.getSubmissionId().equals(submission.getSubmissionId()))
-                    .toList();
-
-                if (!votesForSubmission.isEmpty()) {
-                    double averageRanking = votesForSubmission.stream()
-                        .mapToInt(PlayerVote::getRanking)
-                        .average()
-                        .orElse(0.0);
-                    submission.setAverageRanking(averageRanking);
-                }
-            }
-
-            // Get top 6 submissions (lowest average ranking = best)
-            List<TextSubmission> topSubmissions = phase.getSubmissions().stream()
-                .filter(submission -> submission.getAverageRanking() > 0)
-                .sorted(Comparator.comparingDouble(TextSubmission::getAverageRanking))
-                .limit(6)
-                .toList();
 
             // Create PlayerStat entries for each winning submission
             if (gameSession.getAdventureMap().getStatTypes() == null) {
@@ -481,7 +478,7 @@ public class CollaborativeTextHelper {
 
             List<StatType> statTypes = new ArrayList<>();
             List<String> existingStatTypeLabels = gameSession.getAdventureMap().getStatTypes().stream().map(StatType::getLabel).toList();
-            for (TextSubmission submission : topSubmissions) {
+            for (TextSubmission submission : winningSubmissions) {
                 StatType capableStatType = new StatType();
                 capableStatType.setLabel(submission.getCurrentText());
                 capableStatType.setFavorType(false);
