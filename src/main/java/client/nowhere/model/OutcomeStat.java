@@ -2,8 +2,6 @@ package client.nowhere.model;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 public class OutcomeStat {
     PlayerStat playerStat;

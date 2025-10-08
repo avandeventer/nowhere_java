@@ -229,7 +229,7 @@ public class CollaborativeTextHelper {
             case WHERE_ARE_WE, WHERE_ARE_WE_VOTE, WHERE_ARE_WE_VOTE_WINNER -> "WHERE_ARE_WE";
             case WHAT_DO_WE_FEAR, WHAT_DO_WE_FEAR_VOTE, WHAT_DO_WE_FEAR_VOTE_WINNER -> "WHAT_DO_WE_FEAR";
             case WHO_ARE_WE, WHO_ARE_WE_VOTE, WHO_ARE_WE_VOTE_WINNER -> "WHO_ARE_WE";
-            case WHAT_IS_OUR_GOAL, WHAT_IS_OUR_GOAL_VOTE, WHAT_IS_OUR_GOAL_VOTE_WINNER -> "WHAT_IS_OUR_GOAL";
+            case WHAT_IS_COMING, WHAT_IS_COMING_VOTE, WHAT_IS_COMING_VOTE_WINNER -> "WHAT_IS_COMING";
             case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE, WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> "WHAT_ARE_WE_CAPABLE_OF";
             default -> null;
         };
@@ -249,7 +249,7 @@ public class CollaborativeTextHelper {
             case WHERE_ARE_WE, WHERE_ARE_WE_VOTE -> "Where are we?";
             case WHAT_DO_WE_FEAR, WHAT_DO_WE_FEAR_VOTE -> "What do we fear?";
             case WHO_ARE_WE, WHO_ARE_WE_VOTE -> "Who are we?";
-            case WHAT_IS_OUR_GOAL, WHAT_IS_OUR_GOAL_VOTE -> "What is our goal?";
+            case WHAT_IS_COMING, WHAT_IS_COMING_VOTE -> "What is our goal?";
             case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE -> "What are we capable of?";
             default -> "Unknown question";
         };
@@ -259,7 +259,7 @@ public class CollaborativeTextHelper {
         return gameState == GameState.WHERE_ARE_WE_VOTE ||
                gameState == GameState.WHAT_DO_WE_FEAR_VOTE ||
                gameState == GameState.WHO_ARE_WE_VOTE ||
-               gameState == GameState.WHAT_IS_OUR_GOAL_VOTE ||
+               gameState == GameState.WHAT_IS_COMING_VOTE ||
                gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE;
     }
 
@@ -383,7 +383,7 @@ public class CollaborativeTextHelper {
                     display.setPlayerDescription(winningSubmission.getCurrentText());
                     display.setWhoAreWeSubmission(winningSubmission);
                 }
-                case "WHAT_IS_OUR_GOAL" -> {
+                case "WHAT_IS_COMING" -> {
                     display.setGoalDescription(winningSubmission.getCurrentText());
                     display.setWhatIsOurGoalSubmission(winningSubmission);
                 }

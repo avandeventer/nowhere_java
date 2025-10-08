@@ -68,4 +68,16 @@ public class AdventureMapHelper {
     public void delete(String userProfileId, String adventureId) {
         this.adventureMapDAO.delete(userProfileId, adventureId);
     }
+
+    public List<Location> addLocation(String gameCode, Location location) {
+        return this.adventureMapDAO.addLocation(gameCode, location);
+    }
+
+    public List<Location> getLocationByAuthor(String gameCode, String authorId) {
+        return this.adventureMapDAO.getLocationByAuthor(gameCode, authorId);
+    }
+
+    public List<Location> getLocationByOutcomeAuthor(String gameCode, String outcomeAuthorId) {
+        return this.adventureMapDAO.getLocationByOutcomeAuthor(gameCode, outcomeAuthorId);
+    }
 }

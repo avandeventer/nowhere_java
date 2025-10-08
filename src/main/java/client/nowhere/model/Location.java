@@ -18,6 +18,7 @@ public class Location {
     private String label;
     private List<Option> options;
     private String iconDirectory;
+    private String authorId;
 
     public Location () {
         this.id = UUID.randomUUID().toString();
@@ -113,6 +114,14 @@ public class Location {
     @JsonProperty
     public void setLocationName(String locationName) {
         this.locationName = locationName;
+    }
+
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
     }
 
     @JsonIgnore

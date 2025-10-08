@@ -20,8 +20,23 @@ public class AdventureMapController {
 
     @GetMapping("/location")
     @ResponseBody
-    public List<Location> getLocation(@RequestParam String gameCode) {
-        return this.adventureMapHelper.getGameLocations(gameCode);
+    public List<Location> getLocation(
+            @RequestParam String gameCode,
+            @RequestParam(required = false) String authorId,
+            @RequestParam(required = false) String outcomeAuthorId) {
+        if (authorId != null) {
+            return this.adventureMapHelper.getLocationByAuthor(gameCode, authorId);
+        } else if (outcomeAuthorId != null) {
+            return this.adventureMapHelper.getLocationByOutcomeAuthor(gameCode, outcomeAuthorId);
+        } else {
+            return this.adventureMapHelper.getGameLocations(gameCode);
+        }
+    }
+
+    @PostMapping("/location")
+    @ResponseBody
+    public List<Location> addLocation(@RequestParam String gameCode, @RequestBody Location location) {
+        return this.adventureMapHelper.addLocation(gameCode, location);
     }
 
     @GetMapping("/display")

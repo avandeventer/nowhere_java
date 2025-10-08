@@ -8,15 +8,16 @@ public enum GameState {
         WHAT_DO_WE_FEAR,
         WHAT_DO_WE_FEAR_VOTE,
         WHAT_DO_WE_FEAR_VOTE_WINNER,
+        WHAT_IS_COMING,
+        WHAT_IS_COMING_VOTE,
+        WHAT_IS_COMING_VOTE_WINNER,
         WHO_ARE_WE,
         WHO_ARE_WE_VOTE,
         WHO_ARE_WE_VOTE_WINNER,
-        WHAT_IS_OUR_GOAL,
-        WHAT_IS_OUR_GOAL_VOTE,
-        WHAT_IS_OUR_GOAL_VOTE_WINNER,
         WHAT_ARE_WE_CAPABLE_OF,
         WHAT_ARE_WE_CAPABLE_OF_VOTE,
         WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS,
+        GENERATE_LOCATION_AUTHORS,
         WHERE_CAN_WE_GO,
         GENERATE_OCCUPATION_AUTHORS,
         WHAT_OCCUPATIONS_ARE_THERE,
@@ -62,6 +63,15 @@ public enum GameState {
                                 return GameState.WHAT_DO_WE_FEAR_VOTE_WINNER;
                         }
                         case WHAT_DO_WE_FEAR_VOTE_WINNER -> {
+                                return GameState.WHAT_IS_COMING;
+                        }
+                        case WHAT_IS_COMING -> {
+                                return GameState.WHAT_IS_COMING_VOTE;
+                        }
+                        case WHAT_IS_COMING_VOTE -> {
+                                return GameState.WHAT_IS_COMING_VOTE_WINNER;
+                        }
+                        case WHAT_IS_COMING_VOTE_WINNER -> {
                                 return GameState.WHO_ARE_WE;
                         }
                         case WHO_ARE_WE -> {
@@ -71,15 +81,6 @@ public enum GameState {
                                 return GameState.WHO_ARE_WE_VOTE_WINNER;
                         }
                         case WHO_ARE_WE_VOTE_WINNER -> {
-                                return GameState.WHAT_IS_OUR_GOAL;
-                        }
-                        case WHAT_IS_OUR_GOAL -> {
-                                return GameState.WHAT_IS_OUR_GOAL_VOTE;
-                        }
-                        case WHAT_IS_OUR_GOAL_VOTE -> {
-                                return GameState.WHAT_IS_OUR_GOAL_VOTE_WINNER;
-                        }
-                        case WHAT_IS_OUR_GOAL_VOTE_WINNER -> {
                                 return GameState.WHAT_ARE_WE_CAPABLE_OF;
                         }
                         case WHAT_ARE_WE_CAPABLE_OF -> {
@@ -89,6 +90,9 @@ public enum GameState {
                                 return GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS;
                         }
                         case WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> {
+                                return GameState.GENERATE_LOCATION_AUTHORS;
+                        }
+                        case GENERATE_LOCATION_AUTHORS -> {
                                 return GameState.WHERE_CAN_WE_GO;
                         }
                         case WHERE_CAN_WE_GO -> {

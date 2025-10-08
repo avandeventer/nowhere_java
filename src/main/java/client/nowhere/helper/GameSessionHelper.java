@@ -72,6 +72,14 @@ public class GameSessionHelper {
                         gameSession.skipAdventureMapCreateMode();
                     }
                     break;
+                case GENERATE_LOCATION_AUTHORS:    
+                    generateLocationAuthors(gameSession, players);
+                    gameSession.setGameStateToNext();
+                    break;
+                case GENERATE_OCCUPATION_AUTHORS:
+                    assignLocationOptionAuthors(gameSession, players);
+                    gameSession.setGameStateToNext();
+                    break;
                 case GENERATE_WRITE_PROMPT_AUTHORS:
                 case GENERATE_WRITE_PROMPT_AUTHORS_AGAIN:
                     assignStoryAuthors(gameSession, isTestMode, players);
@@ -79,35 +87,7 @@ public class GameSessionHelper {
                     break;
                 case GENERATE_WRITE_OPTION_AUTHORS:
                 case GENERATE_WRITE_OPTION_AUTHORS_AGAIN:
-                    Queue<String> playerAuthorQueue = new LinkedList<>(players.stream()
-                            .map(Player::getAuthorId)
-                            .collect(Collectors.toList()));
-
-                    List<Story> stories = storyDAO.getStories(gameSession.getGameCode());
-                    List<Story> storiesWithPrompts = stories.stream().filter(story ->
-                            !story.getPlayerId().isEmpty()
-                                    && story.getSelectedOptionId().isEmpty()).toList();
-                    for (Story storyWithPrompt : storiesWithPrompts) {
-                        String firstOptionAuthorPicked = "";
-                        for (Option option : storyWithPrompt.getOptions()) {
-                            String assignedAuthorId;
-
-                            if (!option.getSuccessText().isEmpty() && !option.getFailureText().isEmpty()) {
-                                continue;
-                            }
-
-                            do {
-                                assignedAuthorId = playerAuthorQueue.poll();
-                                playerAuthorQueue.offer(assignedAuthorId);
-                            } while (Objects.equals(assignedAuthorId, storyWithPrompt.getPlayerId())
-                                    || Objects.equals(assignedAuthorId, storyWithPrompt.getAuthorId())
-                                    || Objects.equals(assignedAuthorId, firstOptionAuthorPicked));
-
-                            option.setOutcomeAuthorId(assignedAuthorId);
-                            firstOptionAuthorPicked = assignedAuthorId;
-                        }
-                        storyDAO.updateStory(storyWithPrompt);
-                    }
+                    assignStoryOptionAuthors(gameSession, players);
                     gameSession.setGameStateToNext();
                     break;
                 case ROUND1:
@@ -184,6 +164,110 @@ public class GameSessionHelper {
         return gameSessionDAO.updateGameSession(gameSession);
     }
 
+    private void generateLocationAuthors(GameSession gameSession, List<Player> players) {
+        List<StatType> statTypes = gameSession.getAdventureMap().getStatTypes();
+        if (statTypes == null || statTypes.isEmpty()) {
+            System.out.println("No StatTypes available for location generation");
+            return;
+        }
+
+        List<Location> newLocations = new ArrayList<>();
+        
+        for (int i = 0; i < players.size(); i++) {
+            Player player = players.get(i);
+            Location location = new Location();
+            location.setAuthorId(player.getAuthorId());
+            
+            List<Option> options = new ArrayList<>();
+            
+            StatType primaryStatType = statTypes.get(i % statTypes.size());
+            StatType secondaryStatType1 = statTypes.get((i + 1) % statTypes.size());
+            StatType secondaryStatType2 = statTypes.get((i + 2) % statTypes.size());
+            
+            Option option1 = createLocationOption(primaryStatType, secondaryStatType1);
+            Option option2 = createLocationOption(primaryStatType, secondaryStatType2);
+                         
+            options.add(option1);
+            options.add(option2);
+            location.setOptions(options);
+            
+            newLocations.add(location);
+        }
+        
+        // Add all new locations to the adventure map
+        for (Location location : newLocations) {
+            adventureMapDAO.addLocation(gameSession.getGameCode(), location);
+        }
+    }
+
+    private void assignLocationOptionAuthors(GameSession gameSession, List<Player> players) {
+        Queue<String> playerAuthorQueue = new LinkedList<>(players.stream()
+                .map(Player::getAuthorId)
+                .collect(Collectors.toList()));
+
+        List<Location> locations = adventureMapDAO.getLocations(gameSession.getGameCode());
+        List<Location> locationsWithOptions = locations.stream()
+                .filter(location -> location.getOptions() != null && !location.getOptions().isEmpty())
+                .toList();
+        
+        for (Location location : locationsWithOptions) {
+            String firstOptionAuthorPicked = "";
+            for (Option option : location.getOptions()) {
+                String assignedAuthorId;
+
+                // Only assign authors to options that don't already have successText
+                if (!option.getSuccessText().isEmpty()) {
+                    continue;
+                }
+
+                do {
+                    assignedAuthorId = playerAuthorQueue.poll();
+                    playerAuthorQueue.offer(assignedAuthorId);
+                } while (Objects.equals(assignedAuthorId, location.getAuthorId())
+                        || Objects.equals(assignedAuthorId, firstOptionAuthorPicked));
+
+                option.setOutcomeAuthorId(assignedAuthorId);
+                firstOptionAuthorPicked = assignedAuthorId;
+            }
+        }
+        
+        for (Location location : locationsWithOptions) {
+            adventureMapDAO.updateLocation(gameSession.getGameCode(), location);
+        }
+    }
+
+    private void assignStoryOptionAuthors(GameSession gameSession, List<Player> players) {
+        Queue<String> playerAuthorQueue = new LinkedList<>(players.stream()
+                .map(Player::getAuthorId)
+                .collect(Collectors.toList()));
+
+        List<Story> stories = storyDAO.getStories(gameSession.getGameCode());
+        List<Story> storiesWithPrompts = stories.stream().filter(story ->
+                !story.getPlayerId().isEmpty()
+                        && story.getSelectedOptionId().isEmpty()).toList();
+        for (Story storyWithPrompt : storiesWithPrompts) {
+            String firstOptionAuthorPicked = "";
+            for (Option option : storyWithPrompt.getOptions()) {
+                String assignedAuthorId;
+
+                if (!option.getSuccessText().isEmpty() && !option.getFailureText().isEmpty()) {
+                    continue;
+                }
+
+                do {
+                    assignedAuthorId = playerAuthorQueue.poll();
+                    playerAuthorQueue.offer(assignedAuthorId);
+                } while (Objects.equals(assignedAuthorId, storyWithPrompt.getPlayerId())
+                        || Objects.equals(assignedAuthorId, storyWithPrompt.getAuthorId())
+                        || Objects.equals(assignedAuthorId, firstOptionAuthorPicked));
+
+                option.setOutcomeAuthorId(assignedAuthorId);
+                firstOptionAuthorPicked = assignedAuthorId;
+            }
+            storyDAO.updateStory(storyWithPrompt);
+        }
+    }
+
     private void assignStoryAuthors(
             GameSession gameSession,
             boolean isTestMode,
@@ -221,7 +305,7 @@ public class GameSessionHelper {
                     continue;
                 }
 
-                Player selectedAuthor = eligibleAuthors.get(0);
+                Player selectedAuthor = eligibleAuthors.getFirst();
                 unwrittenStory.setAuthorId(selectedAuthor.getAuthorId());
 
                 if (isTestMode) {
@@ -240,8 +324,36 @@ public class GameSessionHelper {
         }
     }
 
+    /**
+     * Creates a location option with primary and secondary StatTypes
+     */
+    private Option createLocationOption(StatType primaryStatType, StatType secondaryStatType) {
+        Option option = new Option();
+        option.setSuccessResults(createSuccessResults(primaryStatType, secondaryStatType));
+        return option;
+    }
+
+    /**
+     * Creates success results with primary and secondary StatTypes
+     */
+    private ArrayList<OutcomeStat> createSuccessResults(StatType primaryStatType, StatType secondaryStatType) {
+        ArrayList<OutcomeStat> successResults = new ArrayList<>();
+        
+        // Add primary StatType
+        OutcomeStat primaryOutcome = new OutcomeStat();
+        primaryOutcome.setPlayerStat(new PlayerStat(primaryStatType, 1));
+        successResults.add(primaryOutcome);
+        
+        // Add secondary StatType
+        OutcomeStat secondaryOutcome = new OutcomeStat();
+        secondaryOutcome.setPlayerStat(new PlayerStat(secondaryStatType, 1));
+        successResults.add(secondaryOutcome);
+        
+        return successResults;
+    }
+
     private String generateSessionCode() {
-        String CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ123456789";
+        String CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
         StringBuilder stringBuilder = new StringBuilder();
         Random rnd = new Random();
         while (stringBuilder.length() < 6) {
