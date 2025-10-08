@@ -249,7 +249,7 @@ public class CollaborativeTextHelper {
             case WHERE_ARE_WE, WHERE_ARE_WE_VOTE -> "Where are we?";
             case WHAT_DO_WE_FEAR, WHAT_DO_WE_FEAR_VOTE -> "What do we fear?";
             case WHO_ARE_WE, WHO_ARE_WE_VOTE -> "Who are we?";
-            case WHAT_IS_COMING, WHAT_IS_COMING_VOTE -> "What is our goal?";
+            case WHAT_IS_COMING, WHAT_IS_COMING_VOTE -> "What is coming?";
             case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE -> "What are we capable of?";
             default -> "Unknown question";
         };
