@@ -77,6 +77,13 @@ public class GameSessionHelper {
                     gameSession.setGameStateToNext();
                     break;
                 case GENERATE_OCCUPATION_AUTHORS:
+                    players.forEach(player -> {
+                        player.setBasePlayerStats(
+                                gameSession.getAdventureMap().getStatTypes(), 4
+                        );
+                        gameSessionDAO.updatePlayer(player);
+                        gameSession.getPlayers().set(gameSession.getPlayers().indexOf(player), player);
+                    });
                     assignLocationOptionAuthors(gameSession, players);
                     gameSession.setGameStateToNext();
                     break;
@@ -87,14 +94,6 @@ public class GameSessionHelper {
                     break;
                 case GENERATE_WRITE_OPTION_AUTHORS:
                 case GENERATE_WRITE_OPTION_AUTHORS_AGAIN:
-                    players.forEach(player -> {
-                        player.setBasePlayerStats(
-                            gameSession.getAdventureMap().getStatTypes(), 4
-                        );
-                        gameSessionDAO.updatePlayer(player);
-                        gameSession.getPlayers().set(gameSession.getPlayers().indexOf(player), player);
-                    });
-
                     assignStoryOptionAuthors(gameSession, players);
                     gameSession.setGameStateToNext();
                     break;
