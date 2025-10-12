@@ -73,6 +73,10 @@ public class AdventureMapHelper {
         return this.adventureMapDAO.addLocation(gameCode, location);
     }
 
+    public Location updateLocation(String gameCode, Location location) {
+        return this.adventureMapDAO.updateLocation(gameCode, location);
+    }
+
     public List<Location> getLocationByAuthor(String gameCode, String authorId) {
         return this.adventureMapDAO.getLocationByAuthor(gameCode, authorId);
     }

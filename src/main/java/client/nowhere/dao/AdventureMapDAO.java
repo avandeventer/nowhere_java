@@ -312,7 +312,7 @@ public class AdventureMapDAO {
                 .collect(Collectors.toList());
     }
 
-    public void updateLocation(String gameCode, Location location) {
+    public Location updateLocation(String gameCode, Location location) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             GameSession gameSession = FirestoreDAOUtil.mapDatabaseObject(gameSessionRef, GameSession.class);
@@ -327,6 +327,7 @@ public class AdventureMapDAO {
             ApiFuture<WriteResult> result = gameSessionRef.update(updates);
             WriteResult asyncResponse = result.get();
             System.out.println("Location updated successfully: " + location.getLabel());
+            return location;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue updating the location", e);

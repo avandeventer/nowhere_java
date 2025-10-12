@@ -39,6 +39,14 @@ public class AdventureMapController {
         return this.adventureMapHelper.addLocation(gameCode, location);
     }
 
+    @PutMapping("/location")
+    public Location updateLocation(
+            @RequestParam String gameCode,
+            @RequestBody Location location
+    ) {
+        return this.adventureMapHelper.updateLocation(gameCode, location);
+    }
+
     @GetMapping("/display")
     @ResponseBody
     public GameSessionDisplay getGameSessionDisplay(@RequestParam String gameCode) {
