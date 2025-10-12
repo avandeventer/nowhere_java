@@ -80,4 +80,8 @@ public class AdventureMapHelper {
     public List<Location> getLocationByOutcomeAuthor(String gameCode, String outcomeAuthorId) {
         return this.adventureMapDAO.getLocationByOutcomeAuthor(gameCode, outcomeAuthorId);
     }
+
+    public List<String> getLocationImages() {
+        return this.adventureMapDAO.getLocationImages();
+    }
 }

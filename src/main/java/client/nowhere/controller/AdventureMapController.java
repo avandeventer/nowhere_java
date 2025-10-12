@@ -62,4 +62,10 @@ public class AdventureMapController {
     public AdventureMap get(@RequestParam String adventureId) {
         return this.adventureMapHelper.getGlobal(adventureId);
     }
+
+    @GetMapping("/location-images")
+    @ResponseBody
+    public List<String> getLocationImages() {
+        return this.adventureMapHelper.getLocationImages();
+    }
 }

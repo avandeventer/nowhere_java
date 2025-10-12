@@ -8,8 +8,12 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +25,7 @@ import java.util.stream.Collectors;
 @Component
 public class AdventureMapDAO {
 
+    private static final Logger logger = LoggerFactory.getLogger(AdventureMapDAO.class);
     private final Firestore db;
 
     @Autowired
@@ -326,5 +331,52 @@ public class AdventureMapDAO {
             e.printStackTrace();
             throw new ResourceException("There was an issue updating the location", e);
         }
+    }
+
+    public List<String> getLocationImages() {
+        try {
+            logger.info("Fetching location images from Google Cloud Storage");
+            Storage storage = StorageOptions.getDefaultInstance().getService();
+            
+            String bucketName = "nowhere_images";
+            String prefix = "location_icons/";
+            
+            List<String> images = new ArrayList<>();
+            for (com.google.cloud.storage.Blob blob : storage.list(bucketName, Storage.BlobListOption.prefix(prefix)).iterateAll()) {
+                String name = blob.getName().toLowerCase();
+                if (name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg")) {
+                    images.add("https://storage.googleapis.com/" + bucketName + "/" + blob.getName());
+                }
+            }
+            images.sort(String::compareTo);
+                
+            logger.info("Successfully fetched {} location images", images.size());
+            return images;
+            
+        } catch (Exception e) {
+            logger.error("Error fetching location images from Google Cloud Storage", e);
+            logger.info("Falling back to hardcoded image list");
+            return getHardcodedImages();
+        }
+    }
+
+    private List<String> getHardcodedImages() {
+        List<String> images = new ArrayList<>();
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Castle.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Forest.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Dungeon.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Village.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Mountain.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Desert.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Ocean.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Cave.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Temple.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Library.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Market.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Inn.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Bridge.png");
+        images.add("https://storage.googleapis.com/nowhere_images/location_icons/Tower.png");
+        return images;
     }
 }
