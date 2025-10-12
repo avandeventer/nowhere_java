@@ -163,9 +163,13 @@ public class UserProfileDAO {
 
         UserProfile userProfile = this.get(userProfileId);
 
-        List<Story> saveGameStories = userProfile.getMaps()
-                .get(adventureId)
-                .getSaveGameById(saveGameId)
+        ProfileAdventureMap adventureMap = userProfile.getMaps().get(adventureId);
+
+        if (adventureMap == null) {
+            return new  ArrayList<>();
+        }
+
+        List<Story> saveGameStories = adventureMap.getSaveGameById(saveGameId)
                 .getGlobalStories();
 
         return saveGameStories.stream()
