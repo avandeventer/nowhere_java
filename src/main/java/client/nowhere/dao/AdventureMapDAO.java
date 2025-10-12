@@ -254,6 +254,8 @@ public class AdventureMapDAO {
         GameSession gameSession = FirestoreDAOUtil.mapDatabaseObject(gameSessionRef, GameSession.class);
         
         if (gameSession.getAdventureMap().getLocations() != null 
+            && location.getLabel() != null
+            && !location.getLabel().isEmpty()
             && gameSession.getAdventureMap().getLocations().stream()
             .map(Location::getLabel).toList().contains(location.getLabel())
         ) {
@@ -316,13 +318,78 @@ public class AdventureMapDAO {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             GameSession gameSession = FirestoreDAOUtil.mapDatabaseObject(gameSessionRef, GameSession.class);
-            
-            gameSession.getAdventureMap().getLocations().replaceAll(l -> 
-                l.getId().equals(location.getId()) ? location : l
-            );
-            
+            List<Location> locations = gameSession.getAdventureMap().getLocations();
+
+            for (int i = 0; i < locations.size(); i++) {
+                Location locationToUpdate = locations.get(i);
+                if (locationToUpdate.getId().equals(location.getId())) {
+                    // Update Location fields
+                    if (!location.getAuthorId().isEmpty()) {
+                        locationToUpdate.setAuthorId(location.getAuthorId());
+                    }
+
+                    if (!location.getLabel().isEmpty()) {
+                        locationToUpdate.setLabel(location.getLabel());
+                    }
+
+                    if (location.getIconDirectory() != null && !location.getIconDirectory().isEmpty()) {
+                        locationToUpdate.setIconDirectory(location.getIconDirectory());
+                    }
+
+                    // Update Options
+                    if (location.getOptions() != null && !location.getOptions().isEmpty()) {
+                        List<Option> optionsToUpdate = new ArrayList<>();
+
+                        for (Option resultOption : locationToUpdate.getOptions()) {
+                            for (Option inputOption : location.getOptions()) {
+                                if (resultOption.getOptionId().equals(inputOption.getOptionId())) {
+                                    Option optionToUpdate = new Option(
+                                            resultOption.getOptionId(),
+                                            !inputOption.getOptionText().isEmpty() ?
+                                                    inputOption.getOptionText() :
+                                                    resultOption.getOptionText(),
+                                            !inputOption.getOptionText().isEmpty() ?
+                                                    inputOption.getOptionText() :
+                                                    resultOption.getOptionText(),
+                                            !inputOption.getSuccessText().isEmpty() ?
+                                                    inputOption.getSuccessText() :
+                                                    resultOption.getSuccessText(),
+                                            resultOption.getSuccessResults(),
+                                            !inputOption.getFailureText().isEmpty() ?
+                                                    inputOption.getFailureText() :
+                                                    resultOption.getFailureText(),
+                                            resultOption.getFailureResults(),
+                                            !inputOption.getOutcomeAuthorId().isEmpty() ?
+                                                    inputOption.getOutcomeAuthorId() :
+                                                    resultOption.getOutcomeAuthorId(),
+                                            resultOption.getPlayerStatDCs()
+                                    );
+                                    
+                                    // Update attemptText if provided
+                                    if (!inputOption.getAttemptText().isEmpty()) {
+                                        optionToUpdate.setAttemptText(inputOption.getAttemptText());
+                                    } else {
+                                        optionToUpdate.setAttemptText(resultOption.getAttemptText());
+                                    }
+                                    
+                                    optionsToUpdate.add(optionToUpdate);
+                                }
+                            }
+                        }
+
+                        if (!optionsToUpdate.isEmpty()) {
+                            locationToUpdate.setOptions(optionsToUpdate);
+                        }
+                    }
+                    
+                    location = locationToUpdate;
+                    locations.set(i, locationToUpdate);
+                    break;
+                }
+            }
+
             Map<String, Object> updates = new HashMap<>();
-            updates.put("adventureMap.locations", gameSession.getAdventureMap().getLocations());
+            updates.put("adventureMap.locations", locations);
             
             ApiFuture<WriteResult> result = gameSessionRef.update(updates);
             WriteResult asyncResponse = result.get();

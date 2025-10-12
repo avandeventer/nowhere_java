@@ -194,8 +194,8 @@ public class GameSessionHelper {
             newLocations.add(location);
         }
         
-        // Add all new locations to the adventure map
         for (Location location : newLocations) {
+            gameSession.getAdventureMap().getLocations().add(location);
             adventureMapDAO.addLocation(gameSession.getGameCode(), location);
         }
     }
