@@ -63,6 +63,7 @@ public class GameSessionDAO {
         DocumentReference gameSessionRef = db.collection("gameSessions").document(gameSession.getGameCode());
         Map<String, Object> updates = new HashMap<>();
         updates.put("gameState", gameSession.getGameState());
+        updates.put("saveGameId", gameSession.getSaveGameId());
         updates.put("activeGameStateSession", gameSession.getActiveGameStateSession());
         updates.put("activePlayerSession", gameSession.getActivePlayerSession());
         updates.put("totalPointsTowardsVictory", gameSession.getTotalPointsTowardsVictory());

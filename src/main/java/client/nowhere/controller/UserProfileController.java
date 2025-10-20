@@ -58,6 +58,14 @@ public class UserProfileController {
         return this.userProfileHelper.upsertSaveGame(userProfileId, adventureId, saveGame);
     }
 
+    @PostMapping(value = "/save-game/adventure-map")
+    @ResponseBody
+    public String saveGameSessionAdventureMapToUserProfile(
+            @RequestParam String gameCode
+    ) {
+        return this.userProfileHelper.saveGameSessionAdventureMapToUserProfile(gameCode);
+    }
+
     @DeleteMapping(value = "/save-game", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public void deleteSaveGame(@RequestParam String userProfileId,
@@ -69,6 +77,8 @@ public class UserProfileController {
 
         this.userProfileHelper.deleteSaveGame(userProfileId, adventureId, saveGameId);
     }
+
+
 
     @PostMapping("/user-profile/{userProfileId}/adventure-map")
     @ResponseBody

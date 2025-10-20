@@ -1,10 +1,7 @@
 package client.nowhere.helper;
 
 import client.nowhere.dao.*;
-import client.nowhere.model.AdventureMap;
-import client.nowhere.model.ProfileAdventureMap;
-import client.nowhere.model.SaveGame;
-import client.nowhere.model.UserProfile;
+import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,11 +14,13 @@ public class UserProfileHelper {
 
     UserProfileDAO userProfileDAO;
     AdventureMapDAO adventureMapDAO;
+    GameSessionDAO gameSessionDAO;
 
     @Autowired
-    public UserProfileHelper(UserProfileDAO userProfileDAO, AdventureMapDAO adventureMapDAO) {
+    public UserProfileHelper(UserProfileDAO userProfileDAO, AdventureMapDAO adventureMapDAO, GameSessionDAO gameSessionDAO) {
         this.userProfileDAO = userProfileDAO;
         this.adventureMapDAO = adventureMapDAO;
+        this.gameSessionDAO = gameSessionDAO;
     }
 
     public UserProfile create(UserProfile userProfile) {
@@ -35,6 +34,41 @@ public class UserProfileHelper {
 
         userProfile.setMaps(profileAdventureHashMap);
         return this.userProfileDAO.create(userProfile);
+    }
+
+    public String saveGameSessionAdventureMapToUserProfile(String gameCode) {
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        String saveGameId = saveGameSessionAdventureMapToUserProfile(gameSession);
+
+        if (!saveGameId.isEmpty()) {
+            gameSession.setSaveGameId(saveGameId);
+            gameSessionDAO.updateGameSession(gameSession);
+        }
+
+        return saveGameId;
+    }
+
+    public String saveGameSessionAdventureMapToUserProfile(GameSession gameSession) {
+        UserProfile userProfile = userProfileDAO.get(gameSession.getUserProfileId());
+        String adventureId = gameSession.getAdventureMap().getAdventureId();
+
+        String saveGameId = "";
+        if (!userProfile.getMaps().containsKey(adventureId)) {
+            AdventureMap adventureMap = gameSession.getAdventureMap();
+            if (adventureMap.getName().isEmpty()) {
+                adventureMap.setName("Your new map [Name me]");
+            }
+
+            ProfileAdventureMap profileAdventureMap = userProfileDAO.addAdventureMap(
+                    gameSession.getUserProfileId(),
+                    gameSession.getAdventureMap()
+            );
+
+            if (!profileAdventureMap.getSaveGames().isEmpty()) {
+                saveGameId = profileAdventureMap.getSaveGames().keySet().iterator().next();
+            }
+        }
+        return saveGameId;
     }
 
     public UserProfile get(String email, String password) {

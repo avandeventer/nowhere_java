@@ -31,6 +31,7 @@ public class GameSession {
             this.activeGameStateSession = new ActiveGameStateSession(this.gameCode);
         }
         this.collaborativeTextPhases = new HashMap<>();
+        this.saveGameId = "";
     }
 
     public GameSession(String gameCode) {

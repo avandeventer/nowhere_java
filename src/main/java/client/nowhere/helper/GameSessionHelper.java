@@ -1,15 +1,34 @@
 package client.nowhere.helper;
 
-import client.nowhere.dao.*;
-import client.nowhere.exception.GameStateException;
-import client.nowhere.exception.ResourceException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import client.nowhere.model.*;
-import io.netty.util.internal.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import client.nowhere.dao.AdventureMapDAO;
+import client.nowhere.dao.EndingDAO;
+import client.nowhere.dao.GameSessionDAO;
+import client.nowhere.dao.RitualDAO;
+import client.nowhere.dao.StoryDAO;
+import client.nowhere.dao.UserProfileDAO;
+import client.nowhere.exception.GameStateException;
+import client.nowhere.exception.ResourceException;
+import io.netty.util.internal.StringUtil;
 
 @Component
 public class GameSessionHelper {
@@ -17,22 +36,22 @@ public class GameSessionHelper {
     private final GameSessionDAO gameSessionDAO;
     private final AdventureMapDAO adventureMapDAO;
     private final StoryDAO storyDAO;
-    private final RitualDAO ritualDAO;
     private final EndingDAO endingDAO;
+    private final UserProfileHelper userProfileHelper;
 
     @Autowired
     public GameSessionHelper(
             GameSessionDAO gameSessionDAO,
             AdventureMapDAO adventureMapDAO,
             StoryDAO storyDAO,
-            RitualDAO ritualDAO,
-            EndingDAO endingDAO
+            EndingDAO endingDAO,
+            UserProfileHelper userProfileHelper
     ) {
         this.gameSessionDAO = gameSessionDAO;
         this.adventureMapDAO = adventureMapDAO;
         this.storyDAO = storyDAO;
-        this.ritualDAO = ritualDAO;
         this.endingDAO = endingDAO;
+        this.userProfileHelper = userProfileHelper;
     }
 
     public GameSession createGameSession(String userProfileId, String adventureId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound) {
@@ -86,6 +105,19 @@ public class GameSessionHelper {
                     });
                     assignLocationOptionAuthors(gameSession, players);
                     gameSession.setGameStateToNext();
+                    break;
+                case PREAMBLE:
+                    if (
+                        gameSession.getAdventureMap() != null &&
+                        gameSession.getUserProfileId() != null && 
+                        !gameSession.getUserProfileId().isEmpty()
+                    ) {
+                        String saveGameId = userProfileHelper.saveGameSessionAdventureMapToUserProfile(gameSession);
+
+                        if (!saveGameId.isEmpty()) {
+                            gameSession.setSaveGameId(saveGameId);
+                        }
+                    }
                     break;
                 case GENERATE_WRITE_PROMPT_AUTHORS:
                 case GENERATE_WRITE_PROMPT_AUTHORS_AGAIN:

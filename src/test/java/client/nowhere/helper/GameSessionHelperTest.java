@@ -1,29 +1,51 @@
 package client.nowhere.helper;
 
-import client.nowhere.dao.*;
-import client.nowhere.model.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
-import static client.nowhere.model.GameState.LOCATION_SELECT;
-import static client.nowhere.model.GameState.LOCATION_SELECT_AGAIN;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mockito.MockitoAnnotations;
+
+import client.nowhere.dao.AdventureMapDAO;
+import client.nowhere.dao.EndingDAO;
+import client.nowhere.dao.GameSessionDAO;
+import client.nowhere.dao.RitualDAO;
+import client.nowhere.dao.StoryDAO;
+import client.nowhere.model.ActiveGameStateSession;
+import client.nowhere.model.AdventureMap;
+import client.nowhere.model.GameSession;
+import client.nowhere.model.GameState;
+import static client.nowhere.model.GameState.GENERATE_OCCUPATION_AUTHORS;
+import static client.nowhere.model.GameState.LOCATION_SELECT;
+import static client.nowhere.model.GameState.WHAT_OCCUPATIONS_ARE_THERE;
+import static client.nowhere.model.GameState.WHERE_CAN_WE_GO;
+import client.nowhere.model.Location;
+import client.nowhere.model.Option;
+import client.nowhere.model.Player;
+import client.nowhere.model.PlayerStat;
+import client.nowhere.model.StatType;
+import client.nowhere.model.Story;
 
 public class GameSessionHelperTest {
 
@@ -40,7 +62,10 @@ public class GameSessionHelperTest {
     private EndingDAO endingDAO;
 
     @Mock
-    private UserProfileDAO userProfileDAO;
+    private UserProfileHelper userProfileHelper;
+
+    @Mock
+    private AdventureMapDAO adventureMapDAO;
 
     @InjectMocks
     private GameSessionHelper gameSessionHelper;
@@ -88,10 +113,10 @@ public class GameSessionHelperTest {
                         .map(Story::getPrequelStorySelectedOptionId)
                 .collect(Collectors.toList());
 
-        if (playedStoryPlayerIds.size() == 0) {
+        if (playedStoryPlayerIds.isEmpty()) {
             assertEquals(0, sequelStorySelectedOptionIds.size());
         } else {
-            assertTrue(sequelStorySelectedOptionIds.size() > 0, "We'd expect to see at least one sequel story if there are played stories available");
+            assertTrue(!sequelStorySelectedOptionIds.isEmpty(), "We'd expect to see at least one sequel story if there are played stories available");
             assertThat(sequelStorySelectedOptionIds).doesNotHaveDuplicates();
             List<String> sequelOptionIds = updated.getStories().stream().filter(story -> !story.getPrequelStoryId().isEmpty())
                     .flatMap(story -> story.getOptions().stream())
@@ -121,7 +146,7 @@ public class GameSessionHelperTest {
     static Stream<Arguments> provideGameSessionScenarios() {
         return Stream.of(
                 Arguments.of(
-                        3,
+                        10,
                         Arrays.asList("author0", "author1", "author2"),
                         new ArrayList<>(),
                         "Each player owns one story",
@@ -217,6 +242,187 @@ public class GameSessionHelperTest {
         return savedSequelStories;
     }
 
+    @Test
+    void testUpdateGameSession_GENERATE_OCCUPATION_AUTHORS_Phase() {
+        // Arrange
+        List<Player> players = createPlayers(3);
+        GameSession gameSession = createGameSession(WHERE_CAN_WE_GO, new ArrayList<>(), players, new ArrayList<>());
+        
+        // Set up adventure map with custom stat types (after createGameSession which creates an empty one)
+        List<StatType> statTypes = createCustomStatTypes();
+        gameSession.getAdventureMap().setStatTypes(statTypes);
+        
+        // Debug: Print the setup
+        System.out.println("Test setup - Adventure map: " + gameSession.getAdventureMap());
+        System.out.println("Test setup - Stat types: " + gameSession.getAdventureMap().getStatTypes());
+        
+        // Create some locations with options for the assignLocationOptionAuthors method
+        List<Location> locations = createTestLocations(players);
+        gameSession.getAdventureMap().setLocations(locations);
+        
+        when(gameSessionDAO.getGame(anyString())).thenAnswer(invocation -> deepCopy(gameSession));
+        when(gameSessionDAO.getPlayers(anyString())).thenReturn(players);
+        when(gameSessionDAO.updateGameSession(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(gameSessionDAO.updatePlayer(any(Player.class))).thenAnswer(invocation -> {
+            Player player = invocation.getArgument(0);
+            System.out.println("updatePlayer called for player: " + player.getAuthorId() + " with stats: " + player.getPlayerStats());
+            return player;
+        });
+        when(adventureMapDAO.getLocations(anyString())).thenReturn(locations);
+        when(adventureMapDAO.updateLocation(anyString(), any(Location.class))).thenAnswer(invocation -> invocation.getArgument(1));
+
+        // Act
+        System.out.println("About to call updateToNextGameState with game state: " + gameSession.getGameState());
+        GameSession updated;
+        try {
+            updated = gameSessionHelper.updateToNextGameState("test123");
+            System.out.println("After updateToNextGameState, new game state: " + updated.getGameState());
+        } catch (Exception e) {
+            System.out.println("Exception thrown in updateToNextGameState: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+
+        // Assert
+        // The GENERATE_OCCUPATION_AUTHORS phase should advance to the next phase
+        assertEquals(GENERATE_OCCUPATION_AUTHORS.getNextGameState(), updated.getGameState());
+        
+        // Verify that each player has their base player stats set
+        for (Player player : updated.getPlayers()) {
+            // Debug: Print player stats
+            System.out.println("Player " + player.getAuthorId() + " stats: " + player.getPlayerStats());
+            System.out.println("Player " + player.getAuthorId() + " stats size: " + (player.getPlayerStats() != null ? player.getPlayerStats().size() : "null"));
+            assertNotNull(player.getPlayerStats(), "Player stats should not be null for player " + player.getAuthorId());
+            assertEquals(statTypes.size(), player.getPlayerStats().size(), "Player should have " + statTypes.size() + " stats");
+            
+            // Verify that each player stat has the correct stat type and base value (4)
+            for (PlayerStat playerStat : player.getPlayerStats()) {
+                assertNotNull(playerStat.getStatType(), "PlayerStat should not be null");
+                assertEquals(4, playerStat.getValue(), "PlayerStat value should be 4");
+                assertTrue(statTypes.contains(playerStat.getStatType()), "PlayerStat should contain one of the stat types");
+            }
+        }
+        
+        // Verify that the adventure map and stat types are preserved
+        assertNotNull(updated.getAdventureMap());
+        assertNotNull(updated.getAdventureMap().getStatTypes());
+        assertEquals(statTypes.size(), updated.getAdventureMap().getStatTypes().size());
+        
+        // Verify that locations are preserved
+        assertNotNull(updated.getAdventureMap().getLocations());
+        assertEquals(locations.size(), updated.getAdventureMap().getLocations().size());
+    }
+
+    private List<StatType> createCustomStatTypes() {
+        List<StatType> statTypes = new ArrayList<>();
+        
+        StatType strength = new StatType("Strength");
+        strength.setFavorType(false);
+        strength.setFavorEntity("");
+        statTypes.add(strength);
+        
+        StatType magic = new StatType("Magic");
+        magic.setFavorType(false);
+        magic.setFavorEntity("");
+        statTypes.add(magic);
+        
+        StatType charisma = new StatType("Charisma");
+        charisma.setFavorType(true);
+        charisma.setFavorEntity("Nobles");
+        statTypes.add(charisma);
+        
+        return statTypes;
+    }
+
+    private List<Location> createTestLocations(List<Player> players) {
+        List<Location> locations = new ArrayList<>();
+        
+        for (int i = 0; i < players.size(); i++) {
+            Location location = new Location();
+            location.setId("location" + i);
+            location.setAuthorId(players.get(i).getAuthorId());
+            location.setLabel("Test Location " + i);
+            
+            List<Option> options = new ArrayList<>();
+            Option option1 = new Option();
+            option1.setOptionId("option1_" + i);
+            option1.setOptionText("Option 1 for location " + i);
+            option1.setSuccessText(""); // Empty to test assignment
+            option1.setFailureText(""); // Empty to test assignment
+            options.add(option1);
+            
+            Option option2 = new Option();
+            option2.setOptionId("option2_" + i);
+            option2.setOptionText("Option 2 for location " + i);
+            option2.setSuccessText(""); // Empty to test assignment
+            option2.setFailureText(""); // Empty to test assignment
+            options.add(option2);
+            
+            location.setOptions(options);
+            locations.add(location);
+        }
+        
+        return locations;
+    }
+
+    @ParameterizedTest
+    @MethodSource("providePreamblePhaseScenarios")
+    void testUpdateGameSession_PREAMBLE_Phase_AdventureMapIntegration(
+            String scenarioName,
+            String adventureId,
+            String userId,
+            String expectedSaveGameId,
+            boolean shouldCallUserProfileHelper
+    ) {
+        // Arrange
+        List<Player> players = createPlayers(2);
+        GameSession gameSession = createGameSession(WHAT_OCCUPATIONS_ARE_THERE, new ArrayList<>(), players, new ArrayList<>());
+        
+        // Set up adventure map and user profile ID
+        AdventureMap adventureMap = new AdventureMap();
+        adventureMap.setAdventureId(adventureId);
+        gameSession.setAdventureMap(adventureMap);
+        gameSession.setUserProfileId(userId);
+        
+        // Mock the dependencies
+        when(gameSessionDAO.getGame(anyString())).thenAnswer(invocation -> deepCopy(gameSession));
+        when(gameSessionDAO.getPlayers(anyString())).thenReturn(players);
+        when(gameSessionDAO.updateGameSession(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        when(userProfileHelper.saveGameSessionAdventureMapToUserProfile(any(GameSession.class))).thenReturn(expectedSaveGameId);
+
+        // Act
+        GameSession updated = gameSessionHelper.updateToNextGameState("test123");
+
+        // Assert
+        verify(userProfileHelper).saveGameSessionAdventureMapToUserProfile(any(GameSession.class));
+        assertEquals(expectedSaveGameId, updated.getSaveGameId());
+
+        // Verify that the adventure map and user profile ID are preserved
+        assertNotNull(updated.getAdventureMap());
+        assertEquals(adventureId, updated.getAdventureMap().getAdventureId());
+        assertEquals(userId, updated.getUserProfileId());
+    }
+
+    private static Stream<Arguments> providePreamblePhaseScenarios() {
+        return Stream.of(
+            Arguments.of(
+                "Adventure map does NOT exist in user profile",
+                "test-adventure-123",
+                "user-123",
+                "save-game-123", // expectedSaveGameId
+                true  // shouldCallUserProfileHelper
+            ),
+            Arguments.of(
+                "Adventure map DOES exist in user profile",
+                "existing-adventure-456",
+                "user-456",
+                "", // expectedSaveGameId (null when not called)
+                false // shouldCallUserProfileHelper
+            )
+        );
+    }
+
     private GameSession deepCopy(GameSession session) {
         GameSession copy = new GameSession();
         copy.setGameCode(session.getGameCode());
@@ -225,6 +431,14 @@ public class GameSessionHelperTest {
         copy.setStories(session.getStories());
         copy.setActiveGameStateSession(session.getActiveGameStateSession());
         copy.setAdventureMap(session.getAdventureMap());
+        copy.setUserProfileId(session.getUserProfileId());
+        
+        // Debug: Print player stats in the copy
+        System.out.println("deepCopy - Players in copy:");
+        for (Player player : copy.getPlayers()) {
+            System.out.println("  Player " + player.getAuthorId() + " stats: " + player.getPlayerStats());
+        }
+        
         return copy;
     }
 
