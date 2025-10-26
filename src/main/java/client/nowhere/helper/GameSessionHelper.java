@@ -23,9 +23,7 @@ import org.springframework.stereotype.Component;
 import client.nowhere.dao.AdventureMapDAO;
 import client.nowhere.dao.EndingDAO;
 import client.nowhere.dao.GameSessionDAO;
-import client.nowhere.dao.RitualDAO;
 import client.nowhere.dao.StoryDAO;
-import client.nowhere.dao.UserProfileDAO;
 import client.nowhere.exception.GameStateException;
 import client.nowhere.exception.ResourceException;
 import io.netty.util.internal.StringUtil;
@@ -101,8 +99,8 @@ public class GameSessionHelper {
                                 gameSession.getAdventureMap().getStatTypes(), 4
                         );
                         gameSessionDAO.updatePlayer(player);
-                        gameSession.getPlayers().set(gameSession.getPlayers().indexOf(player), player);
                     });
+                    gameSession.setPlayers(players);
                     assignLocationOptionAuthors(gameSession, players);
                     gameSession.setGameStateToNext();
                     break;
