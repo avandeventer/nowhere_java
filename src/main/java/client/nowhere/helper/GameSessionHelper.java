@@ -1,16 +1,14 @@
 package client.nowhere.helper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -238,73 +236,96 @@ public class GameSessionHelper {
     }
 
     private void assignLocationOptionAuthors(GameSession gameSession, List<Player> players) {
-        Queue<String> playerAuthorQueue = new LinkedList<>(players.stream()
-                .map(Player::getAuthorId)
-                .collect(Collectors.toList()));
+        Map<String, Integer> outcomeAuthorCount = players.stream()
+                .collect(Collectors.toMap(Player::getAuthorId, p -> 0));
 
         List<Location> locations = adventureMapDAO.getLocations(gameSession.getGameCode());
         List<Location> locationsWithOptions = locations.stream()
                 .filter(location -> location.getOptions() != null && !location.getOptions().isEmpty())
                 .toList();
         
-        for (Location location : locationsWithOptions) {
-            String firstOptionAuthorPicked = "";
-            for (Option option : location.getOptions()) {
-                String assignedAuthorId;
-
-                // Only assign authors to options that don't already have successText
-                if (!option.getSuccessText().isEmpty()) {
-                    continue;
-                }
-
-                do {
-                    assignedAuthorId = playerAuthorQueue.poll();
-                    playerAuthorQueue.offer(assignedAuthorId);
-                } while (Objects.equals(assignedAuthorId, location.getAuthorId())
-                        || Objects.equals(assignedAuthorId, firstOptionAuthorPicked));
-
-                option.setOutcomeAuthorId(assignedAuthorId);
-                firstOptionAuthorPicked = assignedAuthorId;
-            }
-        }
+        // Randomize order for fair distribution
+        List<Location> shuffledLocations = new ArrayList<>(locationsWithOptions);
+        Collections.shuffle(shuffledLocations, new Random(shuffledLocations.size()));
         
-        for (Location location : locationsWithOptions) {
+        for (Location location : shuffledLocations) {
+            // Get options that need authors
+            List<Option> options = location.getOptions().stream()
+                    .filter(option -> option.getSuccessText().isEmpty())
+                    .toList();
+            
+            if (options.isEmpty()) {
+                adventureMapDAO.updateLocation(gameSession.getGameCode(), location);
+                continue;
+            }
+
+            // Find eligible authors (not the location author)
+            Optional<Player> selectedAuthor = findAuthorWithFewestAssignments(
+                    players, 
+                    List.of(location.getAuthorId()), 
+                    outcomeAuthorCount
+            );
+
+            if (selectedAuthor.isPresent()) {
+                String authorId = selectedAuthor.get().getAuthorId();
+                options.forEach(option -> option.setOutcomeAuthorId(authorId));
+                outcomeAuthorCount.put(authorId, outcomeAuthorCount.get(authorId) + options.size());
+            }
+            
             adventureMapDAO.updateLocation(gameSession.getGameCode(), location);
         }
     }
 
     private void assignStoryOptionAuthors(GameSession gameSession, List<Player> players) {
-        Queue<String> playerAuthorQueue = new LinkedList<>(players.stream()
-                .map(Player::getAuthorId)
-                .collect(Collectors.toList()));
+        Map<String, Integer> outcomeAuthorCount = players.stream()
+                .collect(Collectors.toMap(Player::getAuthorId, p -> 0));
 
-        List<Story> stories = storyDAO.getStories(gameSession.getGameCode());
-        List<Story> storiesWithPrompts = stories.stream().filter(story ->
-                !story.getPlayerId().isEmpty()
-                        && story.getSelectedOptionId().isEmpty()).toList();
-        for (Story storyWithPrompt : storiesWithPrompts) {
-            String firstOptionAuthorPicked = "";
-            for (Option option : storyWithPrompt.getOptions()) {
-                String assignedAuthorId;
-
-                if (!option.getSuccessText().isEmpty() && !option.getFailureText().isEmpty()) {
-                    continue;
-                }
-
-                do {
-                    assignedAuthorId = playerAuthorQueue.poll();
-                    playerAuthorQueue.offer(assignedAuthorId);
-                } while (Objects.equals(assignedAuthorId, storyWithPrompt.getPlayerId())
-                        || Objects.equals(assignedAuthorId, storyWithPrompt.getAuthorId())
-                        || Objects.equals(assignedAuthorId, firstOptionAuthorPicked));
-
-                option.setOutcomeAuthorId(assignedAuthorId);
-                firstOptionAuthorPicked = assignedAuthorId;
+        List<Story> storiesWithPrompts = gameSession.getStories().stream()
+                .filter(story -> !story.getPlayerId().isEmpty() && story.getSelectedOptionId().isEmpty())
+                .toList();
+        
+        // Randomize order for fair distribution
+        List<Story> shuffledStories = new ArrayList<>(storiesWithPrompts);
+        Collections.shuffle(shuffledStories, new Random(shuffledStories.size()));
+        
+        for (Story story : shuffledStories) {
+            // Get options that need authors
+            List<Option> options = story.getOptions().stream()
+                    .filter(option -> option.getSuccessText().isEmpty() || option.getFailureText().isEmpty())
+                    .toList();
+            
+            if (options.isEmpty()) {
+                storyDAO.updateStory(story);
+                continue;
             }
-            storyDAO.updateStory(storyWithPrompt);
+
+            // Find eligible authors (not the story's player or author)
+            Optional<Player> selectedAuthor = findAuthorWithFewestAssignments(
+                    players, 
+                    List.of(story.getPlayerId(), story.getAuthorId()), 
+                    outcomeAuthorCount
+            );
+
+            if (selectedAuthor.isPresent()) {
+                String authorId = selectedAuthor.get().getAuthorId();
+                options.forEach(option -> option.setOutcomeAuthorId(authorId));
+                outcomeAuthorCount.put(authorId, outcomeAuthorCount.get(authorId) + options.size());
+            }
+            
+            storyDAO.updateStory(story);
         }
     }
-
+    
+    private Optional<Player> findAuthorWithFewestAssignments(
+            List<Player> players, 
+            List<String> excludedAuthorIds, 
+            Map<String, Integer> outcomeAuthorCount
+    ) {
+        return players.stream()
+                .filter(p -> !excludedAuthorIds.contains(p.getAuthorId()))
+                .min(Comparator.comparingInt(p -> outcomeAuthorCount.get(p.getAuthorId())));
+    }
+    
     private void assignStoryAuthors(
             GameSession gameSession,
             boolean isTestMode,

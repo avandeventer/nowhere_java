@@ -37,9 +37,12 @@ import client.nowhere.model.AdventureMap;
 import client.nowhere.model.GameSession;
 import client.nowhere.model.GameState;
 import static client.nowhere.model.GameState.GENERATE_OCCUPATION_AUTHORS;
+import static client.nowhere.model.GameState.GENERATE_WRITE_OPTION_AUTHORS;
+import static client.nowhere.model.GameState.GENERATE_WRITE_PROMPT_AUTHORS;
 import static client.nowhere.model.GameState.LOCATION_SELECT;
 import static client.nowhere.model.GameState.WHAT_OCCUPATIONS_ARE_THERE;
 import static client.nowhere.model.GameState.WHERE_CAN_WE_GO;
+import static client.nowhere.model.GameState.WRITE_PROMPTS;
 import client.nowhere.model.Location;
 import client.nowhere.model.Option;
 import client.nowhere.model.Player;
@@ -90,57 +93,122 @@ public class GameSessionHelperTest {
         when(gameSessionDAO.getGame(anyString())).thenAnswer(invocation -> deepCopy(gameSession));
         when(gameSessionDAO.getPlayers(anyString())).thenReturn(players);
         when(gameSessionDAO.updateGameSession(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(storyDAO.getStories(anyString())).thenAnswer(invocation -> gameSession.getStories());
+        when(storyDAO.updateStory(any(Story.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         GameSession updated = gameSessionHelper.updateToNextGameState("test123");
 
         System.out.println("✅ Ran test: " + testName);
-        assertEquals(currentGameState.getNextGameState().getNextGameState(), updated.getGameState());
-        assertTrue(updated.getStories().stream().noneMatch(story -> story.getAuthorId().isEmpty()));
+        
+        // Different assertions based on starting state
+        if (currentGameState == LOCATION_SELECT) {
+            // Starting from LOCATION_SELECT: goes through GENERATE_WRITE_PROMPT_AUTHORS -> WRITE_PROMPTS
+            assertEquals(GENERATE_WRITE_PROMPT_AUTHORS.getNextGameState(), updated.getGameState());
+            assertTrue(updated.getStories().stream().noneMatch(story -> story.getAuthorId().isEmpty()));
 
-        for (Story story : updated.getStories()) {
-            assertNotEquals(story.getPlayerId(), story.getAuthorId(),
-                    "Player cannot author their own story");
-        }
+            for (Story story : updated.getStories()) {
+                assertNotEquals(story.getPlayerId(), story.getAuthorId(),
+                        "Player cannot author their own story");
+            }
 
-        updated.getActiveGameStateSession().getIsPlayerDone().forEach((authorId, doneStatus) -> assertFalse(doneStatus));
+            updated.getActiveGameStateSession().getIsPlayerDone().forEach((authorId, doneStatus) -> assertFalse(doneStatus));
 
-        // Count how many stories each author was assigned
-        Map<String, Long> authorCounts = updated.getStories().stream()
-                .collect(Collectors.groupingBy(Story::getAuthorId, Collectors.counting()));
+            // Count how many stories each author was assigned
+            Map<String, Long> authorCounts = updated.getStories().stream()
+                    .collect(Collectors.groupingBy(Story::getAuthorId, Collectors.counting()));
 
-        List<String> sequelStorySelectedOptionIds =
-                updated.getStories().stream().filter(story -> !story.getPrequelStoryId().isEmpty())
-                        .map(Story::getPrequelStorySelectedOptionId)
-                .collect(Collectors.toList());
-
-        if (playedStoryPlayerIds.isEmpty()) {
-            assertEquals(0, sequelStorySelectedOptionIds.size());
-        } else {
-            assertTrue(!sequelStorySelectedOptionIds.isEmpty(), "We'd expect to see at least one sequel story if there are played stories available");
-            assertThat(sequelStorySelectedOptionIds).doesNotHaveDuplicates();
-            List<String> sequelOptionIds = updated.getStories().stream().filter(story -> !story.getPrequelStoryId().isEmpty())
-                    .flatMap(story -> story.getOptions().stream())
-                    .map(Option::getOptionId)
+            List<String> sequelStorySelectedOptionIds =
+                    updated.getStories().stream().filter(story -> !story.getPrequelStoryId().isEmpty())
+                            .map(Story::getPrequelStorySelectedOptionId)
                     .collect(Collectors.toList());
+
+            if (playedStoryPlayerIds.isEmpty()) {
+                assertEquals(0, sequelStorySelectedOptionIds.size());
+            } else {
+                assertTrue(!sequelStorySelectedOptionIds.isEmpty(), "We'd expect to see at least one sequel story if there are played stories available");
+                assertThat(sequelStorySelectedOptionIds).doesNotHaveDuplicates();
+                List<String> sequelOptionIds = updated.getStories().stream().filter(story -> !story.getPrequelStoryId().isEmpty())
+                        .flatMap(story -> story.getOptions().stream())
+                        .map(Option::getOptionId)
+                        .collect(Collectors.toList());
+            }
+
+            System.out.println("🧾 Story Authorship Counts:");
+            authorCounts.forEach((author, count) -> {
+                System.out.printf("   - %s wrote %d stories", author, count);
+                System.out.printf(" and they wrote %s sequel stories%n",
+                        updated.getStories().stream().filter(
+                            story ->
+                                story.getAuthorId().equals(author)
+                                && !story.getPrequelStoryId().isEmpty()
+                            ).count());
+            });
+
+            // Assert fair distribution
+            long max = authorCounts.values().stream().mapToLong(Long::longValue).max().orElse(0);
+            long min = authorCounts.values().stream().mapToLong(Long::longValue).min().orElse(0);
+            assertTrue(max - min <= 1,
+                    "Story authorship should be fairly balanced (difference between most and least is at most 1)");
+        } else if (currentGameState == WRITE_PROMPTS) {
+            // Starting from WRITE_PROMPTS: goes through GENERATE_WRITE_OPTION_AUTHORS -> WRITE_OPTIONS
+            assertEquals(GENERATE_WRITE_OPTION_AUTHORS.getNextGameState(), updated.getGameState());
+            
+            // Get the updated stories from the DAO (which were updated by assignStoryOptionAuthors)
+            List<Story> updatedStories = storyDAO.getStories("test123");
+            
+            // Count how many outcomes each author was assigned
+            Map<String, Long> outcomeAuthorCounts = updatedStories.stream()
+                    .flatMap(story -> story.getOptions().stream())
+                    .collect(Collectors.groupingBy(Option::getOutcomeAuthorId, Collectors.counting()));
+
+            System.out.println("🧾 Outcome Author Assignment Counts:");
+            outcomeAuthorCounts.forEach((author, count) -> 
+                System.out.printf("   - %s assigned to write %d outcomes%n", author, count)
+            );
+            
+            // Verify all options have outcome authors assigned
+            for (Story story : updatedStories) {
+                for (Option option : story.getOptions()) {
+                    assertFalse(option.getOutcomeAuthorId().isEmpty(), 
+                        "Every option should have an outcome author for story " + story.getStoryId());
+                }
+            }
+
+            // Verify that outcome authors are different from the story author and player
+            for (Story story : updatedStories) {
+                for (Option option : story.getOptions()) {
+                    assertNotEquals(story.getAuthorId(), option.getOutcomeAuthorId(),
+                        "Outcome author should not be the story author");
+                    assertNotEquals(story.getPlayerId(), option.getOutcomeAuthorId(),
+                        "Outcome author should not be the story's player");
+                }
+            }
+
+            // Assert fair distribution of outcome authors
+            long max = outcomeAuthorCounts.values().stream().mapToLong(Long::longValue).max().orElse(0);
+            long min = outcomeAuthorCounts.values().stream().mapToLong(Long::longValue).min().orElse(0);
+            int totalOptions = updatedStories.size() * 2; // 2 options per story
+            int expectedPerAuthor = totalOptions / playerCount;
+            
+            // With one author per story approach, distribution should be very even (max-min <= 1)
+            long variance = max - min;
+            assertTrue(variance <= 1,
+                String.format("Outcome author assignment should be evenly balanced (max-min=%d, expected <=1, totalOptions=%d, expectedPerAuthor=%d, got counts: %s)", 
+                    variance, totalOptions, expectedPerAuthor, outcomeAuthorCounts));
+            
+            // Verify that all options in a story share the same outcome author
+            for (Story story : updatedStories) {
+                List<String> outcomeAuthorIds = story.getOptions().stream()
+                        .map(Option::getOutcomeAuthorId)
+                        .collect(Collectors.toList());
+                // With the new logic, all options in a story should have the SAME author
+                if (outcomeAuthorIds.size() > 1) {
+                    String firstAuthorId = outcomeAuthorIds.get(0);
+                    assertThat(outcomeAuthorIds).allMatch(id -> id.equals(firstAuthorId),
+                        "All options in story " + story.getStoryId() + " should have the same outcome author");
+                }
+            }
         }
-
-        System.out.println("✅ Ran test: " + testName);
-        System.out.println("🧾 Story Authorship Counts:");
-        authorCounts.forEach((author, count) -> {
-            System.out.printf("   - %s wrote %d stories", author, count);
-            System.out.printf(" and they wrote %s sequel stories%n",
-                    updated.getStories().stream().filter(
-                        story ->
-                            story.getAuthorId().equals(author)
-                            && !story.getPrequelStoryId().isEmpty()
-                        ).count());
-        });
-
-        // Assert fair distribution
-        long max = authorCounts.values().stream().mapToLong(Long::longValue).max().orElse(0);
-        long min = authorCounts.values().stream().mapToLong(Long::longValue).min().orElse(0);
-        assertTrue(max - min <= 1,
-                "Story authorship should be fairly balanced (difference between most and least is at most 1)");
     }
 
     static Stream<Arguments> provideGameSessionScenarios() {
@@ -179,6 +247,20 @@ public class GameSessionHelperTest {
                         new ArrayList<>(),
                         "Multiple stories for each player",
                         LOCATION_SELECT
+                ),
+                Arguments.of(
+                        4,
+                        Arrays.asList("author0", "author1", "author2", "author3"),
+                        new ArrayList<>(),
+                        "Outcome authors: 4 players, 1 story each",
+                        WRITE_PROMPTS
+                ),
+                Arguments.of(
+                        5,
+                        Arrays.asList("author0", "author1", "author2", "author3", "author4", "author0", "author1", "author2", "author3", "author4"),
+                        new ArrayList<>(),
+                        "Outcome authors: 5 players, 2 stories each",
+                        WRITE_PROMPTS
                 )
         );
     }
@@ -208,10 +290,32 @@ public class GameSessionHelperTest {
             Story s = new Story();
             s.setStoryId("s" + i);
             s.setPlayerId(playerIds.get(i));
-            s.setAuthorId("");  // to be filled by system
+            
+            // Set authorId based on state
+            if (state == WRITE_PROMPTS) {
+                // For WRITE_PROMPTS state, stories should already have an authorId (different from player)
+                // Use player 2 positions ahead to ensure we have enough eligible authors for outcome assignment
+                int storyAuthorIdx = (i + 2) % players.size();
+                s.setAuthorId(players.get(storyAuthorIdx).getAuthorId());
+                s.setPrompt("Test prompt for story " + i);
+            } else {
+                s.setAuthorId("");  // to be filled by system
+            }
+            
+            // Ensure selectedOptionId is empty for WRITE_PROMPTS state
+            s.setSelectedOptionId("");
+            
             s.setOptions(Arrays.asList(new Option(), new Option()));
             for (int j = 0; j < s.getOptions().size(); j++) {
-                s.getOptions().get(j).setOptionId(s.getStoryId() + "o" + j);
+                Option option = s.getOptions().get(j);
+                option.setOptionId(s.getStoryId() + "o" + j);
+                
+                // For WRITE_PROMPTS state, set empty success and failure text to test outcome assignment
+                // This ensures they qualify for outcome author assignment
+                if (state == WRITE_PROMPTS) {
+                    option.setSuccessText("");
+                    option.setFailureText("");
+                }
             }
             stories.add(s);
         }
