@@ -251,7 +251,7 @@ public class GameSessionHelper {
         for (Location location : shuffledLocations) {
             // Get options that need authors
             List<Option> options = location.getOptions().stream()
-                    .filter(option -> option.getSuccessText().isEmpty())
+                    .filter(option -> option.getOutcomeAuthorId().isEmpty())
                     .toList();
             
             if (options.isEmpty()) {
@@ -291,7 +291,7 @@ public class GameSessionHelper {
         for (Story story : shuffledStories) {
             // Get options that need authors
             List<Option> options = story.getOptions().stream()
-                    .filter(option -> option.getSuccessText().isEmpty() || option.getFailureText().isEmpty())
+                    .filter(option -> option.getOutcomeAuthorId().isEmpty())
                     .toList();
             
             if (options.isEmpty()) {
