@@ -255,7 +255,6 @@ public class GameSessionHelper {
                     .toList();
             
             if (options.isEmpty()) {
-                adventureMapDAO.updateLocation(gameSession.getGameCode(), location);
                 continue;
             }
 
@@ -295,7 +294,6 @@ public class GameSessionHelper {
                     .toList();
             
             if (options.isEmpty()) {
-                storyDAO.updateStory(story);
                 continue;
             }
 

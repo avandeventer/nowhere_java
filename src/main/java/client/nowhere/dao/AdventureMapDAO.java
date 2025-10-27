@@ -328,7 +328,7 @@ public class AdventureMapDAO {
                         locationToUpdate.setAuthorId(location.getAuthorId());
                     }
 
-                    if (!location.getLabel().isEmpty()) {
+                    if (location.getLabel() != null && !location.getLabel().isEmpty()) {
                         locationToUpdate.setLabel(location.getLabel());
                     }
 
