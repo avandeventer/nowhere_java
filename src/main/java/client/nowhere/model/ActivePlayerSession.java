@@ -15,10 +15,12 @@ public class ActivePlayerSession {
     boolean setNextPlayerTurn;
     Map<String, Boolean> isPlayerDoneWithTurn;
     RepercussionOutput repercussions;
+    boolean startTimer;
 
     public ActivePlayerSession() {
         this.isPlayerDoneWithTurn = new HashMap<>();
         this.repercussions = new RepercussionOutput();
+        this.startTimer = false;
     }
 
     public String getPlayerId() {
@@ -47,6 +49,7 @@ public class ActivePlayerSession {
         this.selectedLocationOptionId = updatedSession.getSelectedLocationOptionId();
         this.locationOutcomeDisplay = updatedSession.getLocationOutcomeDisplay();
         this.repercussions = updatedSession.getRepercussions();
+        this.startTimer = updatedSession.isStartTimer();
         if (
             updatedSession.getIsPlayerDoneWithTurn() != null
             && updatedSession.getIsPlayerDoneWithTurn().size() > 0
@@ -134,6 +137,7 @@ public class ActivePlayerSession {
         this.setNextPlayerTurn = false;
         this.selectedLocationOptionId = "";
         this.locationOutcomeDisplay = new ArrayList<>();
+        this.startTimer = false;
     }
 
     public void resetPlayerDoneWithTurn(List<Player> players) {
@@ -160,5 +164,13 @@ public class ActivePlayerSession {
 
     public void setRepercussions(RepercussionOutput repercussions) {
         this.repercussions = repercussions;
+    }
+
+    public boolean isStartTimer() {
+        return startTimer;
+    }
+
+    public void setStartTimer(boolean startTimer) {
+        this.startTimer = startTimer;
     }
 }
