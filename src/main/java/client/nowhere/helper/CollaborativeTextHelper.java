@@ -392,6 +392,7 @@ public class CollaborativeTextHelper {
                     if (!winningSubmissions.isEmpty()) {
                         // Create a PlayerStat entry for WHAT_DO_WE_FEAR
                         createPlayerStatForFearPhase(gameCode, winningSubmissions.getFirst());
+                        display.setEntity(winningSubmissions.getFirst().getCurrentText());
                         System.out.println("WHAT_DO_WE_FEAR winning submission: " + winningSubmissions.getFirst().getCurrentText());
                     }
                 }

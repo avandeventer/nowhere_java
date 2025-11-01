@@ -9,7 +9,8 @@ public class GameSessionDisplay {
     String successText;
     String neutralText;
     String failureText;
-    
+    String entity;
+
     // New TextSubmission fields for collaborative text phases
     TextSubmission whereAreWeSubmission;
     TextSubmission whoAreWeSubmission;
@@ -126,5 +127,13 @@ public class GameSessionDisplay {
 
     public void setWhatIsOurGoalSubmission(TextSubmission whatIsOurGoalSubmission) {
         this.whatIsOurGoalSubmission = whatIsOurGoalSubmission;
+    }
+
+    public String getEntity() {
+        return this.entity;
+    }
+
+    public void setEntity(String entity) {
+        this.entity = entity;
     }
 }
