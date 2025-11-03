@@ -22,12 +22,15 @@ public class AdventureMapController {
     @ResponseBody
     public List<Location> getLocation(
             @RequestParam String gameCode,
+            @RequestParam(required = false) String playerId,
             @RequestParam(required = false) String authorId,
             @RequestParam(required = false) String outcomeAuthorId) {
         if (authorId != null) {
             return this.adventureMapHelper.getLocationByAuthor(gameCode, authorId);
         } else if (outcomeAuthorId != null) {
             return this.adventureMapHelper.getLocationByOutcomeAuthor(gameCode, outcomeAuthorId);
+        } else if (playerId != null) {
+            return this.adventureMapHelper.getLocationsByPlayerId(gameCode, playerId);
         } else {
             return this.adventureMapHelper.getGameLocations(gameCode);
         }

@@ -1,19 +1,30 @@
 package client.nowhere.helper;
 
 import client.nowhere.dao.AdventureMapDAO;
+import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class AdventureMapHelper {
     private final AdventureMapDAO adventureMapDAO;
+    private final GameSessionDAO gameSessionDAO;
+    private final StoryHelper storyHelper;
 
     @Autowired
-    public AdventureMapHelper(AdventureMapDAO adventureMapDAO) {
+    public AdventureMapHelper(
+            AdventureMapDAO adventureMapDAO,
+            GameSessionDAO gameSessionDAO,
+            StoryHelper storyHelper
+    ) {
         this.adventureMapDAO = adventureMapDAO;
+        this.gameSessionDAO = gameSessionDAO;
+        this.storyHelper = storyHelper;
     }
 
     public List<Location> getGameLocations(String gameCode) {
@@ -88,4 +99,33 @@ public class AdventureMapHelper {
     public List<String> getLocationImages() {
         return this.adventureMapDAO.getLocationImages();
     }
+
+    public List<Location> getLocationsByPlayerId(String gameCode, String playerId) {
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+
+        List<Story> existingUnwrittenPlayerStories = gameSession.getStories() == null || gameSession.getStories().isEmpty()
+        ? new ArrayList<>()
+        : gameSession.getStories().stream()
+        .filter(story ->
+                story.getPlayerId().equals(playerId)
+                        && story.getSelectedOptionId().isBlank()
+                        && story.getAuthorId().isBlank()
+        ).collect(Collectors.toList());
+
+        List<Location> locations = this.adventureMapDAO.getLocations(gameCode);
+        
+        if (existingUnwrittenPlayerStories.size() >= gameSession.getStoriesToWritePerRound()) {
+            List<Location> selectableLocations = new ArrayList<>();
+            for (Location location : locations) {
+                Story playerStory = storyHelper.getSaveGameStoryForPlayer(gameCode, playerId, location.getId(), gameSession);
+                if (playerStory != null) {
+                    selectableLocations.add(location);
+                }
+            }
+            locations = selectableLocations;
+        }
+
+        return locations;
+    }
+
 }
