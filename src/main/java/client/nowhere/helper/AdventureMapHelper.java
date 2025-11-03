@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,7 +33,16 @@ public class AdventureMapHelper {
     }
 
     public GameSessionDisplay getGameSessionDisplay(String gameCode) {
-        return this.adventureMapDAO.getGameSessionDisplay(gameCode);
+        GameSessionDisplay gameSessionDisplay = this.adventureMapDAO.getGameSessionDisplay(gameCode);
+        if (gameSessionDisplay.getEntity() == null || gameSessionDisplay.getEntity().isEmpty()) {
+            GameSession gameSession = gameSessionDAO.getGame(gameCode);
+            if (gameSession.getAdventureMap() != null) {
+                Optional<StatType> favorStatOpt = gameSession.getAdventureMap().getStatTypes().stream().filter(StatType::isFavorType).findAny();
+                favorStatOpt.ifPresent(statType -> gameSessionDisplay.setEntity(statType.getFavorEntity()));
+                adventureMapDAO.updateGameSessionDisplay(gameCode, gameSessionDisplay);
+            }
+        }
+        return gameSessionDisplay;
     }
 
     //Global Adventure Map Functions
