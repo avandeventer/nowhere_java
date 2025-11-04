@@ -410,12 +410,14 @@ public class CollaborativeTextHelper {
 
         // Return top 5 submissions except player's own, ordered by most additions first, then by creation time
         // For WHAT_DO_WE_FEAR, return all submissions; for WHAT_ARE_WE_CAPABLE_OF, return top 6; for others, return top 5
+        // For WHAT_WILL_BECOME_OF_US, include player's own submissions (they'll be filtered by outcomeType on frontend)
         boolean isWhatDoWeFear = phaseId.equals("WHAT_DO_WE_FEAR");
         boolean isWhatAreWeCapableOf = phaseId.equals("WHAT_ARE_WE_CAPABLE_OF");
+        boolean isWhatWillBecomeOfUs = phaseId.equals("WHAT_WILL_BECOME_OF_US");
         int limit = isWhatDoWeFear ? Integer.MAX_VALUE : (isWhatAreWeCapableOf ? 6 : 5);
         
         return phase.getSubmissions().stream()
-                .filter(submission -> !submission.getAuthorId().equals(playerId))
+                .filter(submission -> isWhatWillBecomeOfUs || !submission.getAuthorId().equals(playerId))
                 .sorted((s1, s2) -> {
                     // First sort by number of additions (descending - most additions first)
                     int additionsComparison = Integer.compare(s2.getAdditions().size(), s1.getAdditions().size());
