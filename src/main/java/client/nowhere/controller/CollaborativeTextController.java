@@ -61,4 +61,10 @@ public class CollaborativeTextController {
     public List<TextSubmission> getVotingSubmissions(@RequestParam String gameCode, @RequestParam String playerId) {
         return this.collaborativeTextHelper.getVotingSubmissionsForPlayer(gameCode, playerId);
     }
+
+    @GetMapping("/collaborativeText/outcomeType")
+    @ResponseBody
+    public String getOutcomeTypeForPlayer(@RequestParam String gameCode, @RequestParam String playerId) {
+        return this.collaborativeTextHelper.getOutcomeTypeForPlayer(gameCode, playerId);
+    }
 }

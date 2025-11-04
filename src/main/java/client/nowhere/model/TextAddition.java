@@ -8,6 +8,7 @@ public class TextAddition {
     private String addedText;
     private Timestamp addedAt;
     private String submissionId; // Reference to the original submission
+    private String outcomeType; // Optional: "success", "neutral", or "failure" - used for WHAT_WILL_BECOME_OF_US phase
 
     public TextAddition() {
         this.addedAt = Timestamp.now();
@@ -36,4 +37,7 @@ public class TextAddition {
 
     public String getSubmissionId() { return submissionId; }
     public void setSubmissionId(String submissionId) { this.submissionId = submissionId; }
+
+    public String getOutcomeType() { return outcomeType; }
+    public void setOutcomeType(String outcomeType) { this.outcomeType = outcomeType; }
 }

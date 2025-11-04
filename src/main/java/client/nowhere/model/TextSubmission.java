@@ -15,6 +15,7 @@ public class TextSubmission {
     private boolean isFinalized;
     private int totalVotes;
     private double averageRanking;
+    private String outcomeType; // "success", "neutral", or "failure" - used for WHAT_WILL_BECOME_OF_US phase
 
     public TextSubmission() {
         this.additions = new ArrayList<>();
@@ -66,6 +67,9 @@ public class TextSubmission {
 
     public double getAverageRanking() { return averageRanking; }
     public void setAverageRanking(double averageRanking) { this.averageRanking = averageRanking; }
+
+    public String getOutcomeType() { return outcomeType; }
+    public void setOutcomeType(String outcomeType) { this.outcomeType = outcomeType; }
 
     // Helper methods
     public void addTextAddition(TextAddition addition) {

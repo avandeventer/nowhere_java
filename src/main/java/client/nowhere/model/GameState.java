@@ -17,6 +17,9 @@ public enum GameState {
         WHAT_ARE_WE_CAPABLE_OF,
         WHAT_ARE_WE_CAPABLE_OF_VOTE,
         WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS,
+        WHAT_WILL_BECOME_OF_US,
+        WHAT_WILL_BECOME_OF_US_VOTE,
+        WHAT_WILL_BECOME_OF_US_VOTE_WINNER,
         GENERATE_LOCATION_AUTHORS,
         WHERE_CAN_WE_GO,
         GENERATE_OCCUPATION_AUTHORS,
@@ -91,6 +94,15 @@ public enum GameState {
                                 return GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS;
                         }
                         case WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> {
+                                return GameState.WHAT_WILL_BECOME_OF_US;
+                        }
+                        case WHAT_WILL_BECOME_OF_US -> {
+                                return GameState.WHAT_WILL_BECOME_OF_US_VOTE;
+                        }
+                        case WHAT_WILL_BECOME_OF_US_VOTE -> {
+                                return GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER;
+                        }
+                        case WHAT_WILL_BECOME_OF_US_VOTE_WINNER -> {
                                 return GameState.GENERATE_LOCATION_AUTHORS;
                         }
                         case GENERATE_LOCATION_AUTHORS -> {

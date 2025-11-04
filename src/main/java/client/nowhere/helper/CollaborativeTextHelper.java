@@ -63,7 +63,7 @@ public class CollaborativeTextHelper {
             newSubmission = createBranchedSubmission(gameSession, textAddition, phaseId);
         } else {
             // New submission: Create new submission with empty originalText
-            newSubmission = createNewSubmission(textAddition);
+            newSubmission = createNewSubmission(textAddition, gameSession);
         }
 
         // Add submission atomically using Firestore transactions
@@ -157,7 +157,7 @@ public class CollaborativeTextHelper {
     /**
      * Creates a new submission with empty originalText
      */
-    private TextSubmission createNewSubmission(TextAddition textAddition) {
+    private TextSubmission createNewSubmission(TextAddition textAddition, GameSession gameSession) {
         String newSubmissionId = UUID.randomUUID().toString();
         
         TextSubmission newSubmission = new TextSubmission();
@@ -170,6 +170,13 @@ public class CollaborativeTextHelper {
         
         // Add the text addition to the new submission
         newSubmission.addTextAddition(textAddition);
+        
+        // Assign outcome type for WHAT_WILL_BECOME_OF_US phase
+        // Use outcomeType from TextAddition if provided, otherwise calculate based on player order
+        if (gameSession.getGameState() == GameState.WHAT_WILL_BECOME_OF_US) {
+            String outcomeType = textAddition.getOutcomeType();
+            newSubmission.setOutcomeType(outcomeType);
+        }
         
         return newSubmission;
     }
@@ -209,6 +216,11 @@ public class CollaborativeTextHelper {
         newSubmission.setAdditions(parentSubmission.getAdditions());
         newSubmission.addTextAddition(textAddition);
         
+        // Preserve the parent's outcome type if it exists
+        if (parentSubmission.getOutcomeType() != null && !parentSubmission.getOutcomeType().trim().isEmpty()) {
+            newSubmission.setOutcomeType(parentSubmission.getOutcomeType());
+        }
+        
         return newSubmission;
     }
 
@@ -222,6 +234,65 @@ public class CollaborativeTextHelper {
         return gameSession;
     }
 
+    /**
+     * Gets the outcome type assigned to a player based on their order in the game (joinedAt)
+     * Players are sorted by joinedAt, then assigned outcome types in a round-robin fashion:
+     * index % 3 = 0 -> "success"
+     * index % 3 = 1 -> "neutral"
+     * index % 3 = 2 -> "failure"
+     * @param gameCode The game code
+     * @param playerId The player's ID
+     * @return The assigned outcome type ("success", "neutral", or "failure")
+     */
+    public String getOutcomeTypeForPlayer(String gameCode, String playerId) {
+        GameSession gameSession = getGameSession(gameCode);
+        return assignOutcomeTypeToPlayer(gameSession, playerId);
+    }
+
+    /**
+     * Assigns an outcome type to a player based on their order in the game (joinedAt)
+     * Players are sorted by joinedAt, then assigned outcome types in a round-robin fashion:
+     * index % 3 = 0 -> "success"
+     * index % 3 = 1 -> "neutral"
+     * index % 3 = 2 -> "failure"
+     * @param gameSession The game session
+     * @param playerId The player's ID
+     * @return The assigned outcome type ("success", "neutral", or "failure")
+     */
+    private String assignOutcomeTypeToPlayer(GameSession gameSession, String playerId) {
+        if (gameSession.getPlayers() == null || gameSession.getPlayers().isEmpty()) {
+            throw new ValidationException("No players found in game session");
+        }
+
+        // Sort players by joinedAt timestamp
+        List<Player> sortedPlayers = gameSession.getPlayers().stream()
+                .filter(player -> player.getJoinedAt() != null)
+                .sorted(Comparator.comparing(Player::getJoinedAt))
+                .toList();
+
+        // Find the player's index in the sorted list
+        int playerIndex = -1;
+        for (int i = 0; i < sortedPlayers.size(); i++) {
+            if (sortedPlayers.get(i).getAuthorId().equals(playerId)) {
+                playerIndex = i;
+                break;
+            }
+        }
+
+        if (playerIndex == -1) {
+            throw new ValidationException("Player not found in game session: " + playerId);
+        }
+
+        // Assign outcome type based on index modulo 3
+        int outcomeIndex = playerIndex % 3;
+        return switch (outcomeIndex) {
+            case 0 -> "success";
+            case 1 -> "neutral";
+            case 2 -> "failure";
+            default -> "neutral"; // Should never reach here, but provide a default
+        };
+    }
+
     // ===== GAME STATE HELPER METHODS =====
 
     private String getPhaseIdForGameState(GameState gameState) {
@@ -231,6 +302,7 @@ public class CollaborativeTextHelper {
             case WHO_ARE_WE, WHO_ARE_WE_VOTE, WHO_ARE_WE_VOTE_WINNER -> "WHO_ARE_WE";
             case WHAT_IS_COMING, WHAT_IS_COMING_VOTE, WHAT_IS_COMING_VOTE_WINNER -> "WHAT_IS_COMING";
             case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE, WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> "WHAT_ARE_WE_CAPABLE_OF";
+            case WHAT_WILL_BECOME_OF_US, WHAT_WILL_BECOME_OF_US_VOTE, WHAT_WILL_BECOME_OF_US_VOTE_WINNER -> "WHAT_WILL_BECOME_OF_US";
             default -> null;
         };
     }
@@ -251,6 +323,7 @@ public class CollaborativeTextHelper {
             case WHO_ARE_WE, WHO_ARE_WE_VOTE -> "Who are we?";
             case WHAT_IS_COMING, WHAT_IS_COMING_VOTE -> "What is coming?";
             case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE -> "What are we capable of?";
+            case WHAT_WILL_BECOME_OF_US, WHAT_WILL_BECOME_OF_US_VOTE -> "What will become of us?";
             default -> "Unknown question";
         };
     }
@@ -260,7 +333,8 @@ public class CollaborativeTextHelper {
                gameState == GameState.WHAT_DO_WE_FEAR_VOTE ||
                gameState == GameState.WHO_ARE_WE_VOTE ||
                gameState == GameState.WHAT_IS_COMING_VOTE ||
-               gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE;
+               gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE ||
+               gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE;
     }
 
     // ===== VOTE CALCULATION METHODS =====
@@ -289,6 +363,20 @@ public class CollaborativeTextHelper {
                 .sorted(Comparator.comparingDouble(TextSubmission::getAverageRanking))
                 .limit(6)
                 .toList();
+        } else if (gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER) {
+            // For WHAT_WILL_BECOME_OF_US, return the best submission for each outcome type (success, neutral, failure)
+            List<TextSubmission> winners = new ArrayList<>();
+            for (String outcomeType : List.of("success", "neutral", "failure")) {
+                TextSubmission winner = phase.getSubmissions().stream()
+                    .filter(submission -> submission.getAverageRanking() > 0)
+                    .filter(submission -> outcomeType.equals(submission.getOutcomeType()))
+                    .min((s1, s2) -> Double.compare(s1.getAverageRanking(), s2.getAverageRanking()))
+                    .orElse(null);
+                if (winner != null) {
+                    winners.add(winner);
+                }
+            }
+            return winners;
         } else {
             // For other phases, return the single best submission
             TextSubmission winner = phase.getSubmissions().stream()
@@ -413,6 +501,19 @@ public class CollaborativeTextHelper {
                 case "WHAT_ARE_WE_CAPABLE_OF" -> {
                     // Create PlayerStat entries for WHAT_ARE_WE_CAPABLE_OF (top 6)
                     createPlayerStatsForCapablePhase(gameCode, phaseId, winningSubmissions);
+                }
+                case "WHAT_WILL_BECOME_OF_US" -> {
+                    // Set successText, neutralText, and failureText based on outcomeType
+                    for (TextSubmission winningSubmission : winningSubmissions) {
+                        String outcomeType = winningSubmission.getOutcomeType();
+                        if (outcomeType != null && !outcomeType.trim().isEmpty()) {
+                            switch (outcomeType) {
+                                case "success" -> display.setSuccessText(winningSubmission.getCurrentText());
+                                case "neutral" -> display.setNeutralText(winningSubmission.getCurrentText());
+                                case "failure" -> display.setFailureText(winningSubmission.getCurrentText());
+                            }
+                        }
+                    }
                 }
             }
 
