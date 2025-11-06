@@ -279,38 +279,79 @@ public class GameSessionHelper {
         Map<String, Integer> outcomeAuthorCount = players.stream()
                 .collect(Collectors.toMap(Player::getAuthorId, p -> 0));
 
-        List<Story> storiesWithPrompts = gameSession.getStories().stream()
+        // Get stories that need outcome authors
+        Set<Story> remainingStories = gameSession.getStories().stream()
                 .filter(story -> !story.getPlayerId().isEmpty() && story.getSelectedOptionId().isEmpty())
-                .toList();
+                .filter(story -> story.getOptions().stream().anyMatch(option -> option.getOutcomeAuthorId().isEmpty()))
+                .collect(Collectors.toSet());
         
-        // Randomize order for fair distribution
-        List<Story> shuffledStories = new ArrayList<>(storiesWithPrompts);
-        Collections.shuffle(shuffledStories, new Random(shuffledStories.size()));
-        
-        for (Story story : shuffledStories) {
-            // Get options that need authors
-            List<Option> options = story.getOptions().stream()
-                    .filter(option -> option.getOutcomeAuthorId().isEmpty())
-                    .toList();
+        // Process stories ensuring fair distribution
+        while (!remainingStories.isEmpty()) {
+            boolean anyStoryAssigned = false;
             
-            if (options.isEmpty()) {
-                continue;
-            }
+            // Randomize order each iteration for fair distribution
+            List<Story> shuffledStories = new ArrayList<>(remainingStories);
+            Collections.shuffle(shuffledStories, new Random());
+            
+            for (Story story : shuffledStories) {
+                // Get options that need authors
+                List<Option> options = story.getOptions().stream()
+                        .filter(option -> option.getOutcomeAuthorId().isEmpty())
+                        .toList();
+                
+                if (options.isEmpty()) {
+                    remainingStories.remove(story);
+                    continue;
+                }
 
-            // Find eligible authors (not the story's player or author)
-            Optional<Player> selectedAuthor = findAuthorWithFewestAssignments(
-                    players, 
-                    List.of(story.getPlayerId(), story.getAuthorId()), 
-                    outcomeAuthorCount
-            );
+                // Build eligible authors dynamically based on current state
+                // Eligible authors are those who:
+                // 1. Are not the story's player
+                // 2. Are not the story's author
+                // 3. Have stories remaining that they could be assigned to (to ensure everyone gets a chance)
+                List<Player> eligibleAuthors = players.stream()
+                        .filter(p -> !p.getAuthorId().equals(story.getPlayerId()))
+                        .filter(p -> !p.getAuthorId().equals(story.getAuthorId()))
+                        .filter(p -> remainingStories.stream().anyMatch(s -> 
+                            !s.getPlayerId().equals(p.getAuthorId()) && 
+                            !s.getAuthorId().equals(p.getAuthorId())
+                        ))
+                        .sorted(Comparator
+                                .comparingInt((Player p) -> outcomeAuthorCount.get(p.getAuthorId())) // FEWEST assignments first
+                                .thenComparingInt(p -> (int) remainingStories.stream()
+                                        .filter(s -> !s.getPlayerId().equals(p.getAuthorId()) && 
+                                                    !s.getAuthorId().equals(p.getAuthorId()))
+                                        .count()) // THEN fewest eligible stories remaining
+                        )
+                        .collect(Collectors.toList());
 
-            if (selectedAuthor.isPresent()) {
-                String authorId = selectedAuthor.get().getAuthorId();
-                options.forEach(option -> option.setOutcomeAuthorId(authorId));
-                outcomeAuthorCount.put(authorId, outcomeAuthorCount.get(authorId) + options.size());
+                if (eligibleAuthors.isEmpty()) {
+                    // If no eligible authors with remaining stories, just pick any eligible author
+                    eligibleAuthors = players.stream()
+                            .filter(p -> !p.getAuthorId().equals(story.getPlayerId()))
+                            .filter(p -> !p.getAuthorId().equals(story.getAuthorId()))
+                            .sorted(Comparator.comparingInt((Player p) -> outcomeAuthorCount.get(p.getAuthorId())))
+                            .collect(Collectors.toList());
+                }
+
+                if (!eligibleAuthors.isEmpty()) {
+                    Player selectedAuthor = eligibleAuthors.getFirst();
+                    String authorId = selectedAuthor.getAuthorId();
+                    
+                    // Assign all options for this story to the selected author
+                    options.forEach(option -> option.setOutcomeAuthorId(authorId));
+                    outcomeAuthorCount.put(authorId, outcomeAuthorCount.get(authorId) + options.size());
+                    
+                    storyDAO.updateStory(story);
+                    remainingStories.remove(story);
+                    anyStoryAssigned = true;
+                }
             }
             
-            storyDAO.updateStory(story);
+            // If no stories were assigned in this iteration, break to avoid infinite loop
+            if (!anyStoryAssigned) {
+                break;
+            }
         }
     }
     

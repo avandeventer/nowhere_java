@@ -156,9 +156,15 @@ public class GameSessionHelperTest {
             // Get the updated stories from the DAO (which were updated by assignStoryOptionAuthors)
             List<Story> updatedStories = storyDAO.getStories("test123");
             
+            // Filter to only stories that need outcome authors (have playerId and no selectedOptionId)
+            List<Story> storiesNeedingOutcomeAuthors = updatedStories.stream()
+                    .filter(story -> !story.getPlayerId().isEmpty() && story.getSelectedOptionId().isEmpty())
+                    .collect(Collectors.toList());
+            
             // Count how many outcomes each author was assigned
-            Map<String, Long> outcomeAuthorCounts = updatedStories.stream()
+            Map<String, Long> outcomeAuthorCounts = storiesNeedingOutcomeAuthors.stream()
                     .flatMap(story -> story.getOptions().stream())
+                    .filter(option -> !option.getOutcomeAuthorId().isEmpty())
                     .collect(Collectors.groupingBy(Option::getOutcomeAuthorId, Collectors.counting()));
 
             System.out.println("🧾 Outcome Author Assignment Counts:");
@@ -167,7 +173,7 @@ public class GameSessionHelperTest {
             );
             
             // Verify all options have outcome authors assigned
-            for (Story story : updatedStories) {
+            for (Story story : storiesNeedingOutcomeAuthors) {
                 for (Option option : story.getOptions()) {
                     assertFalse(option.getOutcomeAuthorId().isEmpty(), 
                         "Every option should have an outcome author for story " + story.getStoryId());
@@ -175,19 +181,44 @@ public class GameSessionHelperTest {
             }
 
             // Verify that outcome authors are different from the story author and player
-            for (Story story : updatedStories) {
+            for (Story story : storiesNeedingOutcomeAuthors) {
                 for (Option option : story.getOptions()) {
                     assertNotEquals(story.getAuthorId(), option.getOutcomeAuthorId(),
-                        "Outcome author should not be the story author");
+                        "Outcome author should not be the story author for story " + story.getStoryId());
                     assertNotEquals(story.getPlayerId(), option.getOutcomeAuthorId(),
-                        "Outcome author should not be the story's player");
+                        "Outcome author should not be the story's player for story " + story.getStoryId());
+                }
+            }
+
+            // CRITICAL: Verify that eligible players get outcome assignments
+            // This catches the bug where a player who should be eligible gets zero assignments
+            // A player is eligible if they are NOT excluded from at least one story
+            // (i.e., they are neither the author nor the playerId of that story)
+            List<String> allPlayerIds = players.stream()
+                    .map(Player::getAuthorId)
+                    .collect(Collectors.toList());
+            
+            // For each player, check if they are eligible for at least one story
+            for (String playerId : allPlayerIds) {
+                boolean isEligibleForAtLeastOneStory = storiesNeedingOutcomeAuthors.stream()
+                        .anyMatch(story -> 
+                            !story.getAuthorId().equals(playerId) && 
+                            !story.getPlayerId().equals(playerId)
+                        );
+                
+                if (isEligibleForAtLeastOneStory) {
+                    long assignmentCount = outcomeAuthorCounts.getOrDefault(playerId, 0L);
+                    assertTrue(assignmentCount > 0,
+                        String.format("Player %s is eligible for at least one story but got %d outcome assignments. " +
+                            "This indicates a distribution bug. All counts: %s", 
+                            playerId, assignmentCount, outcomeAuthorCounts));
                 }
             }
 
             // Assert fair distribution of outcome authors
             long max = outcomeAuthorCounts.values().stream().mapToLong(Long::longValue).max().orElse(0);
             long min = outcomeAuthorCounts.values().stream().mapToLong(Long::longValue).min().orElse(0);
-            int totalOptions = updatedStories.size() * 2; // 2 options per story
+            int totalOptions = storiesNeedingOutcomeAuthors.size() * 2; // 2 options per story
             int expectedPerAuthor = totalOptions / playerCount;
             
             // With one author per story approach, distribution should be very even (max-min <= 1)
@@ -197,7 +228,7 @@ public class GameSessionHelperTest {
                     variance, totalOptions, expectedPerAuthor, outcomeAuthorCounts));
             
             // Verify that all options in a story share the same outcome author
-            for (Story story : updatedStories) {
+            for (Story story : storiesNeedingOutcomeAuthors) {
                 List<String> outcomeAuthorIds = story.getOptions().stream()
                         .map(Option::getOutcomeAuthorId)
                         .collect(Collectors.toList());
@@ -208,6 +239,25 @@ public class GameSessionHelperTest {
                         "All options in story " + story.getStoryId() + " should have the same outcome author");
                 }
             }
+            
+            // Additional assertion: Verify fair distribution among eligible players
+            // Count how many players are actually eligible (not excluded from all stories)
+            long eligiblePlayerCount = allPlayerIds.stream()
+                    .filter(playerId -> storiesNeedingOutcomeAuthors.stream()
+                            .anyMatch(story -> 
+                                !story.getAuthorId().equals(playerId) && 
+                                !story.getPlayerId().equals(playerId)
+                            ))
+                    .count();
+            
+            int playersWithAssignments = outcomeAuthorCounts.size();
+            // In a balanced distribution, we expect most or all eligible players to get assignments
+            // The exact number depends on the story distribution, but we should have at least 2 players
+            // with assignments in a 4-player game with multiple stories
+            assertTrue(playersWithAssignments >= Math.min(2, eligiblePlayerCount),
+                String.format("Expected at least %d players to have assignments (out of %d eligible), but got %d. " +
+                    "This might indicate a distribution issue. Counts: %s",
+                    Math.min(2, eligiblePlayerCount), eligiblePlayerCount, playersWithAssignments, outcomeAuthorCounts));
         }
     }
 
