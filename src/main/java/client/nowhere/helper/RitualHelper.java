@@ -121,11 +121,11 @@ public class RitualHelper {
         GameSessionDisplay gameSessionDisplay = gameSession.getAdventureMap().getGameSessionDisplay();
 
         if (didWeSucceed) {
-            return new WinState(gameSessionDisplay.getSuccessText(), "You succeeded!", "SUCCESS");
+            return new WinState(gameSessionDisplay.getSuccessText(), "https://storage.googleapis.com/nowhere_images/location_icons/Heart.png", "SUCCESS");
         } else if (didWeDestroy) {
-            return new WinState(gameSessionDisplay.getFailureText(), "You destroyed the entity!", "DESTROYED");
+            return new WinState(gameSessionDisplay.getFailureText(), "https://storage.googleapis.com/nowhere_images/location_icons/Heart.png", "DESTROYED");
         } else {
-            return new WinState(gameSessionDisplay.getNeutralText(), "You failed!", "FAILED");
+            return new WinState(gameSessionDisplay.getNeutralText(), "https://storage.googleapis.com/nowhere_images/location_icons/Skull.png", "FAILED");
         }
     }
 }
