@@ -114,6 +114,24 @@ public class GameSessionHelper {
                             gameSession.setSaveGameId(saveGameId);
                         }
                     }
+
+                    if (gameSession.getAdventureMap().getLocations().size() > 5) {
+                        List<Location> allLocations = new ArrayList<>(gameSession.getAdventureMap().getLocations());
+                        
+                        Collections.shuffle(allLocations, new Random());
+                        List<Location> selectedLocations = allLocations.subList(0, 5);
+                        List<Location> unusedLocations = allLocations.subList(5, allLocations.size());
+                        
+                        gameSession.getAdventureMap().setLocations(new ArrayList<>(selectedLocations));
+                        
+                        if (gameSession.getAdventureMap().getUnusedLocations() == null) {
+                            gameSession.getAdventureMap().setUnusedLocations(new ArrayList<>());
+                        }
+                        
+                        gameSession.getAdventureMap().getUnusedLocations().addAll(new ArrayList<>(unusedLocations));
+                        
+                        adventureMapDAO.updateSessionAdventureMap(gameSession.getGameCode(), gameSession.getAdventureMap());
+                    }
                     break;
                 case GENERATE_WRITE_PROMPT_AUTHORS:
                 case GENERATE_WRITE_PROMPT_AUTHORS_AGAIN:

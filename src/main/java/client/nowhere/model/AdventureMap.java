@@ -10,6 +10,7 @@ public class AdventureMap {
     List<StatType> statTypes;
     GameSessionDisplay gameSessionDisplay;
     List<Location> locations;
+    List<Location> unusedLocations;
     Story ritual;
 
     public AdventureMap() {
@@ -210,6 +211,14 @@ public class AdventureMap {
         }
 
         this.ritual.setOptions(new ArrayList<>(ritualOptionMap.values()));
+    }
+
+    public List<Location> getUnusedLocations() {
+        return unusedLocations;
+    }
+
+    public void setUnusedLocations(List<Location> unusedLocations) {
+        this.unusedLocations = unusedLocations;
     }
 
     @Override
