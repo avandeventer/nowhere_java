@@ -115,8 +115,8 @@ public class RitualHelper {
         gameSession.setTotalPointsTowardsVictory(totalRitualFavor + totalPlayerFavor);
 
         int gameSizeAdjustment = players.size() * gameSession.getStoriesToPlayPerRound();
-        boolean didWeSucceed = gameSession.getTotalPointsTowardsVictory() > (12 * gameSizeAdjustment);
-        boolean didWeDestroy = gameSession.getTotalPointsTowardsVictory() < (2 * gameSizeAdjustment) * -1;
+        boolean didWeSucceed = gameSession.getTotalPointsTowardsVictory() > (6 * gameSizeAdjustment);
+        boolean didWeDestroy = gameSession.getTotalPointsTowardsVictory() < (gameSizeAdjustment) * -1;
 
         GameSessionDisplay gameSessionDisplay = gameSession.getAdventureMap().getGameSessionDisplay();
 
