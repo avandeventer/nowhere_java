@@ -103,4 +103,29 @@ public class RitualHelper {
     public Story create(Story ritualStory) {
         return this.ritualDAO.create(ritualStory);
     }
+
+    public WinState getVictory(String gameCode) {
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        List<Player> players = gameSession.getPlayers();
+        int totalPlayerFavor = players.stream()
+        .mapToInt(Player::getFavor)
+        .sum();
+
+        int totalRitualFavor = gameSession.getTotalPointsTowardsVictory();
+        gameSession.setTotalPointsTowardsVictory(totalRitualFavor + totalPlayerFavor);
+
+        int gameSizeAdjustment = players.size() * gameSession.getStoriesToPlayPerRound();
+        boolean didWeSucceed = gameSession.getTotalPointsTowardsVictory() > (12 * gameSizeAdjustment);
+        boolean didWeDestroy = gameSession.getTotalPointsTowardsVictory() < (2 * gameSizeAdjustment) * -1;
+
+        GameSessionDisplay gameSessionDisplay = gameSession.getAdventureMap().getGameSessionDisplay();
+
+        if (didWeSucceed) {
+            return new WinState(gameSessionDisplay.getSuccessText(), "You succeeded!", "SUCCESS");
+        } else if (didWeDestroy) {
+            return new WinState(gameSessionDisplay.getFailureText(), "You destroyed the entity!", "DESTROYED");
+        } else {
+            return new WinState(gameSessionDisplay.getNeutralText(), "You failed!", "FAILED");
+        }
+    }
 }

@@ -3,6 +3,7 @@ package client.nowhere.controller;
 import client.nowhere.helper.RitualHelper;
 import client.nowhere.model.Option;
 import client.nowhere.model.Story;
+import client.nowhere.model.WinState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,5 +36,11 @@ public class RitualController {
     @ResponseBody
     public Option update(@RequestBody Story ritualStory) {
         return ritualHelper.update(ritualStory);
+    }
+
+    @GetMapping("/victory")
+    @ResponseBody
+    public WinState getVictory(@RequestParam String gameCode) {
+        return ritualHelper.getVictory(gameCode);
     }
 }

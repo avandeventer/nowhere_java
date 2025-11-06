@@ -3,7 +3,6 @@ package client.nowhere.controller;
 import client.nowhere.helper.StoryHelper;
 import client.nowhere.model.RepercussionOutput;
 import client.nowhere.model.ResponseObject;
-import client.nowhere.model.SequelKey;
 import client.nowhere.model.Story;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
