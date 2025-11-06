@@ -319,9 +319,32 @@ public class GameSessionHelper {
             List<String> excludedAuthorIds, 
             Map<String, Integer> outcomeAuthorCount
     ) {
-        return players.stream()
+        List<Player> eligiblePlayers = players.stream()
                 .filter(p -> !excludedAuthorIds.contains(p.getAuthorId()))
-                .min(Comparator.comparingInt(p -> outcomeAuthorCount.get(p.getAuthorId())));
+                .collect(Collectors.toList());
+        
+        if (eligiblePlayers.isEmpty()) {
+            return Optional.empty();
+        }
+        
+        // Find the minimum count
+        int minCount = eligiblePlayers.stream()
+                .mapToInt(p -> outcomeAuthorCount.get(p.getAuthorId()))
+                .min()
+                .orElse(0);
+        
+        // Get all players with the minimum count
+        List<Player> playersWithMinCount = eligiblePlayers.stream()
+                .filter(p -> outcomeAuthorCount.get(p.getAuthorId()) == minCount)
+                .collect(Collectors.toList());
+        
+        // Randomly select one from players with minimum count for fair distribution
+        if (playersWithMinCount.size() == 1) {
+            return Optional.of(playersWithMinCount.get(0));
+        } else {
+            Collections.shuffle(playersWithMinCount, new Random());
+            return Optional.of(playersWithMinCount.get(0));
+        }
     }
     
     private void assignStoryAuthors(
