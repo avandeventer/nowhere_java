@@ -16,11 +16,13 @@ public class ActivePlayerSession {
     Map<String, Boolean> isPlayerDoneWithTurn;
     RepercussionOutput repercussions;
     boolean startTimer;
+    boolean writeTimerDone;
 
     public ActivePlayerSession() {
         this.isPlayerDoneWithTurn = new HashMap<>();
         this.repercussions = new RepercussionOutput();
         this.startTimer = false;
+        this.writeTimerDone = false;
     }
 
     public String getPlayerId() {
@@ -50,6 +52,7 @@ public class ActivePlayerSession {
         this.locationOutcomeDisplay = updatedSession.getLocationOutcomeDisplay();
         this.repercussions = updatedSession.getRepercussions();
         this.startTimer = updatedSession.isStartTimer();
+        this.writeTimerDone = updatedSession.isWriteTimerDone();
         if (
             updatedSession.getIsPlayerDoneWithTurn() != null
             && updatedSession.getIsPlayerDoneWithTurn().size() > 0
@@ -138,6 +141,7 @@ public class ActivePlayerSession {
         this.selectedLocationOptionId = "";
         this.locationOutcomeDisplay = new ArrayList<>();
         this.startTimer = false;
+        this.writeTimerDone = false;
     }
 
     public void resetPlayerDoneWithTurn(List<Player> players) {
@@ -172,5 +176,13 @@ public class ActivePlayerSession {
 
     public void setStartTimer(boolean startTimer) {
         this.startTimer = startTimer;
+    }
+
+    public boolean isWriteTimerDone() {
+        return writeTimerDone;
+    }
+
+    public void setWriteTimerDone(boolean writeTimerDone) {
+        this.writeTimerDone = writeTimerDone;
     }
 }
