@@ -26,6 +26,8 @@ import client.nowhere.exception.GameStateException;
 import client.nowhere.exception.ResourceException;
 import io.netty.util.internal.StringUtil;
 
+import static client.nowhere.model.GameState.WHERE_ARE_WE;
+
 @Component
 public class GameSessionHelper {
 
@@ -81,13 +83,14 @@ public class GameSessionHelper {
             activePlayerSession.resetActivePlayerSession();
             gameSession.setActivePlayerSession(activePlayerSession);
 
+            if (gameSession.getGameState() == WHERE_ARE_WE) {
+                if (gameSession.getAdventureMap() != null && !gameSession.getAdventureMap().getAdventureId().isEmpty()) {
+                    gameSession.skipAdventureMapCreateMode();
+                }
+            }
+
             switch (gameSession.getGameState()) {
-                case WHERE_ARE_WE:
-                    if (gameSession.getAdventureMap() != null && !gameSession.getAdventureMap().getAdventureId().isEmpty()) {
-                        gameSession.skipAdventureMapCreateMode();
-                    }
-                    break;
-                case GENERATE_LOCATION_AUTHORS:    
+                case GENERATE_LOCATION_AUTHORS:
                     generateLocationAuthors(gameSession, players);
                     gameSession.setGameStateToNext();
                     break;
