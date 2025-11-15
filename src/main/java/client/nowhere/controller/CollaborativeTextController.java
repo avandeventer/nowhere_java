@@ -2,6 +2,7 @@ package client.nowhere.controller;
 
 import client.nowhere.helper.CollaborativeTextHelper;
 import client.nowhere.model.CollaborativeTextPhase;
+import client.nowhere.model.CollaborativeTextPhaseInfo;
 import client.nowhere.model.PlayerVote;
 import client.nowhere.model.TextAddition;
 import client.nowhere.model.TextSubmission;
@@ -66,5 +67,11 @@ public class CollaborativeTextController {
     @ResponseBody
     public String getOutcomeTypeForPlayer(@RequestParam String gameCode, @RequestParam String playerId) {
         return this.collaborativeTextHelper.getOutcomeTypeForPlayer(gameCode, playerId);
+    }
+
+    @GetMapping("/collaborativeText/phaseInfo")
+    @ResponseBody
+    public CollaborativeTextPhaseInfo getCollaborativeTextPhaseInfo(@RequestParam String gameCode) {
+        return this.collaborativeTextHelper.getCollaborativeTextPhaseInfo(gameCode);
     }
 }

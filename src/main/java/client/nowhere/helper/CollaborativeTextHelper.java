@@ -20,12 +20,14 @@ public class CollaborativeTextHelper {
     private final GameSessionDAO gameSessionDAO;
     private final CollaborativeTextDAO collaborativeTextDAO;
     private final AdventureMapDAO adventureMapDAO;
+    private final AdventureMapHelper adventureMapHelper;
 
     @Autowired
-    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO) {
+    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO, AdventureMapHelper adventureMapHelper) {
         this.gameSessionDAO = gameSessionDAO;
         this.collaborativeTextDAO = collaborativeTextDAO;
         this.adventureMapDAO = adventureMapDAO;
+        this.adventureMapHelper = adventureMapHelper;
     }
 
     // ===== PUBLIC API METHODS =====
@@ -597,5 +599,82 @@ public class CollaborativeTextHelper {
         } catch (Exception e) {
             System.err.println("Failed to create PlayerStats for WHAT_ARE_WE_CAPABLE_OF: " + e.getMessage());
         }
+    }
+
+    /**
+     * Gets the phase information for collaborative text based on the current game state
+     * @param gameCode The game code
+     * @return CollaborativeTextPhaseInfo with phase question, instructions, mode, and mode instructions
+     */
+    public CollaborativeTextPhaseInfo getCollaborativeTextPhaseInfo(String gameCode) {
+        GameSession gameSession = getGameSession(gameCode);
+        GameState gameState = gameSession.getGameState();
+        GameSessionDisplay gameSessionDisplay = adventureMapHelper.getGameSessionDisplay(gameCode);
+        String entityName = gameSessionDisplay.getEntity() != null && !gameSessionDisplay.getEntity().isEmpty() 
+            ? gameSessionDisplay.getEntity() 
+            : "the Entity";
+
+        String phaseQuestion;
+        String phaseInstructions;
+        CollaborativeMode collaborativeMode;
+        String collaborativeModeInstructions;
+
+        switch (gameState) {
+            case WHERE_ARE_WE -> {
+                phaseQuestion = "Where are we?";
+                phaseInstructions = "We will begin by describing our world.";
+                collaborativeMode = CollaborativeMode.SHARE_TEXT;
+                collaborativeModeInstructions = "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
+            }
+            case WHAT_DO_WE_FEAR -> {
+                phaseQuestion = "What do we fear?";
+                phaseInstructions = "What do we fear? What person, group, or entity holds power in this world?";
+                collaborativeMode = CollaborativeMode.RAPID_FIRE;
+                collaborativeModeInstructions = "Submit as many ideas as you can from your device!";
+            }
+            case WHO_ARE_WE -> {
+                phaseQuestion = "Who are we?";
+                phaseInstructions = "Define who we are together. What is our goal?";
+                collaborativeMode = CollaborativeMode.SHARE_TEXT;
+                collaborativeModeInstructions = "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
+            }
+            case WHAT_IS_COMING -> {
+                phaseQuestion = "What is coming?";
+                phaseInstructions = "An event will occur at the end of the season where we will be judged by " + entityName + ". What must we each do when they arrive to ensure our success or survival?";
+                collaborativeMode = CollaborativeMode.SHARE_TEXT;
+                collaborativeModeInstructions = "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
+            }
+            case WHAT_ARE_WE_CAPABLE_OF -> {
+                phaseQuestion = "What are we capable of?";
+                phaseInstructions = "We will need certain skills in order to overcome. List anything you think we will need to be good at to survive.";
+                collaborativeMode = CollaborativeMode.RAPID_FIRE;
+                collaborativeModeInstructions = "Submit as many ideas as you can from your device!";
+            }
+            case WHAT_WILL_BECOME_OF_US -> {
+                phaseQuestion = "What will become of us?";
+                phaseInstructions = "What will become of us when our confrontation with " + entityName + " is over?";
+                collaborativeMode = CollaborativeMode.SHARE_TEXT;
+                collaborativeModeInstructions = "Your friends will help, but each of us starts with a different prompt for this one!";
+            }
+            case WRITE_ENDING_TEXT -> {
+                phaseQuestion = "How will our story end?";
+                phaseInstructions = "Based on how well we have done as a group, write the ending text that will be displayed. This will determine how our story concludes.";
+                collaborativeMode = CollaborativeMode.SHARE_TEXT;
+                collaborativeModeInstructions = "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
+            }
+            default -> {
+                phaseQuestion = "Collaborative Writing";
+                phaseInstructions = "Work together to build your story!";
+                collaborativeMode = CollaborativeMode.SHARE_TEXT;
+                collaborativeModeInstructions = "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
+            }
+        }
+
+        return new CollaborativeTextPhaseInfo(
+            phaseQuestion,
+            phaseInstructions,
+            collaborativeMode,
+            collaborativeModeInstructions
+        );
     }
 }
