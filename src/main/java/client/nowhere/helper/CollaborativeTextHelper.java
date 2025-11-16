@@ -614,67 +614,186 @@ public class CollaborativeTextHelper {
             ? gameSessionDisplay.getEntity() 
             : "the Entity";
 
-        String phaseQuestion;
-        String phaseInstructions;
-        CollaborativeMode collaborativeMode;
-        String collaborativeModeInstructions;
+        PhaseBaseInfo baseInfo = getPhaseBaseInfo(gameState, entityName);
+        PhaseMode phaseMode = determinePhaseMode(gameState, baseInfo);
 
-        switch (gameState) {
-            case WHERE_ARE_WE -> {
-                phaseQuestion = "Where are we?";
-                phaseInstructions = "We will begin by describing our world.";
-                collaborativeMode = CollaborativeMode.SHARE_TEXT;
-                collaborativeModeInstructions = "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
-            }
-            case WHAT_DO_WE_FEAR -> {
-                phaseQuestion = "What do we fear?";
-                phaseInstructions = "What do we fear? What person, group, or entity holds power in this world?";
-                collaborativeMode = CollaborativeMode.RAPID_FIRE;
-                collaborativeModeInstructions = "Submit as many ideas as you can from your device!";
-            }
-            case WHO_ARE_WE -> {
-                phaseQuestion = "Who are we?";
-                phaseInstructions = "Define who we are together. What is our goal?";
-                collaborativeMode = CollaborativeMode.SHARE_TEXT;
-                collaborativeModeInstructions = "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
-            }
-            case WHAT_IS_COMING -> {
-                phaseQuestion = "What is coming?";
-                phaseInstructions = "An event will occur at the end of the season where we will be judged by " + entityName + ". What must we each do when they arrive to ensure our success or survival?";
-                collaborativeMode = CollaborativeMode.SHARE_TEXT;
-                collaborativeModeInstructions = "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
-            }
-            case WHAT_ARE_WE_CAPABLE_OF -> {
-                phaseQuestion = "What are we capable of?";
-                phaseInstructions = "We will need certain skills in order to overcome. List anything you think we will need to be good at to survive.";
-                collaborativeMode = CollaborativeMode.RAPID_FIRE;
-                collaborativeModeInstructions = "Submit as many ideas as you can from your device!";
-            }
-            case WHAT_WILL_BECOME_OF_US -> {
-                phaseQuestion = "What will become of us?";
-                phaseInstructions = "What will become of us when our confrontation with " + entityName + " is over?";
-                collaborativeMode = CollaborativeMode.SHARE_TEXT;
-                collaborativeModeInstructions = "Your friends will help, but each of us starts with a different prompt for this one!";
-            }
-            case WRITE_ENDING_TEXT -> {
-                phaseQuestion = "How will our story end?";
-                phaseInstructions = "Based on how well we have done as a group, write the ending text that will be displayed. This will determine how our story concludes.";
-                collaborativeMode = CollaborativeMode.SHARE_TEXT;
-                collaborativeModeInstructions = "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
-            }
-            default -> {
-                phaseQuestion = "Collaborative Writing";
-                phaseInstructions = "Work together to build your story!";
-                collaborativeMode = CollaborativeMode.SHARE_TEXT;
-                collaborativeModeInstructions = "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
-            }
-        }
+        String phaseInstructions = getPhaseInstructionsForMode(gameState, phaseMode, baseInfo);
+        
+        String collaborativeModeInstructions = getCollaborativeModeInstructions(
+            baseInfo.collaborativeMode(), 
+            phaseMode, 
+            gameState
+        );
 
         return new CollaborativeTextPhaseInfo(
-            phaseQuestion,
+            baseInfo.phaseQuestion(),
             phaseInstructions,
-            collaborativeMode,
-            collaborativeModeInstructions
+            baseInfo.collaborativeMode(),
+            collaborativeModeInstructions,
+            phaseMode
         );
+    }
+
+    /**
+     * Record to hold base phase information including all three game states
+     */
+    private record PhaseBaseInfo(
+        String phaseQuestion,
+        String baseInstructions,
+        CollaborativeMode collaborativeMode,
+        GameState collaboratingState,
+        GameState votingState,
+        GameState winningState
+    ) {}
+
+    /**
+     * Determines the phase mode by checking which game state in PhaseBaseInfo matches the current game state
+     */
+    private PhaseMode determinePhaseMode(GameState gameState, PhaseBaseInfo baseInfo) {
+        if (gameState == baseInfo.collaboratingState()) {
+            return PhaseMode.COLLABORATING;
+        } else if (gameState == baseInfo.votingState()) {
+            return PhaseMode.VOTING;
+        } else if (gameState == baseInfo.winningState()) {
+            return PhaseMode.WINNING;
+        }
+        // Default fallback
+        return PhaseMode.COLLABORATING;
+    }
+
+    /**
+     * Gets the base phase information (question, base instructions, collaborative mode, and all three game states)
+     */
+    private PhaseBaseInfo getPhaseBaseInfo(GameState gameState, String entityName) {
+        // Determine which phase group this game state belongs to
+        if (isInPhaseGroup(gameState, GameState.WHERE_ARE_WE, GameState.WHERE_ARE_WE_VOTE, GameState.WHERE_ARE_WE_VOTE_WINNER)) {
+            return new PhaseBaseInfo(
+                "Where are we?",
+                "We will begin by describing our world.",
+                CollaborativeMode.SHARE_TEXT,
+                GameState.WHERE_ARE_WE,
+                GameState.WHERE_ARE_WE_VOTE,
+                GameState.WHERE_ARE_WE_VOTE_WINNER
+            );
+        }
+        if (isInPhaseGroup(gameState, GameState.WHAT_DO_WE_FEAR, GameState.WHAT_DO_WE_FEAR_VOTE, GameState.WHAT_DO_WE_FEAR_VOTE_WINNER)) {
+            return new PhaseBaseInfo(
+                "What do we fear?",
+                "What do we fear? What person, group, or entity holds power in this world?",
+                CollaborativeMode.RAPID_FIRE,
+                GameState.WHAT_DO_WE_FEAR,
+                GameState.WHAT_DO_WE_FEAR_VOTE,
+                GameState.WHAT_DO_WE_FEAR_VOTE_WINNER
+            );
+        }
+        if (isInPhaseGroup(gameState, GameState.WHO_ARE_WE, GameState.WHO_ARE_WE_VOTE, GameState.WHO_ARE_WE_VOTE_WINNER)) {
+            return new PhaseBaseInfo(
+                "Who are we?",
+                "Define who we are together. What is our goal?",
+                CollaborativeMode.SHARE_TEXT,
+                GameState.WHO_ARE_WE,
+                GameState.WHO_ARE_WE_VOTE,
+                GameState.WHO_ARE_WE_VOTE_WINNER
+            );
+        }
+        if (isInPhaseGroup(gameState, GameState.WHAT_IS_COMING, GameState.WHAT_IS_COMING_VOTE, GameState.WHAT_IS_COMING_VOTE_WINNER)) {
+            return new PhaseBaseInfo(
+                "What is coming?",
+                "An event will occur at the end of the season where we will be judged by " + entityName + ". What must we each do when they arrive to ensure our success or survival?",
+                CollaborativeMode.SHARE_TEXT,
+                GameState.WHAT_IS_COMING,
+                GameState.WHAT_IS_COMING_VOTE,
+                GameState.WHAT_IS_COMING_VOTE_WINNER
+            );
+        }
+        if (isInPhaseGroup(gameState, GameState.WHAT_ARE_WE_CAPABLE_OF, GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE, GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS)) {
+            return new PhaseBaseInfo(
+                "What are we capable of?",
+                "We will need certain skills in order to overcome. List anything you think we will need to be good at to survive.",
+                CollaborativeMode.RAPID_FIRE,
+                GameState.WHAT_ARE_WE_CAPABLE_OF,
+                GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE,
+                GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS
+            );
+        }
+        if (isInPhaseGroup(gameState, GameState.WHAT_WILL_BECOME_OF_US, GameState.WHAT_WILL_BECOME_OF_US_VOTE, GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER)) {
+            return new PhaseBaseInfo(
+                "What will become of us?",
+                "What will become of us when our confrontation with " + entityName + " is over?",
+                CollaborativeMode.SHARE_TEXT,
+                GameState.WHAT_WILL_BECOME_OF_US,
+                GameState.WHAT_WILL_BECOME_OF_US_VOTE,
+                GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER
+            );
+        }
+        if (gameState == GameState.WRITE_ENDING_TEXT) {
+            // WRITE_ENDING_TEXT only has a collaborating state, no voting or winning
+            return new PhaseBaseInfo(
+                "How will our story end?",
+                "Based on how well we have done as a group, write the ending text that will be displayed. This will determine how our story concludes.",
+                CollaborativeMode.SHARE_TEXT,
+                GameState.WRITE_ENDING_TEXT,
+                GameState.WRITE_ENDING_TEXT, // Use same state as fallback
+                GameState.WRITE_ENDING_TEXT  // Use same state as fallback
+            );
+        }
+        
+        // Default fallback
+        return new PhaseBaseInfo(
+            "Collaborative Writing",
+            "Work together to build your story!",
+            CollaborativeMode.SHARE_TEXT,
+            GameState.INIT, // Use INIT as fallback
+            GameState.INIT, // Use INIT as fallback
+            GameState.INIT  // Use INIT as fallback
+        );
+    }
+
+    /**
+     * Helper method to check if a game state is in a specific phase group
+     */
+    private boolean isInPhaseGroup(GameState gameState, GameState collaborating, GameState voting, GameState winning) {
+        return gameState == collaborating || gameState == voting || gameState == winning;
+    }
+
+    /**
+     * Gets phase instructions based on the phase mode
+     */
+    private String getPhaseInstructionsForMode(GameState gameState, PhaseMode phaseMode, PhaseBaseInfo baseInfo) {
+        return switch (phaseMode) {
+            case COLLABORATING -> baseInfo.baseInstructions();
+            case VOTING -> "The time has come to solidify our fate. Rank the descriptions on your device starting with your favorite first.";
+            case WINNING -> {
+                if (gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER) {
+                    yield "The threads before us have now been sealed. Only our choices ahead can reveal them to us. Now we must build this place.";
+                } else if (gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS) {
+                    yield "The winning submissions are...";
+                } else {
+                    yield "The winning submission is...";
+                }
+            }
+        };
+    }
+
+    /**
+     * Gets collaborative mode instructions, reusing logic based on collaborative mode and phase mode
+     */
+    private String getCollaborativeModeInstructions(CollaborativeMode collaborativeMode, PhaseMode phaseMode, GameState gameState) {
+        // For COLLABORATING phase, return mode-specific instructions
+        if (phaseMode == PhaseMode.COLLABORATING) {
+            if (collaborativeMode == CollaborativeMode.RAPID_FIRE) {
+                return "Submit as many ideas as you can from your device!";
+            } else {
+                // SHARE_TEXT mode
+                if (gameState == GameState.WHAT_WILL_BECOME_OF_US) {
+                    return "Your friends will help, but each of us starts with a different prompt for this one!";
+                } else {
+                    return "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
+                }
+            }
+        }
+        
+        // For VOTING and WINNING phases, return empty string (instructions are in phaseInstructions)
+        return "";
     }
 }
