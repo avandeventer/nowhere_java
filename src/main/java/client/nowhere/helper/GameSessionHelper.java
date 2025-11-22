@@ -52,9 +52,9 @@ public class GameSessionHelper {
         this.userProfileHelper = userProfileHelper;
     }
 
-    public GameSession createGameSession(String userProfileId, String adventureId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound) {
+    public GameSession createGameSession(String userProfileId, String adventureId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound, GameMode gameMode) {
         AdventureMap adventureMap = StringUtil.isNullOrEmpty(adventureId) ? null : adventureMapDAO.get(userProfileId, adventureId);
-        return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, adventureMap, saveGameId, storiesToWritePerRound, storiesToPlayPerRound);
+        return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, adventureMap, saveGameId, storiesToWritePerRound, storiesToPlayPerRound, gameMode);
     }
 
     public GameSession  updateToNextGameState(String gameCode) {

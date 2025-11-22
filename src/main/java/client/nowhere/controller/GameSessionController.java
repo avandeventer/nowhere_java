@@ -1,6 +1,7 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.GameSessionHelper;
+import client.nowhere.model.GameMode;
 import client.nowhere.model.GameSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -30,9 +31,10 @@ public class GameSessionController {
                 @RequestParam(required = false) String adventureId,
                 @RequestParam(required = false, defaultValue = "d9cb0595-86fe-4aac-bfce-918e212a4508") String saveGameId,//"4b8a146a-ccf6-41cf-961a-65096d70bf82") String saveGameId,
                 @RequestParam(required = false, defaultValue = "1") Integer storiesToWritePerRound,
-                @RequestParam(required = false, defaultValue =  "1") Integer storiesToPlayPerRound
+                @RequestParam(required = false, defaultValue =  "1") Integer storiesToPlayPerRound,
+                @RequestParam(required = false, defaultValue = "TOWN_MODE") GameMode gameMode
     ) {
-        return this.gameSessionHelper.createGameSession(userProfileId, adventureId, saveGameId, storiesToWritePerRound, storiesToPlayPerRound);
+        return this.gameSessionHelper.createGameSession(userProfileId, adventureId, saveGameId, storiesToWritePerRound, storiesToPlayPerRound, gameMode);
     }
 
     @PutMapping(value = "/game", produces = MediaType.APPLICATION_JSON_VALUE)

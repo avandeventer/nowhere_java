@@ -22,6 +22,7 @@ public class GameSession {
     String saveGameId;
     Integer storiesToWritePerRound = 1;
     Integer storiesToPlayPerRound = 1;
+    GameMode gameMode = GameMode.TOWN_MODE;
     
     // Collaborative text phases for world-building
     Map<String, CollaborativeTextPhase> collaborativeTextPhases;
@@ -198,5 +199,13 @@ public class GameSession {
 
     public void skipAdventureMapCreateMode() {
         this.gameState = GameState.PREAMBLE;
+    }
+
+    public void setGameMode(GameMode gameMode) {
+        this.gameMode = gameMode;
+    }
+
+    public GameMode getGameMode() {
+        return gameMode;
     }
 }

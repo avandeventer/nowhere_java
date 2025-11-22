@@ -179,4 +179,112 @@ public enum GameState {
                         }
                 }
         }
+
+        /**
+         * Gets the phase ID for this game state.
+         * Returns the phase identifier that groups related game states together.
+         * @return The phase ID string, or null if this game state doesn't belong to a collaborative text phase
+         */
+        public GameState getPhaseId() {
+                return switch (this) {
+                        case WHERE_ARE_WE, WHERE_ARE_WE_VOTE, WHERE_ARE_WE_VOTE_WINNER -> WHERE_ARE_WE;
+                        case WHAT_DO_WE_FEAR, WHAT_DO_WE_FEAR_VOTE, WHAT_DO_WE_FEAR_VOTE_WINNER -> WHAT_DO_WE_FEAR;
+                        case WHO_ARE_WE, WHO_ARE_WE_VOTE, WHO_ARE_WE_VOTE_WINNER -> WHO_ARE_WE;
+                        case WHAT_IS_COMING, WHAT_IS_COMING_VOTE, WHAT_IS_COMING_VOTE_WINNER -> WHAT_IS_COMING;
+                        case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE, WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> WHAT_ARE_WE_CAPABLE_OF;
+                        case WHAT_WILL_BECOME_OF_US, WHAT_WILL_BECOME_OF_US_VOTE, WHAT_WILL_BECOME_OF_US_VOTE_WINNER -> WHAT_WILL_BECOME_OF_US;
+                        default -> null;
+                };
+        }
+
+        /**
+         * Gets the base phase information for this game state.
+         * @param entityName The name of the entity (used in some phase instructions)
+         * @return PhaseBaseInfo containing phase question, instructions, collaborative mode, and related game states
+         */
+        public PhaseBaseInfo getPhaseBaseInfo(String entityName) {
+                // Determine which phase group this game state belongs to using getPhaseId()
+                GameState phaseId = getPhaseId();
+                if (phaseId == WHERE_ARE_WE) {
+                        return new PhaseBaseInfo(
+                                "Where are we?",
+                                "We will begin by describing our world.",
+                                CollaborativeMode.SHARE_TEXT,
+                                WHERE_ARE_WE,
+                                WHERE_ARE_WE_VOTE,
+                                WHERE_ARE_WE_VOTE_WINNER
+                        );
+                }
+                if (phaseId == WHAT_DO_WE_FEAR) {
+                        return new PhaseBaseInfo(
+                                "What do we fear?",
+                                "What do we fear? What person, group, or entity holds power in this world?",
+                                CollaborativeMode.RAPID_FIRE,
+                                WHAT_DO_WE_FEAR,
+                                WHAT_DO_WE_FEAR_VOTE,
+                                WHAT_DO_WE_FEAR_VOTE_WINNER
+                        );
+                }
+                if (phaseId == WHO_ARE_WE) {
+                        return new PhaseBaseInfo(
+                                "Who are we?",
+                                "Define who we are together. What is our goal?",
+                                CollaborativeMode.SHARE_TEXT,
+                                WHO_ARE_WE,
+                                WHO_ARE_WE_VOTE,
+                                WHO_ARE_WE_VOTE_WINNER
+                        );
+                }
+                if (phaseId == WHAT_IS_COMING) {
+                        return new PhaseBaseInfo(
+                                "What is coming?",
+                                "An event will occur at the end of the season where we will be judged by " + entityName + ". What must we each do when they arrive to ensure our success or survival?",
+                                CollaborativeMode.SHARE_TEXT,
+                                WHAT_IS_COMING,
+                                WHAT_IS_COMING_VOTE,
+                                WHAT_IS_COMING_VOTE_WINNER
+                        );
+                }
+                if (phaseId == WHAT_ARE_WE_CAPABLE_OF) {
+                        return new PhaseBaseInfo(
+                                "What are we capable of?",
+                                "We will need certain skills in order to overcome. List anything you think we will need to be good at to survive.",
+                                CollaborativeMode.RAPID_FIRE,
+                                WHAT_ARE_WE_CAPABLE_OF,
+                                WHAT_ARE_WE_CAPABLE_OF_VOTE,
+                                WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS
+                        );
+                }
+                if (phaseId == WHAT_WILL_BECOME_OF_US) {
+                        return new PhaseBaseInfo(
+                                "What will become of us?",
+                                "What will become of us when our confrontation with " + entityName + " is over?",
+                                CollaborativeMode.SHARE_TEXT,
+                                WHAT_WILL_BECOME_OF_US,
+                                WHAT_WILL_BECOME_OF_US_VOTE,
+                                WHAT_WILL_BECOME_OF_US_VOTE_WINNER
+                        );
+                }
+                if (this == WRITE_ENDING_TEXT) {
+                        // WRITE_ENDING_TEXT only has a collaborating state, no voting or winning
+                        return new PhaseBaseInfo(
+                                "How will our story end?",
+                                "Based on how well we have done as a group, write the ending text that will be displayed. This will determine how our story concludes.",
+                                CollaborativeMode.SHARE_TEXT,
+                                WRITE_ENDING_TEXT,
+                                WRITE_ENDING_TEXT, // Use same state as fallback
+                                WRITE_ENDING_TEXT  // Use same state as fallback
+                        );
+                }
+                
+                // Default fallback
+                return new PhaseBaseInfo(
+                        "Collaborative Writing",
+                        "Work together to build your story!",
+                        CollaborativeMode.SHARE_TEXT,
+                        INIT, // Use INIT as fallback
+                        INIT, // Use INIT as fallback
+                        INIT  // Use INIT as fallback
+                );
+        }
 }

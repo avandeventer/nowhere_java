@@ -19,7 +19,7 @@ public class CollaborativeTextPhase {
 
     public enum PhaseType {
         SUBMISSION, // Players submit and elaborate on text
-        VOTING      // Players vote on final submissions
+        VOTING     // Players vote on final submissions
     }
 
     public CollaborativeTextPhase() {

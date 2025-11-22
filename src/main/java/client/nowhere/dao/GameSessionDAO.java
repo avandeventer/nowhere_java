@@ -22,7 +22,15 @@ public class GameSessionDAO {
         this.db = db;
     }
 
-    public GameSession createGameSession(String sessionCode, String userProfileId, AdventureMap adventureMap, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound) {
+    public GameSession createGameSession(
+            String sessionCode,
+            String userProfileId,
+            AdventureMap adventureMap,
+            String saveGameId,
+            Integer storiesToWritePerRound,
+            Integer storiesToPlayPerRound,
+            GameMode gameMode
+    ) {
         DocumentReference docRef = db.collection("gameSessions").document(sessionCode);
 
         GameSession gameSession = new GameSession(sessionCode);
@@ -33,6 +41,7 @@ public class GameSessionDAO {
         gameSession.setStoriesToWritePerRound(storiesToWritePerRound);
         gameSession.setStoriesToPlayPerRound(storiesToPlayPerRound);
         gameSession.setAdventureMap(adventureMap);
+        gameSession.setGameMode(gameMode);
 
         try {
             ApiFuture<WriteResult> result = docRef.set(gameSession);

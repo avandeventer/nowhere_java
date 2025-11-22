@@ -40,7 +40,6 @@ public class CollaborativeTextHelper {
      * @return The updated collaborative text phase
      */
     public CollaborativeTextPhase submitTextAddition(String gameCode, TextAddition textAddition) {
-        // Validate input
         if (textAddition == null) {
             throw new ValidationException("Text addition cannot be null");
         }
@@ -51,33 +50,30 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Added text cannot be null or empty");
         }
 
-        // Get game session to determine phase ID
         GameSession gameSession = getGameSession(gameCode);
-        String phaseId = getPhaseIdForGameState(gameSession.getGameState());
-        if (phaseId == null) {
+        GameState phaseIdState = gameSession.getGameState().getPhaseId();
+        if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
+        String phaseId = phaseIdState.name();
 
-        // Create the appropriate TextSubmission
         TextSubmission newSubmission;
         if (textAddition.getSubmissionId() != null && !textAddition.getSubmissionId().trim().isEmpty()) {
-            // Branching: Create new submission based on parent + addition
             newSubmission = createBranchedSubmission(gameSession, textAddition, phaseId);
         } else {
-            // New submission: Create new submission with empty originalText
             newSubmission = createNewSubmission(textAddition, gameSession);
         }
 
-        // Add submission atomically using Firestore transactions
         return collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, newSubmission);
     }
 
     public CollaborativeTextPhase getCollaborativeTextPhase(String gameCode) {
         GameSession gameSession = getGameSession(gameCode);
-        String phaseId = getPhaseIdForGameState(gameSession.getGameState());
-        if (phaseId == null) {
+        GameState phaseIdState = gameSession.getGameState().getPhaseId();
+        if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
+        String phaseId = phaseIdState.name();
 
         // Get phase from DAO
         CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
@@ -109,10 +105,11 @@ public class CollaborativeTextHelper {
 
         // Get game session to determine phase ID
         GameSession gameSession = getGameSession(gameCode);
-        String phaseId = getPhaseIdForGameState(gameSession.getGameState());
-        if (phaseId == null) {
+        GameState phaseIdState = gameSession.getGameState().getPhaseId();
+        if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
         }
+        String phaseId = phaseIdState.name();
 
         // Add vote atomically using Firestore transactions
         return collaborativeTextDAO.addVoteAtomically(gameCode, phaseId, playerVote);
@@ -120,10 +117,11 @@ public class CollaborativeTextHelper {
 
     public List<TextSubmission> calculateWinningSubmission(String gameCode) {
         GameSession gameSession = getGameSession(gameCode);
-        String phaseId = getPhaseIdForGameState(gameSession.getGameState());
-        if (phaseId == null) {
+        GameState phaseIdState = gameSession.getGameState().getPhaseId();
+        if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
+        String phaseId = phaseIdState.name();
 
         // Get phase from DAO
         CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
@@ -143,11 +141,11 @@ public class CollaborativeTextHelper {
 
     public List<TextSubmission> getAvailableSubmissionsForPlayer(String gameCode, String playerId, int requestedCount) {
         GameSession gameSession = getGameSession(gameCode);
-        String phaseId = getPhaseIdForGameState(gameSession.getGameState());
-
-        if (phaseId == null) {
+        GameState phaseIdState = gameSession.getGameState().getPhaseId();
+        if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
+        String phaseId = phaseIdState.name();
         
         // Use transactional method to get submissions and record views atomically
         return collaborativeTextDAO.getAvailableSubmissionsForPlayerAtomically(gameCode, phaseId, playerId, requestedCount);
@@ -297,20 +295,9 @@ public class CollaborativeTextHelper {
 
     // ===== GAME STATE HELPER METHODS =====
 
-    private String getPhaseIdForGameState(GameState gameState) {
-        return switch (gameState) {
-            case WHERE_ARE_WE, WHERE_ARE_WE_VOTE, WHERE_ARE_WE_VOTE_WINNER -> "WHERE_ARE_WE";
-            case WHAT_DO_WE_FEAR, WHAT_DO_WE_FEAR_VOTE, WHAT_DO_WE_FEAR_VOTE_WINNER -> "WHAT_DO_WE_FEAR";
-            case WHO_ARE_WE, WHO_ARE_WE_VOTE, WHO_ARE_WE_VOTE_WINNER -> "WHO_ARE_WE";
-            case WHAT_IS_COMING, WHAT_IS_COMING_VOTE, WHAT_IS_COMING_VOTE_WINNER -> "WHAT_IS_COMING";
-            case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE, WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> "WHAT_ARE_WE_CAPABLE_OF";
-            case WHAT_WILL_BECOME_OF_US, WHAT_WILL_BECOME_OF_US_VOTE, WHAT_WILL_BECOME_OF_US_VOTE_WINNER -> "WHAT_WILL_BECOME_OF_US";
-            default -> null;
-        };
-    }
-
     private CollaborativeTextPhase createCollaborativeTextPhaseForGameState(GameState gameState) {
-        String phaseId = getPhaseIdForGameState(gameState);
+        GameState phaseIdState = gameState.getPhaseId();
+        String phaseId = phaseIdState != null ? phaseIdState.name() : null;
         String question = getQuestionForGameState(gameState);
         CollaborativeTextPhase.PhaseType phaseType = isVotingPhase(gameState) ? 
             CollaborativeTextPhase.PhaseType.VOTING : CollaborativeTextPhase.PhaseType.SUBMISSION;
@@ -398,11 +385,11 @@ public class CollaborativeTextHelper {
      */
     public List<TextSubmission> getVotingSubmissionsForPlayer(String gameCode, String playerId) {
         GameSession gameSession = getGameSession(gameCode);
-        String phaseId = getPhaseIdForGameState(gameSession.getGameState());
-
-        if (phaseId == null) {
+        GameState phaseIdState = gameSession.getGameState().getPhaseId();
+        if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
         }
+        String phaseId = phaseIdState.name();
         
         // Retrieve the phase
         CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
@@ -413,9 +400,9 @@ public class CollaborativeTextHelper {
         // Return top 5 submissions except player's own, ordered by most additions first, then by creation time
         // For WHAT_DO_WE_FEAR, return all submissions; for WHAT_ARE_WE_CAPABLE_OF, return top 6; for others, return top 5
         // For WHAT_WILL_BECOME_OF_US, include player's own submissions (they'll be filtered by outcomeType on frontend)
-        boolean isWhatDoWeFear = phaseId.equals("WHAT_DO_WE_FEAR");
-        boolean isWhatAreWeCapableOf = phaseId.equals("WHAT_ARE_WE_CAPABLE_OF");
-        boolean isWhatWillBecomeOfUs = phaseId.equals("WHAT_WILL_BECOME_OF_US");
+        boolean isWhatDoWeFear = phaseIdState == GameState.WHAT_DO_WE_FEAR;
+        boolean isWhatAreWeCapableOf = phaseIdState == GameState.WHAT_ARE_WE_CAPABLE_OF;
+        boolean isWhatWillBecomeOfUs = phaseIdState == GameState.WHAT_WILL_BECOME_OF_US;
         int limit = isWhatDoWeFear ? Integer.MAX_VALUE : (isWhatAreWeCapableOf ? 6 : 5);
         
         return phase.getSubmissions().stream()
@@ -445,11 +432,11 @@ public class CollaborativeTextHelper {
         }
 
         GameSession gameSession = getGameSession(gameCode);
-        String phaseId = getPhaseIdForGameState(gameSession.getGameState());
-
-        if (phaseId == null) {
+        GameState phaseIdState = gameSession.getGameState().getPhaseId();
+        if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
         }
+        String phaseId = phaseIdState.name();
 
         // Submit each vote atomically
         for (PlayerVote vote : playerVotes) {
@@ -527,10 +514,6 @@ public class CollaborativeTextHelper {
             // Log error but don't fail the main operation
             System.err.println("Failed to update GameSessionDisplay with winning submissions: " + e.getMessage());
         }
-    }
-
-    private void updateGameSessionDisplayWithWinningSubmission(String gameCode, String phaseId, TextSubmission winningSubmission) {
-        updateGameSessionDisplayWithWinningSubmissions(gameCode, phaseId, List.of(winningSubmission));
     }
 
     /**
@@ -614,7 +597,7 @@ public class CollaborativeTextHelper {
             ? gameSessionDisplay.getEntity() 
             : "the Entity";
 
-        PhaseBaseInfo baseInfo = getPhaseBaseInfo(gameState, entityName);
+        PhaseBaseInfo baseInfo = gameState.getPhaseBaseInfo(entityName);
         PhaseMode phaseMode = determinePhaseMode(gameState, baseInfo);
 
         String phaseInstructions = getPhaseInstructionsForMode(gameState, phaseMode, baseInfo);
@@ -635,18 +618,6 @@ public class CollaborativeTextHelper {
     }
 
     /**
-     * Record to hold base phase information including all three game states
-     */
-    private record PhaseBaseInfo(
-        String phaseQuestion,
-        String baseInstructions,
-        CollaborativeMode collaborativeMode,
-        GameState collaboratingState,
-        GameState votingState,
-        GameState winningState
-    ) {}
-
-    /**
      * Determines the phase mode by checking which game state in PhaseBaseInfo matches the current game state
      */
     private PhaseMode determinePhaseMode(GameState gameState, PhaseBaseInfo baseInfo) {
@@ -659,101 +630,6 @@ public class CollaborativeTextHelper {
         }
         // Default fallback
         return PhaseMode.COLLABORATING;
-    }
-
-    /**
-     * Gets the base phase information (question, base instructions, collaborative mode, and all three game states)
-     */
-    private PhaseBaseInfo getPhaseBaseInfo(GameState gameState, String entityName) {
-        // Determine which phase group this game state belongs to
-        if (isInPhaseGroup(gameState, GameState.WHERE_ARE_WE, GameState.WHERE_ARE_WE_VOTE, GameState.WHERE_ARE_WE_VOTE_WINNER)) {
-            return new PhaseBaseInfo(
-                "Where are we?",
-                "We will begin by describing our world.",
-                CollaborativeMode.SHARE_TEXT,
-                GameState.WHERE_ARE_WE,
-                GameState.WHERE_ARE_WE_VOTE,
-                GameState.WHERE_ARE_WE_VOTE_WINNER
-            );
-        }
-        if (isInPhaseGroup(gameState, GameState.WHAT_DO_WE_FEAR, GameState.WHAT_DO_WE_FEAR_VOTE, GameState.WHAT_DO_WE_FEAR_VOTE_WINNER)) {
-            return new PhaseBaseInfo(
-                "What do we fear?",
-                "What do we fear? What person, group, or entity holds power in this world?",
-                CollaborativeMode.RAPID_FIRE,
-                GameState.WHAT_DO_WE_FEAR,
-                GameState.WHAT_DO_WE_FEAR_VOTE,
-                GameState.WHAT_DO_WE_FEAR_VOTE_WINNER
-            );
-        }
-        if (isInPhaseGroup(gameState, GameState.WHO_ARE_WE, GameState.WHO_ARE_WE_VOTE, GameState.WHO_ARE_WE_VOTE_WINNER)) {
-            return new PhaseBaseInfo(
-                "Who are we?",
-                "Define who we are together. What is our goal?",
-                CollaborativeMode.SHARE_TEXT,
-                GameState.WHO_ARE_WE,
-                GameState.WHO_ARE_WE_VOTE,
-                GameState.WHO_ARE_WE_VOTE_WINNER
-            );
-        }
-        if (isInPhaseGroup(gameState, GameState.WHAT_IS_COMING, GameState.WHAT_IS_COMING_VOTE, GameState.WHAT_IS_COMING_VOTE_WINNER)) {
-            return new PhaseBaseInfo(
-                "What is coming?",
-                "An event will occur at the end of the season where we will be judged by " + entityName + ". What must we each do when they arrive to ensure our success or survival?",
-                CollaborativeMode.SHARE_TEXT,
-                GameState.WHAT_IS_COMING,
-                GameState.WHAT_IS_COMING_VOTE,
-                GameState.WHAT_IS_COMING_VOTE_WINNER
-            );
-        }
-        if (isInPhaseGroup(gameState, GameState.WHAT_ARE_WE_CAPABLE_OF, GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE, GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS)) {
-            return new PhaseBaseInfo(
-                "What are we capable of?",
-                "We will need certain skills in order to overcome. List anything you think we will need to be good at to survive.",
-                CollaborativeMode.RAPID_FIRE,
-                GameState.WHAT_ARE_WE_CAPABLE_OF,
-                GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE,
-                GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS
-            );
-        }
-        if (isInPhaseGroup(gameState, GameState.WHAT_WILL_BECOME_OF_US, GameState.WHAT_WILL_BECOME_OF_US_VOTE, GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER)) {
-            return new PhaseBaseInfo(
-                "What will become of us?",
-                "What will become of us when our confrontation with " + entityName + " is over?",
-                CollaborativeMode.SHARE_TEXT,
-                GameState.WHAT_WILL_BECOME_OF_US,
-                GameState.WHAT_WILL_BECOME_OF_US_VOTE,
-                GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER
-            );
-        }
-        if (gameState == GameState.WRITE_ENDING_TEXT) {
-            // WRITE_ENDING_TEXT only has a collaborating state, no voting or winning
-            return new PhaseBaseInfo(
-                "How will our story end?",
-                "Based on how well we have done as a group, write the ending text that will be displayed. This will determine how our story concludes.",
-                CollaborativeMode.SHARE_TEXT,
-                GameState.WRITE_ENDING_TEXT,
-                GameState.WRITE_ENDING_TEXT, // Use same state as fallback
-                GameState.WRITE_ENDING_TEXT  // Use same state as fallback
-            );
-        }
-        
-        // Default fallback
-        return new PhaseBaseInfo(
-            "Collaborative Writing",
-            "Work together to build your story!",
-            CollaborativeMode.SHARE_TEXT,
-            GameState.INIT, // Use INIT as fallback
-            GameState.INIT, // Use INIT as fallback
-            GameState.INIT  // Use INIT as fallback
-        );
-    }
-
-    /**
-     * Helper method to check if a game state is in a specific phase group
-     */
-    private boolean isInPhaseGroup(GameState gameState, GameState collaborating, GameState voting, GameState winning) {
-        return gameState == collaborating || gameState == voting || gameState == winning;
     }
 
     /**
