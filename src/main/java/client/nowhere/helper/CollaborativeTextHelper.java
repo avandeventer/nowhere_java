@@ -299,8 +299,8 @@ public class CollaborativeTextHelper {
         GameState phaseIdState = gameState.getPhaseId();
         String phaseId = phaseIdState != null ? phaseIdState.name() : null;
         String question = getQuestionForGameState(gameState);
-        CollaborativeTextPhase.PhaseType phaseType = isVotingPhase(gameState) ? 
-            CollaborativeTextPhase.PhaseType.VOTING : CollaborativeTextPhase.PhaseType.SUBMISSION;
+        PhaseType phaseType = isVotingPhase(gameState) ? 
+            PhaseType.VOTING : PhaseType.SUBMISSION;
         
         return new CollaborativeTextPhase(phaseId, question, phaseType);
     }
@@ -598,13 +598,13 @@ public class CollaborativeTextHelper {
             : "the Entity";
 
         PhaseBaseInfo baseInfo = gameState.getPhaseBaseInfo(entityName);
-        PhaseMode phaseMode = determinePhaseMode(gameState, baseInfo);
+        PhaseType phaseType = determinePhaseType(gameState, baseInfo);
 
-        String phaseInstructions = getPhaseInstructionsForMode(gameState, phaseMode, baseInfo);
+        String phaseInstructions = getPhaseInstructionsForMode(gameState, phaseType, baseInfo);
         
         String collaborativeModeInstructions = getCollaborativeModeInstructions(
             baseInfo.collaborativeMode(), 
-            phaseMode, 
+            phaseType, 
             gameState
         );
 
@@ -613,31 +613,31 @@ public class CollaborativeTextHelper {
             phaseInstructions,
             baseInfo.collaborativeMode(),
             collaborativeModeInstructions,
-            phaseMode
+            phaseType
         );
     }
 
     /**
-     * Determines the phase mode by checking which game state in PhaseBaseInfo matches the current game state
+     * Determines the phase type by checking which game state in PhaseBaseInfo matches the current game state
      */
-    private PhaseMode determinePhaseMode(GameState gameState, PhaseBaseInfo baseInfo) {
+    private PhaseType determinePhaseType(GameState gameState, PhaseBaseInfo baseInfo) {
         if (gameState == baseInfo.collaboratingState()) {
-            return PhaseMode.COLLABORATING;
+            return PhaseType.SUBMISSION;
         } else if (gameState == baseInfo.votingState()) {
-            return PhaseMode.VOTING;
+            return PhaseType.VOTING;
         } else if (gameState == baseInfo.winningState()) {
-            return PhaseMode.WINNING;
+            return PhaseType.WINNING;
         }
         // Default fallback
-        return PhaseMode.COLLABORATING;
+        return PhaseType.SUBMISSION;
     }
 
     /**
-     * Gets phase instructions based on the phase mode
+     * Gets phase instructions based on the phase type
      */
-    private String getPhaseInstructionsForMode(GameState gameState, PhaseMode phaseMode, PhaseBaseInfo baseInfo) {
-        return switch (phaseMode) {
-            case COLLABORATING -> baseInfo.baseInstructions();
+    private String getPhaseInstructionsForMode(GameState gameState, PhaseType phaseType, PhaseBaseInfo baseInfo) {
+        return switch (phaseType) {
+            case SUBMISSION -> baseInfo.baseInstructions();
             case VOTING -> "The time has come to solidify our fate. Rank the descriptions on your device starting with your favorite first.";
             case WINNING -> {
                 if (gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER) {
@@ -652,11 +652,11 @@ public class CollaborativeTextHelper {
     }
 
     /**
-     * Gets collaborative mode instructions, reusing logic based on collaborative mode and phase mode
+     * Gets collaborative mode instructions, reusing logic based on collaborative mode and phase type
      */
-    private String getCollaborativeModeInstructions(CollaborativeMode collaborativeMode, PhaseMode phaseMode, GameState gameState) {
-        // For COLLABORATING phase, return mode-specific instructions
-        if (phaseMode == PhaseMode.COLLABORATING) {
+    private String getCollaborativeModeInstructions(CollaborativeMode collaborativeMode, PhaseType phaseType, GameState gameState) {
+        // For SUBMISSION phase, return mode-specific instructions
+        if (phaseType == PhaseType.SUBMISSION) {
             if (collaborativeMode == CollaborativeMode.RAPID_FIRE) {
                 return "Submit as many ideas as you can from your device!";
             } else {

@@ -8,7 +8,7 @@ import java.util.Map;
 public class CollaborativeTextPhase {
     private String phaseId;
     private String question; // e.g., "Where are we?", "Who are we?", "What is our goal?"
-    private PhaseType phaseType; // SUBMISSION or VOTING
+    private PhaseType phaseType; // SUBMISSION, VOTING, or WINNING
     private List<TextSubmission> submissions;
     private Map<String, List<PlayerVote>> playerVotes; // playerId -> list of their votes
     private List<String> playersWhoSubmitted;
@@ -16,11 +16,6 @@ public class CollaborativeTextPhase {
     private String finalResult; // The winning text that goes to GameSessionDisplay
     private Map<String, List<String>> submissionViews; // submissionId -> List of playerIds who viewed it // Key: playerId_submissionId
     private boolean isComplete;
-
-    public enum PhaseType {
-        SUBMISSION, // Players submit and elaborate on text
-        VOTING     // Players vote on final submissions
-    }
 
     public CollaborativeTextPhase() {
         this.submissions = new ArrayList<>();

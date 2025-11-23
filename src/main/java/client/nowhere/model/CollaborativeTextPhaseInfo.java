@@ -5,6 +5,6 @@ public record CollaborativeTextPhaseInfo(
     String phaseInstructions,
     CollaborativeMode collaborativeMode,
     String collaborativeModeInstructions,
-    PhaseMode phaseMode
+    PhaseType phaseType
 ) {}
 
