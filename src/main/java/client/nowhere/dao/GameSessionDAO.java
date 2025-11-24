@@ -165,4 +165,19 @@ public class GameSessionDAO {
             throw new RuntimeException("Transaction failed", e.getCause());
         }
     }
+
+    public void updateDungeonGrid(String gameCode, Map<Integer, Map<Integer, Encounter>> dungeonGrid, PlayerCoordinates playerCoordinates, List<EncounterLabel> encounterLabels) {
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            ApiFuture<WriteResult> result = gameSessionRef.update(
+                "dungeonGrid", dungeonGrid,
+                "playerCoordinates", playerCoordinates,
+                "adventureMap.encounterLabels", encounterLabels
+            );
+            result.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue updating the dungeon grid", e);
+        }
+    }
 }

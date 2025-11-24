@@ -3,6 +3,8 @@ package client.nowhere.model;
 import client.nowhere.constants.AuthorConstants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,10 @@ public class Story {
     private boolean sequelStory;
     private boolean saveGameStory;
     private List<Option> options;
+
+    @Setter
+    @Getter
+    private EncounterLabel encounterLabel;
 
     @JsonIgnore
     private List<Option> ritualOptions;

@@ -12,6 +12,7 @@ public class AdventureMap {
     List<Location> locations;
     List<Location> unusedLocations;
     Story ritual;
+    List<EncounterLabel> encounterLabels;
 
     public AdventureMap() {
         this.name = "";
@@ -34,6 +35,7 @@ public class AdventureMap {
 //        for (Stat defaultStat: Stat.values()) {
 //            this.statTypes.add(defaultStat.getStatType());
 //        }
+        this.encounterLabels = new ArrayList<>();
     }
 
     public String getName() {
@@ -219,6 +221,14 @@ public class AdventureMap {
 
     public void setUnusedLocations(List<Location> unusedLocations) {
         this.unusedLocations = unusedLocations;
+    }
+
+    public List<EncounterLabel> getEncounterLabels() {
+        return encounterLabels;
+    }
+
+    public void setEncounterLabels(List<EncounterLabel> encounterLabels) {
+        this.encounterLabels = encounterLabels;
     }
 
     @Override

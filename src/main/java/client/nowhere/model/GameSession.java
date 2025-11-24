@@ -23,7 +23,9 @@ public class GameSession {
     Integer storiesToWritePerRound = 1;
     Integer storiesToPlayPerRound = 1;
     GameMode gameMode = GameMode.TOWN_MODE;
-    
+    Map<Integer, Map<Integer, Encounter>> dungeonGrid = new HashMap<>();
+    PlayerCoordinates playerCoordinates;
+
     // Collaborative text phases for world-building
     Map<String, CollaborativeTextPhase> collaborativeTextPhases;
 
@@ -43,6 +45,7 @@ public class GameSession {
         this.adventureMap = new AdventureMap();
         this.rituals = new ArrayList<>();
         this.collaborativeTextPhases = new HashMap<>();
+        this.dungeonGrid = new HashMap<>();
     }
 
     public GameSession(String gameCode, GameState gameState) {
@@ -78,7 +81,7 @@ public class GameSession {
     }
 
     public void setGameStateToNext() {
-        this.gameState = this.gameState.getNextGameState();
+        this.gameState = this.gameState.getNextGameState(GameMode.TOWN_MODE);
     }
 
     public ActivePlayerSession getActivePlayerSession() {
@@ -208,4 +211,21 @@ public class GameSession {
     public GameMode getGameMode() {
         return gameMode;
     }
+
+    public Map<Integer, Map<Integer, Encounter>> getDungeonGrid() {
+        return dungeonGrid;
+    }
+
+    public void setDungeonGrid(Map<Integer, Map<Integer, Encounter>> dungeonGrid) {
+        this.dungeonGrid = dungeonGrid;
+    }
+
+    public PlayerCoordinates getPlayerCoordinates() {
+        return playerCoordinates;
+    }
+
+    public void setPlayerCoordinates(PlayerCoordinates playerCoordinates) {
+        this.playerCoordinates = playerCoordinates;
+    }
+
 }

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import com.google.cloud.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -78,10 +80,6 @@ public class CollaborativeTextHelper {
         // Get phase from DAO
         CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
         if (phase == null) {
-            // Create a new phase if it doesn't exist
-            phase = createCollaborativeTextPhaseForGameState(gameSession.getGameState());
-            // Note: We would need to add a method to create phases atomically if needed
-            // For now, this will be handled by the first submission
             throw new ValidationException("Collaborative text phase not found. Please submit text first.");
         }
 
@@ -130,12 +128,12 @@ public class CollaborativeTextHelper {
         }
 
         List<TextSubmission> winningSubmissions = calculateWinnersFromVotes(phase, gameSession.getGameState());
-        
+
         // Store the winning submissions in GameSessionDisplay
         if (!winningSubmissions.isEmpty()) {
-            updateGameSessionDisplayWithWinningSubmissions(gameCode, phaseId, winningSubmissions);
+            updateGameSessionWithWinningSubmissions(gameCode, phaseId, winningSubmissions);
         }
-        
+
         return winningSubmissions;
     }
 
@@ -146,7 +144,7 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
         String phaseId = phaseIdState.name();
-        
+
         // Use transactional method to get submissions and record views atomically
         return collaborativeTextDAO.getAvailableSubmissionsForPlayerAtomically(gameCode, phaseId, playerId, requestedCount);
     }
@@ -159,7 +157,7 @@ public class CollaborativeTextHelper {
      */
     private TextSubmission createNewSubmission(TextAddition textAddition, GameSession gameSession) {
         String newSubmissionId = UUID.randomUUID().toString();
-        
+
         TextSubmission newSubmission = new TextSubmission();
         newSubmission.setSubmissionId(newSubmissionId);
         newSubmission.setAuthorId(textAddition.getAuthorId());
@@ -167,17 +165,17 @@ public class CollaborativeTextHelper {
         newSubmission.setCurrentText(textAddition.getAddedText());
         newSubmission.setCreatedAt(Timestamp.now());
         newSubmission.setLastModified(Timestamp.now());
-        
+
         // Add the text addition to the new submission
         newSubmission.addTextAddition(textAddition);
-        
+
         // Assign outcome type for WHAT_WILL_BECOME_OF_US phase
         // Use outcomeType from TextAddition if provided, otherwise calculate based on player order
         if (gameSession.getGameState() == GameState.WHAT_WILL_BECOME_OF_US) {
             String outcomeType = textAddition.getOutcomeType();
             newSubmission.setOutcomeType(outcomeType);
         }
-        
+
         return newSubmission;
     }
 
@@ -200,10 +198,10 @@ public class CollaborativeTextHelper {
 
         // Create new submission ID
         String newSubmissionId = UUID.randomUUID().toString();
-        
+
         // Create new submission with parent's current text + new addition
         String newCurrentText = parentSubmission.getCurrentText() + " " + textAddition.getAddedText();
-        
+
         TextSubmission newSubmission = new TextSubmission();
         newSubmission.setSubmissionId(newSubmissionId);
         newSubmission.setAuthorId(textAddition.getAuthorId()); // Use the new author's ID
@@ -211,16 +209,16 @@ public class CollaborativeTextHelper {
         newSubmission.setCurrentText(newCurrentText);
         newSubmission.setCreatedAt(Timestamp.now());
         newSubmission.setLastModified(Timestamp.now());
-        
+
         // Add the new addition to the new submission
         newSubmission.setAdditions(parentSubmission.getAdditions());
         newSubmission.addTextAddition(textAddition);
-        
+
         // Preserve the parent's outcome type if it exists
         if (parentSubmission.getOutcomeType() != null && !parentSubmission.getOutcomeType().trim().isEmpty()) {
             newSubmission.setOutcomeType(parentSubmission.getOutcomeType());
         }
-        
+
         return newSubmission;
     }
 
@@ -293,41 +291,6 @@ public class CollaborativeTextHelper {
         };
     }
 
-    // ===== GAME STATE HELPER METHODS =====
-
-    private CollaborativeTextPhase createCollaborativeTextPhaseForGameState(GameState gameState) {
-        GameState phaseIdState = gameState.getPhaseId();
-        String phaseId = phaseIdState != null ? phaseIdState.name() : null;
-        String question = getQuestionForGameState(gameState);
-        PhaseType phaseType = isVotingPhase(gameState) ? 
-            PhaseType.VOTING : PhaseType.SUBMISSION;
-        
-        return new CollaborativeTextPhase(phaseId, question, phaseType);
-    }
-
-    private String getQuestionForGameState(GameState gameState) {
-        return switch (gameState) {
-            case WHERE_ARE_WE, WHERE_ARE_WE_VOTE -> "Where are we?";
-            case WHAT_DO_WE_FEAR, WHAT_DO_WE_FEAR_VOTE -> "What do we fear?";
-            case WHO_ARE_WE, WHO_ARE_WE_VOTE -> "Who are we?";
-            case WHAT_IS_COMING, WHAT_IS_COMING_VOTE -> "What is coming?";
-            case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE -> "What are we capable of?";
-            case WHAT_WILL_BECOME_OF_US, WHAT_WILL_BECOME_OF_US_VOTE -> "What will become of us?";
-            default -> "Unknown question";
-        };
-    }
-
-    private boolean isVotingPhase(GameState gameState) {
-        return gameState == GameState.WHERE_ARE_WE_VOTE ||
-               gameState == GameState.WHAT_DO_WE_FEAR_VOTE ||
-               gameState == GameState.WHO_ARE_WE_VOTE ||
-               gameState == GameState.WHAT_IS_COMING_VOTE ||
-               gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE ||
-               gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE;
-    }
-
-    // ===== VOTE CALCULATION METHODS =====
-
     private List<TextSubmission> calculateWinnersFromVotes(CollaborativeTextPhase phase, GameState gameState) {
         // Calculate average ranking for each submission
         for (TextSubmission submission : phase.getSubmissions()) {
@@ -372,7 +335,7 @@ public class CollaborativeTextHelper {
                 .filter(submission -> submission.getAverageRanking() > 0)
                 .min((s1, s2) -> Double.compare(s1.getAverageRanking(), s2.getAverageRanking()))
                 .orElse(null);
-            
+
             return winner != null ? List.of(winner) : List.of();
         }
     }
@@ -390,7 +353,7 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
         }
         String phaseId = phaseIdState.name();
-        
+
         // Retrieve the phase
         CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
         if (phase == null) {
@@ -404,7 +367,7 @@ public class CollaborativeTextHelper {
         boolean isWhatAreWeCapableOf = phaseIdState == GameState.WHAT_ARE_WE_CAPABLE_OF;
         boolean isWhatWillBecomeOfUs = phaseIdState == GameState.WHAT_WILL_BECOME_OF_US;
         int limit = isWhatDoWeFear ? Integer.MAX_VALUE : (isWhatAreWeCapableOf ? 6 : 5);
-        
+
         return phase.getSubmissions().stream()
                 .filter(submission -> isWhatWillBecomeOfUs || !submission.getAuthorId().equals(playerId))
                 .sorted((s1, s2) -> {
@@ -450,7 +413,7 @@ public class CollaborativeTextHelper {
     /**
      * Updates the GameSessionDisplay with the winning submission for the given phase
      */
-    private void updateGameSessionDisplayWithWinningSubmissions(String gameCode, String phaseId, List<TextSubmission> winningSubmissions) {
+    private void updateGameSessionWithWinningSubmissions(String gameCode, String phaseId, List<TextSubmission> winningSubmissions) {
         try {
             // Get the current GameSessionDisplay
             GameSessionDisplay display = adventureMapDAO.getGameSessionDisplay(gameCode);
@@ -506,6 +469,9 @@ public class CollaborativeTextHelper {
                         }
                     }
                 }
+                case "SET_ENCOUNTERS" -> {
+                    initializeDungeonGridWithEncounters(gameCode, phaseId, winningSubmissions);
+                }
             }
 
             // Update the GameSessionDisplay in the database
@@ -513,6 +479,93 @@ public class CollaborativeTextHelper {
         } catch (Exception e) {
             // Log error but don't fail the main operation
             System.err.println("Failed to update GameSessionDisplay with winning submissions: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Initializes dungeon grid with winning submission at (0,0) and adjacent encounters
+     */
+    private void initializeDungeonGridWithEncounters(String gameCode, String phaseId, List<TextSubmission> winningSubmissions) {
+        try {
+            if (winningSubmissions.isEmpty()) return;
+
+            GameSession gameSession = getGameSession(gameCode);
+            CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+            if (phase == null) return;
+
+            // Calculate average ranking for all submissions
+            for (TextSubmission submission : phase.getSubmissions()) {
+                if (submission.getAverageRanking() == 0) {
+                    List<PlayerVote> votesForSubmission = phase.getPlayerVotes().values().stream()
+                        .flatMap(List::stream)
+                        .filter(vote -> vote.getSubmissionId().equals(submission.getSubmissionId()))
+                        .toList();
+                    if (!votesForSubmission.isEmpty()) {
+                        double averageRanking = votesForSubmission.stream()
+                            .mapToInt(PlayerVote::getRanking)
+                            .average()
+                            .orElse(0.0);
+                        submission.setAverageRanking(averageRanking);
+                    }
+                }
+            }
+
+            // Get all submissions that received votes, sorted by rating (lower is better)
+            List<TextSubmission> submissionsWithVotes = phase.getSubmissions().stream()
+                .filter(sub -> sub.getAverageRanking() > 0)
+                .sorted(Comparator.comparingDouble(TextSubmission::getAverageRanking))
+                .toList();
+
+            if (submissionsWithVotes.isEmpty()) return;
+
+            // Get or create EncounterLabels list in AdventureMap
+            AdventureMap adventureMap = gameSession.getAdventureMap();
+            if (adventureMap == null) {
+                adventureMap = new AdventureMap();
+                gameSession.setAdventureMap(adventureMap);
+            }
+            if (adventureMap.getEncounterLabels() == null) {
+                adventureMap.setEncounterLabels(new ArrayList<>());
+            }
+
+            // Create EncounterLabels for all submissions with votes
+            List<EncounterLabel> encounterLabels = new ArrayList<>();
+            for (TextSubmission submission : submissionsWithVotes) {
+                EncounterLabel label = new EncounterLabel(
+                    submission.getCurrentText(),
+                    submission
+                );
+                encounterLabels.add(label);
+            }
+            adventureMap.getEncounterLabels().addAll(encounterLabels);
+
+            // Initialize dungeon grid with winning submission at (0,0)
+            EncounterLabel winningLabel = encounterLabels.get(0);
+            Map<Integer, Map<Integer, Encounter>> dungeonGrid = new HashMap<>();
+            Map<Integer, Encounter> row0 = new HashMap<>();
+            row0.put(0, new Encounter(winningLabel, "", ""));
+            dungeonGrid.put(0, row0);
+
+            // Place other encounters at adjacent locations
+            int[][] adjacentOffsets = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+            for (int i = 0; i < Math.min(adjacentOffsets.length, encounterLabels.size() - 1); i++) {
+                int x = adjacentOffsets[i][0];
+                int y = adjacentOffsets[i][1];
+                EncounterLabel label = encounterLabels.get(i + 1);
+                
+                dungeonGrid.computeIfAbsent(y, k -> new HashMap<>())
+                    .put(x, new Encounter(label, "", ""));
+            }
+
+            // Update GameSession in Firestore via DAO
+            gameSessionDAO.updateDungeonGrid(
+                gameCode,
+                dungeonGrid,
+                new PlayerCoordinates(0, 0),
+                adventureMap.getEncounterLabels()
+            );
+        } catch (Exception e) {
+            System.err.println("Failed to initialize dungeon grid: " + e.getMessage());
         }
     }
 

@@ -44,143 +44,226 @@ public enum GameState {
         GENERATE_ENDINGS,
         WRITE_ENDINGS,
         ENDING,
-        FINALE;
+        FINALE,
 
-        public GameState getNextGameState() {
-                switch (this) {
-                        case INIT -> {
-                                return GameState.WHERE_ARE_WE;
-                        }
-                        case WHERE_ARE_WE -> {
-                                return GameState.WHERE_ARE_WE_VOTE;
-                        }
-                        case WHERE_ARE_WE_VOTE -> {
-                                return GameState.WHERE_ARE_WE_VOTE_WINNER;
-                        }
-                        case WHERE_ARE_WE_VOTE_WINNER -> {
-                                return GameState.WHAT_DO_WE_FEAR;
-                        }
-                        case WHAT_DO_WE_FEAR -> {
-                                return GameState.WHAT_DO_WE_FEAR_VOTE;
-                        }
-                        case WHAT_DO_WE_FEAR_VOTE -> {
-                                return GameState.WHAT_DO_WE_FEAR_VOTE_WINNER;
-                        }
-                        case WHAT_DO_WE_FEAR_VOTE_WINNER -> {
-                                return GameState.WHAT_IS_COMING;
-                        }
-                        case WHAT_IS_COMING -> {
-                                return GameState.WHAT_IS_COMING_VOTE;
-                        }
-                        case WHAT_IS_COMING_VOTE -> {
-                                return GameState.WHAT_IS_COMING_VOTE_WINNER;
-                        }
-                        case WHAT_IS_COMING_VOTE_WINNER -> {
-                                return GameState.WHO_ARE_WE;
-                        }
-                        case WHO_ARE_WE -> {
-                                return GameState.WHO_ARE_WE_VOTE;
-                        }
-                        case WHO_ARE_WE_VOTE -> {
-                                return GameState.WHO_ARE_WE_VOTE_WINNER;
-                        }
-                        case WHO_ARE_WE_VOTE_WINNER -> {
-                                return GameState.WHAT_ARE_WE_CAPABLE_OF;
-                        }
-                        case WHAT_ARE_WE_CAPABLE_OF -> {
-                                return GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE;
-                        }
-                        case WHAT_ARE_WE_CAPABLE_OF_VOTE -> {
-                                return GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS;
-                        }
-                        case WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> {
-                                return GameState.WHAT_WILL_BECOME_OF_US;
-                        }
-                        case WHAT_WILL_BECOME_OF_US -> {
-                                return GameState.WHAT_WILL_BECOME_OF_US_VOTE;
-                        }
-                        case WHAT_WILL_BECOME_OF_US_VOTE -> {
-                                return GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER;
-                        }
-                        case WHAT_WILL_BECOME_OF_US_VOTE_WINNER -> {
-                                return GameState.GENERATE_LOCATION_AUTHORS;
-                        }
-                        case GENERATE_LOCATION_AUTHORS -> {
-                                return GameState.WHERE_CAN_WE_GO;
-                        }
-                        case WHERE_CAN_WE_GO -> {
-                                return GameState.GENERATE_OCCUPATION_AUTHORS;
-                        }
-                        case GENERATE_OCCUPATION_AUTHORS -> {
-                                return GameState.WHAT_OCCUPATIONS_ARE_THERE;
-                        }
-                        case WHAT_OCCUPATIONS_ARE_THERE -> {
-                                return GameState.PREAMBLE;
-                        }
-                        case PREAMBLE -> {
-                                return GameState.LOCATION_SELECT;
-                        }
-                        case LOCATION_SELECT -> {
-                                return GameState.GENERATE_WRITE_PROMPT_AUTHORS;
-                        }
-                        case GENERATE_WRITE_PROMPT_AUTHORS -> {
-                                return GameState.WRITE_PROMPTS;
-                        }
-                        case WRITE_PROMPTS -> {
-                                return GameState.GENERATE_WRITE_OPTION_AUTHORS;
-                        }
-                        case GENERATE_WRITE_OPTION_AUTHORS -> {
-                                return GameState.WRITE_OPTIONS;
-                        }
-                        case WRITE_OPTIONS -> {
-                                return GameState.ROUND1;
-                        }
-                        case ROUND1 -> {
-                                return GameState.PREAMBLE_AGAIN;
-                        }
-                        case PREAMBLE_AGAIN -> {
-                                return GameState.LOCATION_SELECT_AGAIN;
-                        }
-                        case LOCATION_SELECT_AGAIN -> {
-                                return GameState.GENERATE_WRITE_PROMPT_AUTHORS_AGAIN;
-                        }
-                        case GENERATE_WRITE_PROMPT_AUTHORS_AGAIN -> {
-                                return GameState.WRITE_PROMPTS_AGAIN;
-                        }
-                        case WRITE_PROMPTS_AGAIN -> {
-                                return GameState.GENERATE_WRITE_OPTION_AUTHORS_AGAIN;
-                        }
-                        case GENERATE_WRITE_OPTION_AUTHORS_AGAIN -> {
-                                return GameState.WRITE_OPTIONS_AGAIN;
-                        }
-                        case WRITE_OPTIONS_AGAIN -> {
-                                return GameState.ROUND2;
-                        }
-                        case ROUND2 -> {
-                                return GameState.ENDING_PREAMBLE;
-                        }
-                        case ENDING_PREAMBLE -> {
-                                return GameState.RITUAL;
-                        }
-                        case RITUAL -> {
-                                return GameState.GENERATE_ENDINGS;
-                        }
-                        case GENERATE_ENDINGS -> {
-                                return GameState.WRITE_ENDINGS;
-                        }
-                        case WRITE_ENDINGS -> {
-                                return GameState.ENDING;
-                        }
-                        case ENDING -> {
-                                return GameState.FINALE;
-                        }
-                        default -> {
-                                return GameState.INIT;
-                        }
-                }
+        //Dungeon Mode:
+        SET_ENCOUNTERS,
+        SET_ENCOUNTERS_VOTING,
+        SET_ENCOUNTERS_WINNER,
+        WHAT_HAPPENS_HERE,
+        WHAT_HAPPENS_HERE_VOTING,
+        WHAT_HAPPENS_HERE_WINNER,
+        WHAT_CAN_WE_TRY,
+        WHAT_CAN_WE_TRY_VOTING,
+        WHAT_CAN_WE_TRY_WINNER,
+        HOW_DOES_THIS_RESOLVE,
+        HOW_DOES_THIS_RESOLVE_VOTING,
+        HOW_DOES_THIS_RESOLVE_WINNER,
+        MAKE_CHOICE_VOTING,
+        MAKE_CHOICE_WINNER,
+        NAVIGATE_VOTING,
+        NAVIGATE_WINNER;
+
+
+        public GameState getNextGameState(GameMode gameMode) {
+            if (gameMode == GameMode.TOWN_MODE) {
+                return getNextGameStateTownMode();
+            } else {
+                return getNextGameStateDungeonMode();
+            }
         }
 
-        /**
+    private GameState getNextGameStateDungeonMode() {
+        switch (this) {
+            case INIT -> {
+                return GameState.PREAMBLE;
+            }
+            case PREAMBLE -> {
+                return GameState.SET_ENCOUNTERS;
+            }
+            case SET_ENCOUNTERS -> {
+                return GameState.SET_ENCOUNTERS_VOTING;
+            }
+            case NAVIGATE_VOTING -> {
+                return GameState.NAVIGATE_WINNER;
+            }
+            case SET_ENCOUNTERS_VOTING, NAVIGATE_WINNER -> {
+                return GameState.WHAT_HAPPENS_HERE;
+            }
+            case WHAT_HAPPENS_HERE -> {
+                return GameState.WHAT_HAPPENS_HERE_VOTING;
+            }
+            case WHAT_HAPPENS_HERE_VOTING -> {
+                return GameState.WHAT_HAPPENS_HERE_WINNER;
+            }
+            case WHAT_HAPPENS_HERE_WINNER -> {
+                return GameState.WHAT_CAN_WE_TRY;
+            }
+            case WHAT_CAN_WE_TRY -> {
+                return GameState.WHAT_CAN_WE_TRY_VOTING;
+            }
+            case WHAT_CAN_WE_TRY_VOTING -> {
+                return GameState.WHAT_CAN_WE_TRY_WINNER;
+            }
+            case WHAT_CAN_WE_TRY_WINNER -> {
+                return GameState.HOW_DOES_THIS_RESOLVE;
+            }
+            case HOW_DOES_THIS_RESOLVE -> {
+                return GameState.HOW_DOES_THIS_RESOLVE_VOTING;
+            }
+            case HOW_DOES_THIS_RESOLVE_VOTING -> {
+                return GameState.HOW_DOES_THIS_RESOLVE_WINNER;
+            }
+            case HOW_DOES_THIS_RESOLVE_WINNER -> {
+                return GameState.MAKE_CHOICE_VOTING;
+            }
+            case MAKE_CHOICE_VOTING -> {
+                return GameState.MAKE_CHOICE_WINNER;
+            }
+            case MAKE_CHOICE_WINNER -> {
+                return GameState.NAVIGATE_VOTING;
+            }
+            default -> {
+                return GameState.INIT;
+            }
+        }
+    }
+
+    private GameState getNextGameStateTownMode() {
+            switch (this) {
+                    case INIT -> {
+                        return GameState.WHERE_ARE_WE;
+                    }
+                    case WHERE_ARE_WE -> {
+                        return GameState.WHERE_ARE_WE_VOTE;
+                    }
+                    case WHERE_ARE_WE_VOTE -> {
+                        return GameState.WHERE_ARE_WE_VOTE_WINNER;
+                    }
+                    case WHERE_ARE_WE_VOTE_WINNER -> {
+                        return GameState.WHAT_DO_WE_FEAR;
+                    }
+                    case WHAT_DO_WE_FEAR -> {
+                        return GameState.WHAT_DO_WE_FEAR_VOTE;
+                    }
+                    case WHAT_DO_WE_FEAR_VOTE -> {
+                        return GameState.WHAT_DO_WE_FEAR_VOTE_WINNER;
+                    }
+                    case WHAT_DO_WE_FEAR_VOTE_WINNER -> {
+                        return GameState.WHAT_IS_COMING;
+                    }
+                    case WHAT_IS_COMING -> {
+                        return GameState.WHAT_IS_COMING_VOTE;
+                    }
+                    case WHAT_IS_COMING_VOTE -> {
+                        return GameState.WHAT_IS_COMING_VOTE_WINNER;
+                    }
+                    case WHAT_IS_COMING_VOTE_WINNER -> {
+                        return GameState.WHO_ARE_WE;
+                    }
+                    case WHO_ARE_WE -> {
+                        return GameState.WHO_ARE_WE_VOTE;
+                    }
+                    case WHO_ARE_WE_VOTE -> {
+                        return GameState.WHO_ARE_WE_VOTE_WINNER;
+                    }
+                    case WHO_ARE_WE_VOTE_WINNER -> {
+                        return GameState.WHAT_ARE_WE_CAPABLE_OF;
+                    }
+                    case WHAT_ARE_WE_CAPABLE_OF -> {
+                        return GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE;
+                    }
+                    case WHAT_ARE_WE_CAPABLE_OF_VOTE -> {
+                        return GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS;
+                    }
+                    case WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> {
+                        return GameState.WHAT_WILL_BECOME_OF_US;
+                    }
+                    case WHAT_WILL_BECOME_OF_US -> {
+                        return GameState.WHAT_WILL_BECOME_OF_US_VOTE;
+                    }
+                    case WHAT_WILL_BECOME_OF_US_VOTE -> {
+                        return GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER;
+                    }
+                    case WHAT_WILL_BECOME_OF_US_VOTE_WINNER -> {
+                        return GameState.GENERATE_LOCATION_AUTHORS;
+                    }
+                    case GENERATE_LOCATION_AUTHORS -> {
+                        return GameState.WHERE_CAN_WE_GO;
+                    }
+                    case WHERE_CAN_WE_GO -> {
+                        return GameState.GENERATE_OCCUPATION_AUTHORS;
+                    }
+                    case GENERATE_OCCUPATION_AUTHORS -> {
+                        return GameState.WHAT_OCCUPATIONS_ARE_THERE;
+                    }
+                    case WHAT_OCCUPATIONS_ARE_THERE -> {
+                        return GameState.PREAMBLE;
+                    }
+                    case PREAMBLE -> {
+                        return GameState.LOCATION_SELECT;
+                    }
+                    case LOCATION_SELECT -> {
+                        return GameState.GENERATE_WRITE_PROMPT_AUTHORS;
+                    }
+                    case GENERATE_WRITE_PROMPT_AUTHORS -> {
+                        return GameState.WRITE_PROMPTS;
+                    }
+                    case WRITE_PROMPTS -> {
+                        return GameState.GENERATE_WRITE_OPTION_AUTHORS;
+                    }
+                    case GENERATE_WRITE_OPTION_AUTHORS -> {
+                        return GameState.WRITE_OPTIONS;
+                    }
+                    case WRITE_OPTIONS -> {
+                        return GameState.ROUND1;
+                    }
+                    case ROUND1 -> {
+                        return GameState.PREAMBLE_AGAIN;
+                    }
+                    case PREAMBLE_AGAIN -> {
+                        return GameState.LOCATION_SELECT_AGAIN;
+                    }
+                    case LOCATION_SELECT_AGAIN -> {
+                        return GameState.GENERATE_WRITE_PROMPT_AUTHORS_AGAIN;
+                    }
+                    case GENERATE_WRITE_PROMPT_AUTHORS_AGAIN -> {
+                        return GameState.WRITE_PROMPTS_AGAIN;
+                    }
+                    case WRITE_PROMPTS_AGAIN -> {
+                        return GameState.GENERATE_WRITE_OPTION_AUTHORS_AGAIN;
+                    }
+                    case GENERATE_WRITE_OPTION_AUTHORS_AGAIN -> {
+                        return GameState.WRITE_OPTIONS_AGAIN;
+                    }
+                    case WRITE_OPTIONS_AGAIN -> {
+                        return GameState.ROUND2;
+                    }
+                    case ROUND2 -> {
+                        return GameState.ENDING_PREAMBLE;
+                    }
+                    case ENDING_PREAMBLE -> {
+                        return GameState.RITUAL;
+                    }
+                    case RITUAL -> {
+                        return GameState.GENERATE_ENDINGS;
+                    }
+                    case GENERATE_ENDINGS -> {
+                        return GameState.WRITE_ENDINGS;
+                    }
+                    case WRITE_ENDINGS -> {
+                        return GameState.ENDING;
+                    }
+                    case ENDING -> {
+                        return GameState.FINALE;
+                    }
+                    default -> {
+                        return GameState.INIT;
+                    }
+            }
+        }
+
+    /**
          * Gets the phase ID for this game state.
          * Returns the phase identifier that groups related game states together.
          * @return The phase ID string, or null if this game state doesn't belong to a collaborative text phase
@@ -193,6 +276,12 @@ public enum GameState {
                         case WHAT_IS_COMING, WHAT_IS_COMING_VOTE, WHAT_IS_COMING_VOTE_WINNER -> WHAT_IS_COMING;
                         case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE, WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> WHAT_ARE_WE_CAPABLE_OF;
                         case WHAT_WILL_BECOME_OF_US, WHAT_WILL_BECOME_OF_US_VOTE, WHAT_WILL_BECOME_OF_US_VOTE_WINNER -> WHAT_WILL_BECOME_OF_US;
+                        case SET_ENCOUNTERS, SET_ENCOUNTERS_VOTING-> SET_ENCOUNTERS;
+                        case WHAT_HAPPENS_HERE, WHAT_HAPPENS_HERE_VOTING, WHAT_HAPPENS_HERE_WINNER -> WHAT_HAPPENS_HERE;
+                        case WHAT_CAN_WE_TRY, WHAT_CAN_WE_TRY_VOTING, WHAT_CAN_WE_TRY_WINNER -> WHAT_CAN_WE_TRY;
+                        case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNER -> HOW_DOES_THIS_RESOLVE;
+                        case MAKE_CHOICE_VOTING, MAKE_CHOICE_WINNER -> MAKE_CHOICE_VOTING;
+                        case NAVIGATE_VOTING, NAVIGATE_WINNER -> NAVIGATE_VOTING;
                         default -> null;
                 };
         }
@@ -276,7 +365,66 @@ public enum GameState {
                                 WRITE_ENDING_TEXT  // Use same state as fallback
                         );
                 }
-                
+                if (phaseId == SET_ENCOUNTERS) {
+                        return new PhaseBaseInfo(
+                                "What could we encounter here?",
+                                "Name some things that we might see on our adventure through this place",
+                                CollaborativeMode.RAPID_FIRE,
+                                SET_ENCOUNTERS,
+                                SET_ENCOUNTERS_VOTING,
+                                SET_ENCOUNTERS_WINNER
+                        );
+                }
+                if (phaseId == WHAT_HAPPENS_HERE) {
+                        return new PhaseBaseInfo(
+                                "What happens here?",
+                                "Read the prompt and add any description of it that you feel applies!",
+                                CollaborativeMode.SHARE_TEXT,
+                                WHAT_HAPPENS_HERE,
+                                WHAT_HAPPENS_HERE_VOTING,
+                                WHAT_HAPPENS_HERE_WINNER
+                        );
+                }
+                if (phaseId == WHAT_CAN_WE_TRY) {
+                        return new PhaseBaseInfo(
+                                "What can we try?",
+                                "What are some actions we could try to take? List them!",
+                                CollaborativeMode.RAPID_FIRE,
+                                WHAT_CAN_WE_TRY,
+                                WHAT_CAN_WE_TRY_VOTING,
+                                WHAT_CAN_WE_TRY_WINNER
+                        );
+                }
+                if (phaseId == HOW_DOES_THIS_RESOLVE) {
+                        return new PhaseBaseInfo(
+                                "How does this resolve?",
+                                "Look at the action you've been assigned and describe what happens if we choose it!",
+                                CollaborativeMode.SHARE_TEXT,
+                                HOW_DOES_THIS_RESOLVE,
+                                HOW_DOES_THIS_RESOLVE_VOTING,
+                                HOW_DOES_THIS_RESOLVE_WINNER
+                        );
+                }  
+                if (phaseId == MAKE_CHOICE_VOTING) {
+                    return new PhaseBaseInfo(
+                        "What do we choose?",
+                        "What is the next step in our adventure?",
+                        CollaborativeMode.SHARE_TEXT,
+                        null,
+                        MAKE_CHOICE_VOTING,
+                        MAKE_CHOICE_WINNER
+                    );
+                }
+                if (phaseId == NAVIGATE_VOTING) {
+                    return new PhaseBaseInfo(
+                        "Where do we go now?",
+                        "Seek " + entityName + " or just go in the most interesting direction!",
+                        CollaborativeMode.SHARE_TEXT,
+                        null,
+                        NAVIGATE_VOTING,
+                        NAVIGATE_WINNER
+                    );
+                }
                 // Default fallback
                 return new PhaseBaseInfo(
                         "Collaborative Writing",
