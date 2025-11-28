@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,26 +20,6 @@ import client.nowhere.dao.CollaborativeTextDAO;
 import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
 import client.nowhere.exception.ValidationException;
-import client.nowhere.model.AdventureMap;
-import client.nowhere.model.CollaborativeMode;
-import client.nowhere.model.CollaborativeTextPhase;
-import client.nowhere.model.CollaborativeTextPhaseInfo;
-import client.nowhere.model.Encounter;
-import client.nowhere.model.EncounterLabel;
-import client.nowhere.model.GameBoard;
-import client.nowhere.model.GameSession;
-import client.nowhere.model.GameSessionDisplay;
-import client.nowhere.model.GameState;
-import client.nowhere.model.PhaseBaseInfo;
-import client.nowhere.model.PhaseType;
-import client.nowhere.model.Player;
-import client.nowhere.model.PlayerCoordinates;
-import client.nowhere.model.PlayerVote;
-import client.nowhere.model.StatType;
-import client.nowhere.model.Option;
-import client.nowhere.model.Story;
-import client.nowhere.model.TextAddition;
-import client.nowhere.model.TextSubmission;
 import client.nowhere.constants.AuthorConstants;
 
 @Component
@@ -597,7 +578,7 @@ public class CollaborativeTextHelper {
                     }
                 }
                 case "SET_ENCOUNTERS" -> {
-                    initializeDungeonGridWithEncounters(gameCode, phaseId, winningSubmissions);
+                    initializeDungeonGridWithEncounters(gameCode, phaseId, winningSubmissions, display);
                 }
                 case "WHAT_HAPPENS_HERE" -> {
                     handleWhatHappensHere(gameCode, winningSubmissions);
@@ -622,7 +603,7 @@ public class CollaborativeTextHelper {
     /**
      * Initializes dungeon grid with winning submission at (0,0) and adjacent encounters
      */
-    private void initializeDungeonGridWithEncounters(String gameCode, String phaseId, List<TextSubmission> winningSubmissions) {
+    private void initializeDungeonGridWithEncounters(String gameCode, String phaseId, List<TextSubmission> winningSubmissions, GameSessionDisplay display) {
         try {
             if (winningSubmissions.isEmpty()) return;
 
@@ -655,12 +636,19 @@ public class CollaborativeTextHelper {
             GameBoard gameBoard = new GameBoard();
             
             // Place winning submission at (0, 0)
-            gameBoard.setEncounter(0, 0, new Encounter(winningLabel, "", ""));
+            gameBoard.setEncounter(0, 0, new Encounter(winningLabel, EncounterType.NORMAL, "", ""));
+
+            int entityXPosition = Math.random() < 0.5 ? -1 : 1;
+            int entityYPosition =  Math.random() < 0.5 ? -1 : 1;
+
+            gameBoard.setEncounter(entityXPosition, entityYPosition, new Encounter(new EncounterLabel(display.getEntity(), new TextSubmission()), EncounterType.MAIN, "", ""));
 
             List<int[]> allPositions = new ArrayList<>();
             for (int y = -4; y <= 4; y++) {
                 for (int x = -4; x <= 4; x++) {
-                    if (x != 0 || y != 0) {
+                    // Exclude starting position (0, 0) and entity position
+                    // Use OR because we want to exclude when BOTH coordinates match the excluded position
+                    if ((x != 0 || y != 0) && (x != entityXPosition || y != entityYPosition)) {
                         allPositions.add(new int[]{x, y});
                     }
                 }
@@ -701,11 +689,11 @@ public class CollaborativeTextHelper {
                 int[] pos = allPositions.get(i);
                 int x = pos[0];
                 int y = pos[1];
-                EncounterLabel label = weightedLabels.isEmpty() 
-                    ? winningLabel 
+                EncounterLabel label = weightedLabels.isEmpty()
+                    ? winningLabel
                     : weightedLabels.get(i % weightedLabels.size());
                 
-                gameBoard.setEncounter(x, y, new Encounter(label, "", ""));
+                gameBoard.setEncounter(x, y, new Encounter(label, EncounterType.NORMAL, "", ""));
             }
 
             // Update GameSession in Firestore via DAO

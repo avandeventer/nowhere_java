@@ -5,7 +5,15 @@ import java.util.Map;
 
 public class GameBoard {
     private Map<String, Encounter> dungeonGrid = new HashMap<>();
-    
+
+    public GameBoard() {
+        this.dungeonGrid = new HashMap<>();
+    }
+
+    public GameBoard(Map<String, Encounter> dungeonGrid) {
+        this.dungeonGrid = dungeonGrid != null ? dungeonGrid : new HashMap<>();
+    }
+
     private String key(int x, int y) {
         return x + "," + y;
     }

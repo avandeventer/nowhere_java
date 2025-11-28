@@ -4,11 +4,21 @@ public class Encounter {
     EncounterLabel encounterLabel;
     String storyId;
     String storyPrompt;
+    EncounterType encounterType;
     boolean visited;
 
-    public Encounter(EncounterLabel encounterLabel, String storyId, String storyPrompt) {
+    public Encounter() {
+        this.encounterLabel = new EncounterLabel();
+        this.storyId = "";
+        this.storyPrompt = "";
+        this.encounterType = EncounterType.NORMAL;
+        this.visited = false;
+    }
+
+    public Encounter(EncounterLabel encounterLabel, EncounterType encounterType, String storyId, String storyPrompt) {
         this.encounterLabel = encounterLabel;
         this.storyId = storyId;
+        this.encounterType =  encounterType;
         this.storyPrompt = storyPrompt;
         this.visited = false;
     }

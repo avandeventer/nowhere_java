@@ -4,6 +4,11 @@ public class PlayerCoordinates {
     int xCoordinate;
     int yCoordinate;
 
+    public PlayerCoordinates() {
+        this.xCoordinate = 0;
+        this.yCoordinate = 0;
+    }
+
     public PlayerCoordinates(int xCoordinate, int yCoordinate) {
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;

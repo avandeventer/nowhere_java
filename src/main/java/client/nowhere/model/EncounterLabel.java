@@ -7,10 +7,10 @@ public class EncounterLabel {
     public String encounterLabel;
     public TextSubmission textSubmission;
 
-    public EncounterLabel(String encounterLabel, TextSubmission textSubmission, Story story) {
+    public EncounterLabel() {
         this.encounterId = UUID.randomUUID().toString();
-        this.encounterLabel = encounterLabel;
-        this.textSubmission = textSubmission;
+        this.encounterLabel = "";
+        this.textSubmission = new TextSubmission();
     }
 
     public EncounterLabel(String encounterLabel, TextSubmission textSubmission) {
