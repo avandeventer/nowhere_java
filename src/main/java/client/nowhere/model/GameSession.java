@@ -227,6 +227,4 @@ public class GameSession {
     public void setPlayerCoordinates(PlayerCoordinates playerCoordinates) {
         this.playerCoordinates = playerCoordinates;
     }
-    
-
 }
