@@ -81,7 +81,7 @@ public class GameSession {
     }
 
     public void setGameStateToNext() {
-        this.gameState = this.gameState.getNextGameState(GameMode.TOWN_MODE);
+        this.gameState = this.gameState.getNextGameState(this.gameMode);
     }
 
     public ActivePlayerSession getActivePlayerSession() {
