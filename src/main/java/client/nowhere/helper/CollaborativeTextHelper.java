@@ -25,6 +25,7 @@ import client.nowhere.model.CollaborativeTextPhase;
 import client.nowhere.model.CollaborativeTextPhaseInfo;
 import client.nowhere.model.Encounter;
 import client.nowhere.model.EncounterLabel;
+import client.nowhere.model.GameBoard;
 import client.nowhere.model.GameSession;
 import client.nowhere.model.GameSessionDisplay;
 import client.nowhere.model.GameState;
@@ -651,10 +652,10 @@ public class CollaborativeTextHelper {
             adventureMap.getEncounterLabels().addAll(encounterLabels);
 
             EncounterLabel winningLabel = encounterLabels.get(0);
-            Map<Integer, Map<Integer, Encounter>> dungeonGrid = new HashMap<>();
-            Map<Integer, Encounter> row0 = new HashMap<>();
-            row0.put(0, new Encounter(winningLabel, "", ""));
-            dungeonGrid.put(0, row0);
+            GameBoard gameBoard = new GameBoard();
+            
+            // Place winning submission at (0, 0)
+            gameBoard.setEncounter(0, 0, new Encounter(winningLabel, "", ""));
 
             List<int[]> allPositions = new ArrayList<>();
             for (int y = -4; y <= 4; y++) {
@@ -704,14 +705,13 @@ public class CollaborativeTextHelper {
                     ? winningLabel 
                     : weightedLabels.get(i % weightedLabels.size());
                 
-                dungeonGrid.computeIfAbsent(y, k -> new HashMap<>())
-                    .put(x, new Encounter(label, "", ""));
+                gameBoard.setEncounter(x, y, new Encounter(label, "", ""));
             }
 
             // Update GameSession in Firestore via DAO
             gameSessionDAO.initializeDungeonGrid(
                 gameCode,
-                dungeonGrid,
+                gameBoard,
                 new PlayerCoordinates(0, 0),
                 adventureMap.getEncounterLabels()
             );
@@ -733,19 +733,16 @@ public class CollaborativeTextHelper {
                 return null;
             }
 
-            Map<Integer, Map<Integer, Encounter>> dungeonGrid = gameSession.getDungeonGrid();
-            if (dungeonGrid == null) {
-                System.err.println("Dungeon grid not found for game: " + gameCode);
+            GameBoard gameBoard = gameSession.getGameBoard();
+            if (gameBoard == null) {
+                System.err.println("Game board not found for game: " + gameCode);
                 return null;
             }
 
-            Map<Integer, Encounter> row = dungeonGrid.get(playerCoords.getyCoordinate());
-            if (row == null) {
-                System.err.println("Row not found at y=" + playerCoords.getyCoordinate());
-                return null;
-            }
-
-            Encounter encounter = row.get(playerCoords.getxCoordinate());
+            Encounter encounter = gameBoard.getEncounter(
+                playerCoords.getxCoordinate(), 
+                playerCoords.getyCoordinate()
+            );
             if (encounter == null) {
                 System.err.println("Encounter not found at coordinates (" + playerCoords.getxCoordinate() + ", " + playerCoords.getyCoordinate() + ")");
                 return null;
@@ -779,7 +776,11 @@ public class CollaborativeTextHelper {
 
             // Get GameSession to update dungeon grid
             GameSession gameSession = getGameSession(gameCode);
-            Map<Integer, Map<Integer, Encounter>> dungeonGrid = gameSession.getDungeonGrid();
+            GameBoard gameBoard = gameSession.getGameBoard();
+            if (gameBoard == null) {
+                gameBoard = new GameBoard();
+                gameSession.setGameBoard(gameBoard);
+            }
 
             // Create a new Story
             Story story = new Story();
@@ -796,8 +797,16 @@ public class CollaborativeTextHelper {
             encounter.setStoryPrompt(story.getPrompt());
             encounter.setVisited(true);
 
-            // Update the dungeon grid in Firestore
-            gameSessionDAO.updateDungeonGrid(gameCode, dungeonGrid);
+            // Update the encounter in the game board
+            PlayerCoordinates playerCoords = gameSession.getPlayerCoordinates();
+            gameBoard.setEncounter(
+                playerCoords.getxCoordinate(), 
+                playerCoords.getyCoordinate(), 
+                encounter
+            );
+
+            // Update the game board in Firestore
+            gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
         } catch (Exception e) {
             System.err.println("Failed to handle WHAT_HAPPENS_HERE: " + e.getMessage());
             e.printStackTrace();

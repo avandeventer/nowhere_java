@@ -166,11 +166,11 @@ public class GameSessionDAO {
         }
     }
 
-    public void initializeDungeonGrid(String gameCode, Map<Integer, Map<Integer, Encounter>> dungeonGrid, PlayerCoordinates playerCoordinates, List<EncounterLabel> encounterLabels) {
+    public void initializeDungeonGrid(String gameCode, GameBoard gameBoard, PlayerCoordinates playerCoordinates, List<EncounterLabel> encounterLabels) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             ApiFuture<WriteResult> result = gameSessionRef.update(
-                "dungeonGrid", dungeonGrid,
+                "gameBoard", gameBoard,
                 "playerCoordinates", playerCoordinates,
                 "adventureMap.encounterLabels", encounterLabels
             );
@@ -181,10 +181,10 @@ public class GameSessionDAO {
         }
     }
 
-    public void updateDungeonGrid(String gameCode, Map<Integer, Map<Integer, Encounter>> dungeonGrid) {
+    public void updateDungeonGrid(String gameCode, GameBoard gameBoard) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            ApiFuture<WriteResult> result = gameSessionRef.update("dungeonGrid", dungeonGrid);
+            ApiFuture<WriteResult> result = gameSessionRef.update("gameBoard", gameBoard);
             result.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
