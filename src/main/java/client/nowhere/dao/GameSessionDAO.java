@@ -166,7 +166,7 @@ public class GameSessionDAO {
         }
     }
 
-    public void updateDungeonGrid(String gameCode, Map<Integer, Map<Integer, Encounter>> dungeonGrid, PlayerCoordinates playerCoordinates, List<EncounterLabel> encounterLabels) {
+    public void initializeDungeonGrid(String gameCode, Map<Integer, Map<Integer, Encounter>> dungeonGrid, PlayerCoordinates playerCoordinates, List<EncounterLabel> encounterLabels) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             ApiFuture<WriteResult> result = gameSessionRef.update(
@@ -177,7 +177,29 @@ public class GameSessionDAO {
             result.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            throw new ResourceException("There was an issue initializing the dungeon grid", e);
+        }
+    }
+
+    public void updateDungeonGrid(String gameCode, Map<Integer, Map<Integer, Encounter>> dungeonGrid) {
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            ApiFuture<WriteResult> result = gameSessionRef.update("dungeonGrid", dungeonGrid);
+            result.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
             throw new ResourceException("There was an issue updating the dungeon grid", e);
+        }
+    }
+
+    public void updatePlayerCoordinates(String gameCode, PlayerCoordinates playerCoordinates) {
+        try {
+            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+            ApiFuture<WriteResult> result = gameSessionRef.update("playerCoordinates", playerCoordinates);
+            result.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue updating player coordinates", e);
         }
     }
 }

@@ -358,4 +358,5 @@ public class Story {
                 ))
                 .anyMatch(outcomeStat -> outcomeStat.getPlayerStat().getStatType().isFavorType());
     }
+
 }

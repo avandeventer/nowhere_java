@@ -4,11 +4,13 @@ public class Encounter {
     EncounterLabel encounterLabel;
     String storyId;
     String storyPrompt;
+    boolean visited;
 
     public Encounter(EncounterLabel encounterLabel, String storyId, String storyPrompt) {
         this.encounterLabel = encounterLabel;
         this.storyId = storyId;
         this.storyPrompt = storyPrompt;
+        this.visited = false;
     }
 
     public EncounterLabel getEncounterLabel() {
@@ -33,5 +35,13 @@ public class Encounter {
 
     public void setStoryPrompt(String storyPrompt) {
         this.storyPrompt = storyPrompt;
+    }
+
+    public boolean isVisited() {
+        return visited;
+    }
+
+    public void setVisited(boolean visited) {
+        this.visited = visited;
     }
 }

@@ -49,21 +49,20 @@ public enum GameState {
         //Dungeon Mode:
         SET_ENCOUNTERS,
         SET_ENCOUNTERS_VOTING,
-        SET_ENCOUNTERS_WINNER,
+        SET_ENCOUNTERS_WINNERS,
         WHAT_HAPPENS_HERE,
         WHAT_HAPPENS_HERE_VOTING,
         WHAT_HAPPENS_HERE_WINNER,
         WHAT_CAN_WE_TRY,
         WHAT_CAN_WE_TRY_VOTING,
-        WHAT_CAN_WE_TRY_WINNER,
+        WHAT_CAN_WE_TRY_WINNERS,
         HOW_DOES_THIS_RESOLVE,
         HOW_DOES_THIS_RESOLVE_VOTING,
-        HOW_DOES_THIS_RESOLVE_WINNER,
+        HOW_DOES_THIS_RESOLVE_WINNERS,
         MAKE_CHOICE_VOTING,
         MAKE_CHOICE_WINNER,
         NAVIGATE_VOTING,
         NAVIGATE_WINNER;
-
 
         public GameState getNextGameState(GameMode gameMode) {
             if (gameMode == GameMode.TOWN_MODE) {
@@ -84,10 +83,10 @@ public enum GameState {
             case SET_ENCOUNTERS -> {
                 return GameState.SET_ENCOUNTERS_VOTING;
             }
-            case NAVIGATE_VOTING -> {
-                return GameState.NAVIGATE_WINNER;
+            case SET_ENCOUNTERS_VOTING -> {
+                return GameState.SET_ENCOUNTERS_WINNERS;
             }
-            case SET_ENCOUNTERS_VOTING, NAVIGATE_WINNER -> {
+            case SET_ENCOUNTERS_WINNERS, NAVIGATE_WINNER -> {
                 return GameState.WHAT_HAPPENS_HERE;
             }
             case WHAT_HAPPENS_HERE -> {
@@ -103,18 +102,18 @@ public enum GameState {
                 return GameState.WHAT_CAN_WE_TRY_VOTING;
             }
             case WHAT_CAN_WE_TRY_VOTING -> {
-                return GameState.WHAT_CAN_WE_TRY_WINNER;
+                return GameState.WHAT_CAN_WE_TRY_WINNERS;
             }
-            case WHAT_CAN_WE_TRY_WINNER -> {
+            case WHAT_CAN_WE_TRY_WINNERS -> {
                 return GameState.HOW_DOES_THIS_RESOLVE;
             }
             case HOW_DOES_THIS_RESOLVE -> {
                 return GameState.HOW_DOES_THIS_RESOLVE_VOTING;
             }
             case HOW_DOES_THIS_RESOLVE_VOTING -> {
-                return GameState.HOW_DOES_THIS_RESOLVE_WINNER;
+                return GameState.HOW_DOES_THIS_RESOLVE_WINNERS;
             }
-            case HOW_DOES_THIS_RESOLVE_WINNER -> {
+            case HOW_DOES_THIS_RESOLVE_WINNERS -> {
                 return GameState.MAKE_CHOICE_VOTING;
             }
             case MAKE_CHOICE_VOTING -> {
@@ -122,6 +121,9 @@ public enum GameState {
             }
             case MAKE_CHOICE_WINNER -> {
                 return GameState.NAVIGATE_VOTING;
+            }
+            case NAVIGATE_VOTING -> {
+                return GameState.NAVIGATE_WINNER;
             }
             default -> {
                 return GameState.INIT;
@@ -276,10 +278,10 @@ public enum GameState {
                         case WHAT_IS_COMING, WHAT_IS_COMING_VOTE, WHAT_IS_COMING_VOTE_WINNER -> WHAT_IS_COMING;
                         case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE, WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> WHAT_ARE_WE_CAPABLE_OF;
                         case WHAT_WILL_BECOME_OF_US, WHAT_WILL_BECOME_OF_US_VOTE, WHAT_WILL_BECOME_OF_US_VOTE_WINNER -> WHAT_WILL_BECOME_OF_US;
-                        case SET_ENCOUNTERS, SET_ENCOUNTERS_VOTING-> SET_ENCOUNTERS;
+                        case SET_ENCOUNTERS, SET_ENCOUNTERS_VOTING, SET_ENCOUNTERS_WINNERS -> SET_ENCOUNTERS;
                         case WHAT_HAPPENS_HERE, WHAT_HAPPENS_HERE_VOTING, WHAT_HAPPENS_HERE_WINNER -> WHAT_HAPPENS_HERE;
-                        case WHAT_CAN_WE_TRY, WHAT_CAN_WE_TRY_VOTING, WHAT_CAN_WE_TRY_WINNER -> WHAT_CAN_WE_TRY;
-                        case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNER -> HOW_DOES_THIS_RESOLVE;
+                        case WHAT_CAN_WE_TRY, WHAT_CAN_WE_TRY_VOTING, WHAT_CAN_WE_TRY_WINNERS -> WHAT_CAN_WE_TRY;
+                        case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNERS -> HOW_DOES_THIS_RESOLVE;
                         case MAKE_CHOICE_VOTING, MAKE_CHOICE_WINNER -> MAKE_CHOICE_VOTING;
                         case NAVIGATE_VOTING, NAVIGATE_WINNER -> NAVIGATE_VOTING;
                         default -> null;
@@ -372,7 +374,7 @@ public enum GameState {
                                 CollaborativeMode.RAPID_FIRE,
                                 SET_ENCOUNTERS,
                                 SET_ENCOUNTERS_VOTING,
-                                SET_ENCOUNTERS_WINNER
+                                SET_ENCOUNTERS_WINNERS
                         );
                 }
                 if (phaseId == WHAT_HAPPENS_HERE) {
@@ -392,7 +394,7 @@ public enum GameState {
                                 CollaborativeMode.RAPID_FIRE,
                                 WHAT_CAN_WE_TRY,
                                 WHAT_CAN_WE_TRY_VOTING,
-                                WHAT_CAN_WE_TRY_WINNER
+                                WHAT_CAN_WE_TRY_WINNERS
                         );
                 }
                 if (phaseId == HOW_DOES_THIS_RESOLVE) {
@@ -402,7 +404,7 @@ public enum GameState {
                                 CollaborativeMode.SHARE_TEXT,
                                 HOW_DOES_THIS_RESOLVE,
                                 HOW_DOES_THIS_RESOLVE_VOTING,
-                                HOW_DOES_THIS_RESOLVE_WINNER
+                                HOW_DOES_THIS_RESOLVE_WINNERS
                         );
                 }  
                 if (phaseId == MAKE_CHOICE_VOTING) {
