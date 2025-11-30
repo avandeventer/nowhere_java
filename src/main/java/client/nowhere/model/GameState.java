@@ -375,6 +375,7 @@ public enum GameState {
                         );
                 }
                 if (phaseId == SET_ENCOUNTERS) {
+                        boolean showGameBoard = this.equals(SET_ENCOUNTERS_WINNERS);
                         return new PhaseBaseInfo(
                                 "What could we encounter here?",
                                 "Name some things that we might see on our adventure through this place",
@@ -382,10 +383,11 @@ public enum GameState {
                                 SET_ENCOUNTERS,
                                 SET_ENCOUNTERS_VOTING,
                                 SET_ENCOUNTERS_WINNERS,
-                                false
+                                showGameBoard
                         );
                 }
                 if (phaseId == WHAT_HAPPENS_HERE) {
+                        boolean showGameBoard = this.equals(WHAT_HAPPENS_HERE);
                         return new PhaseBaseInfo(
                                 "What happens here?",
                                 "Read the prompt and add any description of it that you feel applies!",
@@ -393,7 +395,7 @@ public enum GameState {
                                 WHAT_HAPPENS_HERE,
                                 WHAT_HAPPENS_HERE_VOTING,
                                 WHAT_HAPPENS_HERE_WINNER,
-                                true
+                                showGameBoard
                         );
                 }
                 if (phaseId == WHAT_CAN_WE_TRY) {
@@ -404,7 +406,7 @@ public enum GameState {
                                 WHAT_CAN_WE_TRY,
                                 WHAT_CAN_WE_TRY_VOTING,
                                 WHAT_CAN_WE_TRY_WINNERS,
-                                true
+                                false
                         );
                 }
                 if (phaseId == HOW_DOES_THIS_RESOLVE) {
@@ -415,7 +417,7 @@ public enum GameState {
                                 HOW_DOES_THIS_RESOLVE,
                                 HOW_DOES_THIS_RESOLVE_VOTING,
                                 HOW_DOES_THIS_RESOLVE_WINNERS,
-                                true
+                                false
                         );
                 }  
                 if (phaseId == MAKE_CHOICE_VOTING) {
@@ -426,7 +428,7 @@ public enum GameState {
                         null,
                         MAKE_CHOICE_VOTING,
                         MAKE_CHOICE_WINNER,
-                        true
+                        false
                     );
                 }
                 if (phaseId == NAVIGATE_VOTING) {
