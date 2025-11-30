@@ -1052,32 +1052,21 @@ public class CollaborativeTextHelper {
 
         Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
 
-        String textToIterateOn = getTextToIterateOn(encounter, gameState.getPhaseId(), gameCode);
+        Story storyToIterateOn = getTextToIterateOn(encounter, gameCode);
 
         return new CollaborativeTextPhaseInfo(
             baseInfo.phaseQuestion(),
             phaseInstructions,
             baseInfo.collaborativeMode(),
             collaborativeModeInstructions,
-            textToIterateOn,
+            storyToIterateOn,
             phaseType,
             baseInfo.showGameBoard()
         );
     }
 
-    private String getTextToIterateOn(Encounter encounter, GameState phaseId, String gameCode) {
-        if (phaseId == GameState.WHAT_HAPPENS_HERE) {
-            return encounter.getEncounterLabel().getEncounterLabel();
-        } else if (phaseId == GameState.WHAT_CAN_WE_TRY) {
-            return encounter.getStoryPrompt();
-        } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE){
-            Story encounterStory = storyDAO.getAuthorStoriesByStoryId(gameCode, encounter.getStoryId()).getFirst();
-            return encounterStory.getOptions().stream()
-                    .map(Option::getOptionText)
-                    .collect(Collectors.joining(","));
-        } else {
-            return "";
-        }
+    private Story getTextToIterateOn(Encounter encounter, String gameCode) {
+        return storyDAO.getAuthorStoriesByStoryId(gameCode, encounter.getStoryId()).getFirst();
     }
 
     /**

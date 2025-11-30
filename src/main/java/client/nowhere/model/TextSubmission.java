@@ -1,5 +1,6 @@
 package client.nowhere.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.cloud.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,9 +54,11 @@ public class TextSubmission {
     public List<TextAddition> getAdditions() { return additions; }
     public void setAdditions(List<TextAddition> additions) { this.additions = additions; }
 
+    @JsonIgnore
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
 
+    @JsonIgnore
     public Timestamp getLastModified() { return lastModified; }
     public void setLastModified(Timestamp lastModified) { this.lastModified = lastModified; }
 

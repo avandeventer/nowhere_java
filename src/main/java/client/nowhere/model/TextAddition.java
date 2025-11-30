@@ -1,5 +1,6 @@
 package client.nowhere.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.cloud.Timestamp;
 
 public class TextAddition {
@@ -32,6 +33,7 @@ public class TextAddition {
     public String getAddedText() { return addedText; }
     public void setAddedText(String addedText) { this.addedText = addedText; }
 
+    @JsonIgnore
     public Timestamp getAddedAt() { return addedAt; }
     public void setAddedAt(Timestamp addedAt) { this.addedAt = addedAt; }
 
