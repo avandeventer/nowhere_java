@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameBoard {
+    PlayerCoordinates playerCoordinates;
     private Map<String, Encounter> dungeonGrid = new HashMap<>();
 
     public GameBoard() {
@@ -33,5 +34,14 @@ public class GameBoard {
     public void setDungeonGrid(Map<String, Encounter> dungeonGrid) {
         this.dungeonGrid = dungeonGrid != null ? dungeonGrid : new HashMap<>();
     }
+
+    public PlayerCoordinates getPlayerCoordinates() {
+        return playerCoordinates;
+    }
+
+    public void setPlayerCoordinates(PlayerCoordinates playerCoordinates) {
+        this.playerCoordinates = playerCoordinates;
+    }
+
 }
 

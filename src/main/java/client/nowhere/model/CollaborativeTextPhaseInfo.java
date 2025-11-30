@@ -5,6 +5,8 @@ public record CollaborativeTextPhaseInfo(
     String phaseInstructions,
     CollaborativeMode collaborativeMode,
     String collaborativeModeInstructions,
-    PhaseType phaseType
+    String textToIterateOn,
+    PhaseType phaseType,
+    Boolean showGameBoard
 ) {}
 

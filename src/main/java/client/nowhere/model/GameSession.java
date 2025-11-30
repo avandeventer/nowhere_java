@@ -24,7 +24,6 @@ public class GameSession {
     Integer storiesToPlayPerRound = 1;
     GameMode gameMode = GameMode.TOWN_MODE;
     GameBoard gameBoard = new GameBoard();
-    PlayerCoordinates playerCoordinates;
 
     // Collaborative text phases for world-building
     Map<String, CollaborativeTextPhase> collaborativeTextPhases;
@@ -218,13 +217,5 @@ public class GameSession {
 
     public void setGameBoard(GameBoard gameBoard) {
         this.gameBoard = gameBoard != null ? gameBoard : new GameBoard();
-    }
-
-    public PlayerCoordinates getPlayerCoordinates() {
-        return playerCoordinates;
-    }
-
-    public void setPlayerCoordinates(PlayerCoordinates playerCoordinates) {
-        this.playerCoordinates = playerCoordinates;
     }
 }

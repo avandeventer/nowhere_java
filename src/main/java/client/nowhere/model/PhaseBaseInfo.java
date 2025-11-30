@@ -9,6 +9,7 @@ public record PhaseBaseInfo(
     CollaborativeMode collaborativeMode,
     GameState collaboratingState,
     GameState votingState,
-    GameState winningState
+    GameState winningState,
+    Boolean showGameBoard
 ) {}
 

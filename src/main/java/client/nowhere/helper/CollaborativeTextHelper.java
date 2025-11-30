@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -715,7 +716,7 @@ public class CollaborativeTextHelper {
     private Encounter getEncounterAtPlayerCoordinates(String gameCode) {
         try {
             GameSession gameSession = getGameSession(gameCode);
-            PlayerCoordinates playerCoords = gameSession.getPlayerCoordinates();
+            PlayerCoordinates playerCoords = gameSession.getGameBoard().getPlayerCoordinates();
             if (playerCoords == null) {
                 System.err.println("Player coordinates not found for game: " + gameCode);
                 return null;
@@ -786,7 +787,7 @@ public class CollaborativeTextHelper {
             encounter.setVisited(true);
 
             // Update the encounter in the game board
-            PlayerCoordinates playerCoords = gameSession.getPlayerCoordinates();
+            PlayerCoordinates playerCoords = gameSession.getGameBoard().getPlayerCoordinates();
             gameBoard.setEncounter(
                 playerCoords.getxCoordinate(), 
                 playerCoords.getyCoordinate(), 
@@ -1049,13 +1050,34 @@ public class CollaborativeTextHelper {
             gameState
         );
 
+        Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
+
+        String textToIterateOn = getTextToIterateOn(encounter, gameState.getPhaseId(), gameCode);
+
         return new CollaborativeTextPhaseInfo(
             baseInfo.phaseQuestion(),
             phaseInstructions,
             baseInfo.collaborativeMode(),
             collaborativeModeInstructions,
-            phaseType
+            textToIterateOn,
+            phaseType,
+            baseInfo.showGameBoard()
         );
+    }
+
+    private String getTextToIterateOn(Encounter encounter, GameState phaseId, String gameCode) {
+        if (phaseId == GameState.WHAT_HAPPENS_HERE) {
+            return encounter.getEncounterLabel().getEncounterLabel();
+        } else if (phaseId == GameState.WHAT_CAN_WE_TRY) {
+            return encounter.getStoryPrompt();
+        } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE){
+            Story encounterStory = storyDAO.getAuthorStoriesByStoryId(gameCode, encounter.getStoryId()).getFirst();
+            return encounterStory.getOptions().stream()
+                    .map(Option::getOptionText)
+                    .collect(Collectors.joining(","));
+        } else {
+            return "";
+        }
     }
 
     /**

@@ -303,7 +303,8 @@ public enum GameState {
                                 CollaborativeMode.SHARE_TEXT,
                                 WHERE_ARE_WE,
                                 WHERE_ARE_WE_VOTE,
-                                WHERE_ARE_WE_VOTE_WINNER
+                                WHERE_ARE_WE_VOTE_WINNER,
+                                false
                         );
                 }
                 if (phaseId == WHAT_DO_WE_FEAR) {
@@ -313,7 +314,8 @@ public enum GameState {
                                 CollaborativeMode.RAPID_FIRE,
                                 WHAT_DO_WE_FEAR,
                                 WHAT_DO_WE_FEAR_VOTE,
-                                WHAT_DO_WE_FEAR_VOTE_WINNER
+                                WHAT_DO_WE_FEAR_VOTE_WINNER,
+                                false
                         );
                 }
                 if (phaseId == WHO_ARE_WE) {
@@ -323,7 +325,8 @@ public enum GameState {
                                 CollaborativeMode.SHARE_TEXT,
                                 WHO_ARE_WE,
                                 WHO_ARE_WE_VOTE,
-                                WHO_ARE_WE_VOTE_WINNER
+                                WHO_ARE_WE_VOTE_WINNER,
+                                false
                         );
                 }
                 if (phaseId == WHAT_IS_COMING) {
@@ -333,7 +336,8 @@ public enum GameState {
                                 CollaborativeMode.SHARE_TEXT,
                                 WHAT_IS_COMING,
                                 WHAT_IS_COMING_VOTE,
-                                WHAT_IS_COMING_VOTE_WINNER
+                                WHAT_IS_COMING_VOTE_WINNER,
+                                false
                         );
                 }
                 if (phaseId == WHAT_ARE_WE_CAPABLE_OF) {
@@ -343,7 +347,8 @@ public enum GameState {
                                 CollaborativeMode.RAPID_FIRE,
                                 WHAT_ARE_WE_CAPABLE_OF,
                                 WHAT_ARE_WE_CAPABLE_OF_VOTE,
-                                WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS
+                                WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS,
+                                false
                         );
                 }
                 if (phaseId == WHAT_WILL_BECOME_OF_US) {
@@ -353,7 +358,8 @@ public enum GameState {
                                 CollaborativeMode.SHARE_TEXT,
                                 WHAT_WILL_BECOME_OF_US,
                                 WHAT_WILL_BECOME_OF_US_VOTE,
-                                WHAT_WILL_BECOME_OF_US_VOTE_WINNER
+                                WHAT_WILL_BECOME_OF_US_VOTE_WINNER,
+                                false
                         );
                 }
                 if (this == WRITE_ENDING_TEXT) {
@@ -364,7 +370,8 @@ public enum GameState {
                                 CollaborativeMode.SHARE_TEXT,
                                 WRITE_ENDING_TEXT,
                                 WRITE_ENDING_TEXT, // Use same state as fallback
-                                WRITE_ENDING_TEXT  // Use same state as fallback
+                                WRITE_ENDING_TEXT, // Use same state as fallback
+                                false
                         );
                 }
                 if (phaseId == SET_ENCOUNTERS) {
@@ -374,7 +381,8 @@ public enum GameState {
                                 CollaborativeMode.RAPID_FIRE,
                                 SET_ENCOUNTERS,
                                 SET_ENCOUNTERS_VOTING,
-                                SET_ENCOUNTERS_WINNERS
+                                SET_ENCOUNTERS_WINNERS,
+                                false
                         );
                 }
                 if (phaseId == WHAT_HAPPENS_HERE) {
@@ -384,7 +392,8 @@ public enum GameState {
                                 CollaborativeMode.SHARE_TEXT,
                                 WHAT_HAPPENS_HERE,
                                 WHAT_HAPPENS_HERE_VOTING,
-                                WHAT_HAPPENS_HERE_WINNER
+                                WHAT_HAPPENS_HERE_WINNER,
+                                true
                         );
                 }
                 if (phaseId == WHAT_CAN_WE_TRY) {
@@ -394,7 +403,8 @@ public enum GameState {
                                 CollaborativeMode.RAPID_FIRE,
                                 WHAT_CAN_WE_TRY,
                                 WHAT_CAN_WE_TRY_VOTING,
-                                WHAT_CAN_WE_TRY_WINNERS
+                                WHAT_CAN_WE_TRY_WINNERS,
+                                true
                         );
                 }
                 if (phaseId == HOW_DOES_THIS_RESOLVE) {
@@ -404,7 +414,8 @@ public enum GameState {
                                 CollaborativeMode.SHARE_TEXT,
                                 HOW_DOES_THIS_RESOLVE,
                                 HOW_DOES_THIS_RESOLVE_VOTING,
-                                HOW_DOES_THIS_RESOLVE_WINNERS
+                                HOW_DOES_THIS_RESOLVE_WINNERS,
+                                true
                         );
                 }  
                 if (phaseId == MAKE_CHOICE_VOTING) {
@@ -414,7 +425,8 @@ public enum GameState {
                         CollaborativeMode.SHARE_TEXT,
                         null,
                         MAKE_CHOICE_VOTING,
-                        MAKE_CHOICE_WINNER
+                        MAKE_CHOICE_WINNER,
+                        true
                     );
                 }
                 if (phaseId == NAVIGATE_VOTING) {
@@ -424,7 +436,8 @@ public enum GameState {
                         CollaborativeMode.SHARE_TEXT,
                         null,
                         NAVIGATE_VOTING,
-                        NAVIGATE_WINNER
+                        NAVIGATE_WINNER,
+                        true
                     );
                 }
                 // Default fallback
@@ -434,7 +447,8 @@ public enum GameState {
                         CollaborativeMode.SHARE_TEXT,
                         INIT, // Use INIT as fallback
                         INIT, // Use INIT as fallback
-                        INIT  // Use INIT as fallback
+                        INIT, // Use INIT as fallback
+                        false  // Use INIT as fallback
                 );
         }
 }
