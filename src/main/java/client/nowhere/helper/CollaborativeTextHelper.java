@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -192,8 +191,8 @@ public class CollaborativeTextHelper {
                 newSubmission.setOutcomeType(optionId);
             } else {
                 // Fallback: assign optionId based on player order
-                String assignedOptionId = assignOptionIdToPlayer(gameSession, textAddition.getAuthorId());
-                newSubmission.setOutcomeType(assignedOptionId);
+                String assignedOptionText = assignOptionTextToPlayer(gameSession, textAddition.getAuthorId());
+                newSubmission.setOutcomeType(assignedOptionText);
             }
         }
 
@@ -265,6 +264,10 @@ public class CollaborativeTextHelper {
      */
     public String getOutcomeTypeForPlayer(String gameCode, String playerId) {
         GameSession gameSession = getGameSession(gameCode);
+
+        if (gameSession.getGameMode().equals(GameMode.DUNGEON_MODE)) {
+            return assignOptionTextToPlayer(gameSession, playerId);
+        }
         return assignOutcomeTypeToPlayer(gameSession, playerId);
     }
 
@@ -276,7 +279,7 @@ public class CollaborativeTextHelper {
      * @param playerId The player's ID
      * @return The assigned optionId
      */
-    private String assignOptionIdToPlayer(GameSession gameSession, String playerId) {
+    private String assignOptionTextToPlayer(GameSession gameSession, String playerId) {
         // Get the encounter at player coordinates
         Encounter encounter = getEncounterAtPlayerCoordinates(gameSession.getGameCode());
         if (encounter == null) {
@@ -321,7 +324,7 @@ public class CollaborativeTextHelper {
 
         // Assign optionId based on index modulo number of options
         int optionIndex = playerIndex % options.size();
-        return options.get(optionIndex).getOptionId();
+        return options.get(optionIndex).getOptionText();
     }
 
     /**
