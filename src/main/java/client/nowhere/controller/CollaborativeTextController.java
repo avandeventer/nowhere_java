@@ -1,11 +1,7 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.CollaborativeTextHelper;
-import client.nowhere.model.CollaborativeTextPhase;
-import client.nowhere.model.CollaborativeTextPhaseInfo;
-import client.nowhere.model.PlayerVote;
-import client.nowhere.model.TextAddition;
-import client.nowhere.model.TextSubmission;
+import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -65,7 +61,7 @@ public class CollaborativeTextController {
 
     @GetMapping("/collaborativeText/outcomeType")
     @ResponseBody
-    public String getOutcomeTypeForPlayer(@RequestParam String gameCode, @RequestParam String playerId) {
+    public OutcomeType getOutcomeTypeForPlayer(@RequestParam String gameCode, @RequestParam String playerId) {
         return this.collaborativeTextHelper.getOutcomeTypeForPlayer(gameCode, playerId);
     }
 

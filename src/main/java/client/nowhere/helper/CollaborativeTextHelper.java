@@ -191,8 +191,8 @@ public class CollaborativeTextHelper {
                 newSubmission.setOutcomeType(optionId);
             } else {
                 // Fallback: assign optionId based on player order
-                String assignedOptionText = assignOptionTextToPlayer(gameSession, textAddition.getAuthorId());
-                newSubmission.setOutcomeType(assignedOptionText);
+                String assignedOptionId = assignOptionTextToPlayer(gameSession, textAddition.getAuthorId()).getId();
+                newSubmission.setOutcomeType(assignedOptionId);
             }
         }
 
@@ -262,7 +262,7 @@ public class CollaborativeTextHelper {
      * @param playerId The player's ID
      * @return The assigned outcome type ("success", "neutral", or "failure")
      */
-    public String getOutcomeTypeForPlayer(String gameCode, String playerId) {
+    public OutcomeType getOutcomeTypeForPlayer(String gameCode, String playerId) {
         GameSession gameSession = getGameSession(gameCode);
 
         if (gameSession.getGameMode().equals(GameMode.DUNGEON_MODE)) {
@@ -279,7 +279,7 @@ public class CollaborativeTextHelper {
      * @param playerId The player's ID
      * @return The assigned optionId
      */
-    private String assignOptionTextToPlayer(GameSession gameSession, String playerId) {
+    private OutcomeType assignOptionTextToPlayer(GameSession gameSession, String playerId) {
         // Get the encounter at player coordinates
         Encounter encounter = getEncounterAtPlayerCoordinates(gameSession.getGameCode());
         if (encounter == null) {
@@ -324,7 +324,10 @@ public class CollaborativeTextHelper {
 
         // Assign optionId based on index modulo number of options
         int optionIndex = playerIndex % options.size();
-        return options.get(optionIndex).getOptionText();
+        return new OutcomeType(
+                options.get(optionIndex).getOptionId(),
+                options.get(optionIndex).getOptionText()
+        );
     }
 
     /**
@@ -335,9 +338,9 @@ public class CollaborativeTextHelper {
      * index % 3 = 2 -> "failure"
      * @param gameSession The game session
      * @param playerId The player's ID
-     * @return The assigned outcome type ("success", "neutral", or "failure")
+     * @return The assigned outcome type with label message
      */
-    private String assignOutcomeTypeToPlayer(GameSession gameSession, String playerId) {
+    private OutcomeType assignOutcomeTypeToPlayer(GameSession gameSession, String playerId) {
         if (gameSession.getPlayers() == null || gameSession.getPlayers().isEmpty()) {
             throw new ValidationException("No players found in game session");
         }
@@ -361,13 +364,24 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Player not found in game session: " + playerId);
         }
 
+        // Get entity name from GameSessionDisplay
+        String entityName = "the Entity";
+        try {
+            GameSessionDisplay display = adventureMapHelper.getGameSessionDisplay(gameSession.getGameCode());
+            if (display.getEntity() != null && !display.getEntity().isEmpty()) {
+                entityName = display.getEntity();
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to get entity name from GameSessionDisplay: " + e.getMessage());
+        }
+
         // Assign outcome type based on index modulo 3
         int outcomeIndex = playerIndex % 3;
         return switch (outcomeIndex) {
-            case 0 -> "success";
-            case 1 -> "neutral";
-            case 2 -> "failure";
-            default -> "neutral"; // Should never reach here, but provide a default
+            case 0 -> new OutcomeType("success", "What will happen if we impress " + entityName + " and survive?");
+            case 1 -> new OutcomeType("neutral", "What will happen if we are fractured and fail in the final confrontation with " + entityName + "?");
+            case 2 -> new OutcomeType("failure", "What will happen if we rise and destroy " + entityName + "?");
+            default -> new OutcomeType("neutral", "What will happen if we are fractured and fail in the final confrontation with " + entityName + "?"); // Should never reach here, but provide a default
         };
     }
 
