@@ -96,14 +96,23 @@ public class CollaborativeTextPhase {
      * Gets submissions that a player can still view (not exhausted).
      * @param playerId The player requesting submissions
      * @param requestedCount Number of submissions requested
+     * @param outcomeTypeId Optional outcome type ID to filter by (for WHAT_WILL_BECOME_OF_US phase)
      * @return List of submissions available to the player
      */
-    public List<TextSubmission> getAvailableSubmissionsForPlayer(String playerId, int requestedCount) {
+    public List<TextSubmission> getAvailableSubmissionsForPlayer(String playerId, int requestedCount, String outcomeTypeId) {
         return submissions.stream()
                 .filter(submission -> {
                     // Don't show player's own submissions
                     if (submission.getAuthorId().equals(playerId)) {
                         return false;
+                    }
+                    
+                    // Filter by outcome type if provided (for WHAT_WILL_BECOME_OF_US phase)
+                    if (outcomeTypeId != null && !outcomeTypeId.isEmpty()) {
+                        String submissionOutcomeType = submission.getOutcomeType();
+                        if (submissionOutcomeType == null || !outcomeTypeId.equals(submissionOutcomeType)) {
+                            return false;
+                        }
                     }
                     
                     String submissionId = submission.getSubmissionId();

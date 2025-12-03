@@ -145,7 +145,7 @@ public class CollaborativeTextHelper {
         return winningSubmissions;
     }
 
-    public List<TextSubmission> getAvailableSubmissionsForPlayer(String gameCode, String playerId, int requestedCount) {
+    public List<TextSubmission> getAvailableSubmissionsForPlayer(String gameCode, String playerId, int requestedCount, String outcomeTypeId) {
         GameSession gameSession = getGameSession(gameCode);
         GameState phaseIdState = gameSession.getGameState().getPhaseId();
         if (phaseIdState == null) {
@@ -153,8 +153,14 @@ public class CollaborativeTextHelper {
         }
         String phaseId = phaseIdState.name();
 
-        // Use transactional method to get submissions and record views atomically
-        return collaborativeTextDAO.getAvailableSubmissionsForPlayerAtomically(gameCode, phaseId, playerId, requestedCount);
+        if (outcomeTypeId == null || outcomeTypeId.trim().isEmpty()) {
+            OutcomeType outcomeType = getOutcomeTypeForPlayer(gameCode, playerId);
+            if (outcomeType != null && outcomeType.getId() != null) {
+                outcomeTypeId = outcomeType.getId();
+            }
+        }
+
+        return collaborativeTextDAO.getAvailableSubmissionsForPlayerAtomically(gameCode, phaseId, playerId, requestedCount, outcomeTypeId);
     }
 
 
@@ -254,21 +260,26 @@ public class CollaborativeTextHelper {
 
     /**
      * Gets the outcome type assigned to a player based on their order in the game (joinedAt)
-     * Players are sorted by joinedAt, then assigned outcome types in a round-robin fashion:
-     * index % 3 = 0 -> "success"
-     * index % 3 = 1 -> "neutral"
-     * index % 3 = 2 -> "failure"
+     * Only returns an outcome type for phases that require filtering by outcome type.
+     * - WHAT_WILL_BECOME_OF_US: Returns outcome type (success, neutral, or failure)
+     * - HOW_DOES_THIS_RESOLVE: Returns outcome type (optionId)
+     * - Other phases: Returns null (no filtering needed)
      * @param gameCode The game code
      * @param playerId The player's ID
-     * @return The assigned outcome type ("success", "neutral", or "failure")
+     * @return The assigned outcome type, or null if not applicable for the current phase
      */
     public OutcomeType getOutcomeTypeForPlayer(String gameCode, String playerId) {
         GameSession gameSession = getGameSession(gameCode);
+        GameState currentState = gameSession.getGameState();
+        GameState phaseIdState = currentState.getPhaseId();
 
-        if (gameSession.getGameMode().equals(GameMode.DUNGEON_MODE)) {
+        if (phaseIdState == GameState.WHAT_WILL_BECOME_OF_US) {
+            return assignOutcomeTypeToPlayer(gameSession, playerId);
+        } else if (phaseIdState == GameState.HOW_DOES_THIS_RESOLVE) {
             return assignOptionTextToPlayer(gameSession, playerId);
         }
-        return assignOutcomeTypeToPlayer(gameSession, playerId);
+        
+        return null;
     }
 
     /**
@@ -291,7 +302,6 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Story ID not found in encounter");
         }
 
-        // Get the Story by storyId
         List<Story> stories = storyDAO.getAuthorStoriesByStoryId(gameSession.getGameCode(), storyId);
         if (stories.isEmpty()) {
             throw new ValidationException("Story not found with ID: " + storyId);
@@ -324,6 +334,7 @@ public class CollaborativeTextHelper {
 
         // Assign optionId based on index modulo number of options
         int optionIndex = playerIndex % options.size();
+
         return new OutcomeType(
                 options.get(optionIndex).getOptionId(),
                 options.get(optionIndex).getOptionText()
