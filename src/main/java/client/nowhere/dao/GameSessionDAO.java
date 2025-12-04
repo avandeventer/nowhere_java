@@ -166,12 +166,11 @@ public class GameSessionDAO {
         }
     }
 
-    public void initializeDungeonGrid(String gameCode, GameBoard gameBoard, PlayerCoordinates playerCoordinates, List<EncounterLabel> encounterLabels) {
+    public void initializeDungeonGrid(String gameCode, GameBoard gameBoard, List<EncounterLabel> encounterLabels) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             ApiFuture<WriteResult> result = gameSessionRef.update(
                 "gameBoard", gameBoard,
-                "playerCoordinates", playerCoordinates,
                 "adventureMap.encounterLabels", encounterLabels
             );
             result.get();

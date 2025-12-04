@@ -724,12 +724,11 @@ public class CollaborativeTextHelper {
                 
                 gameBoard.setEncounter(x, y, new Encounter(label, EncounterType.NORMAL, "", ""));
             }
-
+            gameBoard.setPlayerCoordinates(new PlayerCoordinates(0, 0));
             // Update GameSession in Firestore via DAO
             gameSessionDAO.initializeDungeonGrid(
                 gameCode,
                 gameBoard,
-                new PlayerCoordinates(0, 0),
                 adventureMap.getEncounterLabels()
             );
         } catch (Exception e) {
