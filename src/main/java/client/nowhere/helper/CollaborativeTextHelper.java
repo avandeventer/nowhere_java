@@ -1080,7 +1080,10 @@ public class CollaborativeTextHelper {
 
         Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
 
-        Story storyToIterateOn = getTextToIterateOn(encounter, gameCode);
+        Story storyToIterateOn = null;
+        if (encounter != null) {
+            storyToIterateOn = getTextToIterateOn(encounter, gameCode);
+        }
 
         return new CollaborativeTextPhaseInfo(
             baseInfo.phaseQuestion(),
