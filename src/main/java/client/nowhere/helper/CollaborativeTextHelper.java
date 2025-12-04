@@ -1129,8 +1129,10 @@ public class CollaborativeTextHelper {
             case WINNING -> {
                 if (gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER) {
                     yield "The threads before us have now been sealed. Only our choices ahead can reveal them to us. Now we must build this place.";
-                } else if (gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS) {
+                } else if (gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS || gameState == GameState.WHAT_CAN_WE_TRY) {
                     yield "The winning submissions are...";
+                } else if (gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS){
+                    yield "Now our heroes must make their choice. Choose from the options on your device and our resolution will be revealed.";
                 } else {
                     yield "The winning submission is...";
                 }
