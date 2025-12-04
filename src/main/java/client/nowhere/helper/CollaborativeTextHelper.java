@@ -1096,7 +1096,11 @@ public class CollaborativeTextHelper {
     }
 
     private Story getTextToIterateOn(Encounter encounter, String gameCode) {
-        return storyDAO.getAuthorStoriesByStoryId(gameCode, encounter.getStoryId()).getFirst();
+        List<Story> stories = storyDAO.getAuthorStoriesByStoryId(gameCode, encounter.getStoryId());
+        if (stories == null || stories.isEmpty()) {
+            return null;
+        }
+        return stories.getFirst();
     }
 
     /**

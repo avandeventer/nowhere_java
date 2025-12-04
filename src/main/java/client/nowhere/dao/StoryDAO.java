@@ -325,18 +325,6 @@ public class StoryDAO {
         return authorStories;
     }
 
-    public List<Story> getStories(String gameCode) {
-        try {
-            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
-            List<Story> stories = mapStories(gameSession);
-            return stories;
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            throw new ResourceException("There was an issue updating the story", e);
-        }
-    }
-
     public List<Story> getAuthorStoriesByStoryId(String gameCode, String storyId) {
         List<Story> playerStories;
         try {
@@ -348,7 +336,9 @@ public class StoryDAO {
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            throw new ResourceException("There was an issue updating the story", e);
+            throw new ResourceException("There was an retrieving session stories", e);
+        } catch (ResourceException e) {
+            return new ArrayList<>();
         }
         return playerStories;
 
