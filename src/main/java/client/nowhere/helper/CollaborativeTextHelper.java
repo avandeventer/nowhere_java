@@ -1085,6 +1085,7 @@ public class CollaborativeTextHelper {
         }
 
         return new CollaborativeTextPhaseInfo(
+            gameState.getPhaseId(),
             baseInfo.phaseQuestion(),
             phaseInstructions,
             baseInfo.collaborativeMode(),
