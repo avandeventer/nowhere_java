@@ -715,8 +715,38 @@ public class CollaborativeTextHelper {
                 gameBoard,
                 adventureMap.getEncounterLabels()
             );
+
+            // Initialize NAVIGATE_VOTING phase with directional submissions
+            initializeNavigateVotingPhase(gameCode);
         } catch (Exception e) {
             System.err.println("Failed to initialize dungeon grid: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Initializes the NAVIGATE_VOTING phase with four directional submissions (NORTH, SOUTH, EAST, WEST)
+     */
+    private void initializeNavigateVotingPhase(String gameCode) {
+        try {
+            String phaseId = GameState.NAVIGATE_VOTING.name();
+            String[] directions = {"NORTH", "SOUTH", "EAST", "WEST"};
+
+            for (String direction : directions) {
+                TextSubmission submission = new TextSubmission();
+                submission.setSubmissionId(direction);
+                submission.setAuthorId(AuthorConstants.DUNGEON_PLAYER);
+                submission.setOriginalText("");
+                submission.setCurrentText(direction);
+                submission.setCreatedAt(Timestamp.now());
+                submission.setLastModified(Timestamp.now());
+                submission.setOutcomeType(direction);
+
+                // Add the submission to the phase atomically
+                collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to initialize NAVIGATE_VOTING phase: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
