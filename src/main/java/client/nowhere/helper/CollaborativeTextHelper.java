@@ -115,6 +115,10 @@ public class CollaborativeTextHelper {
             updateGameSessionWithWinningSubmissions(gameCode, phaseId, winningSubmissions);
         }
 
+        if(phaseId.equals("MAKE_CHOICE_VOTING")) {
+            handleMakeChoiceVoting(gameCode, winningSubmissions);
+        }
+
         return winningSubmissions;
     }
 
@@ -591,7 +595,6 @@ public class CollaborativeTextHelper {
                 case "HOW_DOES_THIS_RESOLVE" -> {
                     handleHowDoesThisResolve(gameCode, winningSubmissions);
                 }
-                
             }
 
             // Update the GameSessionDisplay in the database
@@ -599,6 +602,14 @@ public class CollaborativeTextHelper {
         } catch (Exception e) {
             // Log error but don't fail the main operation
             System.err.println("Failed to update GameSessionDisplay with winning submissions: " + e.getMessage());
+        }
+    }
+
+    private void handleMakeChoiceVoting(String gameCode, List<TextSubmission> winningSubmissions) {
+        Story story = getStoryAtCurrentEncounter(gameCode);
+
+        if (!winningSubmissions.isEmpty()) {
+
         }
     }
 
@@ -928,7 +939,7 @@ public class CollaborativeTextHelper {
             });
 
             // Initialize MAKE_CHOICE_VOTING phase with submissions for each option
-            initializeMakeChoiceVotingPhase(gameCode, story);
+            initializeMakeChoiceVotingPhase(gameCode, winningSubmissions);
         } catch (Exception e) {
             System.err.println("Failed to handle HOW_DOES_THIS_RESOLVE: " + e.getMessage());
             e.printStackTrace();
@@ -936,32 +947,36 @@ public class CollaborativeTextHelper {
     }
 
     /**
-     * Initializes the MAKE_CHOICE_VOTING phase with one submission for each Story option
+     * Initializes the MAKE_CHOICE_VOTING phase with submissions based on winning submissions from HOW_DOES_THIS_RESOLVE
+     * Each submission uses outcomeType (optionId) as submissionId and has new timestamps
      */
-    private void initializeMakeChoiceVotingPhase(String gameCode, Story story) {
+    private void initializeMakeChoiceVotingPhase(String gameCode, List<TextSubmission> winningSubmissions) {
         try {
-            if (story == null || story.getOptions() == null || story.getOptions().isEmpty()) {
-                System.err.println("Story or options not found for MAKE_CHOICE_VOTING initialization");
+            if (winningSubmissions == null || winningSubmissions.isEmpty()) {
+                System.err.println("No winning submissions found for MAKE_CHOICE_VOTING initialization");
                 return;
             }
 
-            String phaseId = GameState.MAKE_CHOICE_VOTING.getPhaseId().name();
+            String phaseId = GameState.MAKE_CHOICE_VOTING.name();
 
-            // Create one submission for each option
-            for (Option option : story.getOptions()) {
-                if (option.getOptionId() == null || option.getOptionId().isEmpty()) {
+            for (TextSubmission winningSubmission : winningSubmissions) {
+                if (winningSubmission.getOutcomeType() == null || winningSubmission.getOutcomeType().isEmpty()) {
                     continue;
                 }
 
                 TextSubmission submission = new TextSubmission();
-                submission.setSubmissionId(option.getOptionId());
-                submission.setAuthorId(AuthorConstants.DUNGEON_PLAYER);
-                submission.setOriginalText("");
-                submission.setCurrentText(option.getOptionText() != null ? option.getOptionText() : "");
+                submission.setSubmissionId(winningSubmission.getOutcomeType());
+                submission.setAuthorId(winningSubmission.getAuthorId());
+                submission.setOriginalText(winningSubmission.getOriginalText());
+                submission.setCurrentText(winningSubmission.getCurrentText());
                 submission.setCreatedAt(Timestamp.now());
                 submission.setLastModified(Timestamp.now());
+                submission.setOutcomeType(winningSubmission.getOutcomeType());
+                
+                if (winningSubmission.getAdditions() != null) {
+                    submission.setAdditions(new ArrayList<>(winningSubmission.getAdditions()));
+                }
 
-                // Add the submission to the phase atomically
                 collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
             }
         } catch (Exception e) {
@@ -1062,12 +1077,7 @@ public class CollaborativeTextHelper {
             gameState
         );
 
-        Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
-
-        Story storyToIterateOn = null;
-        if (encounter != null) {
-            storyToIterateOn = getTextToIterateOn(encounter, gameCode);
-        }
+        Story storyToIterateOn = getStoryAtCurrentEncounter(gameCode);
 
         return new CollaborativeTextPhaseInfo(
             gameState.getPhaseId(),
@@ -1081,7 +1091,13 @@ public class CollaborativeTextHelper {
         );
     }
 
-    private Story getTextToIterateOn(Encounter encounter, String gameCode) {
+    private Story getStoryAtCurrentEncounter(String gameCode) {
+        Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
+
+        if (encounter == null) {
+            return null;
+        }
+
         List<Story> stories = storyDAO.getAuthorStoriesByStoryId(gameCode, encounter.getStoryId());
         if (stories == null || stories.isEmpty()) {
             return null;
