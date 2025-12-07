@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -257,6 +258,40 @@ public class CollaborativeTextDAO {
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
             throw new ResourceException("Failed to get available submissions atomically", e);
+        }
+    }
+
+    /**
+     * Clears all submissions and player votes from a CollaborativeTextPhase atomically
+     * This is useful when transitioning between game phases to reset the phase state
+     * @param gameCode The game code
+     * @param phaseId The phase ID to clear
+     */
+    public void clearPhaseSubmissionsAndVotes(String gameCode, String phaseId) {
+        try {
+            db.runTransaction(transaction -> {
+                // Get the current phase
+                CollaborativeTextPhase phase = getCollaborativeTextPhaseInTransaction(gameCode, phaseId, transaction);
+                if (phase == null) {
+                    // Phase doesn't exist, nothing to clear
+                    return null;
+                }
+                
+                // Clear all submissions and votes
+                phase.setSubmissions(new ArrayList<>());
+                phase.setPlayerVotes(new HashMap<>());
+                phase.setPlayersWhoSubmitted(new ArrayList<>());
+                phase.setPlayersWhoVoted(new ArrayList<>());
+                phase.setSubmissionViews(new HashMap<>());
+                
+                // Update the phase in Firestore
+                updateCollaborativeTextPhaseInTransaction(gameCode, phaseId, phase, transaction);
+                
+                return null;
+            }).get();
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            throw new ResourceException("Failed to clear phase submissions and votes", e);
         }
     }
 }

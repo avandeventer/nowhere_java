@@ -1016,8 +1016,29 @@ public class CollaborativeTextHelper {
 
             // Update player coordinates via DAO
             gameSessionDAO.updatePlayerCoordinates(gameCode, newCoordinates);
+
+            // Clear CollaborativeTextPhase objects for all story writing phases
+            clearStoryWritingPhases(gameCode);
         } catch (Exception e) {
             System.err.println("Failed to handle NAVIGATE_VOTING: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Clears submissions and player votes from all story writing phases
+     * Called after navigation to reset phases for the next encounter
+     */
+    private void clearStoryWritingPhases(String gameCode) {
+        try {
+            // Clear all story writing phases
+            collaborativeTextDAO.clearPhaseSubmissionsAndVotes(gameCode, GameState.WHAT_HAPPENS_HERE.name());
+            collaborativeTextDAO.clearPhaseSubmissionsAndVotes(gameCode, GameState.WHAT_CAN_WE_TRY.name());
+            collaborativeTextDAO.clearPhaseSubmissionsAndVotes(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name());
+            collaborativeTextDAO.clearPhaseSubmissionsAndVotes(gameCode, GameState.MAKE_CHOICE_VOTING.name());
+            collaborativeTextDAO.clearPhaseSubmissionsAndVotes(gameCode, GameState.NAVIGATE_VOTING.name());
+        } catch (Exception e) {
+            System.err.println("Failed to clear story writing phases: " + e.getMessage());
             e.printStackTrace();
         }
     }
