@@ -115,10 +115,6 @@ public class CollaborativeTextHelper {
             updateGameSessionWithWinningSubmissions(gameCode, phaseId, winningSubmissions);
         }
 
-        if(phaseId.equals("MAKE_CHOICE_VOTING")) {
-            handleMakeChoiceVoting(gameCode, winningSubmissions);
-        }
-
         return winningSubmissions;
     }
 
@@ -597,6 +593,12 @@ public class CollaborativeTextHelper {
                 case "HOW_DOES_THIS_RESOLVE" -> {
                     handleHowDoesThisResolve(gameCode, winningSubmissions);
                 }
+                case "MAKE_CHOICE_VOTING" -> {
+                    handleMakeChoice(gameCode, winningSubmissions);
+                }
+                case "NAVIGATE_VOTING" -> {
+                    handleNavigation(gameCode, winningSubmissions);
+                }
             }
 
             // Update the GameSessionDisplay in the database
@@ -604,14 +606,6 @@ public class CollaborativeTextHelper {
         } catch (Exception e) {
             // Log error but don't fail the main operation
             System.err.println("Failed to update GameSessionDisplay with winning submissions: " + e.getMessage());
-        }
-    }
-
-    private void handleMakeChoiceVoting(String gameCode, List<TextSubmission> winningSubmissions) {
-        Story story = getStoryAtCurrentEncounter(gameCode);
-
-        if (!winningSubmissions.isEmpty()) {
-
         }
     }
 
@@ -883,28 +877,10 @@ public class CollaborativeTextHelper {
 
             // Update the story with new options
             story.setOptions(currentOptions);
+            story.setGameCode(gameCode); // Ensure gameCode is set for updateStory
             
-            // Get all stories and update the one we modified
-            GameSession gameSession = getGameSession(gameCode);
-            List<Story> allStories = gameSession.getStories();
-            if (allStories == null) {
-                allStories = new ArrayList<>();
-            }
-            
-            // Find and update the story in the list
-            final List<Story> finalStories = new ArrayList<>(allStories);
-            for (int i = 0; i < finalStories.size(); i++) {
-                if (finalStories.get(i).getStoryId().equals(storyId)) {
-                    finalStories.set(i, story);
-                    break;
-                }
-            }
-            
-            // Update stories in Firestore via transaction
-            gameSessionDAO.runInTransaction(transaction -> {
-                gameSessionDAO.updateStoriesInTransaction(gameCode, finalStories, transaction);
-                return null;
-            });
+            // Use the DAO's updateStory method
+            storyDAO.updateStory(story);
         } catch (Exception e) {
             System.err.println("Failed to handle WHAT_CAN_WE_TRY: " + e.getMessage());
             e.printStackTrace();
@@ -948,32 +924,100 @@ public class CollaborativeTextHelper {
             }
 
             story.setOptions(options);
+            story.setGameCode(gameCode); // Ensure gameCode is set for updateStory
             
-            GameSession gameSession = getGameSession(gameCode);
-            List<Story> allStories = gameSession.getStories();
-            if (allStories == null) {
-                allStories = new ArrayList<>();
-            }
-            
-            // Find and update the story in the list
-            final List<Story> finalStories = new ArrayList<>(allStories);
-            for (int i = 0; i < finalStories.size(); i++) {
-                if (finalStories.get(i).getStoryId().equals(storyId)) {
-                    finalStories.set(i, story);
-                    break;
-                }
-            }
-            
-            // Update stories in Firestore via transaction
-            gameSessionDAO.runInTransaction(transaction -> {
-                gameSessionDAO.updateStoriesInTransaction(gameCode, finalStories, transaction);
-                return null;
-            });
+            // Use the DAO's updateStory method
+            storyDAO.updateStory(story);
 
             // Initialize MAKE_CHOICE_VOTING phase with submissions for each option
             initializeMakeChoiceVotingPhase(gameCode, winningSubmissions);
         } catch (Exception e) {
             System.err.println("Failed to handle HOW_DOES_THIS_RESOLVE: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles MAKE_CHOICE_VOTING phase: Sets visited to true and selectedOptionId to the winning option
+     */
+    private void handleMakeChoice(String gameCode, List<TextSubmission> winningSubmissions) {
+        try {
+            if (winningSubmissions.isEmpty()) {
+                return;
+            }
+
+            // Get the story at the current encounter
+            Story story = getStoryAtCurrentEncounter(gameCode);
+            if (story == null) {
+                return;
+            }
+
+            // The winning submission's submissionId is the optionId that was voted for
+            TextSubmission winningSubmission = winningSubmissions.getFirst();
+            String selectedOptionId = winningSubmission.getSubmissionId();
+
+            // Update the story
+            story.setVisited(true);
+            story.setSelectedOptionId(selectedOptionId);
+            story.setGameCode(gameCode); // Ensure gameCode is set for updateStory
+
+            // Use the DAO's updateStory method
+            storyDAO.updateStory(story);
+        } catch (Exception e) {
+            System.err.println("Failed to handle MAKE_CHOICE_VOTING: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles NAVIGATE_VOTING phase: Updates player coordinates based on the winning direction
+     */
+    private void handleNavigation(String gameCode, List<TextSubmission> winningSubmissions) {
+        try {
+            if (winningSubmissions.isEmpty()) {
+                return;
+            }
+
+            // Get the winning direction submission
+            TextSubmission winningSubmission = winningSubmissions.getFirst();
+            String direction = winningSubmission.getSubmissionId();
+
+            // Get current game session and player coordinates
+            GameSession gameSession = getGameSession(gameCode);
+            GameBoard gameBoard = gameSession.getGameBoard();
+            if (gameBoard == null) {
+                System.err.println("Game board not found for game: " + gameCode);
+                return;
+            }
+
+            PlayerCoordinates currentCoords = gameBoard.getPlayerCoordinates();
+            if (currentCoords == null) {
+                System.err.println("Player coordinates not found for game: " + gameCode);
+                return;
+            }
+
+            // Calculate new coordinates based on direction
+            int newX = currentCoords.getxCoordinate();
+            int newY = currentCoords.getyCoordinate();
+
+            switch (direction) {
+                case "NORTH" -> newY += 1;  // Move north: y increases
+                case "SOUTH" -> newY -= 1;  // Move south: y decreases
+                case "EAST" -> newX += 1;   // Move east: x increases
+                case "WEST" -> newX -= 1;    // Move west: x decreases
+                default -> {
+                    System.err.println("Unknown direction: " + direction);
+                    return;
+                }
+            }
+
+            // Create new player coordinates
+            PlayerCoordinates newCoordinates = new PlayerCoordinates(newX, newY);
+
+            // Update player coordinates via DAO
+            gameSessionDAO.updatePlayerCoordinates(gameCode, newCoordinates);
+        } catch (Exception e) {
+            System.err.println("Failed to handle NAVIGATE_VOTING: " + e.getMessage());
             e.printStackTrace();
         }
     }

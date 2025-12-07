@@ -194,7 +194,7 @@ public class GameSessionDAO {
     public void updatePlayerCoordinates(String gameCode, PlayerCoordinates playerCoordinates) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            ApiFuture<WriteResult> result = gameSessionRef.update("playerCoordinates", playerCoordinates);
+            ApiFuture<WriteResult> result = gameSessionRef.update("gameBoard.playerCoordinates", playerCoordinates);
             result.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
