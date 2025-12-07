@@ -386,36 +386,40 @@ public class CollaborativeTextHelper {
                     .mapToInt(PlayerVote::getRanking)
                     .average()
                     .orElse(0.0);
+                submission.setTotalVotes(votesForSubmission.size());
                 submission.setAverageRanking(averageRanking);
             }
         }
 
-        // For SET_ENCOUNTERS_WINNERS, return all submissions that received votes, sorted by highest rating first
+        List<TextSubmission> submissionsWithVotes = phase.getSubmissions().stream()
+            .filter(submission -> submission.getAverageRanking() > 0)
+            .toList();
+
+        Comparator<TextSubmission> rankingComparator = Comparator
+            .comparingDouble(TextSubmission::getAverageRanking)
+            .thenComparing(Comparator.comparingInt(TextSubmission::getTotalVotes).reversed());
+
         if (gameState == GameState.SET_ENCOUNTERS_WINNERS) {
-            return phase.getSubmissions().stream()
-                .filter(submission -> submission.getAverageRanking() > 0)
-                .sorted(Comparator.comparingDouble(TextSubmission::getAverageRanking))
+            return submissionsWithVotes.stream()
+                .sorted(rankingComparator)
                 .toList();
         } else if (gameState == GameState.WHAT_CAN_WE_TRY_WINNERS) {
-            return phase.getSubmissions().stream()
-                .filter(submission -> submission.getAverageRanking() > 0)
-                .sorted(Comparator.comparingDouble(TextSubmission::getAverageRanking))
+            return submissionsWithVotes.stream()
+                .sorted(rankingComparator)
                 .limit(2)
                 .toList();
         } else if (gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS) {
-            return phase.getSubmissions().stream()
-                .filter(submission -> submission.getAverageRanking() > 0)
-                .sorted(Comparator.comparingDouble(TextSubmission::getAverageRanking))
+            return submissionsWithVotes.stream()
+                .sorted(rankingComparator)
                 .limit(6)
                 .toList();
         } else if (gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER) {
             // For WHAT_WILL_BECOME_OF_US, return the best submission for each outcome type (success, neutral, failure)
             List<TextSubmission> winners = new ArrayList<>();
             for (String outcomeType : List.of("success", "neutral", "failure")) {
-                TextSubmission winner = phase.getSubmissions().stream()
-                    .filter(submission -> submission.getAverageRanking() > 0)
+                TextSubmission winner = submissionsWithVotes.stream()
                     .filter(submission -> outcomeType.equals(submission.getOutcomeType()))
-                    .min((s1, s2) -> Double.compare(s1.getAverageRanking(), s2.getAverageRanking()))
+                    .min(rankingComparator)
                     .orElse(null);
                 if (winner != null) {
                     winners.add(winner);
@@ -425,7 +429,7 @@ public class CollaborativeTextHelper {
         } else if (gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS) {
             // For HOW_DOES_THIS_RESOLVE, return the best submission for each optionId (outcomeType)
             // First, get all unique optionIds from submissions
-            List<String> optionIds = phase.getSubmissions().stream()
+            List<String> optionIds = submissionsWithVotes.stream()
                 .map(TextSubmission::getOutcomeType)
                 .filter(optionId -> optionId != null && !optionId.isEmpty())
                 .distinct()
@@ -433,10 +437,9 @@ public class CollaborativeTextHelper {
             
             List<TextSubmission> winners = new ArrayList<>();
             for (String optionId : optionIds) {
-                TextSubmission winner = phase.getSubmissions().stream()
-                    .filter(submission -> submission.getAverageRanking() > 0)
+                TextSubmission winner = submissionsWithVotes.stream()
                     .filter(submission -> optionId.equals(submission.getOutcomeType()))
-                    .min((s1, s2) -> Double.compare(s1.getAverageRanking(), s2.getAverageRanking()))
+                    .min(rankingComparator)
                     .orElse(null);
                 if (winner != null) {
                     winners.add(winner);
@@ -444,10 +447,9 @@ public class CollaborativeTextHelper {
             }
             return winners;
         } else {
-            // For other phases, return the single best submission
-            TextSubmission winner = phase.getSubmissions().stream()
-                .filter(submission -> submission.getAverageRanking() > 0)
-                .min((s1, s2) -> Double.compare(s1.getAverageRanking(), s2.getAverageRanking()))
+            // For other phases return the single best submission
+            TextSubmission winner = submissionsWithVotes.stream()
+                .min(rankingComparator)
                 .orElse(null);
 
             return winner != null ? List.of(winner) : List.of();
