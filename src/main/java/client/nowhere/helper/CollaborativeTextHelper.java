@@ -94,33 +94,6 @@ public class CollaborativeTextHelper {
         return phase;
     }
 
-    public CollaborativeTextPhase submitPlayerVote(String gameCode, PlayerVote playerVote) {
-        // Validate input
-        if (playerVote == null) {
-            throw new ValidationException("Player vote cannot be null");
-        }
-        if (playerVote.getPlayerId() == null || playerVote.getPlayerId().trim().isEmpty()) {
-            throw new ValidationException("Player ID cannot be null or empty");
-        }
-        if (playerVote.getSubmissionId() == null || playerVote.getSubmissionId().trim().isEmpty()) {
-            throw new ValidationException("Submission ID cannot be null or empty");
-        }
-        if (playerVote.getRanking() < 1 || playerVote.getRanking() > 3) {
-            throw new ValidationException("Ranking must be between 1 and 3");
-        }
-
-        // Get game session to determine phase ID
-        GameSession gameSession = getGameSession(gameCode);
-        GameState phaseIdState = gameSession.getGameState().getPhaseId();
-        if (phaseIdState == null) {
-            throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
-        }
-        String phaseId = phaseIdState.name();
-
-        // Add vote atomically using Firestore transactions
-        return collaborativeTextDAO.addVoteAtomically(gameCode, phaseId, playerVote);
-    }
-
     public List<TextSubmission> calculateWinningSubmission(String gameCode) {
         GameSession gameSession = getGameSession(gameCode);
         GameState phaseIdState = gameSession.getGameState().getPhaseId();
@@ -868,6 +841,10 @@ public class CollaborativeTextHelper {
 
             // Create new Options from winning submissions
             for (TextSubmission submission : winningSubmissions) {
+                if (currentOptions.stream().anyMatch(option -> option.getOptionText().equals(submission.getCurrentText()))) {
+                    continue;
+                }
+
                 Option option = new Option();
                 option.setOptionText(submission.getCurrentText());
                 currentOptions.add(option);
@@ -979,8 +956,46 @@ public class CollaborativeTextHelper {
                 gameSessionDAO.updateStoriesInTransaction(gameCode, finalStories, transaction);
                 return null;
             });
+
+            // Initialize MAKE_CHOICE_VOTING phase with submissions for each option
+            initializeMakeChoiceVotingPhase(gameCode, story);
         } catch (Exception e) {
             System.err.println("Failed to handle HOW_DOES_THIS_RESOLVE: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Initializes the MAKE_CHOICE_VOTING phase with one submission for each Story option
+     */
+    private void initializeMakeChoiceVotingPhase(String gameCode, Story story) {
+        try {
+            if (story == null || story.getOptions() == null || story.getOptions().isEmpty()) {
+                System.err.println("Story or options not found for MAKE_CHOICE_VOTING initialization");
+                return;
+            }
+
+            String phaseId = GameState.MAKE_CHOICE_VOTING.getPhaseId().name();
+
+            // Create one submission for each option
+            for (Option option : story.getOptions()) {
+                if (option.getOptionId() == null || option.getOptionId().isEmpty()) {
+                    continue;
+                }
+
+                TextSubmission submission = new TextSubmission();
+                submission.setSubmissionId(option.getOptionId());
+                submission.setAuthorId(AuthorConstants.DUNGEON_PLAYER);
+                submission.setOriginalText("");
+                submission.setCurrentText(option.getOptionText() != null ? option.getOptionText() : "");
+                submission.setCreatedAt(Timestamp.now());
+                submission.setLastModified(Timestamp.now());
+
+                // Add the submission to the phase atomically
+                collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to initialize MAKE_CHOICE_VOTING phase: " + e.getMessage());
             e.printStackTrace();
         }
     }

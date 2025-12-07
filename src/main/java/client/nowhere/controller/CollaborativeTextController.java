@@ -23,12 +23,6 @@ public class CollaborativeTextController {
         return this.collaborativeTextHelper.submitTextAddition(gameCode, textAddition);
     }
 
-    @PostMapping("/collaborativeText/vote")
-    @ResponseBody
-    public CollaborativeTextPhase submitPlayerVote(@RequestBody PlayerVote playerVote, @RequestParam String gameCode) {
-        return this.collaborativeTextHelper.submitPlayerVote(gameCode, playerVote);
-    }
-
     @PostMapping("/collaborativeText/votes")
     @ResponseBody
     public CollaborativeTextPhase submitPlayerVotes(@RequestBody List<PlayerVote> playerVotes, @RequestParam String gameCode) {
