@@ -812,25 +812,14 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            // Get the encounter at player coordinates
             Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
             if (encounter == null) {
                 return;
             }
 
             String storyId = encounter.getStoryId();
-            if (storyId == null || storyId.isEmpty()) {
-                System.err.println("Story ID not found in encounter for game: " + gameCode);
-                return;
-            }
 
-            // Get the Story by storyId
             List<Story> stories = storyDAO.getAuthorStoriesByStoryId(gameCode, storyId);
-            if (stories.isEmpty()) {
-                System.err.println("Story not found with ID: " + storyId);
-                return;
-            }
-
             Story story = stories.getFirst();
 
             // Get current options or initialize empty list
@@ -839,7 +828,6 @@ public class CollaborativeTextHelper {
                 currentOptions = new ArrayList<>();
             }
 
-            // Create new Options from winning submissions
             for (TextSubmission submission : winningSubmissions) {
                 if (currentOptions.stream().anyMatch(option -> option.getOptionText().equals(submission.getCurrentText()))) {
                     continue;
@@ -889,33 +877,18 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            // Get the encounter at player coordinates
             Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
             if (encounter == null) {
                 return;
             }
 
             String storyId = encounter.getStoryId();
-            if (storyId == null || storyId.isEmpty()) {
-                System.err.println("Story ID not found in encounter for game: " + gameCode);
-                return;
-            }
 
-            // Get the Story by storyId
             List<Story> stories = storyDAO.getAuthorStoriesByStoryId(gameCode, storyId);
-            if (stories.isEmpty()) {
-                System.err.println("Story not found with ID: " + storyId);
-                return;
-            }
 
             Story story = stories.getFirst();
             List<Option> options = story.getOptions();
-            if (options == null || options.isEmpty()) {
-                System.err.println("No options found in story: " + storyId);
-                return;
-            }
 
-            // Create a map of optionId -> winning submission
             Map<String, TextSubmission> optionWinners = new HashMap<>();
             for (TextSubmission winner : winningSubmissions) {
                 String optionId = winner.getOutcomeType();
@@ -924,7 +897,6 @@ public class CollaborativeTextHelper {
                 }
             }
 
-            // Update each Option's successText with the winning submission's text
             for (Option option : options) {
                 TextSubmission winner = optionWinners.get(option.getOptionId());
                 if (winner != null) {
@@ -932,10 +904,8 @@ public class CollaborativeTextHelper {
                 }
             }
 
-            // Update the story with modified options
             story.setOptions(options);
             
-            // Get all stories and update the one we modified
             GameSession gameSession = getGameSession(gameCode);
             List<Story> allStories = gameSession.getStories();
             if (allStories == null) {
