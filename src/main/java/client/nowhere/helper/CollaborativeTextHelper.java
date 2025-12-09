@@ -370,30 +370,46 @@ public class CollaborativeTextHelper {
     }
 
     private List<TextSubmission> calculateWinnersFromVotes(CollaborativeTextPhase phase, GameState gameState) {
-        // Calculate average ranking for each submission
+        double totalRankSum = phase.getPlayerVotes().values().stream()
+                .flatMap(List::stream)
+                .mapToInt(PlayerVote::getRanking)
+                .sum();
+
+        long totalVotesCast = phase.getPlayerVotes().values().stream()
+                .flatMap(List::stream)
+                .count();
+
+        final double priorMean = totalVotesCast > 0 ? (double) totalRankSum / totalVotesCast : 3.0;
+        final double CONFIDENCE_FACTOR = 5.0; // This may need to be adjusted if outliers are being weighted too high or low
+
         for (TextSubmission submission : phase.getSubmissions()) {
             List<PlayerVote> votesForSubmission = phase.getPlayerVotes().values().stream()
                 .flatMap(List::stream)
                 .filter(vote -> vote.getSubmissionId().equals(submission.getSubmissionId()))
                 .toList();
 
+            int numberOfVotes = votesForSubmission.size();
+            submission.setTotalVotes(numberOfVotes);
+
             if (!votesForSubmission.isEmpty()) {
-                double averageRanking = votesForSubmission.stream()
-                    .mapToInt(PlayerVote::getRanking)
-                    .average()
-                    .orElse(0.0);
-                submission.setTotalVotes(votesForSubmission.size());
-                submission.setAverageRanking(averageRanking);
+                double avgRank = votesForSubmission.stream()
+                        .mapToInt(PlayerVote::getRanking)
+                        .average()
+                        .orElse(priorMean);
+
+                double bayesianWeightedScore = (CONFIDENCE_FACTOR * priorMean + numberOfVotes * avgRank) / (CONFIDENCE_FACTOR + numberOfVotes);
+                submission.setAverageRanking(bayesianWeightedScore);
+            } else {
+                submission.setAverageRanking(priorMean);
             }
         }
 
         List<TextSubmission> submissionsWithVotes = phase.getSubmissions().stream()
-            .filter(submission -> submission.getAverageRanking() > 0)
+            .filter(submission -> submission.getTotalVotes() > 0)
             .toList();
 
         Comparator<TextSubmission> rankingComparator = Comparator
-            .comparingDouble(TextSubmission::getAverageRanking)
-            .thenComparing(Comparator.comparingInt(TextSubmission::getTotalVotes).reversed());
+                .comparingDouble(TextSubmission::getAverageRanking);
 
         if (gameState == GameState.SET_ENCOUNTERS_WINNERS) {
             return submissionsWithVotes.stream()
@@ -430,7 +446,7 @@ public class CollaborativeTextHelper {
                 .filter(optionId -> optionId != null && !optionId.isEmpty())
                 .distinct()
                 .toList();
-            
+
             List<TextSubmission> winners = new ArrayList<>();
             for (String optionId : optionIds) {
                 TextSubmission winner = submissionsWithVotes.stream()
