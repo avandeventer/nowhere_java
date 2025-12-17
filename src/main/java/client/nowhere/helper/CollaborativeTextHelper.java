@@ -370,18 +370,6 @@ public class CollaborativeTextHelper {
     }
 
     private List<TextSubmission> calculateWinnersFromVotes(CollaborativeTextPhase phase, GameState gameState) {
-        double totalRankSum = phase.getPlayerVotes().values().stream()
-                .flatMap(List::stream)
-                .mapToInt(PlayerVote::getRanking)
-                .sum();
-
-        long totalVotesCast = phase.getPlayerVotes().values().stream()
-                .flatMap(List::stream)
-                .count();
-
-        final double priorMean = totalVotesCast > 0 ? (double) totalRankSum / totalVotesCast : 3.0;
-        final double CONFIDENCE_FACTOR = 5.0; // This may need to be adjusted if outliers are being weighted too high or low
-
         for (TextSubmission submission : phase.getSubmissions()) {
             List<PlayerVote> votesForSubmission = phase.getPlayerVotes().values().stream()
                 .flatMap(List::stream)
@@ -391,25 +379,29 @@ public class CollaborativeTextHelper {
             int numberOfVotes = votesForSubmission.size();
             submission.setTotalVotes(numberOfVotes);
 
-            if (!votesForSubmission.isEmpty()) {
-                double avgRank = votesForSubmission.stream()
-                        .mapToInt(PlayerVote::getRanking)
-                        .average()
-                        .orElse(priorMean);
+            // Calculate total points: Rank 1 = 5 points, Rank 2 = 4, Rank 3 = 3, Rank 4 = 2, Rank 5+ = 1
+            int totalPoints = votesForSubmission.stream()
+                    .mapToInt(vote -> {
+                        int rank = vote.getRanking();
+                        if (rank <= 1) return 5;
+                        if (rank == 2) return 4;
+                        if (rank == 3) return 3;
+                        if (rank == 4) return 2;
+                        return 1; // Rank 5 or higher
+                    })
+                    .sum();
 
-                double bayesianWeightedScore = (CONFIDENCE_FACTOR * priorMean + numberOfVotes * avgRank) / (CONFIDENCE_FACTOR + numberOfVotes);
-                submission.setAverageRanking(bayesianWeightedScore);
-            } else {
-                submission.setAverageRanking(priorMean);
-            }
+            submission.setAverageRanking(totalPoints);
         }
 
         List<TextSubmission> submissionsWithVotes = phase.getSubmissions().stream()
             .filter(submission -> submission.getTotalVotes() > 0)
             .toList();
 
+        // Sort in descending order (higher points = better)
         Comparator<TextSubmission> rankingComparator = Comparator
-                .comparingDouble(TextSubmission::getAverageRanking);
+                .comparingDouble(TextSubmission::getAverageRanking)
+                .reversed();
 
         if (gameState == GameState.SET_ENCOUNTERS_WINNERS) {
             return submissionsWithVotes.stream()
