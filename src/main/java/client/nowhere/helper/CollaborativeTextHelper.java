@@ -816,15 +816,20 @@ public class CollaborativeTextHelper {
                 gameSession.setGameBoard(gameBoard);
             }
 
-            // Create a new Story
-            Story story = new Story();
-            story.setPrompt(winningSubmission.getCurrentText());
-            story.setPlayerId(AuthorConstants.DUNGEON_PLAYER);
-            story.setGameCode(gameCode);
-            story.setEncounterLabel(encounter.getEncounterLabel());
+            Story story = getStoryAtCurrentEncounter(gameCode);
 
-            // Store the Story in GameSession.stories
-            storyDAO.createStory(story);
+            //Create or update the existing story
+            if (story == null) {
+                story = new Story();
+                story.setPrompt(winningSubmission.getCurrentText());
+                story.setPlayerId(AuthorConstants.DUNGEON_PLAYER);
+                story.setGameCode(gameCode);
+                story.setEncounterLabel(encounter.getEncounterLabel());
+                storyDAO.createStory(story);
+            } else {
+                story.setPrompt(winningSubmission.getCurrentText());
+                storyDAO.updateStory(story);
+            }
 
             // Update the Encounter at player coordinates
             encounter.setStoryId(story.getStoryId());
