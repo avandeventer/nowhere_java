@@ -110,41 +110,23 @@ public class StoryDAO {
                     }
 
                     if (story.getOptions() != null && !story.getOptions().isEmpty()) {
-                        List<Option> optionsToUpdate = new ArrayList<>();
+                        List<Option> optionsToUpdate = storyToUpdate.getOptions() != null
+                                ? updateOptions(story, storyToUpdate) : new ArrayList<>();
 
-                        for (Option resultOption : storyToUpdate.getOptions()) {
-                            for (Option inputOption : story.getOptions()) {
-                                if (resultOption.getOptionId().equals(inputOption.getOptionId())) {
-                                    Option optionToUpdate = new Option(
-                                            resultOption.getOptionId(),
-                                            !inputOption.getOptionText().isEmpty() ?
-                                                    inputOption.getOptionText() :
-                                                    resultOption.getOptionText(),
-                                            !inputOption.getOptionText().isEmpty() ?
-                                                    inputOption.getOptionText() :
-                                                    resultOption.getOptionText(),
-                                            !inputOption.getSuccessText().isEmpty() ?
-                                                    inputOption.getSuccessText() :
-                                                    resultOption.getSuccessText(),
-                                            resultOption.getSuccessResults(),
-                                            !inputOption.getFailureText().isEmpty() ?
-                                                    inputOption.getFailureText() :
-                                                    resultOption.getFailureText(),
-                                            resultOption.getFailureResults(),
-                                            !inputOption.getOutcomeAuthorId().isEmpty() ?
-                                                    inputOption.getOutcomeAuthorId() :
-                                                    resultOption.getOutcomeAuthorId(),
-                                            resultOption.getPlayerStatDCs()
-                                    );
-                                    optionsToUpdate.add(optionToUpdate);
-                                }
+                        List<String> existingOptionIds = optionsToUpdate.stream()
+                                .map(Option::getOptionId)
+                                .toList();
+
+                        for (Option inputOption : story.getOptions()) {
+                            if (!existingOptionIds.contains(inputOption.getOptionId())) {
+                                optionsToUpdate.add(inputOption);
                             }
                         }
 
-                        if (!optionsToUpdate.isEmpty()) {
-                            storyToUpdate.setOptions(optionsToUpdate);
-                        }
+                        storyToUpdate.setOptions(optionsToUpdate);
                     }
+
+
                     story = storyToUpdate;
                     stories.set(i, storyToUpdate);
                     break;
@@ -159,6 +141,42 @@ public class StoryDAO {
             throw new ResourceException("There was an issue updating the story", e);
         }
         return story;
+    }
+
+    private static List<Option> updateOptions(Story story, Story storyToUpdate) {
+        List<Option> optionsToUpdate = new ArrayList<>();
+
+        // Update existing options
+        for (Option resultOption : storyToUpdate.getOptions()) {
+            for (Option inputOption : story.getOptions()) {
+                if (resultOption.getOptionId().equals(inputOption.getOptionId())) {
+                    Option optionToUpdate = new Option(
+                            resultOption.getOptionId(),
+                            !inputOption.getOptionText().isEmpty() ?
+                                    inputOption.getOptionText() :
+                                    resultOption.getOptionText(),
+                            !inputOption.getOptionText().isEmpty() ?
+                                    inputOption.getOptionText() :
+                                    resultOption.getOptionText(),
+                            !inputOption.getSuccessText().isEmpty() ?
+                                    inputOption.getSuccessText() :
+                                    resultOption.getSuccessText(),
+                            resultOption.getSuccessResults(),
+                            !inputOption.getFailureText().isEmpty() ?
+                                    inputOption.getFailureText() :
+                                    resultOption.getFailureText(),
+                            resultOption.getFailureResults(),
+                            !inputOption.getOutcomeAuthorId().isEmpty() ?
+                                    inputOption.getOutcomeAuthorId() :
+                                    resultOption.getOutcomeAuthorId(),
+                            resultOption.getPlayerStatDCs()
+                    );
+                    optionsToUpdate.add(optionToUpdate);
+                    break;
+                }
+            }
+        }
+        return optionsToUpdate;
     }
 
     private List<Story> mapStories(DocumentSnapshot document) {

@@ -51,6 +51,7 @@ public class Story {
 
     public Story () {
         this.storyId = UUID.randomUUID().toString();
+        this.options = new ArrayList<>();
     }
 
     public void setNewStoryId() {
