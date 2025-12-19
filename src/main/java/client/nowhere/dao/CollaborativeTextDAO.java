@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -243,7 +244,15 @@ public class CollaborativeTextDAO {
                 }
                 
                 // Get available submissions
-                List<TextSubmission> availableSubmissions = phase.getAvailableSubmissionsForPlayer(playerId, requestedCount, outcomeTypeId);
+                List<TextSubmission> availableSubmissions = phase.getAvailableSubmissionsForPlayer(playerId, outcomeTypeId);
+
+                availableSubmissions = availableSubmissions.stream()
+                        .sorted(Comparator
+                                .comparingInt((TextSubmission s) -> 
+                                        phase.getSubmissionViews().getOrDefault(s.getSubmissionId(), new ArrayList<>()).size())
+                                .thenComparing(TextSubmission::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                        .limit(requestedCount)
+                        .toList();
                 
                 // Record views for each submission returned
                 for (TextSubmission submission : availableSubmissions) {
