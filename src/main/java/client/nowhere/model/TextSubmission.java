@@ -18,6 +18,8 @@ public class TextSubmission {
     private double averageRanking;
     private String outcomeType; // "success", "neutral", or "failure" - used for WHAT_WILL_BECOME_OF_US phase
 
+    private OutcomeType outcomeTypeWithLabel;
+
     public TextSubmission() {
         this.additions = new ArrayList<>();
         this.createdAt = Timestamp.now();
@@ -25,6 +27,7 @@ public class TextSubmission {
         this.isFinalized = false;
         this.totalVotes = 0;
         this.averageRanking = 0.0;
+        this.outcomeTypeWithLabel = new OutcomeType();
     }
 
     public TextSubmission(String submissionId, String authorId, String originalText) {
@@ -73,6 +76,14 @@ public class TextSubmission {
 
     public String getOutcomeType() { return outcomeType; }
     public void setOutcomeType(String outcomeType) { this.outcomeType = outcomeType; }
+
+    public OutcomeType getOutcomeTypeWithLabel() {
+        return outcomeTypeWithLabel;
+    }
+
+    public void setOutcomeTypeWithLabel(OutcomeType outcomeTypeWithLabel) {
+        this.outcomeTypeWithLabel = outcomeTypeWithLabel;
+    }
 
     // Helper methods
     public void addTextAddition(TextAddition addition) {

@@ -476,6 +476,7 @@ public class CollaborativeTextHelper {
 
         // Retrieve the phase
         CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+        OutcomeType outcomeType = getOutcomeTypeForPlayer(gameCode, playerId);
         if (phase == null) {
             throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
         }
@@ -485,11 +486,17 @@ public class CollaborativeTextHelper {
         // For WHAT_WILL_BECOME_OF_US, include player's own submissions (they'll be filtered by outcomeType on frontend)
         boolean isWhatDoWeFear = phaseIdState == GameState.WHAT_DO_WE_FEAR;
         boolean isWhatAreWeCapableOf = phaseIdState == GameState.WHAT_ARE_WE_CAPABLE_OF;
-        boolean isWhatWillBecomeOfUs = phaseIdState == GameState.WHAT_WILL_BECOME_OF_US;
         int limit = isWhatDoWeFear ? Integer.MAX_VALUE : (isWhatAreWeCapableOf ? 6 : 5);
 
         return phase.getSubmissions().stream()
-                .filter(submission -> isWhatWillBecomeOfUs || !submission.getAuthorId().equals(playerId))
+                .filter(textSubmission -> (textSubmission.getOutcomeType().isEmpty() && !textSubmission.getAuthorId().equals(playerId))
+                        || outcomeType.getId().equals(textSubmission.getOutcomeType()))
+                .map(textSubmission -> {
+                    if (outcomeType.getId().equals(textSubmission.getOutcomeType())) {
+                        textSubmission.setOutcomeTypeWithLabel(outcomeType);
+                    }
+                    return textSubmission;
+                })
                 .sorted((s1, s2) -> {
                     // First sort by number of additions (descending - most additions first)
                     int additionsComparison = Integer.compare(s2.getAdditions().size(), s1.getAdditions().size());
