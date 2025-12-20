@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -271,27 +270,25 @@ public class CollaborativeTextDAO {
     }
 
     /**
-     * Clears all submissions and player votes from a CollaborativeTextPhase atomically
-     * This is useful when transitioning between game phases to reset the phase state
+     * Clears phase data atomically.
+     * This is useful when transitioning between game phases to reset the phase state.
      * @param gameCode The game code
      * @param phaseId The phase ID to clear
+     * @param clearSubmissions If true, clears all submissions and votes. If false, only clears votes and related tracking data.
      */
-    public void clearPhaseSubmissionsAndVotes(String gameCode, String phaseId) {
+    public void clearPhase(String gameCode, String phaseId, boolean clearSubmissions) {
         try {
             db.runTransaction(transaction -> {
-                // Get the current phase
                 CollaborativeTextPhase phase = getCollaborativeTextPhaseInTransaction(gameCode, phaseId, transaction);
                 if (phase == null) {
-                    // Phase doesn't exist, nothing to clear
                     return null;
                 }
                 
-                // Clear all submissions and votes
-                phase.setSubmissions(new ArrayList<>());
-                phase.setPlayerVotes(new HashMap<>());
-                phase.setPlayersWhoSubmitted(new ArrayList<>());
-                phase.setPlayersWhoVoted(new ArrayList<>());
-                phase.setSubmissionViews(new HashMap<>());
+                if (clearSubmissions) {
+                    phase.resetAll();
+                } else {
+                    phase.resetVotes();
+                }
                 
                 // Update the phase in Firestore
                 updateCollaborativeTextPhaseInTransaction(gameCode, phaseId, phase, transaction);
@@ -300,7 +297,7 @@ public class CollaborativeTextDAO {
             }).get();
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
-            throw new ResourceException("Failed to clear phase submissions and votes", e);
+            throw new ResourceException("Failed to clear phase", e);
         }
     }
 }

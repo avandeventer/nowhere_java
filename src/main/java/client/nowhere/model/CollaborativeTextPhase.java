@@ -141,4 +141,27 @@ public class CollaborativeTextPhase {
         viewers.add(playerId);
         return true; // View recorded
     }
+
+    /**
+     * Resets all submissions and votes from the phase.
+     * This clears submissions, votes, player tracking lists, and submission views.
+     */
+    public void resetAll() {
+        this.submissions = new ArrayList<>();
+        this.playerVotes = new HashMap<>();
+        this.playersWhoSubmitted = new ArrayList<>();
+        this.playersWhoVoted = new ArrayList<>();
+        this.submissionViews = new HashMap<>();
+    }
+
+    /**
+     * Resets votes and related tracking data, but keeps submissions.
+     * This clears votes, player tracking lists, and submission views.
+     */
+    public void resetVotes() {
+        this.playerVotes = new HashMap<>();
+        this.playersWhoSubmitted = new ArrayList<>();
+        this.playersWhoVoted = new ArrayList<>();
+        this.submissionViews = new HashMap<>();
+    }
 }

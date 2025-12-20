@@ -417,34 +417,19 @@ public class CollaborativeTextHelper {
                 .sorted(rankingComparator)
                 .limit(6)
                 .toList();
-        } else if (gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER) {
-            // For WHAT_WILL_BECOME_OF_US, return the best submission for each outcome type (success, neutral, failure)
-            List<TextSubmission> winners = new ArrayList<>();
-            for (String outcomeType : List.of("success", "neutral", "failure")) {
-                TextSubmission winner = submissionsWithVotes.stream()
-                    .filter(submission -> outcomeType.equals(submission.getOutcomeType()))
-                    .min(rankingComparator)
-                    .orElse(null);
-                if (winner != null) {
-                    winners.add(winner);
-                }
-            }
-            return winners;
-        } else if (gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS) {
-            // For HOW_DOES_THIS_RESOLVE, return the best submission for each optionId (outcomeType)
-            // First, get all unique optionIds from submissions
-            List<String> optionIds = submissionsWithVotes.stream()
-                .map(TextSubmission::getOutcomeType)
-                .filter(optionId -> optionId != null && !optionId.isEmpty())
-                .distinct()
-                .toList();
+        } else if (gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER || gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS) {
+            List<String> uniqueOutcomeTypes = submissionsWithVotes.stream()
+                    .map(TextSubmission::getOutcomeType)
+                    .filter(outcomeType -> outcomeType != null && !outcomeType.isEmpty())
+                    .distinct()
+                    .toList();
 
             List<TextSubmission> winners = new ArrayList<>();
-            for (String optionId : optionIds) {
+            for (String outcomeType : uniqueOutcomeTypes) {
                 TextSubmission winner = submissionsWithVotes.stream()
-                    .filter(submission -> optionId.equals(submission.getOutcomeType()))
-                    .min(rankingComparator)
-                    .orElse(null);
+                        .filter(submission -> outcomeType.equals(submission.getOutcomeType()))
+                        .min(rankingComparator)
+                        .orElse(null);
                 if (winner != null) {
                     winners.add(winner);
                 }
@@ -491,11 +476,10 @@ public class CollaborativeTextHelper {
         return phase.getSubmissions().stream()
                 .filter(textSubmission -> (textSubmission.getOutcomeType().isEmpty() && !textSubmission.getAuthorId().equals(playerId))
                         || outcomeType.getId().equals(textSubmission.getOutcomeType()))
-                .map(textSubmission -> {
+                .peek(textSubmission -> {
                     if (outcomeType.getId().equals(textSubmission.getOutcomeType())) {
                         textSubmission.setOutcomeTypeWithLabel(outcomeType);
                     }
-                    return textSubmission;
                 })
                 .sorted((s1, s2) -> {
                     // First sort by number of additions (descending - most additions first)
@@ -1052,11 +1036,11 @@ public class CollaborativeTextHelper {
     private void clearStoryWritingPhases(String gameCode) {
         try {
             // Clear all story writing phases
-            collaborativeTextDAO.clearPhaseSubmissionsAndVotes(gameCode, GameState.WHAT_HAPPENS_HERE.name());
-            collaborativeTextDAO.clearPhaseSubmissionsAndVotes(gameCode, GameState.WHAT_CAN_WE_TRY.name());
-            collaborativeTextDAO.clearPhaseSubmissionsAndVotes(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name());
-            collaborativeTextDAO.clearPhaseSubmissionsAndVotes(gameCode, GameState.MAKE_CHOICE_VOTING.name());
-            collaborativeTextDAO.clearPhaseSubmissionsAndVotes(gameCode, GameState.NAVIGATE_VOTING.name());
+            collaborativeTextDAO.clearPhase(gameCode, GameState.WHAT_HAPPENS_HERE.name(), true);
+            collaborativeTextDAO.clearPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name(), true);
+            collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name(), true);
+            collaborativeTextDAO.clearPhase(gameCode, GameState.MAKE_CHOICE_VOTING.name(), true);
+            collaborativeTextDAO.clearPhase(gameCode, GameState.NAVIGATE_VOTING.name(), false);
         } catch (Exception e) {
             System.err.println("Failed to clear story writing phases: " + e.getMessage());
             e.printStackTrace();
