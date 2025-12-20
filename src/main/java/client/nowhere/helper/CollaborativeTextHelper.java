@@ -446,6 +446,37 @@ public class CollaborativeTextHelper {
     }
 
     /**
+     * Checks if a submission is available for voting by a player.
+     * A submission is available if:
+     * - It has no outcomeType (null or empty) and is not the player's own submission, OR
+     * - It matches the player's outcomeType
+     * @param submission The submission to check
+     * @param playerId The player requesting submissions
+     * @param outcomeType The player's outcome type
+     * @return true if the submission is available for voting
+     */
+    private boolean isSubmissionAvailableForVoting(TextSubmission submission, String playerId, OutcomeType outcomeType) {
+        if (submission.getOutcomeType() == null || submission.getOutcomeType().isEmpty()) {
+            return !submission.getAuthorId().equals(playerId);
+        }
+        return outcomeType.getId().equals(submission.getOutcomeType());
+    }
+
+    /**
+     * Sets the outcomeTypeWithLabel on a submission if the outcomeType matches and is not null or empty.
+     * @param submission The submission to update
+     * @param outcomeType The outcome type to set if it matches
+     */
+    private void setOutcomeTypeWithLabelIfMatch(TextSubmission submission, OutcomeType outcomeType) {
+        if (outcomeType != null 
+                && outcomeType.getId() != null 
+                && !outcomeType.getId().isEmpty()
+                && outcomeType.getId().equals(submission.getOutcomeType())) {
+            submission.setOutcomeTypeWithLabel(outcomeType);
+        }
+    }
+
+    /**
      * Gets submissions for voting phase (excludes player's own submissions)
      * @param gameCode The game code
      * @param playerId The player requesting submissions
@@ -474,13 +505,8 @@ public class CollaborativeTextHelper {
         int limit = isWhatDoWeFear ? Integer.MAX_VALUE : (isWhatAreWeCapableOf ? 6 : 5);
 
         return phase.getSubmissions().stream()
-                .filter(textSubmission -> (textSubmission.getOutcomeType().isEmpty() && !textSubmission.getAuthorId().equals(playerId))
-                        || outcomeType.getId().equals(textSubmission.getOutcomeType()))
-                .peek(textSubmission -> {
-                    if (outcomeType.getId().equals(textSubmission.getOutcomeType())) {
-                        textSubmission.setOutcomeTypeWithLabel(outcomeType);
-                    }
-                })
+                .filter(textSubmission -> isSubmissionAvailableForVoting(textSubmission, playerId, outcomeType))
+                .peek(textSubmission -> setOutcomeTypeWithLabelIfMatch(textSubmission, outcomeType))
                 .sorted((s1, s2) -> {
                     // First sort by number of additions (descending - most additions first)
                     int additionsComparison = Integer.compare(s2.getAdditions().size(), s1.getAdditions().size());
