@@ -85,6 +85,8 @@ public enum GameState {
                     return GameState.SET_ENCOUNTERS_WINNERS;
                 } case SET_ENCOUNTERS_WINNERS -> {
                     return GameState.WHAT_HAPPENS_HERE;
+                } case GameState.WHAT_HAPPENS_HERE ->  {
+                    return GameState.WHAT_HAPPENS_HERE_WINNER;
                 } case GameState.WHAT_HAPPENS_HERE_WINNER -> {
                     return GameState.WHAT_CAN_WE_TRY;
                 } case GameState.WHAT_CAN_WE_TRY, NAVIGATE_WINNER -> {
