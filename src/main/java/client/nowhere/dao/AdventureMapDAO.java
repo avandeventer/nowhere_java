@@ -109,9 +109,7 @@ public class AdventureMapDAO {
 
     public AdventureMap updateAdventureMap(String userProfileId, AdventureMap adventureMapUpdates) {
         AdventureMap existingAdventureMap = get(userProfileId, adventureMapUpdates.getAdventureId());
-        existingAdventureMap.updateAdventureMapDisplay(adventureMapUpdates);
-        existingAdventureMap.updateStatTypes(adventureMapUpdates.getStatTypes());
-        existingAdventureMap.updateLocations(adventureMapUpdates.getLocations());
+        existingAdventureMap.updateFrom(adventureMapUpdates);
         update(userProfileId, existingAdventureMap);
         return existingAdventureMap;
     }
@@ -166,6 +164,20 @@ public class AdventureMapDAO {
         AdventureMap adventureMap = gameSession.getAdventureMap();
         System.out.println("Update time : " + adventureMap.toString());
         return adventureMap;
+    }
+
+    /**
+     * Updates the AdventureMap in a game session with data from another AdventureMap.
+     * Retrieves the existing AdventureMap from the game session, applies updates, and saves it back.
+     * @param gameCode The game code identifying the game session
+     * @param adventureMapUpdates The AdventureMap containing the updates to apply
+     * @return The updated AdventureMap
+     */
+    public AdventureMap updateGameSessionAdventureMap(String gameCode, AdventureMap adventureMapUpdates) {
+        AdventureMap existingAdventureMap = get(gameCode);
+        existingAdventureMap.updateFrom(adventureMapUpdates);
+        updateSessionAdventureMap(gameCode, existingAdventureMap);
+        return existingAdventureMap;
     }
 
     public AdventureMap update(String userProfileId, AdventureMap updatedAdventureMap) {

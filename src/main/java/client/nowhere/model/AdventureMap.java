@@ -199,6 +199,33 @@ public class AdventureMap {
         this.locations = new ArrayList<>(locationMap.values());
     }
 
+    public void updateEncounterLabels(List<EncounterLabel> encounterLabels) {
+        Map<String, EncounterLabel> encounterLabelMap = this.encounterLabels.stream()
+                .collect(Collectors.toMap(EncounterLabel::getEncounterLabel, Function.identity()));
+    
+        for (EncounterLabel encounterLabel : encounterLabels) {
+            if (!encounterLabel.getEncounterId().isEmpty() && !encounterLabel.getEncounterLabel().isEmpty()) {
+                if (!encounterLabelMap.containsKey(encounterLabel.getEncounterLabel())) {
+                    encounterLabelMap.put(encounterLabel.getEncounterLabel(), encounterLabel);
+                }
+            }
+        }
+
+        this.encounterLabels = new ArrayList<>(encounterLabelMap.values());
+    }
+
+    /**
+     * Updates this AdventureMap with data from another AdventureMap.
+     * Calls all individual update methods to apply changes.
+     * @param adventureMapUpdates The AdventureMap containing the updates to apply
+     */
+    public void updateFrom(AdventureMap adventureMapUpdates) {
+        this.updateAdventureMapDisplay(adventureMapUpdates);
+        this.updateStatTypes(adventureMapUpdates.getStatTypes());
+        this.updateLocations(adventureMapUpdates.getLocations());
+        this.updateEncounterLabels(adventureMapUpdates.getEncounterLabels());
+    }
+
     public void updateRitualOptions(Story ritual) {
         if (this.ritual.getOptions() == null) {
             this.ritual.setOptions(new ArrayList<>());

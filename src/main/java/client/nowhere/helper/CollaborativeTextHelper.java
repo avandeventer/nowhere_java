@@ -731,7 +731,7 @@ public class CollaborativeTextHelper {
             // Update AdventureMap in Firestore
             gameSession.setAdventureMap(adventureMap);
             gameSession.setGameBoard(new GameBoard());
-            gameSessionDAO.updateGameSession(gameSession);
+            adventureMapDAO.updateGameSessionAdventureMap(gameSession.getGameCode(), adventureMap);
         } catch (Exception e) {
             System.err.println("Failed to add submissions to AdventureMap: " + e.getMessage());
             e.printStackTrace();
