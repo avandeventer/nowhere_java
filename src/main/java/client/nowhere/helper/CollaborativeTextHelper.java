@@ -129,9 +129,12 @@ public class CollaborativeTextHelper {
         if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
+
         String phaseId = phaseIdState.name();
 
-        if (outcomeTypeId == null || outcomeTypeId.trim().isEmpty()) {
+        boolean streamlinedMode = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
+
+        if ((outcomeTypeId == null || outcomeTypeId.trim().isEmpty()) && !streamlinedMode) {
             OutcomeType outcomeType = getOutcomeTypeForPlayer(gameCode, playerId);
             if (outcomeType != null && outcomeType.getId() != null) {
                 outcomeTypeId = outcomeType.getId();
