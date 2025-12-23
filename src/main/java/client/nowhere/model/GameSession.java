@@ -79,8 +79,12 @@ public class GameSession {
         this.gameState = gameState;
     }
 
+    public void setGameStateToNext(boolean streamlinedCollaborativeStories) {
+        this.gameState = this.gameState.getNextGameState(this.gameMode, streamlinedCollaborativeStories);
+    }
+
     public void setGameStateToNext() {
-        this.gameState = this.gameState.getNextGameState(this.gameMode);
+        this.gameState = this.gameState.getNextGameState(this.gameMode, false);
     }
 
     public ActivePlayerSession getActivePlayerSession() {

@@ -30,14 +30,16 @@ public class CollaborativeTextHelper {
     private final AdventureMapDAO adventureMapDAO;
     private final AdventureMapHelper adventureMapHelper;
     private final StoryDAO storyDAO;
+    private final FeatureFlagHelper featureFlagHelper;
 
     @Autowired
-    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO, AdventureMapHelper adventureMapHelper, StoryDAO storyDAO) {
+    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO, AdventureMapHelper adventureMapHelper, StoryDAO storyDAO, FeatureFlagHelper featureFlagHelper) {
         this.gameSessionDAO = gameSessionDAO;
         this.collaborativeTextDAO = collaborativeTextDAO;
         this.adventureMapDAO = adventureMapDAO;
         this.adventureMapHelper = adventureMapHelper;
         this.storyDAO = storyDAO;
+        this.featureFlagHelper = featureFlagHelper;
     }
 
     // ===== PUBLIC API METHODS =====
@@ -108,7 +110,10 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
         }
 
-        List<TextSubmission> winningSubmissions = calculateWinnersFromVotes(phase, gameSession.getGameState());
+        boolean streamlinedMode = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
+        List<TextSubmission> winningSubmissions = streamlinedMode 
+                ? calculateWinnersFromAdditions(phase, gameSession.getGameState())
+                : calculateWinnersFromVotes(phase, gameSession.getGameState());
 
         // Store the winning submissions in GameSessionDisplay
         if (!winningSubmissions.isEmpty()) {
@@ -156,6 +161,8 @@ public class CollaborativeTextHelper {
         // Add the text addition to the new submission
         newSubmission.addTextAddition(textAddition);
 
+        boolean streamlinedMode = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
+        
         // Assign outcome type for WHAT_WILL_BECOME_OF_US phase
         // Use outcomeType from TextAddition if provided, otherwise calculate based on player order
         if (gameSession.getGameState() == GameState.WHAT_WILL_BECOME_OF_US) {
@@ -163,13 +170,21 @@ public class CollaborativeTextHelper {
             newSubmission.setOutcomeType(outcomeType);
         }
         
+        // In streamlined mode, allow encounterLabel ids as outcomeType for WHAT_HAPPENS_HERE
+        if (streamlinedMode && gameSession.getGameState() == GameState.WHAT_HAPPENS_HERE) {
+            String encounterLabelId = textAddition.getOutcomeType();
+            if (encounterLabelId != null && !encounterLabelId.isEmpty()) {
+                newSubmission.setOutcomeType(encounterLabelId);
+            }
+        }
+        
         // Assign optionId as outcomeType for HOW_DOES_THIS_RESOLVE phase
         if (gameSession.getGameState() == GameState.HOW_DOES_THIS_RESOLVE) {
             String optionId = textAddition.getOutcomeType(); // outcomeType contains optionId for this phase
             if (optionId != null && !optionId.isEmpty()) {
                 newSubmission.setOutcomeType(optionId);
-            } else {
-                // Fallback: assign optionId based on player order
+            } else if (!streamlinedMode) {
+                // Fallback: assign optionId based on player order (only in non-streamlined mode)
                 String assignedOptionId = assignOptionTextToPlayer(gameSession, textAddition.getAuthorId()).getId();
                 newSubmission.setOutcomeType(assignedOptionId);
             }
@@ -264,23 +279,11 @@ public class CollaborativeTextHelper {
      * @return The assigned optionId
      */
     private OutcomeType assignOptionTextToPlayer(GameSession gameSession, String playerId) {
-        // Get the encounter at player coordinates
-        Encounter encounter = getEncounterAtPlayerCoordinates(gameSession.getGameCode());
-        if (encounter == null) {
-            throw new ValidationException("Encounter not found at player coordinates");
+        // Get the story at current encounter
+        Story story = getStoryAtCurrentEncounter(gameSession.getGameCode());
+        if (story == null) {
+            throw new ValidationException("Story not found at player coordinates");
         }
-
-        String storyId = encounter.getStoryId();
-        if (storyId == null || storyId.isEmpty()) {
-            throw new ValidationException("Story ID not found in encounter");
-        }
-
-        List<Story> stories = storyDAO.getAuthorStoriesByStoryId(gameSession.getGameCode(), storyId);
-        if (stories.isEmpty()) {
-            throw new ValidationException("Story not found with ID: " + storyId);
-        }
-
-        Story story = stories.getFirst();
         List<Option> options = story.getOptions();
         if (options == null || options.isEmpty()) {
             throw new ValidationException("No options found in story");
@@ -367,6 +370,48 @@ public class CollaborativeTextHelper {
             case 2 -> new OutcomeType("failure", "What will happen if we rise and destroy " + entityName + "?");
             default -> new OutcomeType("neutral", "What will happen if we are fractured and fail in the final confrontation with " + entityName + "?"); // Should never reach here, but provide a default
         };
+    }
+
+    /**
+     * Calculates winners based on number of additions (streamlined mode).
+     * For phases with outcomeTypes, ranks by most submissions per outcomeType.
+     */
+    private List<TextSubmission> calculateWinnersFromAdditions(CollaborativeTextPhase phase, GameState gameState) {
+        for (TextSubmission submission : phase.getSubmissions()) {
+            int additionCount = submission.getAdditions() != null ? submission.getAdditions().size() : 0;
+            submission.setAverageRanking(additionCount);
+        }
+
+        // Sort in descending order (most additions = better)
+        Comparator<TextSubmission> rankingComparator = Comparator
+                .comparingDouble(TextSubmission::getAverageRanking)
+                .reversed();
+
+        if (gameState == GameState.WHAT_HAPPENS_HERE_WINNER || gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS) {
+            // Rank by most submissions PER outcomeType
+            List<String> uniqueOutcomeTypes = phase.getSubmissions().stream()
+                    .map(TextSubmission::getOutcomeType)
+                    .filter(outcomeType -> outcomeType != null && !outcomeType.isEmpty())
+                    .distinct()
+                    .toList();
+
+            // For each outcomeType, find the submission with most additions
+            List<TextSubmission> winners = new ArrayList<>();
+            for (String outcomeType : uniqueOutcomeTypes) {
+                TextSubmission winner = phase.getSubmissions().stream()
+                        .filter(submission -> outcomeType.equals(submission.getOutcomeType()))
+                        .max(rankingComparator)
+                        .orElse(null);
+                if (winner != null) {
+                    winners.add(winner);
+                }
+            }
+            return winners;
+        } else {
+            return phase.getSubmissions().stream()
+                    .sorted(rankingComparator)
+                    .toList();
+        }
     }
 
     private List<TextSubmission> calculateWinnersFromVotes(CollaborativeTextPhase phase, GameState gameState) {
@@ -552,6 +597,8 @@ public class CollaborativeTextHelper {
      */
     private void updateGameSessionWithWinningSubmissions(String gameCode, String phaseId, List<TextSubmission> winningSubmissions) {
         try {
+            boolean streamlinedMode = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
+            
             // Get the current GameSessionDisplay
             GameSessionDisplay display = adventureMapDAO.getGameSessionDisplay(gameCode);
             if (display == null) {
@@ -607,22 +654,38 @@ public class CollaborativeTextHelper {
                     }
                 }
                 case "SET_ENCOUNTERS" -> {
-                    initializeDungeonGridWithEncounters(gameCode, phaseId, winningSubmissions, display);
+                    if (streamlinedMode) {
+                        addAllSubmissionsToAdventureMap(gameCode, winningSubmissions);
+                    } else {
+                        initializeDungeonGridWithEncounters(gameCode, phaseId, winningSubmissions, display);
+                    }
                 }
                 case "WHAT_HAPPENS_HERE" -> {
-                    handleWhatHappensHere(gameCode, winningSubmissions);
+                    if (streamlinedMode) {
+                        handleWhatHappensHereStreamlined(gameCode, winningSubmissions);
+                    } else {
+                        handleWhatHappensHere(gameCode, winningSubmissions);
+                    }
                 }
                 case "WHAT_CAN_WE_TRY" -> {
-                    handleWhatCanWeTry(gameCode, winningSubmissions);
+                    if (streamlinedMode) {
+                        handleWhatCanWeTryStreamlined(gameCode, winningSubmissions);
+                    } else {
+                        handleWhatCanWeTry(gameCode, winningSubmissions);
+                    }
                 }
                 case "HOW_DOES_THIS_RESOLVE" -> {
-                    handleHowDoesThisResolve(gameCode, winningSubmissions);
+                    handleHowDoesThisResolve(gameCode, winningSubmissions, streamlinedMode);
                 }
                 case "MAKE_CHOICE_VOTING" -> {
                     handleMakeChoice(gameCode, winningSubmissions);
                 }
                 case "NAVIGATE_VOTING" -> {
-                    handleNavigation(gameCode, winningSubmissions);
+                    if (streamlinedMode) {
+                        handleNavigationStreamlined(gameCode);
+                    } else {
+                        handleNavigation(gameCode, winningSubmissions);
+                    }
                 }
             }
 
@@ -631,6 +694,47 @@ public class CollaborativeTextHelper {
         } catch (Exception e) {
             // Log error but don't fail the main operation
             System.err.println("Failed to update GameSessionDisplay with winning submissions: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Adds all submissions to AdventureMap as EncounterLabels (streamlined mode for SET_ENCOUNTERS)
+     */
+    private void addAllSubmissionsToAdventureMap(String gameCode, List<TextSubmission> winningSubmissions) {
+        try {
+            if (winningSubmissions.isEmpty()) {
+                return;
+            }
+
+            GameSession gameSession = getGameSession(gameCode);
+            AdventureMap adventureMap = gameSession.getAdventureMap();
+            if (adventureMap == null) {
+                adventureMap = new AdventureMap();
+                gameSession.setAdventureMap(adventureMap);
+            }
+
+            if (adventureMap.getEncounterLabels() == null) {
+                adventureMap.setEncounterLabels(new ArrayList<>());
+            }
+
+            // Create EncounterLabels for all submissions
+            List<EncounterLabel> encounterLabels = new ArrayList<>();
+            for (TextSubmission submission : winningSubmissions) {
+                EncounterLabel label = new EncounterLabel(
+                    submission.getCurrentText(),
+                    submission
+                );
+                encounterLabels.add(label);
+            }
+            adventureMap.getEncounterLabels().addAll(encounterLabels);
+
+            // Update AdventureMap in Firestore
+            gameSession.setAdventureMap(adventureMap);
+            gameSession.setGameBoard(new GameBoard());
+            gameSessionDAO.updateGameSession(gameSession);
+        } catch (Exception e) {
+            System.err.println("Failed to add submissions to AdventureMap: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -807,6 +911,88 @@ public class CollaborativeTextHelper {
     }
 
     /**
+     * Handles WHAT_HAPPENS_HERE phase in streamlined mode: Creates stories for each winning submission
+     * using encounterLabels from AdventureMap and places them on the game board
+     */
+    private void handleWhatHappensHereStreamlined(String gameCode, List<TextSubmission> winningSubmissions) {
+        try {
+            if (winningSubmissions.isEmpty()) {
+                return;
+            }
+
+            GameSession gameSession = getGameSession(gameCode);
+            GameBoard gameBoard = gameSession.getGameBoard();
+            if (gameBoard == null) {
+                gameBoard = new GameBoard();
+                gameSession.setGameBoard(gameBoard);
+            }
+
+            PlayerCoordinates playerCoords = gameBoard.getPlayerCoordinates();
+            if (playerCoords == null) {
+                playerCoords = new PlayerCoordinates(0, 0);
+                gameBoard.setPlayerCoordinates(playerCoords);
+            }
+
+            AdventureMap adventureMap = gameSession.getAdventureMap();
+            if (adventureMap == null || adventureMap.getEncounterLabels() == null) {
+                System.err.println("AdventureMap or encounterLabels not found");
+                return;
+            }
+
+            int currentX = playerCoords.getxCoordinate();
+            int currentY = playerCoords.getyCoordinate();
+
+            // Process each winning submission
+            for (int i = 0; i < winningSubmissions.size(); i++) {
+                TextSubmission submission = winningSubmissions.get(i);
+                String encounterLabelId = submission.getOutcomeType();
+
+                if (encounterLabelId == null || encounterLabelId.isEmpty()) {
+                    continue;
+                }
+
+                // Find the corresponding EncounterLabel from AdventureMap
+                EncounterLabel encounterLabel = adventureMap.getEncounterLabels().stream()
+                        .filter(label -> encounterLabelId.equals(label.getEncounterId()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (encounterLabel == null) {
+                    System.err.println("EncounterLabel not found for id: " + encounterLabelId);
+                    continue;
+                }
+
+                // Create a new story with the encounterLabel and submission text
+                Story story = new Story();
+                story.setPrompt(submission.getCurrentText());
+                story.setPlayerId(AuthorConstants.DUNGEON_PLAYER);
+                story.setGameCode(gameCode);
+                story.setEncounterLabel(encounterLabel);
+                storyDAO.createStory(story);
+
+                // Create encounter with the story
+                Encounter encounter = new Encounter(
+                    encounterLabel,
+                    EncounterType.NORMAL,
+                    story.getStoryId(),
+                    story.getPrompt()
+                );
+
+                // Place first submission at player coordinates, subsequent ones at x+1, x+2, etc.
+                int x = currentX + i;
+                int y = currentY;
+                gameBoard.setEncounter(x, y, encounter);
+            }
+
+            // Update the game board in Firestore
+            gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
+        } catch (Exception e) {
+            System.err.println("Failed to handle WHAT_HAPPENS_HERE (streamlined): " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Handles WHAT_HAPPENS_HERE phase: Creates a Story from the winning submission
      * and updates the Encounter at player coordinates
      */
@@ -870,6 +1056,47 @@ public class CollaborativeTextHelper {
     }
 
     /**
+     * Handles WHAT_CAN_WE_TRY phase in streamlined mode: Adds all winning submissions as options to the story
+     */
+    private void handleWhatCanWeTryStreamlined(String gameCode, List<TextSubmission> winningSubmissions) {
+        try {
+            if (winningSubmissions.isEmpty()) {
+                return;
+            }
+
+            Story story = getStoryAtCurrentEncounter(gameCode);
+            if (story == null) {
+                return;
+            }
+
+            // Get current options or initialize empty list
+            List<Option> currentOptions = story.getOptions();
+            if (currentOptions == null) {
+                currentOptions = new ArrayList<>();
+            }
+
+            // Add all winning submissions as options
+            for (TextSubmission submission : winningSubmissions) {
+                if (currentOptions.stream().anyMatch(option -> option.getOptionText().equals(submission.getCurrentText()))) {
+                    continue;
+                }
+
+                Option option = new Option();
+                option.setOptionText(submission.getCurrentText());
+                currentOptions.add(option);
+            }
+
+            // Update the story with new options
+            story.setOptions(currentOptions);
+            story.setGameCode(gameCode);
+            storyDAO.updateStory(story);
+        } catch (Exception e) {
+            System.err.println("Failed to handle WHAT_CAN_WE_TRY (streamlined): " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Handles WHAT_CAN_WE_TRY phase: Creates Options from winning submissions
      * and adds them to the Story at player coordinates
      */
@@ -879,15 +1106,10 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
-            if (encounter == null) {
+            Story story = getStoryAtCurrentEncounter(gameCode);
+            if (story == null) {
                 return;
             }
-
-            String storyId = encounter.getStoryId();
-
-            List<Story> stories = storyDAO.getAuthorStoriesByStoryId(gameCode, storyId);
-            Story story = stories.getFirst();
 
             // Get current options or initialize empty list
             List<Option> currentOptions = story.getOptions();
@@ -920,22 +1142,16 @@ public class CollaborativeTextHelper {
     /**
      * Handles HOW_DOES_THIS_RESOLVE phase: Updates Option.successText for each winning submission
      */
-    private void handleHowDoesThisResolve(String gameCode, List<TextSubmission> winningSubmissions) {
+    private void handleHowDoesThisResolve(String gameCode, List<TextSubmission> winningSubmissions, boolean streamlinedMode) {
         try {
             if (winningSubmissions.isEmpty()) {
                 return;
             }
 
-            Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
-            if (encounter == null) {
+            Story story = getStoryAtCurrentEncounter(gameCode);
+            if (story == null) {
                 return;
             }
-
-            String storyId = encounter.getStoryId();
-
-            List<Story> stories = storyDAO.getAuthorStoriesByStoryId(gameCode, storyId);
-
-            Story story = stories.getFirst();
             List<Option> options = story.getOptions();
 
             Map<String, TextSubmission> optionWinners = new HashMap<>();
@@ -943,6 +1159,19 @@ public class CollaborativeTextHelper {
                 String optionId = winner.getOutcomeType();
                 if (optionId != null && !optionId.isEmpty()) {
                     optionWinners.put(optionId, winner);
+                }
+            }
+
+            if (streamlinedMode && !winningSubmissions.isEmpty()) {
+                TextSubmission highestRatedWinner = winningSubmissions.stream()
+                        .max(Comparator.comparingInt((TextSubmission s) -> 
+                                s.getAdditions() != null ? s.getAdditions().size() : 0))
+                        .orElse(null);
+
+                String optionId = highestRatedWinner.getOutcomeType();
+                if (optionId != null && !optionId.isEmpty()) {
+                    story.setVisited(true);
+                    story.setSelectedOptionId(optionId);
                 }
             }
 
@@ -995,6 +1224,43 @@ public class CollaborativeTextHelper {
             storyDAO.updateStory(story);
         } catch (Exception e) {
             System.err.println("Failed to handle MAKE_CHOICE_VOTING: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Handles NAVIGATE_VOTING phase in streamlined mode: Moves player to next encounter (x++)
+     */
+    private void handleNavigationStreamlined(String gameCode) {
+        try {
+            // Get current game session and player coordinates
+            GameSession gameSession = getGameSession(gameCode);
+            GameBoard gameBoard = gameSession.getGameBoard();
+            if (gameBoard == null) {
+                System.err.println("Game board not found for game: " + gameCode);
+                return;
+            }
+
+            PlayerCoordinates currentCoords = gameBoard.getPlayerCoordinates();
+            if (currentCoords == null) {
+                System.err.println("Player coordinates not found for game: " + gameCode);
+                return;
+            }
+
+            // Increment x coordinate to move to next encounter
+            int newX = currentCoords.getxCoordinate() + 1;
+            int newY = currentCoords.getyCoordinate();
+
+            // Create new player coordinates
+            PlayerCoordinates newCoordinates = new PlayerCoordinates(newX, newY);
+
+            // Update player coordinates via DAO
+            gameSessionDAO.updatePlayerCoordinates(gameCode, newCoordinates);
+
+            // Clear CollaborativeTextPhase objects for all story writing phases
+            clearStoryWritingPhases(gameCode);
+        } catch (Exception e) {
+            System.err.println("Failed to handle NAVIGATE_VOTING (streamlined): " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -1218,7 +1484,12 @@ public class CollaborativeTextHelper {
         );
     }
 
-    private Story getStoryAtCurrentEncounter(String gameCode) {
+    /**
+     * Gets the story at the current encounter.
+     * @param gameCode The game code
+     * @return Story at current encounter, or null if not found
+     */
+    public Story getStoryAtCurrentEncounter(String gameCode) {
         Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
 
         if (encounter == null) {
@@ -1288,5 +1559,62 @@ public class CollaborativeTextHelper {
         
         // For VOTING and WINNING phases, return empty string (instructions are in phaseInstructions)
         return "";
+    }
+
+    /**
+     * Gets all encounterLabels from the AdventureMap for streamlined mode.
+     * @param gameCode The game code
+     * @return List of encounterLabels
+     */
+    public List<EncounterLabel> getEncounterLabels(String gameCode) {
+        try {
+            GameSession gameSession = getGameSession(gameCode);
+            AdventureMap adventureMap = gameSession.getAdventureMap();
+            if (adventureMap == null || adventureMap.getEncounterLabels() == null) {
+                return new ArrayList<>();
+            }
+            return adventureMap.getEncounterLabels();
+        } catch (Exception e) {
+            System.err.println("Failed to get encounterLabels: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
+
+    /**
+     * Gets outcome types based on the current game phase.
+     * For WHAT_HAPPENS_HERE phase, returns encounterLabels as OutcomeType objects.
+     * For HOW_DOES_THIS_RESOLVE phase, returns options as OutcomeType objects.
+     * @param gameCode The game code
+     * @return List of OutcomeType objects
+     */
+    public List<OutcomeType> getOutcomeTypes(String gameCode) {
+        try {
+            GameSession gameSession = getGameSession(gameCode);
+            GameState gameState = gameSession.getGameState();
+
+            if (gameState == GameState.WHAT_HAPPENS_HERE) {
+                // Return encounterLabels as OutcomeType objects
+                List<EncounterLabel> encounterLabels = getEncounterLabels(gameCode);
+                return encounterLabels.stream()
+                        .map(label -> new OutcomeType(label.getEncounterId(), label.getEncounterLabel()))
+                        .toList();
+            } else if (gameState == GameState.HOW_DOES_THIS_RESOLVE) {
+                // Return options as OutcomeType objects
+                Story story = getStoryAtCurrentEncounter(gameCode);
+                if (story == null || story.getOptions() == null) {
+                    return new ArrayList<>();
+                }
+                List<Option> options = story.getOptions();
+                return options.stream()
+                        .map(option -> new OutcomeType(option.getOptionId(), option.getOptionText()))
+                        .toList();
+            } else {
+                return new ArrayList<>();
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to get outcome types: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
 }

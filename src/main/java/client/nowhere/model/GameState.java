@@ -64,69 +64,95 @@ public enum GameState {
         NAVIGATE_VOTING,
         NAVIGATE_WINNER;
 
-        public GameState getNextGameState(GameMode gameMode) {
+        public GameState getNextGameState(GameMode gameMode, boolean streamlinedCollaborativeStories) {
             if (gameMode == GameMode.TOWN_MODE) {
                 return getNextGameStateTownMode();
             } else {
-                return getNextGameStateDungeonMode();
+                return getNextGameStateDungeonMode(streamlinedCollaborativeStories);
             }
         }
 
-    private GameState getNextGameStateDungeonMode() {
-        switch (this) {
-            case INIT -> {
-                return GameState.PREAMBLE;
+    private GameState getNextGameStateDungeonMode(boolean streamlinedCollaborativeStories) {
+        if (streamlinedCollaborativeStories) {
+            switch (this) {
+                case INIT -> {
+                    return GameState.PREAMBLE;
+                }
+                case PREAMBLE -> {
+                    return GameState.SET_ENCOUNTERS;
+                }
+                case SET_ENCOUNTERS -> {
+                    return GameState.SET_ENCOUNTERS_WINNERS;
+                } case SET_ENCOUNTERS_WINNERS -> {
+                    return GameState.WHAT_HAPPENS_HERE;
+                } case GameState.WHAT_HAPPENS_HERE_WINNER -> {
+                    return GameState.WHAT_CAN_WE_TRY;
+                } case GameState.WHAT_CAN_WE_TRY, NAVIGATE_WINNER -> {
+                    return GameState.WHAT_CAN_WE_TRY_WINNERS;
+                } case GameState.WHAT_CAN_WE_TRY_WINNERS -> {
+                    return GameState.HOW_DOES_THIS_RESOLVE;
+                } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS -> {
+                    return GameState.NAVIGATE_WINNER;
+                } default -> {
+                    return GameState.INIT;
+                }
             }
-            case PREAMBLE -> {
-                return GameState.SET_ENCOUNTERS;
-            }
-            case SET_ENCOUNTERS -> {
-                return GameState.SET_ENCOUNTERS_VOTING;
-            }
-            case SET_ENCOUNTERS_VOTING -> {
-                return GameState.SET_ENCOUNTERS_WINNERS;
-            }
-            case SET_ENCOUNTERS_WINNERS, NAVIGATE_WINNER -> {
-                return GameState.WHAT_HAPPENS_HERE;
-            }
-            case WHAT_HAPPENS_HERE -> {
-                return GameState.WHAT_HAPPENS_HERE_VOTING;
-            }
-            case WHAT_HAPPENS_HERE_VOTING -> {
-                return GameState.WHAT_HAPPENS_HERE_WINNER;
-            }
-            case WHAT_HAPPENS_HERE_WINNER -> {
-                return GameState.WHAT_CAN_WE_TRY;
-            }
-            case WHAT_CAN_WE_TRY -> {
-                return GameState.WHAT_CAN_WE_TRY_VOTING;
-            }
-            case WHAT_CAN_WE_TRY_VOTING -> {
-                return GameState.WHAT_CAN_WE_TRY_WINNERS;
-            }
-            case WHAT_CAN_WE_TRY_WINNERS -> {
-                return GameState.HOW_DOES_THIS_RESOLVE;
-            }
-            case HOW_DOES_THIS_RESOLVE -> {
-                return GameState.HOW_DOES_THIS_RESOLVE_VOTING;
-            }
-            case HOW_DOES_THIS_RESOLVE_VOTING -> {
-                return GameState.HOW_DOES_THIS_RESOLVE_WINNERS;
-            }
-            case HOW_DOES_THIS_RESOLVE_WINNERS -> {
-                return GameState.MAKE_CHOICE_VOTING;
-            }
-            case MAKE_CHOICE_VOTING -> {
-                return GameState.MAKE_CHOICE_WINNER;
-            }
-            case MAKE_CHOICE_WINNER -> {
-                return GameState.NAVIGATE_VOTING;
-            }
-            case NAVIGATE_VOTING -> {
-                return GameState.NAVIGATE_WINNER;
-            }
-            default -> {
-                return GameState.INIT;
+        } else {
+            switch (this) {
+                case INIT -> {
+                    return GameState.PREAMBLE;
+                }
+                case PREAMBLE -> {
+                    return GameState.SET_ENCOUNTERS;
+                }
+                case SET_ENCOUNTERS -> {
+                    return GameState.SET_ENCOUNTERS_VOTING;
+                }
+                case SET_ENCOUNTERS_VOTING -> {
+                    return GameState.SET_ENCOUNTERS_WINNERS;
+                }
+                case SET_ENCOUNTERS_WINNERS, NAVIGATE_WINNER -> {
+                    return GameState.WHAT_HAPPENS_HERE;
+                }
+                case WHAT_HAPPENS_HERE -> {
+                    return GameState.WHAT_HAPPENS_HERE_VOTING;
+                }
+                case WHAT_HAPPENS_HERE_VOTING -> {
+                    return GameState.WHAT_HAPPENS_HERE_WINNER;
+                }
+                case WHAT_HAPPENS_HERE_WINNER -> {
+                    return GameState.WHAT_CAN_WE_TRY;
+                }
+                case WHAT_CAN_WE_TRY -> {
+                    return GameState.WHAT_CAN_WE_TRY_VOTING;
+                }
+                case WHAT_CAN_WE_TRY_VOTING -> {
+                    return GameState.WHAT_CAN_WE_TRY_WINNERS;
+                }
+                case WHAT_CAN_WE_TRY_WINNERS -> {
+                    return GameState.HOW_DOES_THIS_RESOLVE;
+                }
+                case HOW_DOES_THIS_RESOLVE -> {
+                    return GameState.HOW_DOES_THIS_RESOLVE_VOTING;
+                }
+                case HOW_DOES_THIS_RESOLVE_VOTING -> {
+                    return GameState.HOW_DOES_THIS_RESOLVE_WINNERS;
+                }
+                case HOW_DOES_THIS_RESOLVE_WINNERS -> {
+                    return GameState.MAKE_CHOICE_VOTING;
+                }
+                case MAKE_CHOICE_VOTING -> {
+                    return GameState.MAKE_CHOICE_WINNER;
+                }
+                case MAKE_CHOICE_WINNER -> {
+                    return GameState.NAVIGATE_VOTING;
+                }
+                case NAVIGATE_VOTING -> {
+                    return GameState.NAVIGATE_WINNER;
+                }
+                default -> {
+                    return GameState.INIT;
+                }
             }
         }
     }

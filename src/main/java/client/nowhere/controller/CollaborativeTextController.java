@@ -64,4 +64,10 @@ public class CollaborativeTextController {
     public CollaborativeTextPhaseInfo getCollaborativeTextPhaseInfo(@RequestParam String gameCode) {
         return this.collaborativeTextHelper.getCollaborativeTextPhaseInfo(gameCode);
     }
+
+    @GetMapping("/collaborativeText/outcomeTypes")
+    @ResponseBody
+    public List<OutcomeType> getOutcomeTypes(@RequestParam String gameCode) {
+        return this.collaborativeTextHelper.getOutcomeTypes(gameCode);
+    }
 }
