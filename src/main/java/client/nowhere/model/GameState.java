@@ -93,6 +93,8 @@ public enum GameState {
                     return GameState.WHAT_CAN_WE_TRY_WINNERS;
                 } case GameState.WHAT_CAN_WE_TRY_WINNERS -> {
                     return GameState.HOW_DOES_THIS_RESOLVE;
+                } case GameState.HOW_DOES_THIS_RESOLVE -> {
+                    return GameState.HOW_DOES_THIS_RESOLVE_WINNERS;
                 } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS -> {
                     return GameState.NAVIGATE_WINNER;
                 } default -> {
