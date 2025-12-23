@@ -398,8 +398,7 @@ public class CollaborativeTextHelper {
 
         // Sort in descending order (most additions = better)
         Comparator<TextSubmission> rankingComparator = Comparator
-                .comparingDouble(TextSubmission::getAverageRanking)
-                .reversed();
+                .comparingDouble(TextSubmission::getAverageRanking);
 
         if (gameState == GameState.WHAT_HAPPENS_HERE_WINNER || gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS) {
             // Rank by most submissions PER outcomeType
@@ -420,7 +419,8 @@ public class CollaborativeTextHelper {
                     winners.add(winner);
                 }
             }
-            return winners;
+
+            return winners.stream().sorted(rankingComparator.reversed()).toList();
         } else {
             return phase.getSubmissions().stream()
                     .sorted(rankingComparator)
@@ -1177,11 +1177,8 @@ public class CollaborativeTextHelper {
             }
 
             if (streamlinedMode && !winningSubmissions.isEmpty()) {
-                TextSubmission highestRatedWinner = winningSubmissions.stream()
-                        .max(Comparator.comparingInt((TextSubmission s) -> 
-                                s.getAdditions() != null ? s.getAdditions().size() : 0))
-                        .orElse(null);
-
+                // Winners are already sorted in descending order (highest additions first)
+                TextSubmission highestRatedWinner = winningSubmissions.getFirst();
                 String optionId = highestRatedWinner.getOutcomeType();
                 if (optionId != null && !optionId.isEmpty()) {
                     story.setVisited(true);
