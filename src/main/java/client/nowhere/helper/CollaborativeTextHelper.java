@@ -190,6 +190,14 @@ public class CollaborativeTextHelper {
             }
         }
 
+        if (textAddition.getOutcomeTypeWithLabel() != null
+            && !textAddition.getOutcomeTypeWithLabel().getLabel().trim().isEmpty()
+            && !textAddition.getOutcomeTypeWithLabel().getId().isEmpty()
+        ) {
+            newSubmission.setOutcomeTypeWithLabel(textAddition.getOutcomeTypeWithLabel());
+            newSubmission.setOutcomeType(textAddition.getOutcomeTypeWithLabel().getId());
+        }
+
         return newSubmission;
     }
 
@@ -231,6 +239,12 @@ public class CollaborativeTextHelper {
         // Preserve the parent's outcome type if it exists
         if (parentSubmission.getOutcomeType() != null && !parentSubmission.getOutcomeType().trim().isEmpty()) {
             newSubmission.setOutcomeType(parentSubmission.getOutcomeType());
+        }
+
+        if (parentSubmission.getOutcomeTypeWithLabel() != null
+            && !parentSubmission.getOutcomeTypeWithLabel().getLabel().trim().isEmpty()
+        ) {
+            newSubmission.setOutcomeTypeWithLabel(parentSubmission.getOutcomeTypeWithLabel());
         }
 
         return newSubmission;

@@ -10,17 +10,19 @@ public class TextAddition {
     private Timestamp addedAt;
     private String submissionId; // Reference to the original submission
     private String outcomeType; // Optional: "success", "neutral", or "failure" - used for WHAT_WILL_BECOME_OF_US phase
+    private OutcomeType outcomeTypeWithLabel;
 
     public TextAddition() {
         this.addedAt = Timestamp.now();
     }
 
-    public TextAddition(String additionId, String authorId, String addedText, String submissionId) {
+    public TextAddition(String additionId, String authorId, String addedText, String submissionId, OutcomeType outcomeTypeWithLabel) {
         this();
         this.additionId = additionId;
         this.authorId = authorId;
         this.addedText = addedText;
         this.submissionId = submissionId;
+        this.outcomeTypeWithLabel = outcomeTypeWithLabel;
     }
 
     // Getters and Setters
@@ -42,4 +44,12 @@ public class TextAddition {
 
     public String getOutcomeType() { return outcomeType; }
     public void setOutcomeType(String outcomeType) { this.outcomeType = outcomeType; }
+
+    public OutcomeType getOutcomeTypeWithLabel() {
+        return outcomeTypeWithLabel;
+    }
+
+    public void setOutcomeTypeWithLabel(OutcomeType outcomeTypeWithLabel) {
+        this.outcomeTypeWithLabel = outcomeTypeWithLabel;
+    }
 }
