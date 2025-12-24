@@ -37,6 +37,7 @@ public class GameSessionHelper {
     private final EndingDAO endingDAO;
     private final UserProfileHelper userProfileHelper;
     private final FeatureFlagHelper featureFlagHelper;
+    private final CollaborativeTextHelper collaborativeTextHelper;
 
     @Autowired
     public GameSessionHelper(
@@ -45,7 +46,8 @@ public class GameSessionHelper {
             StoryDAO storyDAO,
             EndingDAO endingDAO,
             UserProfileHelper userProfileHelper,
-            FeatureFlagHelper featureFlagHelper
+            FeatureFlagHelper featureFlagHelper,
+            CollaborativeTextHelper collaborativeTextHelper
     ) {
         this.gameSessionDAO = gameSessionDAO;
         this.adventureMapDAO = adventureMapDAO;
@@ -53,6 +55,7 @@ public class GameSessionHelper {
         this.endingDAO = endingDAO;
         this.userProfileHelper = userProfileHelper;
         this.featureFlagHelper = featureFlagHelper;
+        this.collaborativeTextHelper = collaborativeTextHelper;
     }
 
     public GameSession createGameSession(String userProfileId, String adventureId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound, GameMode gameMode) {
@@ -213,6 +216,11 @@ public class GameSessionHelper {
                     }
                     gameSession.setGameStateToNext();
                     break;
+                case NAVIGATE_WINNER:
+                    boolean streamlinedFeatureFlag = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
+                    if (streamlinedFeatureFlag) {
+                        collaborativeTextHelper.handleNavigationStreamlined(gameSession.getGameCode());
+                    }
                 default:
                     break;
             }

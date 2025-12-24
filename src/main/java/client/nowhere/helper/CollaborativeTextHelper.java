@@ -698,11 +698,7 @@ public class CollaborativeTextHelper {
                     handleMakeChoice(gameCode, winningSubmissions);
                 }
                 case "NAVIGATE_VOTING" -> {
-                    if (streamlinedMode) {
-                        handleNavigationStreamlined(gameCode);
-                    } else {
-                        handleNavigation(gameCode, winningSubmissions);
-                    }
+                    handleNavigation(gameCode, winningSubmissions);
                 }
             }
 
@@ -1245,7 +1241,7 @@ public class CollaborativeTextHelper {
     /**
      * Handles NAVIGATE_VOTING phase in streamlined mode: Moves player to next encounter (x++)
      */
-    private void handleNavigationStreamlined(String gameCode) {
+    public void handleNavigationStreamlined(String gameCode) {
         try {
             // Get current game session and player coordinates
             GameSession gameSession = getGameSession(gameCode);
