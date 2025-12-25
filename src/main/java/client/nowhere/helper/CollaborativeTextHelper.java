@@ -74,6 +74,10 @@ public class CollaborativeTextHelper {
             newSubmission = createBranchedSubmission(gameSession, textAddition, phaseId);
         } else {
             newSubmission = createNewSubmission(textAddition, gameSession);
+            
+            if (phaseId.equals(GameState.HOW_DOES_THIS_RESOLVE.name())) {
+                createOptionFromOutcomeType(gameCode, textAddition);
+            }
         }
 
         return collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, newSubmission);
@@ -202,6 +206,42 @@ public class CollaborativeTextHelper {
         }
 
         return newSubmission;
+    }
+
+    /**
+     * Creates a new option in the story at the current encounter if the outcomeTypeWithLabel
+     * doesn't already exist as an option. This is used for HOW_DOES_THIS_RESOLVE phase
+     * when players submit with an outcomeTypeWithLabel.
+     */
+    private void createOptionFromOutcomeType(String gameCode, TextAddition textAddition) {
+        if (textAddition.getOutcomeTypeWithLabel() == null
+                || textAddition.getOutcomeTypeWithLabel().getLabel() == null
+                || textAddition.getOutcomeTypeWithLabel().getLabel().isEmpty()) {
+            return;
+        }
+
+        Story storyAtEncounter = getStoryAtCurrentEncounter(gameCode);
+        if (storyAtEncounter == null || storyAtEncounter.getOptions() == null) {
+            return;
+        }
+
+        String labelText = textAddition.getOutcomeTypeWithLabel().getLabel();
+
+        boolean optionExists = storyAtEncounter.getOptions().stream()
+                .anyMatch(option -> labelText.equals(option.getOptionText()));
+
+        if (!optionExists) {
+            Option newOption = new Option();
+            newOption.setOptionText(labelText);
+            newOption.setOptionId(textAddition.getOutcomeTypeWithLabel().getId());
+
+            if (storyAtEncounter.getOptions() == null) {
+                storyAtEncounter.setOptions(new ArrayList<>());
+            }
+            storyAtEncounter.getOptions().add(newOption);
+            storyAtEncounter.setGameCode(gameCode);
+            storyDAO.updateStory(storyAtEncounter);
+        }
     }
 
     /**
@@ -685,11 +725,12 @@ public class CollaborativeTextHelper {
                     }
                 }
                 case "WHAT_CAN_WE_TRY" -> {
-                    if (streamlinedMode) {
-                        handleWhatCanWeTryStreamlined(gameCode, winningSubmissions);
-                    } else {
+                    if (!streamlinedMode) {
                         handleWhatCanWeTry(gameCode, winningSubmissions);
                     }
+//                    else {
+//                        handleWhatCanWeTryStreamlined(gameCode, winningSubmissions);
+//                    }
                 }
                 case "HOW_DOES_THIS_RESOLVE" -> {
                     handleHowDoesThisResolve(gameCode, winningSubmissions, streamlinedMode);
@@ -1175,16 +1216,6 @@ public class CollaborativeTextHelper {
                 }
             }
 
-            if (streamlinedMode && !winningSubmissions.isEmpty()) {
-                // Winners are already sorted in descending order (highest additions first)
-                TextSubmission highestRatedWinner = winningSubmissions.getFirst();
-                String optionId = highestRatedWinner.getOutcomeType();
-                if (optionId != null && !optionId.isEmpty()) {
-                    story.setVisited(true);
-                    story.setSelectedOptionId(optionId);
-                }
-            }
-
             for (Option option : options) {
                 TextSubmission winner = optionWinners.get(option.getOptionId());
                 if (winner != null) {
@@ -1538,10 +1569,12 @@ public class CollaborativeTextHelper {
             case WINNING -> {
                 if (gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER) {
                     yield "The threads before us have now been sealed. Only our choices ahead can reveal them to us. Now we must build this place.";
-                } else if (gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS || gameState == GameState.WHAT_CAN_WE_TRY) {
+                } else if (gameState == GameState.WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS) {
                     yield "The winning submissions are...";
                 } else if (gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS){
                     yield "Now our heroes must make their choice. Choose from the options on your device and our resolution will be revealed.";
+                } else if (gameState == GameState.WHAT_CAN_WE_TRY_WINNERS || gameState == GameState.WHAT_HAPPENS_HERE_WINNER) {
+                    yield "The story so far...";
                 } else {
                     yield "The winning submission is...";
                 }

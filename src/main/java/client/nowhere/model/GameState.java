@@ -96,6 +96,12 @@ public enum GameState {
                 } case GameState.HOW_DOES_THIS_RESOLVE -> {
                     return GameState.HOW_DOES_THIS_RESOLVE_WINNERS;
                 } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS -> {
+                    return GameState.MAKE_CHOICE_VOTING;
+                }
+                case MAKE_CHOICE_VOTING -> {
+                    return GameState.MAKE_CHOICE_WINNER;
+                }
+                case MAKE_CHOICE_WINNER -> {
                     return GameState.NAVIGATE_WINNER;
                 } default -> {
                     return GameState.INIT;
