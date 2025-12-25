@@ -1643,14 +1643,21 @@ public class CollaborativeTextHelper {
                         .map(label -> new OutcomeType(label.getEncounterId(), label.getEncounterLabel()))
                         .toList();
             } else if (gameState == GameState.HOW_DOES_THIS_RESOLVE) {
-                // Return options as OutcomeType objects
-                Story story = getStoryAtCurrentEncounter(gameCode);
-                if (story == null || story.getOptions() == null) {
+                // Return submissions from WHAT_HAPPENS_HERE phase as OutcomeType objects
+                CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
+                if (whatCanWeTry == null || whatCanWeTry.getSubmissions() == null || whatCanWeTry.getSubmissions().isEmpty()) {
                     return new ArrayList<>();
                 }
-                List<Option> options = story.getOptions();
-                return options.stream()
-                        .map(option -> new OutcomeType(option.getOptionId(), option.getOptionText()))
+                return whatCanWeTry.getSubmissions().stream()
+                        .filter(submission -> 
+                            submission.getSubmissionId() != null 
+                            && !submission.getSubmissionId().isEmpty() 
+                            && submission.getCurrentText() != null 
+                            && !submission.getCurrentText().isEmpty())
+                        .map(submission -> new OutcomeType(
+                            submission.getSubmissionId(),
+                            submission.getCurrentText()
+                        ))
                         .toList();
             } else {
                 return new ArrayList<>();
