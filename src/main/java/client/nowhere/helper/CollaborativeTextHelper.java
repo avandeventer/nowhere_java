@@ -221,13 +221,13 @@ public class CollaborativeTextHelper {
         }
 
         Story storyAtEncounter = getStoryAtCurrentEncounter(gameCode);
-        if (storyAtEncounter == null || storyAtEncounter.getOptions() == null) {
+        if (storyAtEncounter == null) {
             return;
         }
 
         String labelText = textAddition.getOutcomeTypeWithLabel().getLabel();
 
-        boolean optionExists = storyAtEncounter.getOptions().stream()
+        boolean optionExists = storyAtEncounter.getOptions() != null && storyAtEncounter.getOptions().stream()
                 .anyMatch(option -> labelText.equals(option.getOptionText()));
 
         if (!optionExists) {
