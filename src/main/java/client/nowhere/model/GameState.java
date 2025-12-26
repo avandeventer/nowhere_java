@@ -66,15 +66,15 @@ public enum GameState {
         CAMPFIRE,
         CAMPFIRE_WINNERS;
 
-        public GameState getNextGameState(GameMode gameMode, boolean streamlinedCollaborativeStories) {
+        public GameState getNextGameState(GameMode gameMode, boolean streamlinedCollaborativeStories, int roundNumber) {
             if (gameMode == GameMode.TOWN_MODE) {
                 return getNextGameStateTownMode();
             } else {
-                return getNextGameStateDungeonMode(streamlinedCollaborativeStories);
+                return getNextGameStateDungeonMode(streamlinedCollaborativeStories, roundNumber);
             }
         }
 
-    private GameState getNextGameStateDungeonMode(boolean streamlinedCollaborativeStories) {
+    private GameState getNextGameStateDungeonMode(boolean streamlinedCollaborativeStories, int roundNumber) {
         if (streamlinedCollaborativeStories) {
             switch (this) {
                 case INIT -> {
@@ -104,6 +104,9 @@ public enum GameState {
                     return GameState.MAKE_CHOICE_WINNER;
                 }
                 case MAKE_CHOICE_WINNER -> {
+                    return roundNumber == 1 ? GameState.PREAMBLE_AGAIN : GameState.ENDING_PREAMBLE;
+                }
+                case PREAMBLE_AGAIN, ENDING_PREAMBLE -> {
                     return GameState.CAMPFIRE;
                 }
                 case CAMPFIRE -> {

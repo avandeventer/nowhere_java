@@ -66,7 +66,7 @@ public class GameSessionHelper {
     public GameSession  updateToNextGameState(String gameCode) {
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
         boolean streamlinedFeatureFlag = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
-        gameSession.setGameStateToNext(streamlinedFeatureFlag);
+        gameSession.setGameStateToNext(streamlinedFeatureFlag, gameSession.getRoundNumber());
         return updateGameSession(gameSession, false);
     }
 
