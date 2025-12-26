@@ -77,6 +77,7 @@ public class GameSessionDAO {
             updates.put("saveGameId", gameSession.getSaveGameId());
         }
         updates.put("activeGameStateSession", gameSession.getActiveGameStateSession());
+        updates.put("roundNumber", gameSession.getRoundNumber());
         updates.put("activePlayerSession", gameSession.getActivePlayerSession());
         updates.put("totalPointsTowardsVictory", gameSession.getTotalPointsTowardsVictory());
 

@@ -1500,11 +1500,11 @@ public class CollaborativeTextHelper {
             ? gameSessionDisplay.getEntity() 
             : "the Entity";
 
-        PhaseBaseInfo baseInfo = gameState.getPhaseBaseInfo(entityName);
+        PhaseBaseInfo baseInfo = gameState.getPhaseBaseInfo(entityName, gameSession.getRoundNumber());
         PhaseType phaseType = determinePhaseType(gameState, baseInfo);
 
         String phaseInstructions = getPhaseInstructionsForMode(gameState, phaseType, baseInfo);
-        
+
         String collaborativeModeInstructions = getCollaborativeModeInstructions(
             baseInfo.collaborativeMode(), 
             phaseType, 
@@ -1575,6 +1575,8 @@ public class CollaborativeTextHelper {
                     yield "Now our heroes must make their choice. Choose from the options on your device and our resolution will be revealed.";
                 } else if (gameState == GameState.WHAT_CAN_WE_TRY_WINNERS || gameState == GameState.WHAT_HAPPENS_HERE_WINNER) {
                     yield "The story so far...";
+                } else if (gameState == GameState.CAMPFIRE_WINNERS) {
+                    yield "We talk long into the night...";
                 } else {
                     yield "The winning submission is...";
                 }
@@ -1585,7 +1587,11 @@ public class CollaborativeTextHelper {
     /**
      * Gets collaborative mode instructions, reusing logic based on collaborative mode and phase type
      */
-    private String getCollaborativeModeInstructions(CollaborativeMode collaborativeMode, PhaseType phaseType, GameState gameState) {
+    private String getCollaborativeModeInstructions(
+            CollaborativeMode collaborativeMode,
+            PhaseType phaseType,
+            GameState gameState
+        ) {
         // For SUBMISSION phase, return mode-specific instructions
         if (phaseType == PhaseType.SUBMISSION) {
             if (collaborativeMode == CollaborativeMode.RAPID_FIRE) {

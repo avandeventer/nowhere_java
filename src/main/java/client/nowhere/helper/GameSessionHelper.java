@@ -221,6 +221,7 @@ public class GameSessionHelper {
                     if (streamlinedFeatureFlag) {
                         collaborativeTextHelper.handleNavigationStreamlined(gameSession.getGameCode());
                     }
+                    gameSession.setRoundNumber(gameSession.getRoundNumber() + 1);
                 default:
                     break;
             }

@@ -62,7 +62,9 @@ public enum GameState {
         MAKE_CHOICE_VOTING,
         MAKE_CHOICE_WINNER,
         NAVIGATE_VOTING,
-        NAVIGATE_WINNER;
+        NAVIGATE_WINNER,
+        CAMPFIRE,
+        CAMPFIRE_WINNERS;
 
         public GameState getNextGameState(GameMode gameMode, boolean streamlinedCollaborativeStories) {
             if (gameMode == GameMode.TOWN_MODE) {
@@ -102,8 +104,15 @@ public enum GameState {
                     return GameState.MAKE_CHOICE_WINNER;
                 }
                 case MAKE_CHOICE_WINNER -> {
+                    return GameState.CAMPFIRE;
+                }
+                case CAMPFIRE -> {
+                    return GameState.CAMPFIRE_WINNERS;
+                }
+                case CAMPFIRE_WINNERS -> {
                     return GameState.NAVIGATE_WINNER;
-                } default -> {
+                }
+                default -> {
                     return GameState.INIT;
                 }
             }
@@ -320,6 +329,7 @@ public enum GameState {
                         case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNERS -> HOW_DOES_THIS_RESOLVE;
                         case MAKE_CHOICE_VOTING, MAKE_CHOICE_WINNER -> MAKE_CHOICE_VOTING;
                         case NAVIGATE_VOTING, NAVIGATE_WINNER -> NAVIGATE_VOTING;
+                        case CAMPFIRE, CAMPFIRE_WINNERS -> CAMPFIRE;
                         default -> null;
                 };
         }
@@ -329,7 +339,7 @@ public enum GameState {
          * @param entityName The name of the entity (used in some phase instructions)
          * @return PhaseBaseInfo containing phase question, instructions, collaborative mode, and related game states
          */
-        public PhaseBaseInfo getPhaseBaseInfo(String entityName) {
+        public PhaseBaseInfo getPhaseBaseInfo(String entityName, int roundNumber) {
                 // Determine which phase group this game state belongs to using getPhaseId()
                 GameState phaseId = getPhaseId();
                 if (phaseId == WHERE_ARE_WE) {
@@ -476,6 +486,25 @@ public enum GameState {
                         NAVIGATE_VOTING,
                         NAVIGATE_WINNER,
                         true
+                    );
+                }
+                if (phaseId == CAMPFIRE) {
+                    String memory = "The " + entityName + "used to be one of us. We reminisce about how they changed.";
+                    if (roundNumber == 2) {
+                        memory = "We each reminisce about our fondest memory with " + entityName + ".";
+                    }
+                    if (roundNumber == 3) {
+                        memory = "We discuss how we plan to bring our friend back from the dark.";
+                    }
+
+                    return new PhaseBaseInfo(
+                            "We rest for a moment and old memories return...",
+                            memory,
+                            CollaborativeMode.SHARE_TEXT,
+                            null,
+                            CAMPFIRE,
+                            CAMPFIRE_WINNERS,
+                            false
                     );
                 }
                 // Default fallback

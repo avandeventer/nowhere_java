@@ -22,6 +22,7 @@ public class GameSession {
     String saveGameId;
     Integer storiesToWritePerRound = 1;
     Integer storiesToPlayPerRound = 1;
+    Integer roundNumber = 1;
     GameMode gameMode = GameMode.TOWN_MODE;
     GameBoard gameBoard = new GameBoard();
 
@@ -221,5 +222,13 @@ public class GameSession {
 
     public void setGameBoard(GameBoard gameBoard) {
         this.gameBoard = gameBoard != null ? gameBoard : new GameBoard();
+    }
+
+    public Integer getRoundNumber() {
+        return roundNumber;
+    }
+
+    public void setRoundNumber(Integer roundNumber) {
+        this.roundNumber = roundNumber;
     }
 }
