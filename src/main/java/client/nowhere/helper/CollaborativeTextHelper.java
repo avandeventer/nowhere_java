@@ -115,7 +115,7 @@ public class CollaborativeTextHelper {
         }
 
         boolean streamlinedMode = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
-        List<TextSubmission> winningSubmissions = streamlinedMode 
+        List<TextSubmission> winningSubmissions = streamlinedMode && !phaseId.equals(GameState.MAKE_CHOICE_VOTING.name())
                 ? calculateWinnersFromAdditions(phase, gameSession.getGameState())
                 : calculateWinnersFromVotes(phase, gameSession.getGameState());
 
