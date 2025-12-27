@@ -504,8 +504,8 @@ public enum GameState {
                             "We rest for a moment and old memories return...",
                             memory,
                             CollaborativeMode.SHARE_TEXT,
-                            null,
                             CAMPFIRE,
+                            null,
                             CAMPFIRE_WINNERS,
                             false
                     );
