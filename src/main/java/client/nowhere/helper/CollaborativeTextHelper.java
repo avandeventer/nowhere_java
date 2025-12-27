@@ -439,7 +439,8 @@ public class CollaborativeTextHelper {
             submission.setAverageRanking(additionCount);
         }
 
-        // Sort in descending order (most additions = better)
+        // Comparator is ascending (lower values first, higher values last)
+        // For additions: higher = better, so we use .max() to find highest, then sort descending
         Comparator<TextSubmission> rankingComparator = Comparator
                 .comparingDouble(TextSubmission::getAverageRanking);
 
@@ -452,6 +453,7 @@ public class CollaborativeTextHelper {
                     .toList();
 
             // For each outcomeType, find the submission with most additions
+            // .max() with ascending comparator returns the highest value
             List<TextSubmission> winners = new ArrayList<>();
             for (String outcomeType : uniqueOutcomeTypes) {
                 TextSubmission winner = phase.getSubmissions().stream()
@@ -463,10 +465,13 @@ public class CollaborativeTextHelper {
                 }
             }
 
+            // Sort descending so highest additions come first
             return winners.stream().sorted(rankingComparator.reversed()).toList();
         } else {
+            // For other phases (like CAMPFIRE), return all submissions sorted by most additions first
+            // Sort descending so highest additions come first
             return phase.getSubmissions().stream()
-                    .sorted(rankingComparator)
+                    .sorted(rankingComparator.reversed())
                     .toList();
         }
     }
