@@ -99,7 +99,7 @@ public class GameSessionHelperTest {
         // Different assertions based on starting state
         if (currentGameState == LOCATION_SELECT) {
             // Starting from LOCATION_SELECT: goes through GENERATE_WRITE_PROMPT_AUTHORS -> WRITE_PROMPTS
-            assertEquals(GENERATE_WRITE_PROMPT_AUTHORS.getNextGameState(GameMode.TOWN_MODE, false), updated.getGameState());
+            assertEquals(GENERATE_WRITE_PROMPT_AUTHORS.getNextGameState(GameMode.TOWN_MODE, false, 1), updated.getGameState());
             assertTrue(updated.getStories().stream().noneMatch(story -> story.getAuthorId().isEmpty()));
 
             for (Story story : updated.getStories()) {
@@ -147,7 +147,7 @@ public class GameSessionHelperTest {
                     "Story authorship should be fairly balanced (difference between most and least is at most 1)");
         } else if (currentGameState == WRITE_PROMPTS) {
             // Starting from WRITE_PROMPTS: goes through GENERATE_WRITE_OPTION_AUTHORS -> WRITE_OPTIONS
-            assertEquals(GENERATE_WRITE_OPTION_AUTHORS.getNextGameState(GameMode.TOWN_MODE, false), updated.getGameState());
+            assertEquals(GENERATE_WRITE_OPTION_AUTHORS.getNextGameState(GameMode.TOWN_MODE, false, 1), updated.getGameState());
             
             // Get the updated stories from the DAO (which were updated by assignStoryOptionAuthors)
             List<Story> updatedStories = storyDAO.getStories("test123");
@@ -435,7 +435,7 @@ public class GameSessionHelperTest {
 
         // Assert
         // The GENERATE_OCCUPATION_AUTHORS phase should advance to the next phase
-        assertEquals(GENERATE_OCCUPATION_AUTHORS.getNextGameState(GameMode.TOWN_MODE, false), updated.getGameState());
+        assertEquals(GENERATE_OCCUPATION_AUTHORS.getNextGameState(GameMode.TOWN_MODE, false, 1), updated.getGameState());
         
         // Verify that each player has their base player stats set
         for (Player player : updated.getPlayers()) {
