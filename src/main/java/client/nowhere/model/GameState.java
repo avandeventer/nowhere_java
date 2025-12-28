@@ -64,7 +64,8 @@ public enum GameState {
         NAVIGATE_VOTING,
         NAVIGATE_WINNER,
         CAMPFIRE,
-        CAMPFIRE_WINNERS;
+        CAMPFIRE_WINNERS,
+        EPILOGUE_PREAMBLE;
 
         public GameState getNextGameState(GameMode gameMode, boolean streamlinedCollaborativeStories, int roundNumber) {
             if (gameMode == GameMode.TOWN_MODE) {
@@ -90,7 +91,7 @@ public enum GameState {
                 } case GameState.WHAT_HAPPENS_HERE ->  {
                     return GameState.WHAT_HAPPENS_HERE_WINNER;
                 } case GameState.WHAT_HAPPENS_HERE_WINNER, NAVIGATE_WINNER -> {
-                    return GameState.WHAT_CAN_WE_TRY;
+                    return roundNumber == 3 ? GameState.WHAT_HAPPENS_HERE : GameState.WHAT_CAN_WE_TRY;
                 } case GameState.WHAT_CAN_WE_TRY -> {
                     return GameState.WHAT_CAN_WE_TRY_WINNERS;
                 } case GameState.WHAT_CAN_WE_TRY_WINNERS -> {
@@ -104,9 +105,15 @@ public enum GameState {
                     return GameState.MAKE_CHOICE_WINNER;
                 }
                 case MAKE_CHOICE_WINNER -> {
-                    return roundNumber == 1 ? GameState.PREAMBLE_AGAIN : GameState.ENDING_PREAMBLE;
+                    if (roundNumber == 1) {
+                        return GameState.PREAMBLE_AGAIN;
+                    } else if (roundNumber == 2) {
+                        return GameState.ENDING_PREAMBLE;
+                    } else {
+                        return GameState.EPILOGUE_PREAMBLE;
+                    }
                 }
-                case PREAMBLE_AGAIN, ENDING_PREAMBLE -> {
+                case PREAMBLE_AGAIN, ENDING_PREAMBLE, EPILOGUE_PREAMBLE -> {
                     return GameState.CAMPFIRE;
                 }
                 case CAMPFIRE -> {
@@ -492,16 +499,9 @@ public enum GameState {
                     );
                 }
                 if (phaseId == CAMPFIRE) {
-                    String memory = "The " + entityName + "used to be one of us. We reminisce about how they changed.";
-                    if (roundNumber == 2) {
-                        memory = "We each reminisce about our fondest memory with " + entityName + ".";
-                    }
-                    if (roundNumber == 3) {
-                        memory = "We discuss how we plan to bring our friend back from the dark.";
-                    }
-
+                    String memory = getMemory(entityName, roundNumber);
                     return new PhaseBaseInfo(
-                            "We rest for a moment and old memories return...",
+                            roundNumber == 4 ? "And so our journey ends..." : "We rest for a moment and old memories return...",
                             memory,
                             CollaborativeMode.SHARE_TEXT,
                             CAMPFIRE,
@@ -521,4 +521,18 @@ public enum GameState {
                         false  // Use INIT as fallback
                 );
         }
+
+    private static String getMemory(String entityName, int roundNumber) {
+        String memory = "The " + entityName + " used to be one of us. Describe how you first noticed they were beginning to change.";
+        if (roundNumber == 2) {
+            memory = "We each reminisce about our fondest memory with " + entityName + ". Describe your fondest memory before they changed.";
+        }
+        if (roundNumber == 3) {
+            memory = "We discuss how we plan to stop " + entityName + " from destroying our town.";
+        }
+        if (roundNumber == 4) {
+            memory = "Describe how this place has changed now that our journey is at its end";
+        }
+        return memory;
+    }
 }
