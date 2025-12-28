@@ -105,12 +105,14 @@ public enum GameState {
                     return GameState.MAKE_CHOICE_WINNER;
                 }
                 case MAKE_CHOICE_WINNER -> {
-                    if (roundNumber == 2) {
+                    if (roundNumber == 1) {
                         return GameState.PREAMBLE_AGAIN;
-                    } else if (roundNumber == 3) {
+                    } else if (roundNumber == 2) {
                         return GameState.ENDING_PREAMBLE;
-                    } else {
+                    } else if (roundNumber == 3) {
                         return GameState.EPILOGUE_PREAMBLE;
+                    } else {
+                        return GameState.PREAMBLE;
                     }
                 }
                 case PREAMBLE_AGAIN, ENDING_PREAMBLE, EPILOGUE_PREAMBLE -> {
@@ -521,7 +523,7 @@ public enum GameState {
         }
 
     private static String getMemory(String entityName, int roundNumber) {
-        String memory = "The " + entityName + " used to be one of us. Describe how you first noticed they were beginning to change.";
+        String memory = entityName + " used to be one of us. Describe how you first noticed they were beginning to change.";
         if (roundNumber == 2) {
             memory = "We each reminisce about our fondest memory with " + entityName + ". Describe your fondest memory before they changed.";
         }
