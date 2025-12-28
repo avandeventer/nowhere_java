@@ -116,7 +116,7 @@ public class CollaborativeTextHelper {
 
         boolean streamlinedMode = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
         List<TextSubmission> winningSubmissions = streamlinedMode && !phaseId.equals(GameState.MAKE_CHOICE_VOTING.name())
-                ? calculateWinnersFromAdditions(phase, gameSession.getGameState())
+                ? calculateWinnersFromAdditions(phase, gameSession.getGameState(), gameSession.getRoundNumber())
                 : calculateWinnersFromVotes(phase, gameSession.getGameState());
 
         // Store the winning submissions in GameSessionDisplay
@@ -433,7 +433,7 @@ public class CollaborativeTextHelper {
      * Calculates winners based on number of additions (streamlined mode).
      * For phases with outcomeTypes, ranks by most submissions per outcomeType.
      */
-    private List<TextSubmission> calculateWinnersFromAdditions(CollaborativeTextPhase phase, GameState gameState) {
+    private List<TextSubmission> calculateWinnersFromAdditions(CollaborativeTextPhase phase, GameState gameState, int roundNumber) {
         for (TextSubmission submission : phase.getSubmissions()) {
             int additionCount = submission.getAdditions() != null ? submission.getAdditions().size() : 0;
             submission.setAverageRanking(additionCount);
@@ -444,7 +444,7 @@ public class CollaborativeTextHelper {
         Comparator<TextSubmission> rankingComparator = Comparator
                 .comparingDouble(TextSubmission::getAverageRanking);
 
-        if (gameState == GameState.WHAT_HAPPENS_HERE_WINNER || gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS) {
+        if ((gameState == GameState.WHAT_HAPPENS_HERE_WINNER && roundNumber != 4) || gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS) {
             // Rank by most submissions PER outcomeType
             List<String> uniqueOutcomeTypes = phase.getSubmissions().stream()
                     .map(TextSubmission::getOutcomeType)
