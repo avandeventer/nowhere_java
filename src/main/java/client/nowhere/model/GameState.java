@@ -108,11 +108,11 @@ public enum GameState {
                     if (roundNumber == 1) {
                         return GameState.PREAMBLE_AGAIN;
                     } else if (roundNumber == 2) {
-                        return GameState.ENDING_PREAMBLE;
+                        return GameState.CAMPFIRE;
                     } else if (roundNumber == 3) {
-                        return GameState.EPILOGUE_PREAMBLE;
+                        return GameState.ENDING_PREAMBLE;
                     } else {
-                        return GameState.PREAMBLE;
+                        return GameState.EPILOGUE_PREAMBLE;
                     }
                 }
                 case PREAMBLE_AGAIN, ENDING_PREAMBLE, EPILOGUE_PREAMBLE -> {
