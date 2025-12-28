@@ -1417,6 +1417,7 @@ public class CollaborativeTextHelper {
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.MAKE_CHOICE_VOTING.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.NAVIGATE_VOTING.name(), false);
+            collaborativeTextDAO.clearPhase(gameCode, GameState.CAMPFIRE.name(), true);
         } catch (Exception e) {
             System.err.println("Failed to clear story writing phases: " + e.getMessage());
             e.printStackTrace();
