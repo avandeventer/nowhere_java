@@ -90,7 +90,9 @@ public enum GameState {
                     return GameState.WHAT_HAPPENS_HERE;
                 } case GameState.WHAT_HAPPENS_HERE ->  {
                     return GameState.WHAT_HAPPENS_HERE_WINNER;
-                } case GameState.WHAT_HAPPENS_HERE_WINNER, NAVIGATE_WINNER -> {
+                } case GameState.WHAT_HAPPENS_HERE_WINNER -> {
+                    return GameState.WHAT_CAN_WE_TRY;
+                } case GameState.NAVIGATE_WINNER -> {
                     return roundNumber == 4 ? GameState.WHAT_HAPPENS_HERE : GameState.WHAT_CAN_WE_TRY;
                 } case GameState.WHAT_CAN_WE_TRY -> {
                     return GameState.WHAT_CAN_WE_TRY_WINNERS;
