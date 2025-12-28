@@ -121,7 +121,7 @@ public class CollaborativeTextHelper {
 
         // Store the winning submissions in GameSessionDisplay
         if (!winningSubmissions.isEmpty()) {
-            updateGameSessionWithWinningSubmissions(gameCode, phaseId, winningSubmissions);
+            updateGameSessionWithWinningSubmissions(gameCode, phaseId, winningSubmissions, gameSession.getRoundNumber());
         }
 
         return winningSubmissions;
@@ -657,7 +657,7 @@ public class CollaborativeTextHelper {
     /**
      * Updates the GameSessionDisplay with the winning submission for the given phase
      */
-    private void updateGameSessionWithWinningSubmissions(String gameCode, String phaseId, List<TextSubmission> winningSubmissions) {
+    private void updateGameSessionWithWinningSubmissions(String gameCode, String phaseId, List<TextSubmission> winningSubmissions, int roundNumber) {
         try {
             boolean streamlinedMode = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
             
@@ -723,7 +723,7 @@ public class CollaborativeTextHelper {
                     }
                 }
                 case "WHAT_HAPPENS_HERE" -> {
-                    if (streamlinedMode) {
+                    if (streamlinedMode && roundNumber != 4) {
                         handleWhatHappensHereStreamlined(gameCode, winningSubmissions);
                     } else {
                         handleWhatHappensHere(gameCode, winningSubmissions);
