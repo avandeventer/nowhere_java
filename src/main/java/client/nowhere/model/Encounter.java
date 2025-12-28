@@ -54,4 +54,12 @@ public class Encounter {
     public void setVisited(boolean visited) {
         this.visited = visited;
     }
+
+    public EncounterType getEncounterType() {
+        return encounterType;
+    }
+
+    public void setEncounterType(EncounterType encounterType) {
+        this.encounterType = encounterType;
+    }
 }
