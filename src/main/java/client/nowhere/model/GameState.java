@@ -91,7 +91,7 @@ public enum GameState {
                 } case GameState.WHAT_HAPPENS_HERE ->  {
                     return GameState.WHAT_HAPPENS_HERE_WINNER;
                 } case GameState.WHAT_HAPPENS_HERE_WINNER, NAVIGATE_WINNER -> {
-                    return roundNumber == 3 ? GameState.WHAT_HAPPENS_HERE : GameState.WHAT_CAN_WE_TRY;
+                    return roundNumber == 4 ? GameState.WHAT_HAPPENS_HERE : GameState.WHAT_CAN_WE_TRY;
                 } case GameState.WHAT_CAN_WE_TRY -> {
                     return GameState.WHAT_CAN_WE_TRY_WINNERS;
                 } case GameState.WHAT_CAN_WE_TRY_WINNERS -> {
@@ -105,9 +105,9 @@ public enum GameState {
                     return GameState.MAKE_CHOICE_WINNER;
                 }
                 case MAKE_CHOICE_WINNER -> {
-                    if (roundNumber == 1) {
+                    if (roundNumber == 2) {
                         return GameState.PREAMBLE_AGAIN;
-                    } else if (roundNumber == 2) {
+                    } else if (roundNumber == 3) {
                         return GameState.ENDING_PREAMBLE;
                     } else {
                         return GameState.EPILOGUE_PREAMBLE;

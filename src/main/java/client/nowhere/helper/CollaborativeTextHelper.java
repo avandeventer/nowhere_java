@@ -1686,7 +1686,7 @@ public class CollaborativeTextHelper {
             GameSession gameSession = getGameSession(gameCode);
             GameState gameState = gameSession.getGameState();
 
-            if (gameState == GameState.WHAT_HAPPENS_HERE) {
+            if (gameState == GameState.WHAT_HAPPENS_HERE && gameSession.getRoundNumber() < 3) {
                 // Return encounterLabels as OutcomeType objects
                 List<EncounterLabel> encounterLabels = getEncounterLabels(gameCode);
                 return encounterLabels.stream()
