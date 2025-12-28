@@ -451,7 +451,7 @@ public enum GameState {
                                 WHAT_HAPPENS_HERE,
                                 WHAT_HAPPENS_HERE_VOTING,
                                 WHAT_HAPPENS_HERE_WINNER,
-                                false
+                                roundNumber == 4
                         );
                 }
                 if (phaseId == WHAT_CAN_WE_TRY) {
