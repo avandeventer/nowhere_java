@@ -1623,6 +1623,8 @@ public class CollaborativeTextHelper {
                     yield "These things have become part of this world";
                 } else if (gameState == GameState.CAMPFIRE_WINNERS) {
                     yield "We talk long into the night...";
+                } else if (gameState == GameState.NAVIGATE_WINNER) {
+                    yield "We see the encounters ahead";
                 } else {
                     yield "The winning submission is...";
                 }
