@@ -1619,6 +1619,8 @@ public class CollaborativeTextHelper {
                     yield "Now our heroes must make their choice. Choose from the options on your device and our resolution will be revealed.";
                 } else if (gameState == GameState.WHAT_CAN_WE_TRY_WINNERS || gameState == GameState.WHAT_HAPPENS_HERE_WINNER) {
                     yield "The story so far...";
+                } else if (gameState == GameState.SET_ENCOUNTERS_WINNERS) {
+                    yield "These things have become part of this world";
                 } else if (gameState == GameState.CAMPFIRE_WINNERS) {
                     yield "We talk long into the night...";
                 } else {

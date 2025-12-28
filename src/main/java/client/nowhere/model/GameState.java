@@ -431,7 +431,6 @@ public enum GameState {
                         );
                 }
                 if (phaseId == SET_ENCOUNTERS) {
-                        boolean showGameBoard = this.equals(SET_ENCOUNTERS_WINNERS);
                         return new PhaseBaseInfo(
                                 "What could we encounter here?",
                                 "Name some things that we might see on our adventure through this place",
@@ -439,19 +438,18 @@ public enum GameState {
                                 SET_ENCOUNTERS,
                                 SET_ENCOUNTERS_VOTING,
                                 SET_ENCOUNTERS_WINNERS,
-                                showGameBoard
+                                false
                         );
                 }
                 if (phaseId == WHAT_HAPPENS_HERE) {
-                        boolean showGameBoard = this.equals(WHAT_HAPPENS_HERE);
                         return new PhaseBaseInfo(
                                 "What happens here?",
-                                "Read the prompt and add any description of it that you feel applies!",
+                                "Read the encounter title and add any description of it that you feel applies!",
                                 CollaborativeMode.SHARE_TEXT,
                                 WHAT_HAPPENS_HERE,
                                 WHAT_HAPPENS_HERE_VOTING,
                                 WHAT_HAPPENS_HERE_WINNER,
-                                showGameBoard
+                                false
                         );
                 }
                 if (phaseId == WHAT_CAN_WE_TRY) {
