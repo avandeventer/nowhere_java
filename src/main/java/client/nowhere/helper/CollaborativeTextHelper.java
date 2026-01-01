@@ -444,7 +444,7 @@ public class CollaborativeTextHelper {
         Comparator<TextSubmission> rankingComparator = Comparator
                 .comparingDouble(TextSubmission::getAverageRanking);
 
-        if ((gameState == GameState.WHAT_HAPPENS_HERE_WINNER && roundNumber != 4) || gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS) {
+        if (gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS) {
             // Rank by most submissions PER outcomeType
             List<String> uniqueOutcomeTypes = phase.getSubmissions().stream()
                     .map(TextSubmission::getOutcomeType)
@@ -1001,10 +1001,6 @@ public class CollaborativeTextHelper {
             int currentX = playerCoords.getxCoordinate();
             int y = playerCoords.getyCoordinate();
 
-            if (winningSubmissions.size() > 3) {
-                winningSubmissions = winningSubmissions.subList(0, 2);
-            }
-
             for (int i = 0; i < winningSubmissions.size(); i++) {
                 TextSubmission submission = winningSubmissions.get(i);
                 String encounterLabelId = submission.getOutcomeType();
@@ -1043,42 +1039,6 @@ public class CollaborativeTextHelper {
                 // Place first submission at player coordinates, subsequent ones at x+1, x+2, etc.
                 int x = currentX + i;
                 gameBoard.setEncounter(x, y, encounter);
-            }
-
-            // Place final encounter after all winning submissions
-            try {
-                GameSessionDisplay display = adventureMapHelper.getGameSessionDisplay(gameCode);
-                String entityName = display != null && display.getEntity() != null && !display.getEntity().isEmpty()
-                    ? display.getEntity()
-                    : "the Entity";
-
-                // Create EncounterLabel for the final encounter
-                EncounterLabel finalEncounterLabel = new EncounterLabel();
-                finalEncounterLabel.encounterLabel = entityName;
-                finalEncounterLabel.encounterId = UUID.randomUUID().toString();
-
-                // Create a story for the final encounter
-                Story finalStory = new Story();
-                finalStory.setPrompt(""); // Final encounter may not need a prompt initially
-                finalStory.setPlayerId(AuthorConstants.DUNGEON_PLAYER);
-                finalStory.setGameCode(gameCode);
-                finalStory.setEncounterLabel(finalEncounterLabel);
-                storyDAO.createStory(finalStory);
-
-                // Create final encounter
-                Encounter finalEncounter = new Encounter(
-                    finalEncounterLabel,
-                    EncounterType.FINAL,
-                    finalStory.getStoryId(),
-                    finalStory.getPrompt()
-                );
-
-                // Place final encounter after all winning submissions
-                int finalX = currentX + winningSubmissions.size();
-                gameBoard.setEncounter(finalX, y, finalEncounter);
-            } catch (Exception e) {
-                System.err.println("Failed to create final encounter: " + e.getMessage());
-                e.printStackTrace();
             }
 
             // Update the game board in Firestore

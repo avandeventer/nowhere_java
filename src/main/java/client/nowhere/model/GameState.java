@@ -65,7 +65,8 @@ public enum GameState {
         NAVIGATE_WINNER,
         CAMPFIRE,
         CAMPFIRE_WINNERS,
-        EPILOGUE_PREAMBLE;
+        EPILOGUE_PREAMBLE,
+        LOCATION_SELECT_COLLABORATIVE;
 
         public GameState getNextGameState(GameMode gameMode, boolean streamlinedCollaborativeStories, int roundNumber) {
             if (gameMode == GameMode.TOWN_MODE) {
@@ -92,9 +93,7 @@ public enum GameState {
                     return GameState.WHAT_HAPPENS_HERE_WINNER;
                 } case GameState.WHAT_HAPPENS_HERE_WINNER -> {
                     return GameState.WHAT_CAN_WE_TRY;
-                } case GameState.NAVIGATE_WINNER -> {
-                    return roundNumber == 4 ? GameState.WHAT_HAPPENS_HERE : GameState.WHAT_CAN_WE_TRY;
-                } case GameState.WHAT_CAN_WE_TRY -> {
+                } case GameState.NAVIGATE_WINNER, GameState.WHAT_CAN_WE_TRY -> {
                     return GameState.WHAT_CAN_WE_TRY_WINNERS;
                 } case GameState.WHAT_CAN_WE_TRY_WINNERS -> {
                     return GameState.HOW_DOES_THIS_RESOLVE;
@@ -107,23 +106,6 @@ public enum GameState {
                     return GameState.MAKE_CHOICE_WINNER;
                 }
                 case MAKE_CHOICE_WINNER -> {
-                    if (roundNumber == 1) {
-                        return GameState.PREAMBLE_AGAIN;
-                    } else if (roundNumber == 2) {
-                        return GameState.CAMPFIRE;
-                    } else if (roundNumber == 3) {
-                        return GameState.ENDING_PREAMBLE;
-                    } else {
-                        return GameState.EPILOGUE_PREAMBLE;
-                    }
-                }
-                case PREAMBLE_AGAIN, ENDING_PREAMBLE, EPILOGUE_PREAMBLE -> {
-                    return GameState.CAMPFIRE;
-                }
-                case CAMPFIRE -> {
-                    return GameState.CAMPFIRE_WINNERS;
-                }
-                case CAMPFIRE_WINNERS -> {
                     return GameState.NAVIGATE_WINNER;
                 }
                 default -> {
@@ -172,6 +154,9 @@ public enum GameState {
                     return GameState.HOW_DOES_THIS_RESOLVE_WINNERS;
                 }
                 case HOW_DOES_THIS_RESOLVE_WINNERS -> {
+                    return GameState.LOCATION_SELECT_COLLABORATIVE;
+                }
+                case LOCATION_SELECT_COLLABORATIVE -> {
                     return GameState.MAKE_CHOICE_VOTING;
                 }
                 case MAKE_CHOICE_VOTING -> {
