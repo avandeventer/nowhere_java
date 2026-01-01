@@ -53,7 +53,12 @@ public class CollaborativeTextDAO {
                 return null;
             }
             
-            return collaborativeTextPhases.get(phaseId);
+            CollaborativeTextPhase phase = collaborativeTextPhases.get(phaseId);
+            // Filter out parent submissions so they don't show up regardless of context
+            if (phase != null) {
+                phase.filterOutParentSubmissions();
+            }
+            return phase;
             
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
@@ -242,6 +247,9 @@ public class CollaborativeTextDAO {
                     return new ArrayList<>();
                 }
                 
+                // Clear all existing views for this player before recording new ones
+                phase.clearViewsForPlayer(playerId);
+ 
                 // Get available submissions
                 List<TextSubmission> availableSubmissions = phase.getAvailableSubmissionsForPlayer(playerId, outcomeTypeId);
 

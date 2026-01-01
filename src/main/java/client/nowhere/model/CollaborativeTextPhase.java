@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CollaborativeTextPhase {
     private String phaseId;
@@ -117,8 +119,8 @@ public class CollaborativeTextPhase {
                     String submissionId = submission.getSubmissionId();
                     List<String> viewers = submissionViews.getOrDefault(submissionId, new ArrayList<>());
                     
-                    // If 2 or more players have viewed this submission, it's exhausted
-                    return viewers.size() < 2;
+                    // If a player is currently viewing this submission, it's unavailable
+                    return viewers.size() < 1;
                 })
                 .toList();
     }
@@ -140,6 +142,37 @@ public class CollaborativeTextPhase {
         // Add player to viewers list
         viewers.add(playerId);
         return true; // View recorded
+    }
+
+    /**
+     * Clears all views for a specific player across all submissions.
+     * @param playerId The player whose views should be cleared
+     */
+    public void clearViewsForPlayer(String playerId) {
+        for (List<String> viewers : submissionViews.values()) {
+            viewers.remove(playerId);
+        }
+    }
+
+    /**
+     * Filters out submissions that have been iterated on (parent submissions).
+     * A submission is considered a parent if it is referenced in any other submission's additions.
+     * This method modifies the submissions list in place.
+     */
+    public void filterOutParentSubmissions() {
+        // Collect all submissionIds that are referenced in other submissions' additions
+        Set<String> iteratedSubmissionIds = submissions.stream()
+                .flatMap(submission -> submission.getAdditions() != null 
+                        ? submission.getAdditions().stream() 
+                        : java.util.stream.Stream.empty())
+                .map(TextAddition::getSubmissionId)
+                .filter(submissionId -> submissionId != null && !submissionId.trim().isEmpty())
+                .collect(Collectors.toSet());
+        
+        // Filter out submissions that have been iterated on
+        submissions = submissions.stream()
+                .filter(submission -> !iteratedSubmissionIds.contains(submission.getSubmissionId()))
+                .collect(Collectors.toList());
     }
 
     /**
