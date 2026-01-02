@@ -347,8 +347,7 @@ public class StoryDAO {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             DocumentSnapshot gameSession = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
-            List<Story> stories = mapStories(gameSession);
-            return stories;
+            return mapStories(gameSession);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue updating the story", e);

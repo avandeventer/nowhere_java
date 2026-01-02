@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.google.cloud.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -48,6 +49,7 @@ public class Story {
     private List<Option> ritualOptions;
     private Location location;
     private String optionType;
+    private Timestamp createdAt;
 
     public Story () {
         this.storyId = UUID.randomUUID().toString();
@@ -294,6 +296,14 @@ public class Story {
 
     public void setOptionType(String optionType) {
         this.optionType = optionType;
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
     public boolean isMainPlotStory() {

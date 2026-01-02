@@ -1029,6 +1029,7 @@ public class CollaborativeTextHelper {
                 story.setPlayerId(AuthorConstants.DUNGEON_PLAYER);
                 story.setGameCode(gameCode);
                 story.setEncounterLabel(encounterLabel);
+                story.setCreatedAt(Timestamp.now());
                 storyDAO.createStory(story);
 
                 // Create encounter with the story
@@ -1208,12 +1209,13 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            Story story = getStoryAtCurrentEncounter(gameCode);
-            if (story == null) {
+            List<Story> stories = storyDAO.getStories(gameCode);
+
+            if (stories == null || stories.isEmpty()) {
                 return;
             }
-            List<Option> options = story.getOptions();
 
+            // Build map of optionId -> winning submission
             Map<String, TextSubmission> optionWinners = new HashMap<>();
             for (TextSubmission winner : winningSubmissions) {
                 String optionId = winner.getOutcomeType();
@@ -1222,18 +1224,28 @@ public class CollaborativeTextHelper {
                 }
             }
 
-            for (Option option : options) {
-                TextSubmission winner = optionWinners.get(option.getOptionId());
-                if (winner != null) {
-                    option.setSuccessText(winner.getCurrentText());
+            // Update all stories that have matching options
+            for (Story story : stories) {
+                if (story.getOptions() == null || story.getOptions().isEmpty()) {
+                    continue;
+                }
+
+                boolean storyModified = false;
+                for (Option option : story.getOptions()) {
+                    TextSubmission winner = optionWinners.get(option.getOptionId());
+                    if (winner != null) {
+                        option.setSuccessText(winner.getCurrentText());
+                        storyModified = true;
+                    }
+                }
+
+                // Update the story if any options were modified
+                if (storyModified) {
+                    story.setOptions(story.getOptions());
+                    story.setGameCode(gameCode); // Ensure gameCode is set for updateStory
+                    storyDAO.updateStory(story);
                 }
             }
-
-            story.setOptions(options);
-            story.setGameCode(gameCode); // Ensure gameCode is set for updateStory
-            
-            // Use the DAO's updateStory method
-            storyDAO.updateStory(story);
 
             // Initialize MAKE_CHOICE_VOTING phase with submissions for each option
             initializeMakeChoiceVotingPhase(gameCode, winningSubmissions);
@@ -1645,10 +1657,12 @@ public class CollaborativeTextHelper {
      * Gets outcome types based on the current game phase.
      * For WHAT_HAPPENS_HERE phase, returns encounterLabels as OutcomeType objects.
      * For HOW_DOES_THIS_RESOLVE phase, returns options as OutcomeType objects.
+     * For WHAT_CAN_WE_TRY phase, returns a story distributed to the player based on their index.
      * @param gameCode The game code
+     * @param playerId The player ID for distribution logic
      * @return List of OutcomeType objects
      */
-    public List<OutcomeType> getOutcomeTypes(String gameCode) {
+    public List<OutcomeType> getOutcomeTypes(String gameCode, String playerId) {
         try {
             GameSession gameSession = getGameSession(gameCode);
             GameState gameState = gameSession.getGameState();
@@ -1659,6 +1673,45 @@ public class CollaborativeTextHelper {
                 return encounterLabels.stream()
                         .map(label -> new OutcomeType(label.getEncounterId(), label.getEncounterLabel()))
                         .toList();
+            } else if (gameState == GameState.WHAT_CAN_WE_TRY) {
+
+                List<Story> allStories = gameSession.getStories();
+                List<Player> players = gameSession.getPlayers();
+                
+                if (allStories == null || allStories.isEmpty() || players == null || players.isEmpty()) {
+                    return new ArrayList<>();
+                }
+                
+                List<Player> sortedPlayers = players.stream()
+                        .filter(player -> player.getJoinedAt() != null)
+                        .sorted(Comparator.comparing(Player::getJoinedAt))
+                        .toList();
+                                
+                int playerIndex = -1;
+                for (int i = 0; i < sortedPlayers.size(); i++) {
+                    if (sortedPlayers.get(i).getAuthorId().equals(playerId)) {
+                        playerIndex = i;
+                        break;
+                    }
+                }
+                
+                if (playerIndex == -1) {
+                    return new ArrayList<>();
+                }
+                
+                List<Story> sortedStories = allStories.stream()
+                        .filter(story -> story.getCreatedAt() != null)
+                        .sorted(Comparator.comparing(Story::getCreatedAt))
+                        .toList();
+                
+                if (sortedStories.isEmpty()) {
+                    return new ArrayList<>();
+                }
+                
+                int storyIndex = playerIndex % sortedStories.size();
+                Story assignedStory = sortedStories.get(storyIndex);
+                
+                return List.of(new OutcomeType(assignedStory.getStoryId(), assignedStory.getPrompt()));
             } else if (gameState == GameState.HOW_DOES_THIS_RESOLVE) {
                 // Return submissions from WHAT_HAPPENS_HERE phase as OutcomeType objects
                 CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());

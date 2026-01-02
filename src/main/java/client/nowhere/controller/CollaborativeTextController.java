@@ -67,7 +67,7 @@ public class CollaborativeTextController {
 
     @GetMapping("/collaborativeText/outcomeTypes")
     @ResponseBody
-    public List<OutcomeType> getOutcomeTypes(@RequestParam String gameCode) {
-        return this.collaborativeTextHelper.getOutcomeTypes(gameCode);
+    public List<OutcomeType> getOutcomeTypes(@RequestParam String gameCode, @RequestParam String playerId) {
+        return this.collaborativeTextHelper.getOutcomeTypes(gameCode, playerId);
     }
 }
