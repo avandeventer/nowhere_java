@@ -7,11 +7,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import com.google.cloud.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -49,7 +46,7 @@ public class Story {
     private List<Option> ritualOptions;
     private Location location;
     private String optionType;
-    private Timestamp createdAt;
+    private Date createdAt;
 
     public Story () {
         this.storyId = UUID.randomUUID().toString();
@@ -298,11 +295,11 @@ public class Story {
         this.optionType = optionType;
     }
 
-    public Timestamp getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 

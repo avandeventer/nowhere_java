@@ -1,13 +1,6 @@
 package client.nowhere.helper;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1029,7 +1022,7 @@ public class CollaborativeTextHelper {
                 story.setPlayerId(AuthorConstants.DUNGEON_PLAYER);
                 story.setGameCode(gameCode);
                 story.setEncounterLabel(encounterLabel);
-                story.setCreatedAt(Timestamp.now());
+                story.setCreatedAt(new Date());
                 storyDAO.createStory(story);
 
                 // Create encounter with the story
