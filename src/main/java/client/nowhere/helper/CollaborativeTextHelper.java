@@ -1700,53 +1700,89 @@ public class CollaborativeTextHelper {
                     return new ArrayList<>();
                 }
                 
-                int numPlayers = sortedPlayers.size();
-                int numStories = sortedStories.size();
-                List<OutcomeType> assignedStories = new ArrayList<>();
                 
                 // Check how many submissions the player has made for this phase
-                CollaborativeTextPhase whatCanWeTryPhase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
-                long playerSubmissionCount = 0;
-                if (whatCanWeTryPhase != null && whatCanWeTryPhase.getSubmissions() != null) {
-                    playerSubmissionCount = whatCanWeTryPhase.getSubmissions().stream()
-                            .filter(submission -> playerId.equals(submission.getAuthorId()))
-                            .count();
-                }
+                long playerSubmissionCount = getPlayerSubmissionCountForPhase(gameCode, playerId, GameState.WHAT_CAN_WE_TRY);
                 
                 // Only return multiple stories if player has made 2+ submissions
                 boolean shouldReturnMultiple = playerSubmissionCount >= 2;
+
+                return distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, shouldReturnMultiple);
+            } else if (gameState == GameState.HOW_DOES_THIS_RESOLVE) {
+                // Get stories and players for distribution
+                List<Story> allStories = gameSession.getStories();
+                List<Player> players = gameSession.getPlayers();
                 
-                if (numStories <= numPlayers || !shouldReturnMultiple) {
-                    // Fewer stories than players, or player hasn't made 2+ submissions: return one story with wrapping
-                    int storyIndex = playerIndex % numStories;
-                    Story assignedStory = sortedStories.get(storyIndex);
-                    assignedStories.add(new OutcomeType(assignedStory.getStoryId(), assignedStory.getPrompt()));
-                } else {
-                    // More stories than players AND player has 2+ submissions: return multiple stories
-                    for (int i = 0; i < sortedStories.size(); i++) {
-                        if (i % numPlayers == playerIndex) {
-                            Story story = sortedStories.get(i);
-                            assignedStories.add(new OutcomeType(story.getStoryId(), story.getPrompt()));
-                        }
+                if (allStories == null || allStories.isEmpty() || players == null || players.isEmpty()) {
+                    return new ArrayList<>();
+                }
+                
+                List<Player> sortedPlayers = players.stream()
+                        .filter(player -> player.getJoinedAt() != null)
+                        .sorted(Comparator.comparing(Player::getJoinedAt))
+                        .toList();
+                
+                int playerIndex = -1;
+                for (int i = 0; i < sortedPlayers.size(); i++) {
+                    if (sortedPlayers.get(i).getAuthorId().equals(playerId)) {
+                        playerIndex = i;
+                        break;
                     }
                 }
                 
-                return assignedStories;
-            } else if (gameState == GameState.HOW_DOES_THIS_RESOLVE) {
-                // Return submissions from WHAT_HAPPENS_HERE phase as OutcomeType objects
+                if (playerIndex == -1) {
+                    return new ArrayList<>();
+                }
+                
+                List<Story> sortedStories = allStories.stream()
+                        .filter(story -> story.getCreatedAt() != null)
+                        .sorted(Comparator.comparing(Story::getCreatedAt))
+                        .toList();
+                
+                if (sortedStories.isEmpty()) {
+                    return new ArrayList<>();
+                }
+                
+                // Offset player index by one (wrapping if needed)
+                int numPlayers = sortedPlayers.size();
+                int offsetPlayerIndex = (playerIndex + 1) % numPlayers;
+                
+                // Get assigned story (only one story per player for this phase)
+                List<OutcomeType> assignedStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, false);
+                
+                if (assignedStories.isEmpty()) {
+                    return new ArrayList<>();
+                }
+                
+                // Get the assigned story ID and prompt (first story from the list)
+                String assignedStoryId = assignedStories.get(0).getId();
+                
+                // Find the assigned story to get its prompt
+                final String storyPrompt = sortedStories.stream()
+                        .filter(story -> story.getStoryId().equals(assignedStoryId))
+                        .findFirst()
+                        .map(story -> story.getPrompt() != null ? story.getPrompt() : "")
+                        .orElse("");
+                
+                // Get WHAT_CAN_WE_TRY submissions and filter by outcomeTypeWithLabel.id matching assigned story
                 CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
                 if (whatCanWeTry == null || whatCanWeTry.getSubmissions() == null || whatCanWeTry.getSubmissions().isEmpty()) {
                     return new ArrayList<>();
                 }
+                
                 return whatCanWeTry.getSubmissions().stream()
-                        .filter(submission -> 
-                            submission.getSubmissionId() != null 
-                            && !submission.getSubmissionId().isEmpty() 
-                            && submission.getCurrentText() != null 
-                            && !submission.getCurrentText().isEmpty())
+                        .filter(submission -> {
+                            // Check if submission has outcomeTypeWithLabel and its id matches assigned story
+                            if (submission.getOutcomeTypeWithLabel() == null) {
+                                return false;
+                            }
+                            String outcomeTypeId = submission.getOutcomeTypeWithLabel().getId();
+                            return outcomeTypeId != null && outcomeTypeId.equals(assignedStoryId);
+                        })
                         .map(submission -> new OutcomeType(
                             submission.getSubmissionId(),
-                            submission.getCurrentText()
+                            submission.getCurrentText(),
+                            storyPrompt
                         ))
                         .toList();
             } else {
@@ -1756,5 +1792,53 @@ public class CollaborativeTextHelper {
             System.err.println("Failed to get outcome types: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    /**
+     * Gets the count of submissions a player has made for a specific collaborative text phase.
+     * @param gameCode The game code
+     * @param playerId The player ID
+     * @param phase The game state phase to check
+     * @return The count of submissions made by the player for this phase
+     */
+    private long getPlayerSubmissionCountForPhase(String gameCode, String playerId, GameState phase) {
+        CollaborativeTextPhase phaseData = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phase.name());
+        if (phaseData == null || phaseData.getSubmissions() == null) {
+            return 0;
+        }
+        return phaseData.getSubmissions().stream()
+                .filter(submission -> playerId.equals(submission.getAuthorId()))
+                .count();
+    }
+
+    /**
+     * Distributes stories to a player based on their index and submission count.
+     * @param sortedStories List of stories sorted by createdAt
+     * @param sortedPlayers List of players sorted by joinedAt
+     * @param playerIndex The index of the player in the sorted players list
+     * @param shouldReturnMultiple Whether to return multiple stories (player has 2+ submissions)
+     * @return List of OutcomeType objects representing the assigned stories
+     */
+    private List<OutcomeType> distributeStoriesToPlayer(List<Story> sortedStories, List<Player> sortedPlayers, int playerIndex, boolean shouldReturnMultiple) {
+        int numPlayers = sortedPlayers.size();
+        int numStories = sortedStories.size();
+        List<OutcomeType> assignedStories = new ArrayList<>();
+
+        if (numStories <= numPlayers || !shouldReturnMultiple) {
+            // Fewer stories than players, or player hasn't made 2+ submissions: return one story with wrapping
+            int storyIndex = playerIndex % numStories;
+            Story assignedStory = sortedStories.get(storyIndex);
+            assignedStories.add(new OutcomeType(assignedStory.getStoryId(), assignedStory.getPrompt()));
+        } else {
+            // More stories than players AND player has 2+ submissions: return multiple stories
+            for (int i = 0; i < sortedStories.size(); i++) {
+                if (i % numPlayers == playerIndex) {
+                    Story story = sortedStories.get(i);
+                    assignedStories.add(new OutcomeType(story.getStoryId(), story.getPrompt()));
+                }
+            }
+        }
+
+        return assignedStories;
     }
 }
