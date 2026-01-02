@@ -1667,7 +1667,6 @@ public class CollaborativeTextHelper {
                         .map(label -> new OutcomeType(label.getEncounterId(), label.getEncounterLabel()))
                         .toList();
             } else if (gameState == GameState.WHAT_CAN_WE_TRY) {
-
                 List<Story> allStories = gameSession.getStories();
                 List<Player> players = gameSession.getPlayers();
                 
@@ -1701,10 +1700,38 @@ public class CollaborativeTextHelper {
                     return new ArrayList<>();
                 }
                 
-                int storyIndex = playerIndex % sortedStories.size();
-                Story assignedStory = sortedStories.get(storyIndex);
+                int numPlayers = sortedPlayers.size();
+                int numStories = sortedStories.size();
+                List<OutcomeType> assignedStories = new ArrayList<>();
                 
-                return List.of(new OutcomeType(assignedStory.getStoryId(), assignedStory.getPrompt()));
+                // Check how many submissions the player has made for this phase
+                CollaborativeTextPhase whatCanWeTryPhase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
+                long playerSubmissionCount = 0;
+                if (whatCanWeTryPhase != null && whatCanWeTryPhase.getSubmissions() != null) {
+                    playerSubmissionCount = whatCanWeTryPhase.getSubmissions().stream()
+                            .filter(submission -> playerId.equals(submission.getAuthorId()))
+                            .count();
+                }
+                
+                // Only return multiple stories if player has made 2+ submissions
+                boolean shouldReturnMultiple = playerSubmissionCount >= 2;
+                
+                if (numStories <= numPlayers || !shouldReturnMultiple) {
+                    // Fewer stories than players, or player hasn't made 2+ submissions: return one story with wrapping
+                    int storyIndex = playerIndex % numStories;
+                    Story assignedStory = sortedStories.get(storyIndex);
+                    assignedStories.add(new OutcomeType(assignedStory.getStoryId(), assignedStory.getPrompt()));
+                } else {
+                    // More stories than players AND player has 2+ submissions: return multiple stories
+                    for (int i = 0; i < sortedStories.size(); i++) {
+                        if (i % numPlayers == playerIndex) {
+                            Story story = sortedStories.get(i);
+                            assignedStories.add(new OutcomeType(story.getStoryId(), story.getPrompt()));
+                        }
+                    }
+                }
+                
+                return assignedStories;
             } else if (gameState == GameState.HOW_DOES_THIS_RESOLVE) {
                 // Return submissions from WHAT_HAPPENS_HERE phase as OutcomeType objects
                 CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
