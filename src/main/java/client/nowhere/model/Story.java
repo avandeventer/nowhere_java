@@ -46,7 +46,7 @@ public class Story {
     private List<Option> ritualOptions;
     private Location location;
     private String optionType;
-    private Date createdAt;
+    private Timestamp createdAt;
 
     public Story () {
         this.storyId = UUID.randomUUID().toString();
@@ -295,11 +295,12 @@ public class Story {
         this.optionType = optionType;
     }
 
-    public Date getCreatedAt() {
+    @JsonIgnore
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 

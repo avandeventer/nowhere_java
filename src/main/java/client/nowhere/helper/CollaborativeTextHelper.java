@@ -1022,7 +1022,7 @@ public class CollaborativeTextHelper {
                 story.setPlayerId(AuthorConstants.DUNGEON_PLAYER);
                 story.setGameCode(gameCode);
                 story.setEncounterLabel(encounterLabel);
-                story.setCreatedAt(new Date());
+                story.setCreatedAt(Timestamp.now());
                 storyDAO.createStory(story);
 
                 // Create encounter with the story
