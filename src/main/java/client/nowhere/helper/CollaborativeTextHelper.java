@@ -1,6 +1,7 @@
 package client.nowhere.helper;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1700,7 +1701,6 @@ public class CollaborativeTextHelper {
                     return new ArrayList<>();
                 }
                 
-                
                 // Check how many submissions the player has made for this phase
                 long playerSubmissionCount = getPlayerSubmissionCountForPhase(gameCode, playerId, GameState.WHAT_CAN_WE_TRY);
                 
@@ -1734,17 +1734,53 @@ public class CollaborativeTextHelper {
                     return new ArrayList<>();
                 }
                 
+                // Get WHAT_CAN_WE_TRY submissions to count related submissions per story
+                CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
+                List<TextSubmission> whatCanWeTrySubmissions = (whatCanWeTry != null && whatCanWeTry.getSubmissions() != null) 
+                        ? whatCanWeTry.getSubmissions() 
+                        : new ArrayList<>();
+                
+                // Count related submissions for each story and create a map
+                Map<String, Long> storySubmissionCounts = whatCanWeTrySubmissions.stream()
+                        .filter(submission -> submission.getOutcomeTypeWithLabel() != null 
+                                && submission.getOutcomeTypeWithLabel().getId() != null)
+                        .collect(Collectors.groupingBy(
+                                submission -> submission.getOutcomeTypeWithLabel().getId(),
+                                Collectors.counting()
+                        ));
+                
+                // Sort stories: first by number of related submissions (ascending), then by createdAt
+                // Filter out stories with no submissions and stories that already have 2 options with successText
                 List<Story> sortedStories = allStories.stream()
                         .filter(story -> story.getCreatedAt() != null)
-                        .sorted(Comparator.comparing(Story::getCreatedAt))
+                        .filter(story -> {
+                            long submissionCount = storySubmissionCounts.getOrDefault(story.getStoryId(), 0L);
+                            return submissionCount > 1;
+                        })
+                        .filter(story -> {
+                            // Exclude stories that already have 2 options with successText
+                            if (story.getOptions() == null) {
+                                return true; // No options, so can't have 2 with successText
+                            }
+                            long optionsWithSuccessText = story.getOptions().stream()
+                                    .filter(option -> option.getSuccessText() != null 
+                                            && !option.getSuccessText().trim().isEmpty())
+                                    .count();
+                            return optionsWithSuccessText < 2;
+                        })
+                        .sorted(Comparator
+                                .comparing((Story story) -> storySubmissionCounts.getOrDefault(story.getStoryId(), 0L))
+                                .thenComparing(Story::getCreatedAt))
                         .toList();
                 
                 if (sortedStories.isEmpty()) {
                     return new ArrayList<>();
                 }
                 
-                // Offset player index by one (wrapping if needed)
                 int numPlayers = sortedPlayers.size();
+                int numStories = sortedStories.size();
+                
+                // Offset player index by one (wrapping if needed)
                 int offsetPlayerIndex = (playerIndex + 1) % numPlayers;
                 
                 // Get assigned story (only one story per player for this phase)
@@ -1764,27 +1800,70 @@ public class CollaborativeTextHelper {
                         .map(story -> story.getPrompt() != null ? story.getPrompt() : "")
                         .orElse("");
                 
-                // Get WHAT_CAN_WE_TRY submissions and filter by outcomeTypeWithLabel.id matching assigned story
-                CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
-                if (whatCanWeTry == null || whatCanWeTry.getSubmissions() == null || whatCanWeTry.getSubmissions().isEmpty()) {
-                    return new ArrayList<>();
-                }
-                
-                return whatCanWeTry.getSubmissions().stream()
+                // Get submissions related to the assigned story
+                List<TextSubmission> relatedSubmissions = whatCanWeTrySubmissions.stream()
                         .filter(submission -> {
-                            // Check if submission has outcomeTypeWithLabel and its id matches assigned story
                             if (submission.getOutcomeTypeWithLabel() == null) {
                                 return false;
                             }
                             String outcomeTypeId = submission.getOutcomeTypeWithLabel().getId();
                             return outcomeTypeId != null && outcomeTypeId.equals(assignedStoryId);
                         })
-                        .map(submission -> new OutcomeType(
-                            submission.getSubmissionId(),
-                            submission.getCurrentText(),
-                            storyPrompt
-                        ))
+                        .sorted(Comparator.comparing(TextSubmission::getCreatedAt))
                         .toList();
+                
+                if (relatedSubmissions.isEmpty()) {
+                    return new ArrayList<>();
+                }
+                
+                // Check if player index is shared (wraps around when numPlayers > numStories)
+                // A player shares if: offsetPlayerIndex >= numStories OR offsetPlayerIndex < (numPlayers - numStories)
+                boolean isSharedIndex = numPlayers > numStories && 
+                        (offsetPlayerIndex >= numStories || offsetPlayerIndex < (numPlayers - numStories));
+                
+                if (isSharedIndex) {
+                    // Multiple players share this story - distribute submissions evenly using modulus
+                    // Find all players that share this story (same story index after modulus)
+                    int storyIndex = offsetPlayerIndex % numStories;
+                    List<Integer> sharingPlayerIndices = new ArrayList<>();
+                    for (int i = 0; i < numPlayers; i++) {
+                        if ((i % numStories) == storyIndex) {
+                            sharingPlayerIndices.add(i);
+                        }
+                    }
+                    
+                    // Find this player's position among the sharing players (sorted by player index)
+                    sharingPlayerIndices.sort(Integer::compareTo);
+                    int playerPositionInSharing = sharingPlayerIndices.indexOf(offsetPlayerIndex);
+                    int numSharingPlayers = sharingPlayerIndices.size();
+                    
+                    // Sort submissions by createdAt and distribute using modulus
+                    List<TextSubmission> sortedRelatedSubmissions = relatedSubmissions.stream()
+                            .sorted(Comparator.comparing(TextSubmission::getCreatedAt))
+                            .toList();
+                    
+                    List<OutcomeType> distributedSubmissions = new ArrayList<>();
+                    for (int i = 0; i < sortedRelatedSubmissions.size(); i++) {
+                        if (i % numSharingPlayers == playerPositionInSharing) {
+                            TextSubmission submission = sortedRelatedSubmissions.get(i);
+                            distributedSubmissions.add(new OutcomeType(
+                                submission.getSubmissionId(),
+                                submission.getCurrentText(),
+                                storyPrompt
+                            ));
+                        }
+                    }
+                    return distributedSubmissions;
+                } else {
+                    // Player has unique story assignment - return all related submissions
+                    return relatedSubmissions.stream()
+                            .map(submission -> new OutcomeType(
+                                submission.getSubmissionId(),
+                                submission.getCurrentText(),
+                                storyPrompt
+                            ))
+                            .toList();
+                }
             } else {
                 return new ArrayList<>();
             }
