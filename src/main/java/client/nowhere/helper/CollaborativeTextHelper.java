@@ -1842,27 +1842,35 @@ public class CollaborativeTextHelper {
                             .sorted(Comparator.comparing(TextSubmission::getCreatedAt))
                             .toList();
                     
-                    List<OutcomeType> distributedSubmissions = new ArrayList<>();
+                    // Create subTypes for distributed submissions
+                    List<OutcomeType> distributedSubTypes = new ArrayList<>();
                     for (int i = 0; i < sortedRelatedSubmissions.size(); i++) {
                         if (i % numSharingPlayers == playerPositionInSharing) {
                             TextSubmission submission = sortedRelatedSubmissions.get(i);
-                            distributedSubmissions.add(new OutcomeType(
+                            distributedSubTypes.add(new OutcomeType(
                                 submission.getSubmissionId(),
-                                submission.getCurrentText(),
-                                storyPrompt
+                                submission.getCurrentText()
                             ));
                         }
                     }
-                    return distributedSubmissions;
+                    
+                    // Return single OutcomeType with story info and subTypes array
+                    OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt, storyPrompt);
+                    storyOutcomeType.setSubTypes(distributedSubTypes);
+                    return List.of(storyOutcomeType);
                 } else {
-                    // Player has unique story assignment - return all related submissions
-                    return relatedSubmissions.stream()
+                    // Player has unique story assignment - return all related submissions as subTypes
+                    List<OutcomeType> allSubTypes = relatedSubmissions.stream()
                             .map(submission -> new OutcomeType(
                                 submission.getSubmissionId(),
-                                submission.getCurrentText(),
-                                storyPrompt
+                                submission.getCurrentText()
                             ))
                             .toList();
+                    
+                    // Return single OutcomeType with story info and subTypes array
+                    OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt, storyPrompt);
+                    storyOutcomeType.setSubTypes(allSubTypes);
+                    return List.of(storyOutcomeType);
                 }
             } else {
                 return new ArrayList<>();
