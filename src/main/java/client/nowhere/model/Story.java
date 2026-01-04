@@ -295,11 +295,12 @@ public class Story {
         this.optionType = optionType;
     }
 
-    @JsonIgnore
+    @JsonProperty("createdAt")
     public Timestamp getCreatedAt() {
         return createdAt;
     }
 
+    @JsonProperty("createdAt")
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }

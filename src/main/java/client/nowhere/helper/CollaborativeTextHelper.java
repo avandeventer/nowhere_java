@@ -1780,26 +1780,30 @@ public class CollaborativeTextHelper {
                                 submission -> submission.getOutcomeTypeWithLabel().getId(),
                                 Collectors.counting()
                         ));
-                
+
+                List<Story> filteredStories = allStories.stream().filter(story -> {
+                    // Exclude stories that already have 2 options with successText
+                    if (story.getOptions() == null) {
+                        return true;
+                    }
+                    long optionsWithSuccessText = story.getOptions().stream()
+                            .filter(option -> option.getSuccessText() != null
+                                    && !option.getSuccessText().trim().isEmpty())
+                            .count();
+                    return optionsWithSuccessText < 2;
+                }).toList();
+
+                if (phaseId == GameState.HOW_DOES_THIS_RESOLVE) {
+                    filteredStories = allStories.stream().filter(story -> {
+                        long submissionCount = storySubmissionCounts.getOrDefault(story.getStoryId(), 0L);
+                        return submissionCount > 0;
+                    }).toList();
+                }
+
                 // Sort stories: first by number of related submissions (ascending), then by createdAt
                 // Filter out stories with no submissions and stories that already have 2 options with successText
-                List<Story> sortedStories = allStories.stream()
+                List<Story> sortedStories = filteredStories.stream()
                         .filter(story -> story.getCreatedAt() != null)
-                        .filter(story -> {
-                            long submissionCount = storySubmissionCounts.getOrDefault(story.getStoryId(), 0L);
-                            return submissionCount > 1;
-                        })
-                        .filter(story -> {
-                            // Exclude stories that already have 2 options with successText
-                            if (story.getOptions() == null) {
-                                return true; // No options, so can't have 2 with successText
-                            }
-                            long optionsWithSuccessText = story.getOptions().stream()
-                                    .filter(option -> option.getSuccessText() != null 
-                                            && !option.getSuccessText().trim().isEmpty())
-                                    .count();
-                            return optionsWithSuccessText < 2;
-                        })
                         .sorted(Comparator
                                 .comparing((Story story) -> storySubmissionCounts.getOrDefault(story.getStoryId(), 0L))
                                 .thenComparing(Story::getCreatedAt))

@@ -451,7 +451,7 @@ public enum GameState {
                 if (phaseId == WHAT_CAN_WE_TRY) {
                         return new PhaseBaseInfo(
                                 "What can we try?",
-                                "What are some actions we could try to take? List them!",
+                                "What are some actions we could try when we encounter the selected text? List them!",
                                 CollaborativeMode.RAPID_FIRE,
                                 WHAT_CAN_WE_TRY,
                                 WHAT_CAN_WE_TRY_VOTING,
