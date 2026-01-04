@@ -57,8 +57,10 @@ public enum GameState {
         WHAT_CAN_WE_TRY_VOTING,
         WHAT_CAN_WE_TRY_WINNERS,
         HOW_DOES_THIS_RESOLVE,
+        HOW_DOES_THIS_RESOLVE_AGAIN,
         HOW_DOES_THIS_RESOLVE_VOTING,
         HOW_DOES_THIS_RESOLVE_WINNERS,
+        HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN,
         MAKE_CHOICE_VOTING,
         MAKE_CHOICE_WINNER,
         NAVIGATE_VOTING,
@@ -100,6 +102,10 @@ public enum GameState {
                 } case GameState.HOW_DOES_THIS_RESOLVE -> {
                     return GameState.HOW_DOES_THIS_RESOLVE_WINNERS;
                 } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS -> {
+                    return GameState.HOW_DOES_THIS_RESOLVE_AGAIN;
+                } case GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> {
+                    return GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN;
+                } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> {
                     return GameState.MAKE_CHOICE_VOTING;
                 }
                 case MAKE_CHOICE_VOTING -> {
@@ -325,7 +331,7 @@ public enum GameState {
                         case SET_ENCOUNTERS, SET_ENCOUNTERS_VOTING, SET_ENCOUNTERS_WINNERS -> SET_ENCOUNTERS;
                         case WHAT_HAPPENS_HERE, WHAT_HAPPENS_HERE_VOTING, WHAT_HAPPENS_HERE_WINNER -> WHAT_HAPPENS_HERE;
                         case WHAT_CAN_WE_TRY, WHAT_CAN_WE_TRY_VOTING, WHAT_CAN_WE_TRY_WINNERS -> WHAT_CAN_WE_TRY;
-                        case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNERS -> HOW_DOES_THIS_RESOLVE;
+                        case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNERS, HOW_DOES_THIS_RESOLVE_AGAIN, HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> HOW_DOES_THIS_RESOLVE;
                         case MAKE_CHOICE_VOTING, MAKE_CHOICE_WINNER -> MAKE_CHOICE_VOTING;
                         case NAVIGATE_VOTING, NAVIGATE_WINNER -> NAVIGATE_VOTING;
                         case CAMPFIRE, CAMPFIRE_WINNERS -> CAMPFIRE;
@@ -453,13 +459,14 @@ public enum GameState {
                         );
                 }
                 if (phaseId == HOW_DOES_THIS_RESOLVE) {
+                        boolean again = (this == HOW_DOES_THIS_RESOLVE_AGAIN || this == HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN);
                         return new PhaseBaseInfo(
                                 "How does this resolve?",
                                 "Look at the action you've been assigned and describe what happens if we choose it!",
                                 CollaborativeMode.SHARE_TEXT,
-                                HOW_DOES_THIS_RESOLVE,
+                                again ? HOW_DOES_THIS_RESOLVE_AGAIN : HOW_DOES_THIS_RESOLVE,
                                 HOW_DOES_THIS_RESOLVE_VOTING,
-                                HOW_DOES_THIS_RESOLVE_WINNERS,
+                                again ? HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN : HOW_DOES_THIS_RESOLVE_WINNERS,
                                 false
                         );
                 }  

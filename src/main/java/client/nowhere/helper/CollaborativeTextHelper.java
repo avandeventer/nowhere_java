@@ -69,9 +69,9 @@ public class CollaborativeTextHelper {
         } else {
             newSubmission = createNewSubmission(textAddition, gameSession);
             
-            if (phaseId.equals(GameState.HOW_DOES_THIS_RESOLVE.name())) {
-                createOptionFromOutcomeType(gameCode, textAddition);
-            }
+//            if (phaseId.equals(GameState.HOW_DOES_THIS_RESOLVE.name())) {
+//                createOptionFromOutcomeType(gameCode, textAddition);
+//            }
         }
 
         return collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, newSubmission);
@@ -196,7 +196,20 @@ public class CollaborativeTextHelper {
             && !textAddition.getOutcomeTypeWithLabel().getId().isEmpty()
         ) {
             newSubmission.setOutcomeTypeWithLabel(textAddition.getOutcomeTypeWithLabel());
-            newSubmission.setOutcomeType(textAddition.getOutcomeTypeWithLabel().getId());
+            
+            // If outcomeTypeWithLabel has subTypes, use the first subType's id as outcomeType
+            // Otherwise, use the parent id
+            if (textAddition.getOutcomeTypeWithLabel().getSubTypes() != null
+                    && !textAddition.getOutcomeTypeWithLabel().getSubTypes().isEmpty()) {
+                OutcomeType firstSubType = textAddition.getOutcomeTypeWithLabel().getSubTypes().get(0);
+                if (firstSubType != null && firstSubType.getId() != null && !firstSubType.getId().isEmpty()) {
+                    newSubmission.setOutcomeType(firstSubType.getId());
+                } else {
+                    newSubmission.setOutcomeType(textAddition.getOutcomeTypeWithLabel().getId());
+                }
+            } else {
+                newSubmission.setOutcomeType(textAddition.getOutcomeTypeWithLabel().getId());
+            }
         }
 
         return newSubmission;
@@ -735,7 +748,7 @@ public class CollaborativeTextHelper {
 //                    }
                 }
                 case "HOW_DOES_THIS_RESOLVE" -> {
-                    handleHowDoesThisResolve(gameCode, winningSubmissions, streamlinedMode);
+                    handleHowDoesThisResolve(gameCode, winningSubmissions);
                 }
                 case "MAKE_CHOICE_VOTING" -> {
                     handleMakeChoice(gameCode, winningSubmissions);
@@ -1196,8 +1209,10 @@ public class CollaborativeTextHelper {
 
     /**
      * Handles HOW_DOES_THIS_RESOLVE phase: Updates Option.successText for each winning submission
+     * If a submission has outcomeTypeWithLabel with subTypes, adds a new option to the matching story
+     * and removes the corresponding submission from WHAT_CAN_WE_TRY phase
      */
-    private void handleHowDoesThisResolve(String gameCode, List<TextSubmission> winningSubmissions, boolean streamlinedMode) {
+    private void handleHowDoesThisResolve(String gameCode, List<TextSubmission> winningSubmissions) {
         try {
             if (winningSubmissions.isEmpty()) {
                 return;
@@ -1209,35 +1224,66 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            // Build map of optionId -> winning submission
-            Map<String, TextSubmission> optionWinners = new HashMap<>();
+            // Get WHAT_CAN_WE_TRY phase to remove submissions
+            CollaborativeTextPhase whatCanWeTryPhase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
+
+            // Process each winning submission
             for (TextSubmission winner : winningSubmissions) {
-                String optionId = winner.getOutcomeType();
-                if (optionId != null && !optionId.isEmpty()) {
-                    optionWinners.put(optionId, winner);
-                }
-            }
-
-            // Update all stories that have matching options
-            for (Story story : stories) {
-                if (story.getOptions() == null || story.getOptions().isEmpty()) {
-                    continue;
-                }
-
-                boolean storyModified = false;
-                for (Option option : story.getOptions()) {
-                    TextSubmission winner = optionWinners.get(option.getOptionId());
-                    if (winner != null) {
-                        option.setSuccessText(winner.getCurrentText());
-                        storyModified = true;
+                OutcomeType outcomeTypeWithLabel = winner.getOutcomeTypeWithLabel();
+                
+                // Check if this submission has subTypes (new structure)
+                if (outcomeTypeWithLabel != null 
+                        && outcomeTypeWithLabel.getSubTypes() != null 
+                        && !outcomeTypeWithLabel.getSubTypes().isEmpty()) {
+                    
+                    // Find the story where storyId matches the parent outcomeTypeWithLabel.id
+                    String parentStoryId = outcomeTypeWithLabel.getId();
+                    Story matchingStory = stories.stream()
+                            .filter(story -> story.getStoryId().equals(parentStoryId))
+                            .findFirst()
+                            .orElse(null);
+                    
+                    if (matchingStory != null) {
+                        // Process each subType
+                        for (OutcomeType subType : outcomeTypeWithLabel.getSubTypes()) {
+                            String subTypeId = subType.getId();
+                            String subTypeLabel = subType.getLabel();
+                            
+                            if (subTypeId != null && !subTypeId.isEmpty() 
+                                    && subTypeLabel != null && !subTypeLabel.isEmpty()) {
+                                
+                                // Initialize options list if null
+                                if (matchingStory.getOptions() == null) {
+                                    matchingStory.setOptions(new ArrayList<>());
+                                }
+                                
+                                // Check if option with this ID already exists
+                                boolean optionExists = matchingStory.getOptions().stream()
+                                        .anyMatch(opt -> opt.getOptionId().equals(subTypeId));
+                                
+                                if (!optionExists) {
+                                    // Add new option with subType.id as optionId and subType.label as successText
+                                    Option newOption = new Option();
+                                    newOption.setOptionId(subTypeId);
+                                    newOption.setSuccessText(subTypeLabel);
+                                    matchingStory.getOptions().add(newOption);
+                                    
+                                    // Update the story
+                                    matchingStory.setGameCode(gameCode);
+                                    storyDAO.updateStory(matchingStory);
+                                }
+                                
+                                // Remove the submission from WHAT_CAN_WE_TRY phase that matches subType.id
+                                if (whatCanWeTryPhase != null) {
+                                    boolean removed = whatCanWeTryPhase.removeSubmissionById(subTypeId);
+                                    if (removed) {
+                                        // Update the phase in Firestore
+                                        collaborativeTextDAO.updateCollaborativeTextPhaseAtomically(gameCode, GameState.WHAT_CAN_WE_TRY.name(), whatCanWeTryPhase);
+                                    }
+                                }
+                            }
+                        }
                     }
-                }
-
-                // Update the story if any options were modified
-                if (storyModified) {
-                    story.setOptions(story.getOptions());
-                    story.setGameCode(gameCode); // Ensure gameCode is set for updateStory
-                    storyDAO.updateStory(story);
                 }
             }
 
@@ -1659,15 +1705,15 @@ public class CollaborativeTextHelper {
     public List<OutcomeType> getOutcomeTypes(String gameCode, String playerId) {
         try {
             GameSession gameSession = getGameSession(gameCode);
-            GameState gameState = gameSession.getGameState();
+            GameState phaseId = gameSession.getGameState().getPhaseId();
 
-            if (gameState == GameState.WHAT_HAPPENS_HERE && gameSession.getRoundNumber() < 3) {
+            if (phaseId == GameState.WHAT_HAPPENS_HERE && gameSession.getRoundNumber() < 3) {
                 // Return encounterLabels as OutcomeType objects
                 List<EncounterLabel> encounterLabels = getEncounterLabels(gameCode);
                 return encounterLabels.stream()
                         .map(label -> new OutcomeType(label.getEncounterId(), label.getEncounterLabel()))
                         .toList();
-            } else if (gameState == GameState.WHAT_CAN_WE_TRY) {
+            } else if (phaseId == GameState.WHAT_CAN_WE_TRY) {
                 List<Story> allStories = gameSession.getStories();
                 List<Player> players = gameSession.getPlayers();
                 
@@ -1708,7 +1754,7 @@ public class CollaborativeTextHelper {
                 boolean shouldReturnMultiple = playerSubmissionCount >= 2;
 
                 return distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, shouldReturnMultiple);
-            } else if (gameState == GameState.HOW_DOES_THIS_RESOLVE) {
+            } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE) {
                 // Get stories and players for distribution
                 List<Story> allStories = gameSession.getStories();
                 List<Player> players = gameSession.getPlayers();

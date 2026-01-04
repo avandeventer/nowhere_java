@@ -74,6 +74,20 @@ public class CollaborativeTextPhase {
         }
     }
 
+    /**
+     * Removes a submission by its ID from the phase.
+     * @param submissionId The ID of the submission to remove
+     * @return true if the submission was removed, false if it wasn't found
+     */
+    public boolean removeSubmissionById(String submissionId) {
+        boolean removed = this.submissions.removeIf(s -> s.getSubmissionId().equals(submissionId));
+        // Also remove from submissionViews if present
+        if (removed) {
+            this.submissionViews.remove(submissionId);
+        }
+        return removed;
+    }
+
     public void addPlayerVote(PlayerVote vote) {
         this.playerVotes.computeIfAbsent(vote.getPlayerId(), k -> new ArrayList<>()).add(vote);
         if (!this.playersWhoVoted.contains(vote.getPlayerId())) {
