@@ -162,8 +162,6 @@ public class CollaborativeTextHelper {
         // Add the text addition to the new submission
         newSubmission.addTextAddition(textAddition);
 
-        boolean streamlinedMode = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
-        
         // Assign outcome type for WHAT_WILL_BECOME_OF_US phase
         // Use outcomeType from TextAddition if provided, otherwise calculate based on player order
         if (gameSession.getGameState() == GameState.WHAT_WILL_BECOME_OF_US) {
@@ -171,24 +169,9 @@ public class CollaborativeTextHelper {
             newSubmission.setOutcomeType(outcomeType);
         }
         
-        // In streamlined mode, allow encounterLabel ids as outcomeType for WHAT_HAPPENS_HERE
-        if (streamlinedMode && gameSession.getGameState() == GameState.WHAT_HAPPENS_HERE) {
-            String encounterLabelId = textAddition.getOutcomeType();
-            if (encounterLabelId != null && !encounterLabelId.isEmpty()) {
-                newSubmission.setOutcomeType(encounterLabelId);
-            }
-        }
-        
-        // Assign optionId as outcomeType for HOW_DOES_THIS_RESOLVE phase
-        if (gameSession.getGameState() == GameState.HOW_DOES_THIS_RESOLVE) {
-            String optionId = textAddition.getOutcomeType(); // outcomeType contains optionId for this phase
-            if (optionId != null && !optionId.isEmpty()) {
-                newSubmission.setOutcomeType(optionId);
-            } else if (!streamlinedMode) {
-                // Fallback: assign optionId based on player order (only in non-streamlined mode)
-                String assignedOptionId = assignOptionTextToPlayer(gameSession, textAddition.getAuthorId()).getId();
-                newSubmission.setOutcomeType(assignedOptionId);
-            }
+        String outcomeType = textAddition.getOutcomeType();
+        if (outcomeType != null && !outcomeType.isEmpty()) {
+            newSubmission.setOutcomeType(outcomeType);
         }
 
         if (textAddition.getOutcomeTypeWithLabel() != null
@@ -451,7 +434,8 @@ public class CollaborativeTextHelper {
         Comparator<TextSubmission> rankingComparator = Comparator
                 .comparingDouble(TextSubmission::getAverageRanking);
 
-        if (gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS) {
+        if (gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS
+                || gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN) {
             // Rank by most submissions PER outcomeType
             List<String> uniqueOutcomeTypes = phase.getSubmissions().stream()
                     .map(TextSubmission::getOutcomeType)
@@ -1264,15 +1248,16 @@ public class CollaborativeTextHelper {
                                 if (!optionExists) {
                                     // Add new option with subType.id as optionId and subType.label as successText
                                     Option newOption = new Option();
+                                    newOption.setOptionText(subTypeLabel);
                                     newOption.setOptionId(subTypeId);
-                                    newOption.setSuccessText(subTypeLabel);
+                                    newOption.setSuccessText(winner.getCurrentText());
                                     matchingStory.getOptions().add(newOption);
                                     
                                     // Update the story
                                     matchingStory.setGameCode(gameCode);
                                     storyDAO.updateStory(matchingStory);
                                 }
-                                
+
                                 // Remove the submission from WHAT_CAN_WE_TRY phase that matches subType.id
                                 if (whatCanWeTryPhase != null) {
                                     boolean removed = whatCanWeTryPhase.removeSubmissionById(subTypeId);
@@ -1430,6 +1415,7 @@ public class CollaborativeTextHelper {
             collaborativeTextDAO.clearPhase(gameCode, GameState.WHAT_HAPPENS_HERE.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name(), true);
+            collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE_AGAIN.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.MAKE_CHOICE_VOTING.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.NAVIGATE_VOTING.name(), false);
             collaborativeTextDAO.clearPhase(gameCode, GameState.CAMPFIRE.name(), true);
@@ -1754,7 +1740,7 @@ public class CollaborativeTextHelper {
                 boolean shouldReturnMultiple = playerSubmissionCount >= 2;
 
                 return distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, shouldReturnMultiple);
-            } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE) {
+            } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE || phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
                 // Get stories and players for distribution
                 List<Story> allStories = gameSession.getStories();
                 List<Player> players = gameSession.getPlayers();
