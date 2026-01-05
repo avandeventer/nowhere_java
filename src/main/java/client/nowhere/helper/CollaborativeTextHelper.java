@@ -1021,6 +1021,17 @@ public class CollaborativeTextHelper {
                 story.setGameCode(gameCode);
                 story.setEncounterLabel(encounterLabel);
                 story.setCreatedAt(Timestamp.now());
+                
+                // Set authorId to the original author from the first addition (for branched submissions)
+                // or use the submission's authorId (for new submissions)
+                String originalAuthorId = submission.getAuthorId();
+                if (submission.getAdditions() != null && !submission.getAdditions().isEmpty()) {
+                    TextAddition firstAddition = submission.getAdditions().get(0);
+                    if (firstAddition.getAuthorId() != null && !firstAddition.getAuthorId().isEmpty()) {
+                        originalAuthorId = firstAddition.getAuthorId();
+                    }
+                }
+                story.setAuthorId(originalAuthorId);
                 storyDAO.createStory(story);
 
                 // Create encounter with the story
