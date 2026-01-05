@@ -731,7 +731,7 @@ public class CollaborativeTextHelper {
 //                        handleWhatCanWeTryStreamlined(gameCode, winningSubmissions);
 //                    }
                 }
-                case "HOW_DOES_THIS_RESOLVE" -> {
+                case "HOW_DOES_THIS_RESOLVE", "HOW_DOES_THIS_RESOLVE_AGAIN" -> {
                     handleHowDoesThisResolve(gameCode, winningSubmissions);
                 }
                 case "MAKE_CHOICE_VOTING" -> {
