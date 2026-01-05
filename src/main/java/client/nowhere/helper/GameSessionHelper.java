@@ -26,7 +26,7 @@ import client.nowhere.exception.GameStateException;
 import client.nowhere.exception.ResourceException;
 import io.netty.util.internal.StringUtil;
 
-import static client.nowhere.model.GameState.WHERE_ARE_WE;
+import static client.nowhere.model.GameState.*;
 
 @Component
 public class GameSessionHelper {
@@ -217,9 +217,9 @@ public class GameSessionHelper {
                     gameSession.setGameStateToNext();
                     break;
                 case NAVIGATE_WINNER:
-                    boolean streamlinedFeatureFlag = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
-                    if (streamlinedFeatureFlag) {
-                        collaborativeTextHelper.handleNavigationStreamlined(gameSession.getGameCode());
+                    boolean encounterAtNext = collaborativeTextHelper.handleNavigationStreamlined(gameSession.getGameCode());
+                    if (!encounterAtNext) {
+                        gameSession.setGameState(WHAT_HAPPENS_HERE);
                     }
                     gameSession.setRoundNumber(gameSession.getRoundNumber() + 1);
                 default:

@@ -1334,20 +1334,20 @@ public class CollaborativeTextHelper {
     /**
      * Handles NAVIGATE_VOTING phase in streamlined mode: Moves player to next encounter (x++)
      */
-    public void handleNavigationStreamlined(String gameCode) {
+    public boolean handleNavigationStreamlined(String gameCode) {
         try {
             // Get current game session and player coordinates
             GameSession gameSession = getGameSession(gameCode);
             GameBoard gameBoard = gameSession.getGameBoard();
             if (gameBoard == null) {
                 System.err.println("Game board not found for game: " + gameCode);
-                return;
+                return false;
             }
 
             PlayerCoordinates currentCoords = gameBoard.getPlayerCoordinates();
             if (currentCoords == null) {
                 System.err.println("Player coordinates not found for game: " + gameCode);
-                return;
+                return false;
             }
 
             // Increment x coordinate to move to next encounter
@@ -1357,14 +1357,15 @@ public class CollaborativeTextHelper {
             // Create new player coordinates
             PlayerCoordinates newCoordinates = new PlayerCoordinates(newX, newY);
 
-            // Update player coordinates via DAO
             gameSessionDAO.updatePlayerCoordinates(gameCode, newCoordinates);
-
-            // Clear CollaborativeTextPhase objects for all story writing phases
             clearStoryWritingPhases(gameCode);
+
+            Encounter encounter = gameBoard.getEncounter(newX, newY);
+            return encounter != null;
         } catch (Exception e) {
             System.err.println("Failed to handle NAVIGATE_VOTING (streamlined): " + e.getMessage());
             e.printStackTrace();
+            return false;
         }
     }
 

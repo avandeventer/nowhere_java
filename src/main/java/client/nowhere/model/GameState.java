@@ -95,7 +95,7 @@ public enum GameState {
                     return GameState.WHAT_HAPPENS_HERE_WINNER;
                 } case GameState.WHAT_HAPPENS_HERE_WINNER -> {
                     return GameState.WHAT_CAN_WE_TRY;
-                } case GameState.NAVIGATE_WINNER, GameState.WHAT_CAN_WE_TRY -> {
+                } case GameState.WHAT_CAN_WE_TRY -> {
                     return GameState.WHAT_CAN_WE_TRY_WINNERS;
                 } case GameState.WHAT_CAN_WE_TRY_WINNERS -> {
                     return GameState.HOW_DOES_THIS_RESOLVE;
@@ -113,6 +113,10 @@ public enum GameState {
                 }
                 case MAKE_CHOICE_WINNER -> {
                     return GameState.NAVIGATE_WINNER;
+                }
+                case NAVIGATE_WINNER -> {
+                    //Loops back to make choice. This loop is broken in NAVIGATE_WINNER case in GameSessionHelper.updateGameSession
+                    return MAKE_CHOICE_VOTING;
                 }
                 default -> {
                     return GameState.INIT;
