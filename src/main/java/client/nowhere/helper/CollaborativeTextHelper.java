@@ -1711,6 +1711,7 @@ public class CollaborativeTextHelper {
                         .filter(player -> player.getJoinedAt() != null)
                         .sorted(Comparator.comparing(Player::getJoinedAt))
                         .toList();
+                
                                 
                 int playerIndex = -1;
                 for (int i = 0; i < sortedPlayers.size(); i++) {
@@ -1723,11 +1724,9 @@ public class CollaborativeTextHelper {
                 if (playerIndex == -1) {
                     return new ArrayList<>();
                 }
-                
-                List<Story> sortedStories = allStories.stream()
-                        .filter(story -> story.getCreatedAt() != null)
-                        .sorted(Comparator.comparing(Story::getCreatedAt))
-                        .toList();
+
+                // Sort stories by matching authorId to player order
+                List<Story> sortedStories = sortStoriesByPlayerOrder(sortedPlayers, allStories);
                 
                 if (sortedStories.isEmpty()) {
                     return new ArrayList<>();
@@ -1739,7 +1738,10 @@ public class CollaborativeTextHelper {
                 // Only return multiple stories if player has made 2+ submissions
                 boolean shouldReturnMultiple = playerSubmissionCount >= 2;
 
-                return distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, shouldReturnMultiple);
+                // Offset player index by one (wrapping if needed)
+                int offsetPlayerIndex = (playerIndex + 1) % sortedPlayers.size();
+
+                return distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, shouldReturnMultiple);
             } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE || phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
                 // Get stories and players for distribution
                 List<Story> allStories = gameSession.getStories();
@@ -1800,24 +1802,17 @@ public class CollaborativeTextHelper {
                     }).toList();
                 }
 
-                // Sort stories: first by number of related submissions (ascending), then by createdAt
-                // Filter out stories with no submissions and stories that already have 2 options with successText
-                List<Story> sortedStories = filteredStories.stream()
-                        .filter(story -> story.getCreatedAt() != null)
-                        .sorted(Comparator
-                                .comparing((Story story) -> storySubmissionCounts.getOrDefault(story.getStoryId(), 0L))
-                                .thenComparing(Story::getCreatedAt))
-                        .toList();
+                // Sort stories by matching authorId to player order
+                List<Story> sortedStories = sortStoriesByPlayerOrder(sortedPlayers, allStories);
                 
                 if (sortedStories.isEmpty()) {
                     return new ArrayList<>();
                 }
                 
-                int numPlayers = sortedPlayers.size();
                 int numStories = sortedStories.size();
                 
                 // Offset player index by one (wrapping if needed)
-                int offsetPlayerIndex = (playerIndex + 1) % numPlayers;
+                int offsetPlayerIndex = (playerIndex + 2) % sortedPlayers.size();
                 
                 // Get assigned story (only one story per player for this phase)
                 List<OutcomeType> assignedStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, false);
@@ -1852,6 +1847,7 @@ public class CollaborativeTextHelper {
                     return new ArrayList<>();
                 }
                 
+                int numPlayers = sortedPlayers.size();
                 // Check if player index is shared (wraps around when numPlayers > numStories)
                 // A player shares if: offsetPlayerIndex >= numStories OR offsetPlayerIndex < (numPlayers - numStories)
                 boolean isSharedIndex = numPlayers > numStories && 
@@ -1932,6 +1928,35 @@ public class CollaborativeTextHelper {
         return phaseData.getSubmissions().stream()
                 .filter(submission -> playerId.equals(submission.getAuthorId()))
                 .count();
+    }
+
+    /**
+     * Sorts stories by matching their authorId to the order of players in the sorted players list.
+     * Stories with matching players are sorted by player index, stories without matching players
+     * are placed at the end and sorted by createdAt.
+     * @param sortedPlayers List of players sorted by joinedAt
+     * @param stories List of stories to sort
+     * @return List of stories sorted by player order
+     */
+    private List<Story> sortStoriesByPlayerOrder(List<Player> sortedPlayers, List<Story> stories) {
+        // Create a map of player authorId to their index in the sorted list
+        Map<String, Integer> playerIndexMap = new HashMap<>();
+        for (int i = 0; i < sortedPlayers.size(); i++) {
+            playerIndexMap.put(sortedPlayers.get(i).getAuthorId(), i);
+        }
+        
+        // Sort stories by matching authorId to player order, then by createdAt for stories without matching players
+        final Map<String, Integer> finalPlayerIndexMap = playerIndexMap;
+        return stories.stream()
+                .sorted(Comparator
+                        .comparing((Story story) -> {
+                            Integer playerIdx = finalPlayerIndexMap.get(story.getAuthorId());
+                            // Stories with matching players come first, sorted by player index
+                            // Stories without matching players come last, sorted by createdAt
+                            return playerIdx != null ? playerIdx : Integer.MAX_VALUE;
+                        })
+                        .thenComparing(Story::getCreatedAt))
+                .toList();
     }
 
     /**
