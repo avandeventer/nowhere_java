@@ -1262,6 +1262,14 @@ public class CollaborativeTextHelper {
                                     newOption.setOptionText(subTypeLabel);
                                     newOption.setOptionId(subTypeId);
                                     newOption.setSuccessText(winner.getCurrentText());
+                                    String originalAuthorId = winner.getAuthorId();
+                                    if (winner.getAdditions() != null && !winner.getAdditions().isEmpty()) {
+                                        TextAddition firstAddition = winner.getAdditions().get(0);
+                                        if (firstAddition.getAuthorId() != null && !firstAddition.getAuthorId().isEmpty()) {
+                                            originalAuthorId = firstAddition.getAuthorId();
+                                        }
+                                    }
+                                    newOption.setOutcomeAuthorId(originalAuthorId);
                                     matchingStory.getOptions().add(newOption);
                                     
                                     // Update the story
@@ -1855,7 +1863,7 @@ public class CollaborativeTextHelper {
                         .toList();
                 
                 if (relatedSubmissions.isEmpty()) {
-                    return new ArrayList<>();
+                    return createPreCannedOptions(assignedStoryId, storyPrompt);
                 }
                 
                 int numPlayers = sortedPlayers.size();
@@ -1968,6 +1976,54 @@ public class CollaborativeTextHelper {
                         })
                         .thenComparing(Story::getCreatedAt))
                 .toList();
+    }
+
+    /**
+     * Creates pre-canned options when there are no submissions for a story.
+     * Randomly selects 3 options from a predefined list.
+     * @param assignedStoryId The ID of the assigned story
+     * @param storyPrompt The prompt text of the story
+     * @return List containing a single OutcomeType with pre-canned subTypes
+     */
+    private List<OutcomeType> createPreCannedOptions(String assignedStoryId, String storyPrompt) {
+        List<String> preCannedOptions = List.of(
+            "Use your secret vegetables",
+            "Ask for help",
+            "Ignore them",
+            "Call for the king",
+            "Use your tongue",
+            "Trust your instincts",
+            "Set a fire",
+            "Snacks!",
+            "Become wet",
+            "Consult with the stars",
+            "Phone a friend",
+            "Use 'smooch'",
+            "Run away",
+            "Yell loudly!",
+            "Attack",
+            "Defend",
+            "Examine",
+            "Use your feet",
+            "Try to be brave"
+        );
+        
+        // Randomly select 3 options
+        List<String> shuffled = new ArrayList<>(preCannedOptions);
+        Collections.shuffle(shuffled);
+        List<String> selectedOptions = shuffled.subList(0, Math.min(3, shuffled.size()));
+        
+        // Create subTypes from pre-canned options
+        List<OutcomeType> preCannedSubTypes = new ArrayList<>();
+        for (String optionText : selectedOptions) {
+            String optionId = UUID.randomUUID().toString();
+            preCannedSubTypes.add(new OutcomeType(optionId, optionText));
+        }
+        
+        // Return single OutcomeType with story info and pre-canned subTypes
+        OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt, storyPrompt);
+        storyOutcomeType.setSubTypes(preCannedSubTypes);
+        return List.of(storyOutcomeType);
     }
 
     /**
