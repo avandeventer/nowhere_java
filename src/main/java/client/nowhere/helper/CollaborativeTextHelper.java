@@ -1436,7 +1436,7 @@ public class CollaborativeTextHelper {
             collaborativeTextDAO.clearPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE_AGAIN.name(), true);
-            collaborativeTextDAO.clearPhase(gameCode, GameState.MAKE_CHOICE_VOTING.name(), true);
+            collaborativeTextDAO.clearPhase(gameCode, GameState.MAKE_CHOICE_VOTING.name(), false);
             collaborativeTextDAO.clearPhase(gameCode, GameState.NAVIGATE_VOTING.name(), false);
             collaborativeTextDAO.clearPhase(gameCode, GameState.CAMPFIRE.name(), true);
         } catch (Exception e) {
