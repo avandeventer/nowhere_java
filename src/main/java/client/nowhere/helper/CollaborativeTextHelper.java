@@ -1760,8 +1760,12 @@ public class CollaborativeTextHelper {
 
                 // Offset player index by one (wrapping if needed)
                 int offsetPlayerIndex = (playerIndex + 1) % sortedPlayers.size();
+                List<OutcomeType> nextPlayersStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, shouldReturnMultiple);
 
-                return distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, shouldReturnMultiple);
+                int nextNextIndex = players.size() > 4 ? offsetPlayerIndex + 1 : playerIndex;
+                List<OutcomeType> nextNextPlayerStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, nextNextIndex, shouldReturnMultiple);
+                nextPlayersStories.addAll(nextNextPlayerStories);
+                return nextPlayersStories;
             } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE || phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
                 // Get stories and players for distribution
                 List<Story> allStories = gameSession.getStories();
@@ -1832,7 +1836,12 @@ public class CollaborativeTextHelper {
                 int numStories = sortedStories.size();
                 
                 // Offset player index by one (wrapping if needed)
-                int offsetPlayerIndex = (playerIndex + 2) % sortedPlayers.size();
+                int offsetValue = 4;
+                if (phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
+                    offsetValue = players.size() > 4 ? 5 : 3;
+                }
+
+                int offsetPlayerIndex = (playerIndex + offsetValue) % sortedPlayers.size();
                 
                 // Get assigned story (only one story per player for this phase)
                 List<OutcomeType> assignedStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, false);
