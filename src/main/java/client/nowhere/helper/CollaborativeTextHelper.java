@@ -1807,25 +1807,6 @@ public class CollaborativeTextHelper {
                                 Collectors.counting()
                         ));
 
-                List<Story> filteredStories = allStories.stream().filter(story -> {
-                    // Exclude stories that already have 2 options with successText
-                    if (story.getOptions() == null) {
-                        return true;
-                    }
-                    long optionsWithSuccessText = story.getOptions().stream()
-                            .filter(option -> option.getSuccessText() != null
-                                    && !option.getSuccessText().trim().isEmpty())
-                            .count();
-                    return optionsWithSuccessText < 2;
-                }).toList();
-
-                if (phaseId == GameState.HOW_DOES_THIS_RESOLVE) {
-                    filteredStories = allStories.stream().filter(story -> {
-                        long submissionCount = storySubmissionCounts.getOrDefault(story.getStoryId(), 0L);
-                        return submissionCount > 0;
-                    }).toList();
-                }
-
                 // Sort stories by matching authorId to player order
                 List<Story> sortedStories = sortStoriesByPlayerOrder(sortedPlayers, allStories);
                 
@@ -1836,9 +1817,9 @@ public class CollaborativeTextHelper {
                 int numStories = sortedStories.size();
                 
                 // Offset player index by one (wrapping if needed)
-                int offsetValue = 4;
+                int offsetValue = 3;
                 if (phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
-                    offsetValue = players.size() > 4 ? 5 : 3;
+                    offsetValue = players.size() > 4 ? 4 : 2;
                 }
 
                 int offsetPlayerIndex = (playerIndex + offsetValue) % sortedPlayers.size();
