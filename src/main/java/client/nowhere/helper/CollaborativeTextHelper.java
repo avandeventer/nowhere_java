@@ -1722,38 +1722,26 @@ public class CollaborativeTextHelper {
                             .toList();
                 } else {
                     // Round > 0: Distribute visited stories and filter encounters
-                    List<Story> allUnvisitedStories = gameSession.getStories().stream().filter(Story::isVisited).toList();;
-                    List<Player> players = gameSession.getPlayers();
+                    List<Story> allVisitedStories = gameSession.getStories().stream().filter(Story::isVisited).toList();
                     
-                    if (allUnvisitedStories.isEmpty() || players == null || players.isEmpty()) {
+                    if (allVisitedStories.isEmpty()) {
                         return new ArrayList<>();
                     }
 
-                    // Sort players by joinedAt
-                    List<Player> sortedPlayers = players.stream()
-                            .filter(player -> player.getJoinedAt() != null)
-                            .sorted(Comparator.comparing(Player::getJoinedAt))
-                            .toList();
-                    
-                    // Find player index
-                    int playerIndex = -1;
-                    for (int i = 0; i < sortedPlayers.size(); i++) {
-                        if (sortedPlayers.get(i).getAuthorId().equals(playerId)) {
-                            playerIndex = i;
-                            break;
-                        }
-                    }
-                    
-                    if (playerIndex == -1) {
+                    PlayerSortResult playerResult = getSortedPlayersAndIndex(gameSession.getPlayers(), playerId);
+                    if (playerResult == null) {
                         return new ArrayList<>();
                     }
+                    
+                    List<Player> sortedPlayers = playerResult.sortedPlayers;
+                    int playerIndex = playerResult.playerIndex;
                     
                     // Calculate offset: 3 for 4 players, 4 for more than 4 players
                     int offsetValue = sortedPlayers.size() == 4 ? 1 : 2;
                     int offsetPlayerIndex = (playerIndex + offsetValue) % sortedPlayers.size();
                     
                     // Sort visited stories by player order
-                    List<Story> sortedVisitedStories = sortStoriesByPlayerOrder(sortedPlayers, allUnvisitedStories);
+                    List<Story> sortedVisitedStories = sortStoriesByPlayerOrder(sortedPlayers, allVisitedStories);
                     
                     // Distribute stories to player
                     List<OutcomeType> assignedStories = distributeStoriesToPlayer(sortedVisitedStories, sortedPlayers, offsetPlayerIndex, false);
@@ -1777,7 +1765,7 @@ public class CollaborativeTextHelper {
                     List<EncounterLabel> allEncounterLabels = getEncounterLabels(gameCode);
                     
                     // Get encounter label IDs used in stories (except the assigned one)
-                    Set<String> usedEncounterLabelIds = allUnvisitedStories.stream()
+                    Set<String> usedEncounterLabelIds = allVisitedStories.stream()
                             .filter(story -> story.getEncounterLabel() != null)
                             .map(story -> story.getEncounterLabel().getEncounterId())
                             .filter(id -> !id.equals(assignedEncounterLabelId)) // Keep the assigned one
@@ -1805,29 +1793,18 @@ public class CollaborativeTextHelper {
                 }
             } else if (phaseId == GameState.WHAT_CAN_WE_TRY) {
                 List<Story> allUnvisitedStories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();
-                List<Player> players = gameSession.getPlayers();
                 
-                if (allUnvisitedStories.isEmpty() || players == null || players.isEmpty()) {
+                if (allUnvisitedStories.isEmpty()) {
                     return new ArrayList<>();
                 }
                 
-                List<Player> sortedPlayers = players.stream()
-                        .filter(player -> player.getJoinedAt() != null)
-                        .sorted(Comparator.comparing(Player::getJoinedAt))
-                        .toList();
-                
-                                
-                int playerIndex = -1;
-                for (int i = 0; i < sortedPlayers.size(); i++) {
-                    if (sortedPlayers.get(i).getAuthorId().equals(playerId)) {
-                        playerIndex = i;
-                        break;
-                    }
-                }
-                
-                if (playerIndex == -1) {
+                PlayerSortResult playerResult = getSortedPlayersAndIndex(gameSession.getPlayers(), playerId);
+                if (playerResult == null) {
                     return new ArrayList<>();
                 }
+                
+                List<Player> sortedPlayers = playerResult.sortedPlayers;
+                int playerIndex = playerResult.playerIndex;
 
                 // Sort stories by matching authorId to player order
                 List<Story> sortedStories = sortStoriesByPlayerOrder(sortedPlayers, allUnvisitedStories);
@@ -1846,35 +1823,25 @@ public class CollaborativeTextHelper {
                 int offsetPlayerIndex = (playerIndex + 1) % sortedPlayers.size();
                 List<OutcomeType> nextPlayersStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, shouldReturnMultiple);
 
-                int nextNextIndex = players.size() > 4 ? offsetPlayerIndex + 1 : playerIndex;
+                int nextNextIndex = sortedPlayers.size() > 4 ? offsetPlayerIndex + 1 : playerIndex;
                 List<OutcomeType> nextNextPlayerStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, nextNextIndex, shouldReturnMultiple);
                 nextPlayersStories.addAll(nextNextPlayerStories);
                 return nextPlayersStories;
             } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE || phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
                 // Get stories and players for distribution
-                List<Story> allUnvisitedStories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();;
-                List<Player> players = gameSession.getPlayers();
+                List<Story> allUnvisitedStories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();
                 
-                if (allUnvisitedStories.isEmpty() || players == null || players.isEmpty()) {
+                if (allUnvisitedStories.isEmpty()) {
                     return new ArrayList<>();
                 }
                 
-                List<Player> sortedPlayers = players.stream()
-                        .filter(player -> player.getJoinedAt() != null)
-                        .sorted(Comparator.comparing(Player::getJoinedAt))
-                        .toList();
-                
-                int playerIndex = -1;
-                for (int i = 0; i < sortedPlayers.size(); i++) {
-                    if (sortedPlayers.get(i).getAuthorId().equals(playerId)) {
-                        playerIndex = i;
-                        break;
-                    }
-                }
-                
-                if (playerIndex == -1) {
+                PlayerSortResult playerResult = getSortedPlayersAndIndex(gameSession.getPlayers(), playerId);
+                if (playerResult == null) {
                     return new ArrayList<>();
                 }
+                
+                List<Player> sortedPlayers = playerResult.sortedPlayers;
+                int playerIndex = playerResult.playerIndex;
                 
                 // Get WHAT_CAN_WE_TRY submissions to count related submissions per story
                 CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
@@ -1894,7 +1861,7 @@ public class CollaborativeTextHelper {
                 // Offset player index by one (wrapping if needed)
                 int offsetValue = 3;
                 if (phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
-                    offsetValue = players.size() > 4 ? 4 : 2;
+                    offsetValue = sortedPlayers.size() > 4 ? 4 : 2;
                 }
 
                 int offsetPlayerIndex = (playerIndex + offsetValue) % sortedPlayers.size();
@@ -2013,6 +1980,50 @@ public class CollaborativeTextHelper {
         return phaseData.getSubmissions().stream()
                 .filter(submission -> playerId.equals(submission.getAuthorId()))
                 .count();
+    }
+
+    /**
+     * Helper class to hold sorted players and player index
+     */
+    private static class PlayerSortResult {
+        final List<Player> sortedPlayers;
+        final int playerIndex;
+        
+        PlayerSortResult(List<Player> sortedPlayers, int playerIndex) {
+            this.sortedPlayers = sortedPlayers;
+            this.playerIndex = playerIndex;
+        }
+    }
+
+    /**
+     * Sorts players by joinedAt and finds the index of the specified player.
+     * @param players List of players to sort
+     * @param playerId The ID of the player to find
+     * @return PlayerSortResult containing sorted players and player index, or null if player not found or invalid input
+     */
+    private PlayerSortResult getSortedPlayersAndIndex(List<Player> players, String playerId) {
+        if (players == null || players.isEmpty() || playerId == null || playerId.isEmpty()) {
+            return null;
+        }
+        
+        List<Player> sortedPlayers = players.stream()
+                .filter(player -> player.getJoinedAt() != null)
+                .sorted(Comparator.comparing(Player::getJoinedAt))
+                .toList();
+        
+        int playerIndex = -1;
+        for (int i = 0; i < sortedPlayers.size(); i++) {
+            if (sortedPlayers.get(i).getAuthorId().equals(playerId)) {
+                playerIndex = i;
+                break;
+            }
+        }
+        
+        if (playerIndex == -1) {
+            return null;
+        }
+        
+        return new PlayerSortResult(sortedPlayers, playerIndex);
     }
 
     /**
