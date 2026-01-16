@@ -1021,6 +1021,10 @@ public class CollaborativeTextHelper {
                 story.setGameCode(gameCode);
                 story.setEncounterLabel(encounterLabel);
                 story.setCreatedAt(Timestamp.now());
+                String clarifier = submission.getOutcomeTypeWithLabel().getClarifier();
+                if (clarifier != null && !clarifier.isEmpty()) {
+                    story.setPrequelStoryId(clarifier);
+                }
                 
                 // Set authorId to the original author from the first addition (for branched submissions)
                 // or use the submission's authorId (for new submissions)
