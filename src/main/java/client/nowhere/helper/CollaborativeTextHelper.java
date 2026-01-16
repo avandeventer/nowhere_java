@@ -2131,7 +2131,12 @@ public class CollaborativeTextHelper {
             // Fewer stories than players, or player hasn't made 2+ submissions: return one story with wrapping
             int storyIndex = playerIndex % numStories;
             Story assignedStory = sortedStories.get(storyIndex);
-            assignedStories.add(new OutcomeType(assignedStory.getStoryId(), assignedStory.getPrompt()));
+            OutcomeType outcomeType = new OutcomeType(assignedStory.getStoryId(), assignedStory.getPrompt());
+            String prequelStoryId = assignedStory.getPrequelStoryId();
+            if (prequelStoryId != null && !prequelStoryId.isEmpty()) {
+                outcomeType.setClarifier(prequelStoryId);
+            }
+            assignedStories.add(outcomeType);
         } else {
             // More stories than players AND player has 2+ submissions: return multiple stories
             for (int i = 0; i < sortedStories.size(); i++) {
