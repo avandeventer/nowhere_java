@@ -1878,7 +1878,8 @@ public class CollaborativeTextHelper {
                 }
                 
                 // Get the assigned story ID and prompt (first story from the list)
-                String assignedStoryId = assignedStories.getFirst().getId();
+                OutcomeType assignedStoryOutcomeType = assignedStories.getFirst();
+                String assignedStoryId = assignedStoryOutcomeType.getId();
                 
                 // Find the assigned story to get its prompt
                 final String storyPrompt = sortedStories.stream()
@@ -1944,6 +1945,9 @@ public class CollaborativeTextHelper {
                     
                     // Return single OutcomeType with story info and subTypes array
                     OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt);
+                    if (assignedStoryOutcomeType.getClarifier() != null && !assignedStoryOutcomeType.getClarifier().isEmpty()) {
+                        storyOutcomeType.setClarifier(assignedStoryOutcomeType.getClarifier());
+                    }
                     storyOutcomeType.setSubTypes(distributedSubTypes);
                     return List.of(storyOutcomeType);
                 } else {
@@ -1957,6 +1961,9 @@ public class CollaborativeTextHelper {
                     
                     // Return single OutcomeType with story info and subTypes array
                     OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt);
+                    if (assignedStoryOutcomeType.getClarifier() != null && !assignedStoryOutcomeType.getClarifier().isEmpty()) {
+                        storyOutcomeType.setClarifier(assignedStoryOutcomeType.getClarifier());
+                    }
                     storyOutcomeType.setSubTypes(allSubTypes);
                     return List.of(storyOutcomeType);
                 }
@@ -2130,7 +2137,12 @@ public class CollaborativeTextHelper {
             for (int i = 0; i < sortedStories.size(); i++) {
                 if (i % numPlayers == playerIndex) {
                     Story story = sortedStories.get(i);
-                    assignedStories.add(new OutcomeType(story.getStoryId(), story.getPrompt()));
+                    OutcomeType outcomeType = new OutcomeType(story.getStoryId(), story.getPrompt());
+                    String prequelStoryId = story.getPrequelStoryId();
+                    if (prequelStoryId != null && !prequelStoryId.isEmpty()) {
+                        outcomeType.setClarifier(prequelStoryId);
+                    }
+                    assignedStories.add(outcomeType);
                 }
             }
         }
