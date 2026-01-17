@@ -1718,7 +1718,7 @@ public class CollaborativeTextHelper {
             GameState phaseId = gameSession.getGameState().getPhaseId();
 
             if (phaseId == GameState.WHAT_HAPPENS_HERE) {
-                if (gameSession.getRoundNumber() == 0) {
+                if (gameSession.getRoundNumber() == 1) {
                     List<EncounterLabel> encounterLabels = getEncounterLabels(gameCode);
 
                     return encounterLabels.stream()
