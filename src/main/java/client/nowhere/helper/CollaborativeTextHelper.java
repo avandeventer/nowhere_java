@@ -1827,67 +1827,64 @@ public class CollaborativeTextHelper {
                 int offsetPlayerIndex = (playerIndex + 1) % sortedPlayers.size();
                 List<OutcomeType> nextPlayersStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, shouldReturnMultiple);
 
-                int nextNextIndex = sortedPlayers.size() > 4 ? offsetPlayerIndex + 1 : playerIndex;
+                int nextNextIndex = sortedPlayers.size() > 4 ? playerIndex + 2 : playerIndex;
                 List<OutcomeType> nextNextPlayerStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, nextNextIndex, shouldReturnMultiple);
                 nextPlayersStories.addAll(nextNextPlayerStories);
                 return nextPlayersStories;
             } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE || phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
                 // Get stories and players for distribution
                 List<Story> allUnvisitedStories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();
-                
+
                 if (allUnvisitedStories.isEmpty()) {
                     return new ArrayList<>();
                 }
-                
+
                 PlayerSortResult playerResult = getSortedPlayersAndIndex(gameSession.getPlayers(), playerId);
                 if (playerResult == null) {
                     return new ArrayList<>();
                 }
-                
+
                 List<Player> sortedPlayers = playerResult.sortedPlayers;
                 int playerIndex = playerResult.playerIndex;
-                
+
                 // Get WHAT_CAN_WE_TRY submissions to count related submissions per story
                 CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
-                List<TextSubmission> whatCanWeTrySubmissions = (whatCanWeTry != null && whatCanWeTry.getSubmissions() != null) 
-                        ? whatCanWeTry.getSubmissions() 
+                List<TextSubmission> whatCanWeTrySubmissions = (whatCanWeTry != null && whatCanWeTry.getSubmissions() != null)
+                        ? whatCanWeTry.getSubmissions()
                         : new ArrayList<>();
 
                 // Sort stories by matching authorId to player order
                 List<Story> sortedStories = sortStoriesByPlayerOrder(sortedPlayers, allUnvisitedStories);
-                
+
                 if (sortedStories.isEmpty()) {
                     return new ArrayList<>();
                 }
-                
+
                 int numStories = sortedStories.size();
-                
+
                 // Offset player index by one (wrapping if needed)
-                int offsetValue = 3;
-                if (phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
-                    offsetValue = sortedPlayers.size() > 4 ? 4 : 2;
-                }
+                int offsetValue = sortedPlayers.size() > 4 ? 3 : 2;
 
                 int offsetPlayerIndex = (playerIndex + offsetValue) % sortedPlayers.size();
-                
+
                 // Get assigned story (only one story per player for this phase)
                 List<OutcomeType> assignedStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, false);
-                
+
                 if (assignedStories.isEmpty()) {
                     return new ArrayList<>();
                 }
-                
+
                 // Get the assigned story ID and prompt (first story from the list)
                 OutcomeType assignedStoryOutcomeType = assignedStories.getFirst();
                 String assignedStoryId = assignedStoryOutcomeType.getId();
-                
+
                 // Find the assigned story to get its prompt
                 final String storyPrompt = sortedStories.stream()
                         .filter(story -> story.getStoryId().equals(assignedStoryId))
                         .findFirst()
                         .map(story -> story.getPrompt() != null ? story.getPrompt() : "")
                         .orElse("");
-                
+
                 // Get submissions related to the assigned story
                 List<TextSubmission> relatedSubmissions = whatCanWeTrySubmissions.stream()
                         .filter(submission -> {
@@ -1899,17 +1896,17 @@ public class CollaborativeTextHelper {
                         })
                         .sorted(Comparator.comparing(TextSubmission::getCreatedAt))
                         .toList();
-                
+
                 if (relatedSubmissions.isEmpty()) {
                     return createPreCannedOptions(assignedStoryId, storyPrompt);
                 }
-                
+
                 int numPlayers = sortedPlayers.size();
                 // Check if player index is shared (wraps around when numPlayers > numStories)
                 // A player shares if: offsetPlayerIndex >= numStories OR offsetPlayerIndex < (numPlayers - numStories)
-                boolean isSharedIndex = numPlayers > numStories && 
+                boolean isSharedIndex = numPlayers > numStories &&
                         (offsetPlayerIndex >= numStories || offsetPlayerIndex < (numPlayers - numStories));
-                
+
                 if (isSharedIndex) {
                     // Multiple players share this story - distribute submissions evenly using modulus
                     // Find all players that share this story (same story index after modulus)
@@ -1920,17 +1917,17 @@ public class CollaborativeTextHelper {
                             sharingPlayerIndices.add(i);
                         }
                     }
-                    
+
                     // Find this player's position among the sharing players (sorted by player index)
                     sharingPlayerIndices.sort(Integer::compareTo);
                     int playerPositionInSharing = sharingPlayerIndices.indexOf(offsetPlayerIndex);
                     int numSharingPlayers = sharingPlayerIndices.size();
-                    
+
                     // Sort submissions by createdAt and distribute using modulus
                     List<TextSubmission> sortedRelatedSubmissions = relatedSubmissions.stream()
                             .sorted(Comparator.comparing(TextSubmission::getCreatedAt))
                             .toList();
-                    
+
                     // Create subTypes for distributed submissions
                     List<OutcomeType> distributedSubTypes = new ArrayList<>();
                     for (int i = 0; i < sortedRelatedSubmissions.size(); i++) {
@@ -1942,7 +1939,7 @@ public class CollaborativeTextHelper {
                             ));
                         }
                     }
-                    
+
                     // Return single OutcomeType with story info and subTypes array
                     OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt);
                     if (assignedStoryOutcomeType.getClarifier() != null && !assignedStoryOutcomeType.getClarifier().isEmpty()) {
@@ -1958,7 +1955,7 @@ public class CollaborativeTextHelper {
                                 submission.getCurrentText()
                             ))
                             .toList();
-                    
+
                     // Return single OutcomeType with story info and subTypes array
                     OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt);
                     if (assignedStoryOutcomeType.getClarifier() != null && !assignedStoryOutcomeType.getClarifier().isEmpty()) {
@@ -1966,6 +1963,42 @@ public class CollaborativeTextHelper {
                     }
                     storyOutcomeType.setSubTypes(allSubTypes);
                     return List.of(storyOutcomeType);
+                }
+            } else if (phaseId == GameState.WHAT_CAN_WE_TRY_VOTING) {
+                List<Story> allUnvisitedStories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();
+
+                if (allUnvisitedStories.isEmpty()) {
+                    return new ArrayList<>();
+                }
+
+                PlayerSortResult playerResult = getSortedPlayersAndIndex(gameSession.getPlayers(), playerId);
+                if (playerResult == null) {
+                    return new ArrayList<>();
+                }
+
+                List<Player> sortedPlayers = playerResult.sortedPlayers;
+                int playerIndex = playerResult.playerIndex;
+
+                // Sort stories by matching authorId to player order
+                List<Story> sortedStories = sortStoriesByPlayerOrder(sortedPlayers, allUnvisitedStories);
+
+                if (sortedStories.isEmpty()) {
+                    return new ArrayList<>();
+                }
+
+                // Offset player index by one (wrapping if needed)
+                int offsetPlayerIndex = (playerIndex + 1) % sortedPlayers.size();
+                List<OutcomeType> assignedPlayerStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, false);
+                List<String> storyIds = assignedPlayerStories.stream().map(OutcomeType::getId).toList();
+
+                Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
+
+                if (!storyIds.isEmpty()
+                        && encounter != null
+                        && storyIds.contains(encounter.getStoryId())) {
+                    return new ArrayList<>(Collections.singletonList(new OutcomeType(encounter.getStoryId(), encounter.getStoryPrompt())));
+                } else {
+                    return new ArrayList<>();
                 }
             } else {
                 return new ArrayList<>();
