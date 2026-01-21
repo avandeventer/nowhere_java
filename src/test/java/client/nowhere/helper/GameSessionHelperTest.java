@@ -69,6 +69,9 @@ public class GameSessionHelperTest {
     @InjectMocks
     private GameSessionHelper gameSessionHelper;
 
+    @Mock
+    private CollaborativeTextHelper collaborativeTextHelper;
+
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);

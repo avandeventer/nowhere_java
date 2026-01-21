@@ -98,7 +98,7 @@ public class GameSessionHelper {
             PhaseBaseInfo phaseBaseInfo = gameSession.getGameState().getPhaseBaseInfo("", gameSession.getRoundNumber());
             if (!gameSession.getGameState().equals(MAKE_CHOICE_VOTING)
                 && !gameSession.getGameState().equals(NAVIGATE_WINNER)
-                && !gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
+                && gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
                 collaborativeTextHelper.calculateWinningSubmission(gameSession.getGameCode());
                 gameSession.setGameStateToNext();
             }
