@@ -1964,7 +1964,7 @@ public class CollaborativeTextHelper {
                     storyOutcomeType.setSubTypes(allSubTypes);
                     return List.of(storyOutcomeType);
                 }
-            } else if (phaseId == GameState.WHAT_CAN_WE_TRY_VOTING) {
+            } else if (phaseId == GameState.MAKE_CHOICE_VOTING) {
                 List<Story> allUnvisitedStories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();
 
                 if (allUnvisitedStories.isEmpty()) {
