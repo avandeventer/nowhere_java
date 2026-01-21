@@ -100,7 +100,7 @@ public class GameSessionHelper {
                 && !gameSession.getGameState().equals(NAVIGATE_WINNER)
                 && gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
                 collaborativeTextHelper.calculateWinningSubmission(gameSession.getGameCode());
-                gameSession.setGameStateToNext();
+                gameSession.setGameStateToNext(true,  gameSession.getRoundNumber());
             }
 
             switch (gameSession.getGameState()) {
