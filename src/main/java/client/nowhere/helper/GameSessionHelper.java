@@ -95,6 +95,13 @@ public class GameSessionHelper {
                     gameSession.skipAdventureMapCreateMode();
                 }
             }
+            PhaseBaseInfo phaseBaseInfo = gameSession.getGameState().getPhaseBaseInfo("", gameSession.getRoundNumber());
+            if (!gameSession.getGameState().equals(MAKE_CHOICE_VOTING)
+                && !gameSession.getGameState().equals(NAVIGATE_WINNER)
+                && !gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
+                collaborativeTextHelper.calculateWinningSubmission(gameSession.getGameCode());
+                gameSession.setGameStateToNext();
+            }
 
             switch (gameSession.getGameState()) {
                 case GENERATE_LOCATION_AUTHORS:
