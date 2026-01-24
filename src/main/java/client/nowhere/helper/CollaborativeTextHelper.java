@@ -560,7 +560,7 @@ public class CollaborativeTextHelper {
         if (submission.getOutcomeType() == null || submission.getOutcomeType().isEmpty()) {
             return !submission.getAuthorId().equals(playerId);
         }
-        return outcomeType.getId().equals(submission.getOutcomeType());
+        return outcomeType != null && outcomeType.getId().equals(submission.getOutcomeType());
     }
 
     /**
@@ -593,7 +593,9 @@ public class CollaborativeTextHelper {
 
         // Retrieve the phase
         CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
-        OutcomeType outcomeType = getOutcomeTypeForPlayer(gameCode, playerId);
+        List<OutcomeType> outcomeTypes = getOutcomeTypes(gameCode, playerId);
+
+        OutcomeType outcomeType = outcomeTypes.isEmpty() ? null : outcomeTypes.getFirst();
         if (phase == null) {
             throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
         }
@@ -1740,15 +1742,14 @@ public class CollaborativeTextHelper {
                     List<Player> sortedPlayers = playerResult.sortedPlayers;
                     int playerIndex = playerResult.playerIndex;
                     
-                    // Calculate offset: 3 for 4 players, 4 for more than 4 players
-                    int offsetValue = sortedPlayers.size() == 4 ? 1 : 2;
-                    int offsetPlayerIndex = (playerIndex + offsetValue) % sortedPlayers.size();
+                    // Calculate offset: 1 for 4 players, 2 for more than 4 players
+                    int offsetValue = sortedPlayers.size() > 4 ? 1 : 2;
                     
                     // Sort visited stories by player order
                     List<Story> sortedVisitedStories = sortStoriesByPlayerOrder(sortedPlayers, allVisitedStories);
                     
                     // Distribute stories to player
-                    List<OutcomeType> assignedStories = distributeStoriesToPlayer(sortedVisitedStories, sortedPlayers, offsetPlayerIndex, false);
+                    List<OutcomeType> assignedStories = distributeStoriesToPlayer(sortedVisitedStories, sortedPlayers, playerIndex, offsetValue, false);
                     
                     if (assignedStories.isEmpty()) {
                         return new ArrayList<>();
@@ -1823,12 +1824,12 @@ public class CollaborativeTextHelper {
                 // Only return multiple stories if player has made 2+ submissions
                 boolean shouldReturnMultiple = playerSubmissionCount >= 2;
 
-                // Offset player index by one (wrapping if needed)
-                int offsetPlayerIndex = (playerIndex + 1) % sortedPlayers.size();
-                List<OutcomeType> nextPlayersStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, shouldReturnMultiple);
+                // Get next player's stories (offset by 1)
+                List<OutcomeType> nextPlayersStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, 1, shouldReturnMultiple);
 
-                int nextNextIndex = sortedPlayers.size() > 4 ? playerIndex + 2 : playerIndex;
-                List<OutcomeType> nextNextPlayerStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, nextNextIndex, shouldReturnMultiple);
+                // Get next next player's stories (offset by 2 if more than 4 players, else 0)
+                int nextNextOffset = sortedPlayers.size() > 4 ? 2 : 0;
+                List<OutcomeType> nextNextPlayerStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, nextNextOffset, shouldReturnMultiple);
                 nextPlayersStories.addAll(nextNextPlayerStories);
                 return nextPlayersStories;
             } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE || phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
@@ -1862,13 +1863,15 @@ public class CollaborativeTextHelper {
 
                 int numStories = sortedStories.size();
 
-                // Offset player index by one (wrapping if needed)
+                // Calculate offset: 3 if more than 4 players, else 2
                 int offsetValue = sortedPlayers.size() > 4 ? 3 : 2;
-
-                int offsetPlayerIndex = (playerIndex + offsetValue) % sortedPlayers.size();
+                
+                // Calculate offset player index for use in shared index logic
+                int numPlayers = sortedPlayers.size();
+                int offsetPlayerIndex = (playerIndex + offsetValue) % numPlayers;
 
                 // Get assigned story (only one story per player for this phase)
-                List<OutcomeType> assignedStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, false);
+                List<OutcomeType> assignedStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, offsetValue, false);
 
                 if (assignedStories.isEmpty()) {
                     return new ArrayList<>();
@@ -1901,7 +1904,6 @@ public class CollaborativeTextHelper {
                     return createPreCannedOptions(assignedStoryId, storyPrompt);
                 }
 
-                int numPlayers = sortedPlayers.size();
                 // Check if player index is shared (wraps around when numPlayers > numStories)
                 // A player shares if: offsetPlayerIndex >= numStories OR offsetPlayerIndex < (numPlayers - numStories)
                 boolean isSharedIndex = numPlayers > numStories &&
@@ -1986,9 +1988,8 @@ public class CollaborativeTextHelper {
                     return new ArrayList<>();
                 }
 
-                // Offset player index by one (wrapping if needed)
-                int offsetPlayerIndex = (playerIndex + 1) % sortedPlayers.size();
-                List<OutcomeType> assignedPlayerStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, offsetPlayerIndex, false);
+                // Get assigned stories with offset of 3
+                List<OutcomeType> assignedPlayerStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, -1, false);
                 List<String> storyIds = assignedPlayerStories.stream().map(OutcomeType::getId).toList();
 
                 Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
@@ -1996,6 +1997,7 @@ public class CollaborativeTextHelper {
                 if (!storyIds.isEmpty()
                         && encounter != null
                         && storyIds.contains(encounter.getStoryId())) {
+
                     return new ArrayList<>(Collections.singletonList(new OutcomeType(encounter.getStoryId(), encounter.getStoryPrompt())));
                 } else {
                     return new ArrayList<>();
@@ -2094,8 +2096,7 @@ public class CollaborativeTextHelper {
                             // Stories with matching players come first, sorted by player index
                             // Stories without matching players come last, sorted by createdAt
                             return playerIdx != null ? playerIdx : Integer.MAX_VALUE;
-                        })
-                        .thenComparing(Story::getCreatedAt))
+                        }))
                 .toList();
     }
 
@@ -2155,25 +2156,35 @@ public class CollaborativeTextHelper {
      * @param shouldReturnMultiple Whether to return multiple stories (player has 2+ submissions)
      * @return List of OutcomeType objects representing the assigned stories
      */
-    private List<OutcomeType> distributeStoriesToPlayer(List<Story> sortedStories, List<Player> sortedPlayers, int playerIndex, boolean shouldReturnMultiple) {
+    private List<OutcomeType> distributeStoriesToPlayer(List<Story> sortedStories, List<Player> sortedPlayers, int playerIndex, int offset, boolean shouldReturnMultiple) {
         int numPlayers = sortedPlayers.size();
         int numStories = sortedStories.size();
         List<OutcomeType> assignedStories = new ArrayList<>();
 
+        // Calculate offset player index (wrapping if needed)
+        int offsetPlayerIndex = (playerIndex + offset) % numPlayers;
+
         if (numStories <= numPlayers || !shouldReturnMultiple) {
             // Fewer stories than players, or player hasn't made 2+ submissions: return one story with wrapping
-            int storyIndex = playerIndex % numStories;
+            int storyIndex = offsetPlayerIndex % numStories;
             Story assignedStory = sortedStories.get(storyIndex);
             OutcomeType outcomeType = new OutcomeType(assignedStory.getStoryId(), assignedStory.getPrompt());
             String prequelStoryId = assignedStory.getPrequelStoryId();
             if (prequelStoryId != null && !prequelStoryId.isEmpty()) {
                 outcomeType.setClarifier(prequelStoryId);
             }
+
+            if (!assignedStory.getOptions().isEmpty()) {
+                for (Option option : assignedStory.getOptions()) {
+                    outcomeType.getSubTypes().add(new OutcomeType(option.getOptionId(), option.getOptionText()));
+                }
+            }
+
             assignedStories.add(outcomeType);
         } else {
             // More stories than players AND player has 2+ submissions: return multiple stories
             for (int i = 0; i < sortedStories.size(); i++) {
-                if (i % numPlayers == playerIndex) {
+                if (i % numPlayers == offsetPlayerIndex) {
                     Story story = sortedStories.get(i);
                     OutcomeType outcomeType = new OutcomeType(story.getStoryId(), story.getPrompt());
                     String prequelStoryId = story.getPrequelStoryId();
