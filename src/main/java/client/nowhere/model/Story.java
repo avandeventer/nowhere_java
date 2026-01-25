@@ -27,6 +27,7 @@ public class Story {
     //Temporary player variables
     private boolean visited = false;
     private String playerId = "";
+    private ArrayList<String> playerIds = new ArrayList<>();
     private String selectedOptionId = "";
     private boolean playerSucceeded = false;
     private String prequelStoryPlayerId = "";
@@ -49,7 +50,8 @@ public class Story {
     private Timestamp createdAt;
 
     public Story () {
-        this.storyId = UUID.randomUUID().toString();
+        // Don't generate UUID here - it causes issues during deserialization
+        // Call setNewStoryId() explicitly when creating new stories
     }
 
     public void setNewStoryId() {
@@ -298,6 +300,21 @@ public class Story {
     @JsonIgnore
     public Timestamp getCreatedAt() {
         return createdAt;
+    }
+
+    public ArrayList<String> getPlayerIds() {
+        if (playerId != null && !playerId.isEmpty() && !playerIds.contains(playerId)) {
+            playerIds.add(playerId);
+        }
+        return playerIds;
+    }
+
+    public void addPlayerId(String playerId) {
+        this.playerIds.add(playerId);
+    }
+
+    public void setPlayerIds(ArrayList<String> playerIds) {
+        this.playerIds = playerIds;
     }
 
     public void setCreatedAt(Timestamp createdAt) {

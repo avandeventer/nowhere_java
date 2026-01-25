@@ -173,7 +173,7 @@ public class CollaborativeTextPhase {
      * A submission is considered a parent if it is referenced in any other submission's additions.
      * This method modifies the submissions list in place.
      */
-    public void filterOutParentSubmissions() {
+    public List<TextSubmission> getSubmissionsWithoutParentSubmissions() {
         // Collect all submissionIds that are referenced in other submissions' additions
         Set<String> iteratedSubmissionIds = submissions.stream()
                 .flatMap(submission -> submission.getAdditions() != null 
@@ -184,7 +184,7 @@ public class CollaborativeTextPhase {
                 .collect(Collectors.toSet());
         
         // Filter out submissions that have been iterated on
-        submissions = submissions.stream()
+        return submissions.stream()
                 .filter(submission -> !iteratedSubmissionIds.contains(submission.getSubmissionId()))
                 .collect(Collectors.toList());
     }

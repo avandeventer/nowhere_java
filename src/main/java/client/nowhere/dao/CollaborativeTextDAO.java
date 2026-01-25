@@ -56,7 +56,7 @@ public class CollaborativeTextDAO {
             CollaborativeTextPhase phase = collaborativeTextPhases.get(phaseId);
             // Filter out parent submissions so they don't show up regardless of context
             if (phase != null) {
-                phase.filterOutParentSubmissions();
+                phase.getSubmissionsWithoutParentSubmissions();
             }
             return phase;
             

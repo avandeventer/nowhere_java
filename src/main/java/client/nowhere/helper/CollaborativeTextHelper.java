@@ -3,16 +3,13 @@ package client.nowhere.helper;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import client.nowhere.dao.*;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.cloud.Timestamp;
 
-import client.nowhere.dao.AdventureMapDAO;
-import client.nowhere.dao.CollaborativeTextDAO;
-import client.nowhere.dao.GameSessionDAO;
-import client.nowhere.dao.StoryDAO;
 import client.nowhere.exception.ValidationException;
 import client.nowhere.constants.AuthorConstants;
 
@@ -25,15 +22,17 @@ public class CollaborativeTextHelper {
     private final AdventureMapHelper adventureMapHelper;
     private final StoryDAO storyDAO;
     private final FeatureFlagHelper featureFlagHelper;
+    private final OutcomeTypeHelper outcomeTypeHelper;
 
     @Autowired
-    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO, AdventureMapHelper adventureMapHelper, StoryDAO storyDAO, FeatureFlagHelper featureFlagHelper) {
+    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO, AdventureMapHelper adventureMapHelper, StoryDAO storyDAO, FeatureFlagHelper featureFlagHelper, OutcomeTypeHelper outcomeTypeHelper) {
         this.gameSessionDAO = gameSessionDAO;
         this.collaborativeTextDAO = collaborativeTextDAO;
         this.adventureMapDAO = adventureMapDAO;
         this.adventureMapHelper = adventureMapHelper;
         this.storyDAO = storyDAO;
         this.featureFlagHelper = featureFlagHelper;
+        this.outcomeTypeHelper = outcomeTypeHelper;
     }
 
     // ===== PUBLIC API METHODS =====
@@ -115,7 +114,7 @@ public class CollaborativeTextHelper {
 
         // Store the winning submissions in GameSessionDisplay
         if (!winningSubmissions.isEmpty()) {
-            updateGameSessionWithWinningSubmissions(gameCode, phaseId, winningSubmissions, gameSession.getRoundNumber());
+            updateGameSessionWithWinningSubmissions(gameSession, phaseId, winningSubmissions);
         }
 
         return winningSubmissions;
@@ -196,42 +195,6 @@ public class CollaborativeTextHelper {
         }
 
         return newSubmission;
-    }
-
-    /**
-     * Creates a new option in the story at the current encounter if the outcomeTypeWithLabel
-     * doesn't already exist as an option. This is used for HOW_DOES_THIS_RESOLVE phase
-     * when players submit with an outcomeTypeWithLabel.
-     */
-    private void createOptionFromOutcomeType(String gameCode, TextAddition textAddition) {
-        if (textAddition.getOutcomeTypeWithLabel() == null
-                || textAddition.getOutcomeTypeWithLabel().getLabel() == null
-                || textAddition.getOutcomeTypeWithLabel().getLabel().isEmpty()) {
-            return;
-        }
-
-        Story storyAtEncounter = getStoryAtCurrentEncounter(gameCode);
-        if (storyAtEncounter == null) {
-            return;
-        }
-
-        String labelText = textAddition.getOutcomeTypeWithLabel().getLabel();
-
-        boolean optionExists = storyAtEncounter.getOptions() != null && storyAtEncounter.getOptions().stream()
-                .anyMatch(option -> labelText.equals(option.getOptionText()));
-
-        if (!optionExists) {
-            Option newOption = new Option();
-            newOption.setOptionText(labelText);
-            newOption.setOptionId(textAddition.getOutcomeTypeWithLabel().getId());
-
-            if (storyAtEncounter.getOptions() == null) {
-                storyAtEncounter.setOptions(new ArrayList<>());
-            }
-            storyAtEncounter.getOptions().add(newOption);
-            storyAtEncounter.setGameCode(gameCode);
-            storyDAO.updateStory(storyAtEncounter);
-        }
     }
 
     /**
@@ -327,7 +290,7 @@ public class CollaborativeTextHelper {
      */
     private OutcomeType assignOptionTextToPlayer(GameSession gameSession, String playerId) {
         // Get the story at current encounter
-        Story story = getStoryAtCurrentEncounter(gameSession.getGameCode());
+        Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
         if (story == null) {
             throw new ValidationException("Story not found at player coordinates");
         }
@@ -461,10 +424,10 @@ public class CollaborativeTextHelper {
         } else {
             // For other phases (like CAMPFIRE), return all submissions sorted by most additions first
             // Filter out submissions that have been iterated on (referenced in other submissions' additions)
-            phase.filterOutParentSubmissions();
+            List<TextSubmission> submissionsWithoutParents = phase.getSubmissionsWithoutParentSubmissions();
             
             // Sort descending so highest additions come first
-            return phase.getSubmissions().stream()
+            return submissionsWithoutParents.stream()
                     .sorted(rankingComparator.reversed())
                     .toList();
         }
@@ -547,117 +510,11 @@ public class CollaborativeTextHelper {
     }
 
     /**
-     * Checks if a submission is available for voting by a player.
-     * A submission is available if:
-     * - It has no outcomeType (null or empty) and is not the player's own submission, OR
-     * - It matches the player's outcomeType
-     * @param submission The submission to check
-     * @param playerId The player requesting submissions
-     * @param outcomeType The player's outcome type
-     * @return true if the submission is available for voting
-     */
-    private boolean isSubmissionAvailableForVoting(TextSubmission submission, String playerId, OutcomeType outcomeType) {
-        if (submission.getOutcomeType() == null || submission.getOutcomeType().isEmpty()) {
-            return !submission.getAuthorId().equals(playerId);
-        }
-        return outcomeType != null && outcomeType.getId().equals(submission.getOutcomeType());
-    }
-
-    /**
-     * Sets the outcomeTypeWithLabel on a submission if the outcomeType matches and is not null or empty.
-     * @param submission The submission to update
-     * @param outcomeType The outcome type to set if it matches
-     */
-    private void setOutcomeTypeWithLabelIfMatch(TextSubmission submission, OutcomeType outcomeType) {
-        if (outcomeType != null 
-                && outcomeType.getId() != null 
-                && !outcomeType.getId().isEmpty()
-                && outcomeType.getId().equals(submission.getOutcomeType())) {
-            submission.setOutcomeTypeWithLabel(outcomeType);
-        }
-    }
-
-    /**
-     * Gets submissions for voting phase (excludes player's own submissions)
-     * @param gameCode The game code
-     * @param playerId The player requesting submissions
-     * @return List of submissions ordered by phase
-     */
-    public List<TextSubmission> getVotingSubmissionsForPlayer(String gameCode, String playerId) {
-        GameSession gameSession = getGameSession(gameCode);
-        GameState phaseIdState = gameSession.getGameState().getPhaseId();
-        if (phaseIdState == null) {
-            throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
-        }
-        String phaseId = phaseIdState.name();
-
-        // Retrieve the phase
-        CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
-        List<OutcomeType> outcomeTypes = getOutcomeTypes(gameCode, playerId);
-
-        OutcomeType outcomeType = outcomeTypes.isEmpty() ? null : outcomeTypes.getFirst();
-        if (phase == null) {
-            throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
-        }
-
-        // Return top 5 submissions except player's own, ordered by most additions first, then by creation time
-        // For WHAT_DO_WE_FEAR, return all submissions; for WHAT_ARE_WE_CAPABLE_OF, return top 6; for others, return top 5
-        // For WHAT_WILL_BECOME_OF_US, include player's own submissions (they'll be filtered by outcomeType on frontend)
-        boolean isWhatDoWeFear = phaseIdState == GameState.WHAT_DO_WE_FEAR;
-        boolean isWhatAreWeCapableOf = phaseIdState == GameState.WHAT_ARE_WE_CAPABLE_OF;
-        int limit = isWhatDoWeFear ? Integer.MAX_VALUE : (isWhatAreWeCapableOf ? 6 : 5);
-
-        return phase.getSubmissions().stream()
-                .filter(textSubmission -> isSubmissionAvailableForVoting(textSubmission, playerId, outcomeType))
-                .peek(textSubmission -> setOutcomeTypeWithLabelIfMatch(textSubmission, outcomeType))
-                .sorted((s1, s2) -> {
-                    // First sort by number of additions (descending - most additions first)
-                    int additionsComparison = Integer.compare(s2.getAdditions().size(), s1.getAdditions().size());
-                    if (additionsComparison != 0) {
-                        return additionsComparison;
-                    }
-                    // If additions are equal, sort by creation time (descending - newest first)
-                    return s2.getCreatedAt().compareTo(s1.getCreatedAt());
-                })
-                .limit(limit)
-                .toList();
-    }
-
-    /**
-     * Submits multiple player votes for voting phase
-     * @param gameCode The game code
-     * @param playerVotes List of player votes with rankings
-     * @return Updated collaborative text phase
-     */
-    public CollaborativeTextPhase submitPlayerVotes(String gameCode, List<PlayerVote> playerVotes) {
-        if (playerVotes == null || playerVotes.isEmpty()) {
-            throw new ValidationException("Player votes cannot be null or empty");
-        }
-
-        GameSession gameSession = getGameSession(gameCode);
-        GameState phaseIdState = gameSession.getGameState().getPhaseId();
-        if (phaseIdState == null) {
-            throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
-        }
-        String phaseId = phaseIdState.name();
-
-        // Submit each vote atomically
-        for (PlayerVote vote : playerVotes) {
-            collaborativeTextDAO.addVoteAtomically(gameCode, phaseId, vote);
-        }
-
-        // Return updated phase
-        return collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
-    }
-
-    /**
      * Updates the GameSessionDisplay with the winning submission for the given phase
      */
-    private void updateGameSessionWithWinningSubmissions(String gameCode, String phaseId, List<TextSubmission> winningSubmissions, int roundNumber) {
+    private void updateGameSessionWithWinningSubmissions(GameSession gameSession, String phaseId, List<TextSubmission> winningSubmissions) {
         try {
-            boolean streamlinedMode = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
-            
-            // Get the current GameSessionDisplay
+            String gameCode = gameSession.getGameCode();
             GameSessionDisplay display = adventureMapDAO.getGameSessionDisplay(gameCode);
             if (display == null) {
                 display = new GameSessionDisplay();
@@ -712,32 +569,16 @@ public class CollaborativeTextHelper {
                     }
                 }
                 case "SET_ENCOUNTERS" -> {
-                    if (streamlinedMode) {
-                        addAllSubmissionsToAdventureMap(gameCode, winningSubmissions);
-                    } else {
-                        initializeDungeonGridWithEncounters(gameCode, phaseId, winningSubmissions, display);
-                    }
+                    addAllSubmissionsToAdventureMap(gameCode, winningSubmissions);
                 }
                 case "WHAT_HAPPENS_HERE" -> {
-                    if (streamlinedMode) {
-                        handleWhatHappensHereStreamlined(gameCode, winningSubmissions);
-                    } else {
-                        handleWhatHappensHere(gameCode, winningSubmissions);
-                    }
-                }
-                case "WHAT_CAN_WE_TRY" -> {
-                    if (!streamlinedMode) {
-                        handleWhatCanWeTry(gameCode, winningSubmissions);
-                    }
-//                    else {
-//                        handleWhatCanWeTryStreamlined(gameCode, winningSubmissions);
-//                    }
+                    handleWhatHappensHereStreamlined(gameCode, winningSubmissions);
                 }
                 case "HOW_DOES_THIS_RESOLVE", "HOW_DOES_THIS_RESOLVE_AGAIN" -> {
                     handleHowDoesThisResolve(gameCode, winningSubmissions);
                 }
                 case "MAKE_CHOICE_VOTING" -> {
-                    handleMakeChoice(gameCode, winningSubmissions);
+                    handleMakeChoice(gameSession, winningSubmissions);
                 }
                 case "NAVIGATE_VOTING" -> {
                     handleNavigation(gameCode, winningSubmissions);
@@ -931,41 +772,6 @@ public class CollaborativeTextHelper {
     }
 
     /**
-     * Gets the Encounter at the player's current coordinates
-     * @return The Encounter at player coordinates, or null if not found
-     */
-    private Encounter getEncounterAtPlayerCoordinates(String gameCode) {
-        try {
-            GameSession gameSession = getGameSession(gameCode);
-            PlayerCoordinates playerCoords = gameSession.getGameBoard().getPlayerCoordinates();
-            if (playerCoords == null) {
-                System.err.println("Player coordinates not found for game: " + gameCode);
-                return null;
-            }
-
-            GameBoard gameBoard = gameSession.getGameBoard();
-            if (gameBoard == null) {
-                System.err.println("Game board not found for game: " + gameCode);
-                return null;
-            }
-
-            Encounter encounter = gameBoard.getEncounter(
-                playerCoords.getxCoordinate(), 
-                playerCoords.getyCoordinate()
-            );
-            if (encounter == null) {
-                System.err.println("Encounter not found at coordinates (" + playerCoords.getxCoordinate() + ", " + playerCoords.getyCoordinate() + ")");
-                return null;
-            }
-
-            return encounter;
-        } catch (Exception e) {
-            System.err.println("Failed to get encounter at player coordinates: " + e.getMessage());
-            return null;
-        }
-    }
-
-    /**
      * Handles WHAT_HAPPENS_HERE phase in streamlined mode: Creates stories for each winning submission
      * using encounterLabels from AdventureMap and places them on the game board
      */
@@ -1018,6 +824,7 @@ public class CollaborativeTextHelper {
 
                 // Create a new story with the encounterLabel and submission text
                 Story story = new Story();
+                story.setNewStoryId();
                 story.setPrompt(submission.getCurrentText());
                 story.setPlayerId(AuthorConstants.DUNGEON_PLAYER);
                 story.setGameCode(gameCode);
@@ -1030,13 +837,7 @@ public class CollaborativeTextHelper {
                 
                 // Set authorId to the original author from the first addition (for branched submissions)
                 // or use the submission's authorId (for new submissions)
-                String originalAuthorId = submission.getAuthorId();
-                if (submission.getAdditions() != null && !submission.getAdditions().isEmpty()) {
-                    TextAddition firstAddition = submission.getAdditions().get(0);
-                    if (firstAddition.getAuthorId() != null && !firstAddition.getAuthorId().isEmpty()) {
-                        originalAuthorId = firstAddition.getAuthorId();
-                    }
-                }
+                String originalAuthorId = createStoryFromTextSubmission(submission);
                 story.setAuthorId(originalAuthorId);
                 storyDAO.createStory(story);
 
@@ -1061,6 +862,17 @@ public class CollaborativeTextHelper {
         }
     }
 
+    private String createStoryFromTextSubmission(TextSubmission submission) {
+        String originalAuthorId = submission.getAuthorId();
+        if (submission.getAdditions() != null && !submission.getAdditions().isEmpty()) {
+            TextAddition firstAddition = submission.getAdditions().get(0);
+            if (firstAddition.getAuthorId() != null && !firstAddition.getAuthorId().isEmpty()) {
+                originalAuthorId = firstAddition.getAuthorId();
+            }
+        }
+        return originalAuthorId;
+    }
+
     /**
      * Handles WHAT_HAPPENS_HERE phase: Creates a Story from the winning submission
      * and updates the Encounter at player coordinates
@@ -1074,13 +886,7 @@ public class CollaborativeTextHelper {
             // Get the single winning submission
             TextSubmission winningSubmission = winningSubmissions.getFirst();
 
-            // Get the encounter at player coordinates
-            Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
-            if (encounter == null) {
-                return;
-            }
-
-            // Get GameSession to update dungeon grid
+            // Single fetch to ensure data consistency
             GameSession gameSession = getGameSession(gameCode);
             GameBoard gameBoard = gameSession.getGameBoard();
             if (gameBoard == null) {
@@ -1088,11 +894,34 @@ public class CollaborativeTextHelper {
                 gameSession.setGameBoard(gameBoard);
             }
 
-            Story story = getStoryAtCurrentEncounter(gameCode);
+            PlayerCoordinates playerCoords = gameBoard.getPlayerCoordinates();
+            if (playerCoords == null) {
+                System.err.println("Player coordinates not found for game: " + gameCode);
+                return;
+            }
+
+            Encounter encounter = gameBoard.getEncounter(
+                playerCoords.getxCoordinate(),
+                playerCoords.getyCoordinate()
+            );
+            if (encounter == null) {
+                System.err.println("Encounter not found at coordinates (" + playerCoords.getxCoordinate() + ", " + playerCoords.getyCoordinate() + ")");
+                return;
+            }
+
+            // Look up story using the encounter's storyId directly (no re-fetch)
+            Story story = null;
+            if (encounter.getStoryId() != null && !encounter.getStoryId().isEmpty()) {
+                List<Story> stories = storyDAO.getAuthorStoriesByStoryId(gameCode, encounter.getStoryId());
+                if (stories != null && !stories.isEmpty()) {
+                    story = stories.getFirst();
+                }
+            }
 
             //Create or update the existing story
             if (story == null) {
                 story = new Story();
+                story.setNewStoryId();
                 story.setPrompt(winningSubmission.getCurrentText());
                 story.setPlayerId(AuthorConstants.DUNGEON_PLAYER);
                 story.setGameCode(gameCode);
@@ -1109,10 +938,9 @@ public class CollaborativeTextHelper {
             encounter.setVisited(true);
 
             // Update the encounter in the game board
-            PlayerCoordinates playerCoords = gameSession.getGameBoard().getPlayerCoordinates();
             gameBoard.setEncounter(
-                playerCoords.getxCoordinate(), 
-                playerCoords.getyCoordinate(), 
+                playerCoords.getxCoordinate(),
+                playerCoords.getyCoordinate(),
                 encounter
             );
 
@@ -1120,90 +948,6 @@ public class CollaborativeTextHelper {
             gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
         } catch (Exception e) {
             System.err.println("Failed to handle WHAT_HAPPENS_HERE: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Handles WHAT_CAN_WE_TRY phase in streamlined mode: Adds all winning submissions as options to the story
-     */
-    private void handleWhatCanWeTryStreamlined(String gameCode, List<TextSubmission> winningSubmissions) {
-        try {
-            if (winningSubmissions.isEmpty()) {
-                return;
-            }
-
-            Story story = getStoryAtCurrentEncounter(gameCode);
-            if (story == null) {
-                return;
-            }
-
-            // Get current options or initialize empty list
-            List<Option> currentOptions = story.getOptions();
-            if (currentOptions == null) {
-                currentOptions = new ArrayList<>();
-            }
-
-            // Add all winning submissions as options
-            for (TextSubmission submission : winningSubmissions) {
-                if (currentOptions.stream().anyMatch(option -> option.getOptionText().equals(submission.getCurrentText()))) {
-                    continue;
-                }
-
-                Option option = new Option();
-                option.setOptionText(submission.getCurrentText());
-                currentOptions.add(option);
-            }
-
-            // Update the story with new options
-            story.setOptions(currentOptions);
-            story.setGameCode(gameCode);
-            storyDAO.updateStory(story);
-        } catch (Exception e) {
-            System.err.println("Failed to handle WHAT_CAN_WE_TRY (streamlined): " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Handles WHAT_CAN_WE_TRY phase: Creates Options from winning submissions
-     * and adds them to the Story at player coordinates
-     */
-    private void handleWhatCanWeTry(String gameCode, List<TextSubmission> winningSubmissions) {
-        try {
-            if (winningSubmissions.isEmpty()) {
-                return;
-            }
-
-            Story story = getStoryAtCurrentEncounter(gameCode);
-            if (story == null) {
-                return;
-            }
-
-            // Get current options or initialize empty list
-            List<Option> currentOptions = story.getOptions();
-            if (currentOptions == null) {
-                currentOptions = new ArrayList<>();
-            }
-
-            for (TextSubmission submission : winningSubmissions) {
-                if (currentOptions.stream().anyMatch(option -> option.getOptionText().equals(submission.getCurrentText()))) {
-                    continue;
-                }
-
-                Option option = new Option();
-                option.setOptionText(submission.getCurrentText());
-                currentOptions.add(option);
-            }
-
-            // Update the story with new options
-            story.setOptions(currentOptions);
-            story.setGameCode(gameCode); // Ensure gameCode is set for updateStory
-            
-            // Use the DAO's updateStory method
-            storyDAO.updateStory(story);
-        } catch (Exception e) {
-            System.err.println("Failed to handle WHAT_CAN_WE_TRY: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -1230,28 +974,28 @@ public class CollaborativeTextHelper {
 
             // Process each winning submission
             for (TextSubmission winner : winningSubmissions) {
-                OutcomeType outcomeTypeWithLabel = winner.getOutcomeTypeWithLabel();
+                OutcomeType storyOutcomeType = winner.getOutcomeTypeWithLabel();
                 
                 // Check if this submission has subTypes (new structure)
-                if (outcomeTypeWithLabel != null 
-                        && outcomeTypeWithLabel.getSubTypes() != null 
-                        && !outcomeTypeWithLabel.getSubTypes().isEmpty()) {
+                if (storyOutcomeType != null
+                        && storyOutcomeType.getSubTypes() != null
+                        && !storyOutcomeType.getSubTypes().isEmpty()) {
                     
-                    // Find the story where storyId matches the parent outcomeTypeWithLabel.id
-                    String parentStoryId = outcomeTypeWithLabel.getId();
+                    // Find the story where storyId matches the outcomeTypeWithLabel.id
+                    String storyId = storyOutcomeType.getId();
                     Story matchingStory = stories.stream()
-                            .filter(story -> story.getStoryId().equals(parentStoryId))
+                            .filter(story -> story.getStoryId().equals(storyId))
                             .findFirst()
                             .orElse(null);
                     
                     if (matchingStory != null) {
                         // Process each subType
-                        for (OutcomeType subType : outcomeTypeWithLabel.getSubTypes()) {
-                            String subTypeId = subType.getId();
-                            String subTypeLabel = subType.getLabel();
+                        for (OutcomeType optionOutcomeType : storyOutcomeType.getSubTypes()) {
+                            String optionId = optionOutcomeType.getId();
+                            String optionText = optionOutcomeType.getLabel();
                             
-                            if (subTypeId != null && !subTypeId.isEmpty() 
-                                    && subTypeLabel != null && !subTypeLabel.isEmpty()) {
+                            if (optionId != null && !optionId.isEmpty()
+                                    && optionText != null && !optionText.isEmpty()) {
                                 
                                 // Initialize options list if null
                                 if (matchingStory.getOptions() == null) {
@@ -1260,21 +1004,15 @@ public class CollaborativeTextHelper {
                                 
                                 // Check if option with this ID already exists
                                 boolean optionExists = matchingStory.getOptions().stream()
-                                        .anyMatch(opt -> opt.getOptionId().equals(subTypeId));
+                                        .anyMatch(opt -> opt.getOptionId().equals(optionId));
                                 
                                 if (!optionExists) {
                                     // Add new option with subType.id as optionId and subType.label as successText
                                     Option newOption = new Option();
-                                    newOption.setOptionText(subTypeLabel);
-                                    newOption.setOptionId(subTypeId);
+                                    newOption.setOptionText(optionText);
+                                    newOption.setOptionId(optionId);
                                     newOption.setSuccessText(winner.getCurrentText());
-                                    String originalAuthorId = winner.getAuthorId();
-                                    if (winner.getAdditions() != null && !winner.getAdditions().isEmpty()) {
-                                        TextAddition firstAddition = winner.getAdditions().get(0);
-                                        if (firstAddition.getAuthorId() != null && !firstAddition.getAuthorId().isEmpty()) {
-                                            originalAuthorId = firstAddition.getAuthorId();
-                                        }
-                                    }
+                                    String originalAuthorId = createStoryFromTextSubmission(winner);
                                     newOption.setOutcomeAuthorId(originalAuthorId);
                                     matchingStory.getOptions().add(newOption);
                                     
@@ -1285,7 +1023,7 @@ public class CollaborativeTextHelper {
 
                                 // Remove the submission from WHAT_CAN_WE_TRY phase that matches subType.id
                                 if (whatCanWeTryPhase != null) {
-                                    boolean removed = whatCanWeTryPhase.removeSubmissionById(subTypeId);
+                                    boolean removed = whatCanWeTryPhase.removeSubmissionById(optionId);
                                     if (removed) {
                                         // Update the phase in Firestore
                                         collaborativeTextDAO.updateCollaborativeTextPhaseAtomically(gameCode, GameState.WHAT_CAN_WE_TRY.name(), whatCanWeTryPhase);
@@ -1308,14 +1046,14 @@ public class CollaborativeTextHelper {
     /**
      * Handles MAKE_CHOICE_VOTING phase: Sets visited to true and selectedOptionId to the winning option
      */
-    private void handleMakeChoice(String gameCode, List<TextSubmission> winningSubmissions) {
+    private void handleMakeChoice(GameSession gameSession, List<TextSubmission> winningSubmissions) {
         try {
             if (winningSubmissions.isEmpty()) {
                 return;
             }
 
             // Get the story at the current encounter
-            Story story = getStoryAtCurrentEncounter(gameCode);
+            Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
             if (story == null) {
                 return;
             }
@@ -1327,7 +1065,7 @@ public class CollaborativeTextHelper {
             // Update the story
             story.setVisited(true);
             story.setSelectedOptionId(selectedOptionId);
-            story.setGameCode(gameCode); // Ensure gameCode is set for updateStory
+            story.setGameCode(gameSession.getGameCode()); // Ensure gameCode is set for updateStory
 
             // Use the DAO's updateStory method
             storyDAO.updateStory(story);
@@ -1564,7 +1302,7 @@ public class CollaborativeTextHelper {
      * @return CollaborativeTextPhaseInfo with phase question, instructions, mode, and mode instructions
      */
     public CollaborativeTextPhaseInfo getCollaborativeTextPhaseInfo(String gameCode) {
-        GameSession gameSession = getGameSession(gameCode);
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
         GameState gameState = gameSession.getGameState();
         GameSessionDisplay gameSessionDisplay = adventureMapHelper.getGameSessionDisplay(gameCode);
         String entityName = gameSessionDisplay.getEntity() != null && !gameSessionDisplay.getEntity().isEmpty() 
@@ -1582,7 +1320,7 @@ public class CollaborativeTextHelper {
             gameState
         );
 
-        Story storyToIterateOn = getStoryAtCurrentEncounter(gameCode);
+        Story storyToIterateOn = gameSession.getStoryAtCurrentPlayerCoordinates();
 
         return new CollaborativeTextPhaseInfo(
             gameState.getPhaseId(),
@@ -1594,25 +1332,6 @@ public class CollaborativeTextHelper {
             phaseType,
             baseInfo.showGameBoard()
         );
-    }
-
-    /**
-     * Gets the story at the current encounter.
-     * @param gameCode The game code
-     * @return Story at current encounter, or null if not found
-     */
-    public Story getStoryAtCurrentEncounter(String gameCode) {
-        Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
-
-        if (encounter == null) {
-            return null;
-        }
-
-        List<Story> stories = storyDAO.getAuthorStoriesByStoryId(gameCode, encounter.getStoryId());
-        if (stories == null || stories.isEmpty()) {
-            return null;
-        }
-        return stories.getFirst();
     }
 
     /**
@@ -1734,22 +1453,22 @@ public class CollaborativeTextHelper {
                         return new ArrayList<>();
                     }
 
-                    PlayerSortResult playerResult = getSortedPlayersAndIndex(gameSession.getPlayers(), playerId);
+                    PlayerSortResult playerResult = gameSession.getSortedPlayersAndIndex(playerId);
                     if (playerResult == null) {
                         return new ArrayList<>();
                     }
                     
-                    List<Player> sortedPlayers = playerResult.sortedPlayers;
-                    int playerIndex = playerResult.playerIndex;
+                    List<Player> sortedPlayers = playerResult.getSortedPlayers();
+                    int playerIndex = playerResult.getPlayerIndex();
                     
                     // Calculate offset: 1 for 4 players, 2 for more than 4 players
                     int offsetValue = sortedPlayers.size() > 4 ? 1 : 2;
                     
                     // Sort visited stories by player order
-                    List<Story> sortedVisitedStories = sortStoriesByPlayerOrder(sortedPlayers, allVisitedStories);
+                    List<Story> sortedVisitedStories = outcomeTypeHelper.sortStoriesByPlayerOrder(sortedPlayers, allVisitedStories);
                     
                     // Distribute stories to player
-                    List<OutcomeType> assignedStories = distributeStoriesToPlayer(sortedVisitedStories, sortedPlayers, playerIndex, offsetValue, false);
+                    List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedVisitedStories, sortedPlayers, playerIndex, offsetValue, false);
                     
                     if (assignedStories.isEmpty()) {
                         return new ArrayList<>();
@@ -1803,16 +1522,16 @@ public class CollaborativeTextHelper {
                     return new ArrayList<>();
                 }
                 
-                PlayerSortResult playerResult = getSortedPlayersAndIndex(gameSession.getPlayers(), playerId);
+                PlayerSortResult playerResult = gameSession.getSortedPlayersAndIndex(playerId);;
                 if (playerResult == null) {
                     return new ArrayList<>();
                 }
                 
-                List<Player> sortedPlayers = playerResult.sortedPlayers;
-                int playerIndex = playerResult.playerIndex;
+                List<Player> sortedPlayers = playerResult.getSortedPlayers();
+                int playerIndex = playerResult.getPlayerIndex();
 
                 // Sort stories by matching authorId to player order
-                List<Story> sortedStories = sortStoriesByPlayerOrder(sortedPlayers, allUnvisitedStories);
+                List<Story> sortedStories = outcomeTypeHelper.sortStoriesByPlayerOrder(sortedPlayers, allUnvisitedStories);
                 
                 if (sortedStories.isEmpty()) {
                     return new ArrayList<>();
@@ -1825,11 +1544,11 @@ public class CollaborativeTextHelper {
                 boolean shouldReturnMultiple = playerSubmissionCount >= 2;
 
                 // Get next player's stories (offset by 1)
-                List<OutcomeType> nextPlayersStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, 1, shouldReturnMultiple);
+                List<OutcomeType> nextPlayersStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, 1, shouldReturnMultiple);
 
                 // Get next next player's stories (offset by 2 if more than 4 players, else 0)
                 int nextNextOffset = sortedPlayers.size() > 4 ? 2 : 0;
-                List<OutcomeType> nextNextPlayerStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, nextNextOffset, shouldReturnMultiple);
+                List<OutcomeType> nextNextPlayerStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, nextNextOffset, shouldReturnMultiple);
                 nextPlayersStories.addAll(nextNextPlayerStories);
                 return nextPlayersStories;
             } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE || phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
@@ -1840,13 +1559,13 @@ public class CollaborativeTextHelper {
                     return new ArrayList<>();
                 }
 
-                PlayerSortResult playerResult = getSortedPlayersAndIndex(gameSession.getPlayers(), playerId);
+                PlayerSortResult playerResult = gameSession.getSortedPlayersAndIndex(playerId);
                 if (playerResult == null) {
                     return new ArrayList<>();
                 }
 
-                List<Player> sortedPlayers = playerResult.sortedPlayers;
-                int playerIndex = playerResult.playerIndex;
+                List<Player> sortedPlayers = playerResult.getSortedPlayers();
+                int playerIndex = playerResult.getPlayerIndex();
 
                 // Get WHAT_CAN_WE_TRY submissions to count related submissions per story
                 CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
@@ -1855,7 +1574,7 @@ public class CollaborativeTextHelper {
                         : new ArrayList<>();
 
                 // Sort stories by matching authorId to player order
-                List<Story> sortedStories = sortStoriesByPlayerOrder(sortedPlayers, allUnvisitedStories);
+                List<Story> sortedStories = outcomeTypeHelper.sortStoriesByPlayerOrder(sortedPlayers, allUnvisitedStories);
 
                 if (sortedStories.isEmpty()) {
                     return new ArrayList<>();
@@ -1871,7 +1590,7 @@ public class CollaborativeTextHelper {
                 int offsetPlayerIndex = (playerIndex + offsetValue) % numPlayers;
 
                 // Get assigned story (only one story per player for this phase)
-                List<OutcomeType> assignedStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, offsetValue, false);
+                List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, offsetValue, false);
 
                 if (assignedStories.isEmpty()) {
                     return new ArrayList<>();
@@ -1966,42 +1685,6 @@ public class CollaborativeTextHelper {
                     storyOutcomeType.setSubTypes(allSubTypes);
                     return List.of(storyOutcomeType);
                 }
-            } else if (phaseId == GameState.MAKE_CHOICE_VOTING) {
-                List<Story> allUnvisitedStories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();
-
-                if (allUnvisitedStories.isEmpty()) {
-                    return new ArrayList<>();
-                }
-
-                PlayerSortResult playerResult = getSortedPlayersAndIndex(gameSession.getPlayers(), playerId);
-                if (playerResult == null) {
-                    return new ArrayList<>();
-                }
-
-                List<Player> sortedPlayers = playerResult.sortedPlayers;
-                int playerIndex = playerResult.playerIndex;
-
-                // Sort stories by matching authorId to player order
-                List<Story> sortedStories = sortStoriesByPlayerOrder(sortedPlayers, allUnvisitedStories);
-
-                if (sortedStories.isEmpty()) {
-                    return new ArrayList<>();
-                }
-
-                // Get assigned stories with offset of 3
-                List<OutcomeType> assignedPlayerStories = distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, -1, false);
-                List<String> storyIds = assignedPlayerStories.stream().map(OutcomeType::getId).toList();
-
-                Encounter encounter = getEncounterAtPlayerCoordinates(gameCode);
-
-                if (!storyIds.isEmpty()
-                        && encounter != null
-                        && storyIds.contains(encounter.getStoryId())) {
-
-                    return new ArrayList<>(Collections.singletonList(new OutcomeType(encounter.getStoryId(), encounter.getStoryPrompt())));
-                } else {
-                    return new ArrayList<>();
-                }
             } else {
                 return new ArrayList<>();
             }
@@ -2026,78 +1709,6 @@ public class CollaborativeTextHelper {
         return phaseData.getSubmissions().stream()
                 .filter(submission -> playerId.equals(submission.getAuthorId()))
                 .count();
-    }
-
-    /**
-     * Helper class to hold sorted players and player index
-     */
-    private static class PlayerSortResult {
-        final List<Player> sortedPlayers;
-        final int playerIndex;
-        
-        PlayerSortResult(List<Player> sortedPlayers, int playerIndex) {
-            this.sortedPlayers = sortedPlayers;
-            this.playerIndex = playerIndex;
-        }
-    }
-
-    /**
-     * Sorts players by joinedAt and finds the index of the specified player.
-     * @param players List of players to sort
-     * @param playerId The ID of the player to find
-     * @return PlayerSortResult containing sorted players and player index, or null if player not found or invalid input
-     */
-    private PlayerSortResult getSortedPlayersAndIndex(List<Player> players, String playerId) {
-        if (players == null || players.isEmpty() || playerId == null || playerId.isEmpty()) {
-            return null;
-        }
-        
-        List<Player> sortedPlayers = players.stream()
-                .filter(player -> player.getJoinedAt() != null)
-                .sorted(Comparator.comparing(Player::getJoinedAt))
-                .toList();
-        
-        int playerIndex = -1;
-        for (int i = 0; i < sortedPlayers.size(); i++) {
-            if (sortedPlayers.get(i).getAuthorId().equals(playerId)) {
-                playerIndex = i;
-                break;
-            }
-        }
-        
-        if (playerIndex == -1) {
-            return null;
-        }
-        
-        return new PlayerSortResult(sortedPlayers, playerIndex);
-    }
-
-    /**
-     * Sorts stories by matching their authorId to the order of players in the sorted players list.
-     * Stories with matching players are sorted by player index, stories without matching players
-     * are placed at the end and sorted by createdAt.
-     * @param sortedPlayers List of players sorted by joinedAt
-     * @param stories List of stories to sort
-     * @return List of stories sorted by player order
-     */
-    private List<Story> sortStoriesByPlayerOrder(List<Player> sortedPlayers, List<Story> stories) {
-        // Create a map of player authorId to their index in the sorted list
-        Map<String, Integer> playerIndexMap = new HashMap<>();
-        for (int i = 0; i < sortedPlayers.size(); i++) {
-            playerIndexMap.put(sortedPlayers.get(i).getAuthorId(), i);
-        }
-        
-        // Sort stories by matching authorId to player order, then by createdAt for stories without matching players
-        final Map<String, Integer> finalPlayerIndexMap = playerIndexMap;
-        return stories.stream()
-                .sorted(Comparator
-                        .comparing((Story story) -> {
-                            Integer playerIdx = finalPlayerIndexMap.get(story.getAuthorId());
-                            // Stories with matching players come first, sorted by player index
-                            // Stories without matching players come last, sorted by createdAt
-                            return playerIdx != null ? playerIdx : Integer.MAX_VALUE;
-                        }))
-                .toList();
     }
 
     /**
@@ -2148,54 +1759,26 @@ public class CollaborativeTextHelper {
         return List.of(storyOutcomeType);
     }
 
-    /**
-     * Distributes stories to a player based on their index and submission count.
-     * @param sortedStories List of stories sorted by createdAt
-     * @param sortedPlayers List of players sorted by joinedAt
-     * @param playerIndex The index of the player in the sorted players list
-     * @param shouldReturnMultiple Whether to return multiple stories (player has 2+ submissions)
-     * @return List of OutcomeType objects representing the assigned stories
-     */
-    private List<OutcomeType> distributeStoriesToPlayer(List<Story> sortedStories, List<Player> sortedPlayers, int playerIndex, int offset, boolean shouldReturnMultiple) {
-        int numPlayers = sortedPlayers.size();
-        int numStories = sortedStories.size();
-        List<OutcomeType> assignedStories = new ArrayList<>();
-
-        // Calculate offset player index (wrapping if needed)
-        int offsetPlayerIndex = (playerIndex + offset) % numPlayers;
-
-        if (numStories <= numPlayers || !shouldReturnMultiple) {
-            // Fewer stories than players, or player hasn't made 2+ submissions: return one story with wrapping
-            int storyIndex = offsetPlayerIndex % numStories;
-            Story assignedStory = sortedStories.get(storyIndex);
-            OutcomeType outcomeType = new OutcomeType(assignedStory.getStoryId(), assignedStory.getPrompt());
-            String prequelStoryId = assignedStory.getPrequelStoryId();
-            if (prequelStoryId != null && !prequelStoryId.isEmpty()) {
-                outcomeType.setClarifier(prequelStoryId);
-            }
-
-            if (!assignedStory.getOptions().isEmpty()) {
-                for (Option option : assignedStory.getOptions()) {
-                    outcomeType.getSubTypes().add(new OutcomeType(option.getOptionId(), option.getOptionText()));
-                }
-            }
-
-            assignedStories.add(outcomeType);
-        } else {
-            // More stories than players AND player has 2+ submissions: return multiple stories
-            for (int i = 0; i < sortedStories.size(); i++) {
-                if (i % numPlayers == offsetPlayerIndex) {
-                    Story story = sortedStories.get(i);
-                    OutcomeType outcomeType = new OutcomeType(story.getStoryId(), story.getPrompt());
-                    String prequelStoryId = story.getPrequelStoryId();
-                    if (prequelStoryId != null && !prequelStoryId.isEmpty()) {
-                        outcomeType.setClarifier(prequelStoryId);
-                    }
-                    assignedStories.add(outcomeType);
-                }
-            }
+    public List<TextSubmission> getMakeChoiceVotingOutcomeForks(GameSession gameSession) {
+        Story currentEncounterStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+        if (currentEncounterStory.getSelectedOptionId().isEmpty()) {
+            return new ArrayList<>();
         }
 
-        return assignedStories;
+        String selectedOptionId = currentEncounterStory.getSelectedOptionId();
+
+        CollaborativeTextPhase howDoesThisResolve = gameSession.getCollaborativeTextPhase(String.valueOf(GameState.HOW_DOES_THIS_RESOLVE));
+        CollaborativeTextPhase howDoesThisResolveAgain = gameSession.getCollaborativeTextPhase(String.valueOf(GameState.HOW_DOES_THIS_RESOLVE_AGAIN));
+
+        List<TextSubmission> allResolveSubmissions = new ArrayList<>();
+        allResolveSubmissions.addAll(howDoesThisResolve.getSubmissionsWithoutParentSubmissions());
+        allResolveSubmissions.addAll(howDoesThisResolveAgain.getSubmissionsWithoutParentSubmissions());
+
+        return allResolveSubmissions.stream()
+            .filter(submission -> submission.getOutcomeType() != null
+                && submission.getOutcomeTypeWithLabel().getSubTypes() != null
+                && submission.getOutcomeTypeWithLabel().getSubTypes().stream()
+                    .anyMatch(subType -> selectedOptionId.equals(subType.getId())))
+            .collect(Collectors.toList());
     }
 }

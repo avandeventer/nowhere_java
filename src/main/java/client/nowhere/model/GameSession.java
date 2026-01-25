@@ -1,9 +1,9 @@
 package client.nowhere.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import client.nowhere.helper.CollaborativeTextHelper;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GameSession {
 
@@ -230,5 +230,46 @@ public class GameSession {
 
     public void setRoundNumber(Integer roundNumber) {
         this.roundNumber = roundNumber;
+    }
+
+    /**
+     * Sorts players by joinedAt and finds the index of the specified player.
+     * @param playerId The ID of the player to find
+     * @return PlayerSortResult containing sorted players and player index, or null if player not found or invalid input
+     */
+    public PlayerSortResult getSortedPlayersAndIndex(String playerId) {
+        if (players == null || players.isEmpty() || playerId == null || playerId.isEmpty()) {
+            return null;
+        }
+
+        List<Player> sortedPlayers = players.stream()
+                .filter(player -> player.getJoinedAt() != null)
+                .sorted(Comparator.comparing(Player::getJoinedAt))
+                .toList();
+
+        int playerIndex = -1;
+        for (int i = 0; i < sortedPlayers.size(); i++) {
+            if (sortedPlayers.get(i).getAuthorId().equals(playerId)) {
+                playerIndex = i;
+                break;
+            }
+        }
+
+        if (playerIndex == -1) {
+            return null;
+        }
+
+        return new PlayerSortResult(sortedPlayers, playerIndex);
+    }
+
+    public Story getStoryAtCurrentPlayerCoordinates() {
+        Encounter encounter = gameBoard.getEncounterAtPlayerCoordinates();
+        if (encounter == null || encounter.storyId == null) {
+            return null;
+        }
+
+        return stories.stream()
+                .filter(story -> story.getStoryId().equals(encounter.storyId))
+                .toList().stream().findFirst().orElse(null);
     }
 }

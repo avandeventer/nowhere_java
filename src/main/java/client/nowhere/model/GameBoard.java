@@ -43,5 +43,24 @@ public class GameBoard {
         this.playerCoordinates = playerCoordinates;
     }
 
+    public Encounter getEncounterAtPlayerCoordinates() {
+        if (playerCoordinates == null) {
+            System.err.println("Player coordinates not found for game.");
+            return null;
+        }
+
+        Encounter encounter = this.getEncounter(
+                playerCoordinates.getxCoordinate(),
+                playerCoordinates.getyCoordinate()
+        );
+
+        if (encounter == null) {
+            System.err.println("Encounter not found at coordinates (" + playerCoordinates.getxCoordinate() + ", " + playerCoordinates.getyCoordinate() + ")");
+            return null;
+        }
+
+        return encounter;
+    }
+
 }
 

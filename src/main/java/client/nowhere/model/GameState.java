@@ -63,6 +63,7 @@ public enum GameState {
         HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN,
         MAKE_CHOICE_VOTING,
         MAKE_CHOICE_WINNER,
+        MAKE_OUTCOME_CHOICE_VOTING,
         NAVIGATE_VOTING,
         NAVIGATE_WINNER,
         CAMPFIRE,
@@ -109,6 +110,9 @@ public enum GameState {
                     return GameState.MAKE_CHOICE_VOTING;
                 }
                 case MAKE_CHOICE_VOTING -> {
+                    return GameState.MAKE_OUTCOME_CHOICE_VOTING;
+                }
+                case MAKE_OUTCOME_CHOICE_VOTING -> {
                     return GameState.MAKE_CHOICE_WINNER;
                 }
                 case MAKE_CHOICE_WINNER -> {

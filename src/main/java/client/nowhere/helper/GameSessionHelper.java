@@ -78,7 +78,14 @@ public class GameSessionHelper {
         }
 
         try {
-            gameSessionDAO.updateGameSession(gameSession);
+            PhaseBaseInfo phaseBaseInfo = gameSession.getGameState().getPhaseBaseInfo("", gameSession.getRoundNumber());
+
+//            if (gameSession.getGameState().equals(MAKE_CHOICE_WINNER)
+//                    || gameSession.getGameState().equals(NAVIGATE_WINNER)
+//                    || !gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
+//                gameSessionDAO.updateGameSession(gameSession);
+//            }
+
             List<Player> players = existingSession.getPlayers();
             ActiveGameStateSession gameStateSession =
                     gameSession.getActiveGameStateSession();
@@ -95,7 +102,7 @@ public class GameSessionHelper {
                     gameSession.skipAdventureMapCreateMode();
                 }
             }
-            PhaseBaseInfo phaseBaseInfo = gameSession.getGameState().getPhaseBaseInfo("", gameSession.getRoundNumber());
+
             if (!gameSession.getGameState().equals(MAKE_CHOICE_WINNER)
                 && !gameSession.getGameState().equals(NAVIGATE_WINNER)
                 && gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
@@ -223,6 +230,10 @@ public class GameSessionHelper {
                     }
                     gameSession.setGameStateToNext();
                     break;
+                case MAKE_OUTCOME_CHOICE_VOTING:
+                    if(collaborativeTextHelper.getMakeChoiceVotingOutcomeForks(gameSession).size() < 2) {
+                        gameSession.setGameStateToNext();
+                    }
                 case NAVIGATE_WINNER:
                     boolean encounterAtNext = collaborativeTextHelper.handleNavigationStreamlined(gameSession.getGameCode());
                     if (!encounterAtNext) {
@@ -372,7 +383,7 @@ public class GameSessionHelper {
                             .filter(p -> !p.getAuthorId().equals(story.getPlayerId()))
                             .filter(p -> !p.getAuthorId().equals(story.getAuthorId()))
                             .sorted(Comparator.comparingInt((Player p) -> outcomeAuthorCount.get(p.getAuthorId())))
-                            .collect(Collectors.toList());
+                            .toList();
                 }
 
                 if (!eligibleAuthors.isEmpty()) {

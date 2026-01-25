@@ -1,6 +1,7 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.CollaborativeTextHelper;
+import client.nowhere.helper.VotingHelper;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -11,22 +12,18 @@ import java.util.List;
 public class CollaborativeTextController {
 
     private final CollaborativeTextHelper collaborativeTextHelper;
+    private final VotingHelper votingHelper;
 
     @Autowired
-    public CollaborativeTextController(CollaborativeTextHelper collaborativeTextHelper) {
+    public CollaborativeTextController(CollaborativeTextHelper collaborativeTextHelper,  VotingHelper votingHelper) {
         this.collaborativeTextHelper = collaborativeTextHelper;
+        this.votingHelper = votingHelper;
     }
 
     @PostMapping("/collaborativeText")
     @ResponseBody
     public CollaborativeTextPhase submitTextAddition(@RequestBody TextAddition textAddition, @RequestParam String gameCode) {
         return this.collaborativeTextHelper.submitTextAddition(gameCode, textAddition);
-    }
-
-    @PostMapping("/collaborativeText/votes")
-    @ResponseBody
-    public CollaborativeTextPhase submitPlayerVotes(@RequestBody List<PlayerVote> playerVotes, @RequestParam String gameCode) {
-        return this.collaborativeTextHelper.submitPlayerVotes(gameCode, playerVotes);
     }
 
     @GetMapping("/collaborativeText")
@@ -47,12 +44,6 @@ public class CollaborativeTextController {
         return this.collaborativeTextHelper.getAvailableSubmissionsForPlayer(gameCode, playerId, requestedCount, outcomeTypeId);
     }
 
-    @GetMapping("/collaborativeText/voting")
-    @ResponseBody
-    public List<TextSubmission> getVotingSubmissions(@RequestParam String gameCode, @RequestParam String playerId) {
-        return this.collaborativeTextHelper.getVotingSubmissionsForPlayer(gameCode, playerId);
-    }
-
     @GetMapping("/collaborativeText/outcomeType")
     @ResponseBody
     public OutcomeType getOutcomeTypeForPlayer(@RequestParam String gameCode, @RequestParam String playerId) {
@@ -69,5 +60,17 @@ public class CollaborativeTextController {
     @ResponseBody
     public List<OutcomeType> getOutcomeTypes(@RequestParam String gameCode, @RequestParam String playerId) {
         return this.collaborativeTextHelper.getOutcomeTypes(gameCode, playerId);
+    }
+
+    @PostMapping("/collaborativeText/votes")
+    @ResponseBody
+    public CollaborativeTextPhase submitPlayerVotes(@RequestBody List<PlayerVote> playerVotes, @RequestParam String gameCode) {
+        return this.votingHelper.submitPlayerVotes(gameCode, playerVotes);
+    }
+
+    @GetMapping("/collaborativeText/voting")
+    @ResponseBody
+    public List<TextSubmission> getVotingSubmissions(@RequestParam String gameCode, @RequestParam String playerId) {
+        return this.votingHelper.getVotingSubmissionsForPlayer(gameCode, playerId);
     }
 }
