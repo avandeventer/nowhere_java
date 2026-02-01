@@ -65,7 +65,7 @@ public class OutcomeTypeHelper {
                 outcomeType.setClarifier(prequelStoryId);
             }
 
-            if (!assignedStory.getOptions().isEmpty()) {
+            if (assignedStory.getOptions() != null && !assignedStory.getOptions().isEmpty()) {
                 for (Option option : assignedStory.getOptions()) {
                     outcomeType.getSubTypes().add(new OutcomeType(option.getOptionId(), option.getOptionText()));
                 }

@@ -433,7 +433,6 @@ public class CollaborativeTextHelper {
             // Sort descending so highest additions come first
             return winners.stream().sorted(rankingComparator.reversed()).toList();
         } else {
-            // For other phases (like CAMPFIRE), return all submissions sorted by most additions first
             // Filter out submissions that have been iterated on (referenced in other submissions' additions)
             List<TextSubmission> submissionsWithoutParents = phase.getSubmissionsWithoutParentSubmissions();
             
