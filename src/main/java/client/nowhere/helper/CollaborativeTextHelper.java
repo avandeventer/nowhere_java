@@ -1034,11 +1034,17 @@ public class CollaborativeTextHelper {
                                     matchingStory.setGameCode(gameCode);
                                 } else {
                                     Option option = matchingOptions.getFirst();
-                                    List<String> existingForkIds = option
-                                            .getOutcomeForks().stream().map(
-                                            outcomeFork -> outcomeFork.getTextSubmission().getSubmissionId()).toList();
-                                    if (!existingForkIds.contains(winner.getSubmissionId())) {
-                                        option.getOutcomeForks().add(new OutcomeFork(winner));
+
+                                    if (option.getOutcomeForks() == null) {
+                                        List<OutcomeFork> outcomeForks = new ArrayList<>();
+                                        outcomeForks.add(new OutcomeFork(winner));
+                                        option.setOutcomeForks(outcomeForks);
+                                    } else {
+                                        List<String> existingForkIds = option.getOutcomeForks().stream().map(
+                                                outcomeFork -> outcomeFork.getTextSubmission().getSubmissionId()).toList();
+                                        if (!existingForkIds.contains(winner.getSubmissionId())) {
+                                            option.getOutcomeForks().add(new OutcomeFork(winner));
+                                        }
                                     }
                                 }
 

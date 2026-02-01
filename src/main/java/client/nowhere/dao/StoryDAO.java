@@ -175,8 +175,8 @@ public class StoryDAO {
                                     resultOption.getOutcomeAuthorId(),
                             resultOption.getPlayerStatDCs()
                     );
-                    if (!inputOption.getOutcomeForks().isEmpty()) {
-                        optionToUpdate.setOutcomeForks(optionToUpdate.getOutcomeForks());
+                    if (inputOption.getOutcomeForks() != null && !inputOption.getOutcomeForks().isEmpty()) {
+                        optionToUpdate.setOutcomeForks(inputOption.getOutcomeForks());
                     }
                     optionsToUpdate.add(optionToUpdate);
                     break;
