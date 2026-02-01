@@ -1,6 +1,8 @@
 package client.nowhere.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,6 +24,10 @@ public class Option {
     private boolean playerSucceeded = false;
     private Integer pointsRewarded = 0;
     private String successMarginText = "";
+
+    @Getter
+    @Setter
+    List<OutcomeFork> outcomeForks;
 
     public Option () {
         this.optionId = UUID.randomUUID().toString();

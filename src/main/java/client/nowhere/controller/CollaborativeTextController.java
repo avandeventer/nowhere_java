@@ -62,15 +62,15 @@ public class CollaborativeTextController {
         return this.collaborativeTextHelper.getOutcomeTypes(gameCode, playerId);
     }
 
-    @PostMapping("/collaborativeText/votes")
-    @ResponseBody
-    public CollaborativeTextPhase submitPlayerVotes(@RequestBody List<PlayerVote> playerVotes, @RequestParam String gameCode) {
-        return this.votingHelper.submitPlayerVotes(gameCode, playerVotes);
-    }
-
     @GetMapping("/collaborativeText/voting")
     @ResponseBody
     public List<TextSubmission> getVotingSubmissions(@RequestParam String gameCode, @RequestParam String playerId) {
         return this.votingHelper.getVotingSubmissionsForPlayer(gameCode, playerId);
+    }
+
+    @PostMapping("/collaborativeText/votes")
+    @ResponseBody
+    public CollaborativeTextPhase submitPlayerVotes(@RequestBody List<PlayerVote> playerVotes, @RequestParam String gameCode) {
+        return this.votingHelper.submitPlayerVotes(gameCode, playerVotes);
     }
 }

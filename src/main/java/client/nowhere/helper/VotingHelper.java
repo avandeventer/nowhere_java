@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -40,6 +41,25 @@ public class VotingHelper {
         }
         String phaseId = phaseIdState.name();
 
+        if (phaseIdState == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
+            Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+            if (currentStory != null && currentStory.getPlayerIds().contains(playerId)) {
+                return new ArrayList<>();
+            }
+
+            // Get submissions from HOW_DOES_THIS_RESOLVE and HOW_DOES_THIS_RESOLVE_AGAIN phases
+            // filtered by currentStory.selectedOptionId
+            if (currentStory != null && !currentStory.getSelectedOptionId().isEmpty()) {
+                String selectedOptionId = currentStory.getSelectedOptionId();
+                Option selectedOption = currentStory.getOptions().stream().filter(option -> option.getOptionId().equals(selectedOptionId))
+                        .findFirst().orElse(null);
+                if (selectedOption == null || selectedOption.getOutcomeForks() == null) {
+                    return null;
+                }
+                return selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
+            }
+        }
+
         // Retrieve the phase
         CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
         List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameCode, playerId);
@@ -56,7 +76,7 @@ public class VotingHelper {
         boolean isWhatAreWeCapableOf = phaseIdState == GameState.WHAT_ARE_WE_CAPABLE_OF;
         int limit = isWhatDoWeFear ? Integer.MAX_VALUE : (isWhatAreWeCapableOf ? 6 : 5);
 
-        List<TextSubmission> submissionsPlayerCanVoteOn = phase.getSubmissions().stream()
+        return phase.getSubmissions().stream()
                 .filter(textSubmission -> isSubmissionAvailableForVoting(textSubmission, playerId, outcomeType))
                 .peek(textSubmission -> setOutcomeTypeWithLabelIfMatch(textSubmission, outcomeType))
                 .sorted((s1, s2) -> {
@@ -70,12 +90,6 @@ public class VotingHelper {
                 })
                 .limit(limit)
                 .toList();
-
-        if (submissionsPlayerCanVoteOn.isEmpty() && phaseIdState == GameState.MAKE_CHOICE_VOTING) {
-            activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
-        }
-
-        return submissionsPlayerCanVoteOn;
     }
 
     /**
@@ -161,8 +175,36 @@ public class VotingHelper {
             collaborativeTextDAO.addVoteAtomically(gameCode, phaseId, vote);
         }
 
+        if (phaseIdState == GameState.MAKE_CHOICE_VOTING) {
+            setNonActivePlayersToDone(gameSession);
+        }
+
+        if (phaseIdState == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
+            setActivePlayersToDone(gameSession);
+        }
+
         // Return updated phase
         return collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+    }
+
+    private void setNonActivePlayersToDone(GameSession gameSession) {
+        for (Player player : gameSession.getPlayers()) {
+            List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameSession.getGameCode(), player.getAuthorId());
+
+            if (outcomeTypes.isEmpty()) {
+                activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), player.getAuthorId(), true);
+            }
+        }
+    }
+
+    private void setActivePlayersToDone(GameSession gameSession) {
+        for (Player player : gameSession.getPlayers()) {
+            Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
+
+            if (story.getPlayerIds().contains(player.getAuthorId())) {
+                activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), player.getAuthorId(), true);
+            }
+        }
     }
 
     public List<OutcomeType> getMakeChoiceStoryOutcomes(String gameCode, String playerId) {

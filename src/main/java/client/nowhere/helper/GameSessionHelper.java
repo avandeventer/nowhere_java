@@ -103,11 +103,11 @@ public class GameSessionHelper {
                 }
             }
 
-            if (!gameSession.getGameState().equals(MAKE_CHOICE_WINNER)
-                && !gameSession.getGameState().equals(NAVIGATE_WINNER)
-                && gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
+            if (gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
                 collaborativeTextHelper.calculateWinningSubmission(gameSession.getGameCode());
-                gameSession.setGameStateToNext(true,  gameSession.getRoundNumber());
+                if (!gameSession.getGameState().equals(NAVIGATE_WINNER) && !gameSession.getGameState().equals(MAKE_OUTCOME_CHOICE_VOTING)) {
+                    gameSession.setGameStateToNext(true, gameSession.getRoundNumber());
+                }
             }
 
             switch (gameSession.getGameState()) {

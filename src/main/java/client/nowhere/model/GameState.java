@@ -64,6 +64,7 @@ public enum GameState {
         MAKE_CHOICE_VOTING,
         MAKE_CHOICE_WINNER,
         MAKE_OUTCOME_CHOICE_VOTING,
+        MAKE_OUTCOME_CHOICE_WINNER,
         NAVIGATE_VOTING,
         NAVIGATE_WINNER,
         CAMPFIRE,
@@ -110,12 +111,15 @@ public enum GameState {
                     return GameState.MAKE_CHOICE_VOTING;
                 }
                 case MAKE_CHOICE_VOTING -> {
-                    return GameState.MAKE_OUTCOME_CHOICE_VOTING;
-                }
-                case MAKE_OUTCOME_CHOICE_VOTING -> {
                     return GameState.MAKE_CHOICE_WINNER;
                 }
                 case MAKE_CHOICE_WINNER -> {
+                    return GameState.MAKE_OUTCOME_CHOICE_VOTING;
+                }
+                case MAKE_OUTCOME_CHOICE_VOTING -> {
+                    return GameState.MAKE_OUTCOME_CHOICE_WINNER;
+                }
+                case MAKE_OUTCOME_CHOICE_WINNER -> {
                     return GameState.NAVIGATE_WINNER;
                 }
                 case NAVIGATE_WINNER -> {
@@ -342,6 +346,7 @@ public enum GameState {
                         case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNERS -> HOW_DOES_THIS_RESOLVE;
                         case HOW_DOES_THIS_RESOLVE_AGAIN, HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> HOW_DOES_THIS_RESOLVE_AGAIN;
                         case MAKE_CHOICE_VOTING, MAKE_CHOICE_WINNER -> MAKE_CHOICE_VOTING;
+                        case MAKE_OUTCOME_CHOICE_VOTING ->  MAKE_OUTCOME_CHOICE_VOTING;
                         case NAVIGATE_VOTING, NAVIGATE_WINNER -> NAVIGATE_VOTING;
                         case CAMPFIRE, CAMPFIRE_WINNERS -> CAMPFIRE;
                         default -> null;
@@ -509,6 +514,17 @@ public enum GameState {
                         NAVIGATE_VOTING,
                         NAVIGATE_WINNER,
                         true
+                    );
+                }
+                if (phaseId == MAKE_OUTCOME_CHOICE_VOTING) {
+                    return new PhaseBaseInfo(
+                            "Oh? Many paths lay before you",
+                            "Decide your friend's fate!",
+                            CollaborativeMode.SHARE_TEXT,
+                            null,
+                            MAKE_OUTCOME_CHOICE_VOTING,
+                            MAKE_OUTCOME_CHOICE_WINNER,
+                            false
                     );
                 }
                 if (phaseId == CAMPFIRE) {

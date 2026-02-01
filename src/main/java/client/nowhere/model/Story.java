@@ -49,10 +49,7 @@ public class Story {
     private String optionType;
     private Timestamp createdAt;
 
-    public Story () {
-        // Don't generate UUID here - it causes issues during deserialization
-        // Call setNewStoryId() explicitly when creating new stories
-    }
+    public Story () { }
 
     public void setNewStoryId() {
         this.storyId = UUID.randomUUID().toString();
@@ -354,6 +351,7 @@ public class Story {
 
     public void resetPlayerVariables() {
         setPlayerId("");
+        setPlayerIds(new ArrayList<>());
         setVisited(false);
         setPlayerSucceeded(false);
         setSelectedOptionId("");

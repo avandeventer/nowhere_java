@@ -348,7 +348,6 @@ public class StoryHelper {
         String saveGameId = gameSession.getSaveGameId();
 
         gameSession.getStories()
-            .stream()
             .forEach(Story::resetPlayerVariables);
 
         List<Story> gameSessionStories = gameSession.getStories()

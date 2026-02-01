@@ -107,17 +107,28 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
         }
 
-        boolean streamlinedMode = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
-        List<TextSubmission> winningSubmissions = streamlinedMode && !phaseId.equals(GameState.MAKE_CHOICE_VOTING.name())
-                ? calculateWinnersFromAdditions(phase, gameSession.getGameState(), gameSession.getRoundNumber())
-                : calculateWinnersFromVotes(phase, gameSession.getGameState());
+        List<TextSubmission> winningSubmissions = getWinningSubmissions(phaseIdState, phase, gameSession);
 
         // Store the winning submissions in GameSessionDisplay
         if (!winningSubmissions.isEmpty()) {
-            updateGameSessionWithWinningSubmissions(gameSession, phaseId, winningSubmissions);
+            updateGameSessionWithWinningSubmissions(gameSession, phaseIdState, winningSubmissions);
         }
 
         return winningSubmissions;
+    }
+
+    private List<TextSubmission> getWinningSubmissions(GameState phaseId, CollaborativeTextPhase phase, GameSession gameSession) {
+        switch (phaseId) {
+            case GameState.MAKE_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_VOTING -> {
+                return calculateWinnersFromVotes(phase, gameSession.getGameState());
+            }
+            case GameState.HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> {
+                return phase.getSubmissionsWithoutParentSubmissions();
+            }
+            default -> {
+                return calculateWinnersFromAdditions(phase, gameSession.getGameState(), gameSession.getRoundNumber());
+            }
+        }
     }
 
     public List<TextSubmission> getAvailableSubmissionsForPlayer(String gameCode, String playerId, int requestedCount, String outcomeTypeId) {
@@ -183,7 +194,7 @@ public class CollaborativeTextHelper {
             // Otherwise, use the parent id
             if (textAddition.getOutcomeTypeWithLabel().getSubTypes() != null
                     && !textAddition.getOutcomeTypeWithLabel().getSubTypes().isEmpty()) {
-                OutcomeType firstSubType = textAddition.getOutcomeTypeWithLabel().getSubTypes().get(0);
+                OutcomeType firstSubType = textAddition.getOutcomeTypeWithLabel().getSubTypes().getFirst();
                 if (firstSubType != null && firstSubType.getId() != null && !firstSubType.getId().isEmpty()) {
                     newSubmission.setOutcomeType(firstSubType.getId());
                 } else {
@@ -481,7 +492,10 @@ public class CollaborativeTextHelper {
                 .sorted(rankingComparator)
                 .limit(6)
                 .toList();
-        } else if (gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER || gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS) {
+        } else if (gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER
+                || gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS
+                || gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN
+        ) {
             List<String> uniqueOutcomeTypes = submissionsWithVotes.stream()
                     .map(TextSubmission::getOutcomeType)
                     .filter(outcomeType -> outcomeType != null && !outcomeType.isEmpty())
@@ -512,7 +526,7 @@ public class CollaborativeTextHelper {
     /**
      * Updates the GameSessionDisplay with the winning submission for the given phase
      */
-    private void updateGameSessionWithWinningSubmissions(GameSession gameSession, String phaseId, List<TextSubmission> winningSubmissions) {
+    private void updateGameSessionWithWinningSubmissions(GameSession gameSession, GameState phaseId, List<TextSubmission> winningSubmissions) {
         try {
             String gameCode = gameSession.getGameCode();
             GameSessionDisplay display = adventureMapDAO.getGameSessionDisplay(gameCode);
@@ -522,14 +536,14 @@ public class CollaborativeTextHelper {
 
             // Update the appropriate field based on the phase
             switch (phaseId) {
-                case "WHERE_ARE_WE" -> {
+                case GameState.WHERE_ARE_WE -> {
                     if (!winningSubmissions.isEmpty()) {
                         TextSubmission winningSubmission = winningSubmissions.getFirst();
                         display.setMapDescription(winningSubmission.getCurrentText());
                         display.setWhereAreWeSubmission(winningSubmission);
                     }
                 }
-                case "WHAT_DO_WE_FEAR" -> {
+                case GameState.WHAT_DO_WE_FEAR -> {
                     if (!winningSubmissions.isEmpty()) {
                         // Create a PlayerStat entry for WHAT_DO_WE_FEAR
                         createPlayerStatForFearPhase(gameCode, winningSubmissions.getFirst());
@@ -537,25 +551,22 @@ public class CollaborativeTextHelper {
                         System.out.println("WHAT_DO_WE_FEAR winning submission: " + winningSubmissions.getFirst().getCurrentText());
                     }
                 }
-                case "WHO_ARE_WE" -> {
+                case GameState.WHO_ARE_WE -> {
                     if (!winningSubmissions.isEmpty()) {
                         TextSubmission winningSubmission = winningSubmissions.getFirst();
                         display.setPlayerDescription(winningSubmission.getCurrentText());
                         display.setWhoAreWeSubmission(winningSubmission);
                     }
                 }
-                case "WHAT_IS_COMING" -> {
+                case GameState.WHAT_IS_COMING -> {
                     if (!winningSubmissions.isEmpty()) {
                         TextSubmission winningSubmission = winningSubmissions.getFirst();
                         display.setGoalDescription(winningSubmission.getCurrentText());
                         display.setWhatIsOurGoalSubmission(winningSubmission);
                     }
                 }
-                case "WHAT_ARE_WE_CAPABLE_OF" -> {
-                    // Create PlayerStat entries for WHAT_ARE_WE_CAPABLE_OF (top 6)
-                    createPlayerStatsForCapablePhase(gameCode, phaseId, winningSubmissions);
-                }
-                case "WHAT_WILL_BECOME_OF_US" -> {
+                case GameState.WHAT_ARE_WE_CAPABLE_OF -> createPlayerStatsForCapablePhase(gameCode, winningSubmissions);
+                case GameState.WHAT_WILL_BECOME_OF_US -> {
                     // Set successText, neutralText, and failureText based on outcomeType
                     for (TextSubmission winningSubmission : winningSubmissions) {
                         String outcomeType = winningSubmission.getOutcomeType();
@@ -568,21 +579,12 @@ public class CollaborativeTextHelper {
                         }
                     }
                 }
-                case "SET_ENCOUNTERS" -> {
-                    addAllSubmissionsToAdventureMap(gameCode, winningSubmissions);
-                }
-                case "WHAT_HAPPENS_HERE" -> {
-                    handleWhatHappensHereStreamlined(gameCode, winningSubmissions);
-                }
-                case "HOW_DOES_THIS_RESOLVE", "HOW_DOES_THIS_RESOLVE_AGAIN" -> {
-                    handleHowDoesThisResolve(gameCode, winningSubmissions);
-                }
-                case "MAKE_CHOICE_VOTING" -> {
-                    handleMakeChoice(gameSession, winningSubmissions);
-                }
-                case "NAVIGATE_VOTING" -> {
-                    handleNavigation(gameCode, winningSubmissions);
-                }
+                case GameState.SET_ENCOUNTERS -> addAllSubmissionsToAdventureMap(gameCode, winningSubmissions);
+                case GameState.WHAT_HAPPENS_HERE -> handleWhatHappensHereStreamlined(gameCode, winningSubmissions);
+                case GameState.HOW_DOES_THIS_RESOLVE, GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> handleHowDoesThisResolve(gameCode, winningSubmissions);
+                case GameState.MAKE_CHOICE_VOTING -> handleMakeChoice(gameSession, winningSubmissions);
+                case GameState.MAKE_OUTCOME_CHOICE_VOTING -> handleMakeOutcomeChoices(gameSession, winningSubmissions);
+                case GameState.NAVIGATE_VOTING -> handleNavigation(gameCode, winningSubmissions);
             }
 
             // Update the GameSessionDisplay in the database
@@ -590,6 +592,18 @@ public class CollaborativeTextHelper {
         } catch (Exception e) {
             // Log error but don't fail the main operation
             System.err.println("Failed to update GameSessionDisplay with winning submissions: " + e.getMessage());
+        }
+    }
+
+    private void handleMakeOutcomeChoices(GameSession gameSession, List<TextSubmission> winningSubmissions) {
+        Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
+        if (!winningSubmissions.isEmpty() && winningSubmissions.getFirst().getCurrentText() != null) {
+            String selectedOptionId = winningSubmissions.getFirst().getOutcomeTypeWithLabel().getSubTypes().getFirst().getId();
+            Option selectedOption = story.getOptions().stream().filter(option -> option.getOptionId().equals(selectedOptionId)).findFirst().orElse(null);
+            if (selectedOption != null) {
+                selectedOption.setSuccessText(winningSubmissions.getFirst().getCurrentText());
+                storyDAO.updateStory(story);
+            }
         }
     }
 
@@ -1003,10 +1017,10 @@ public class CollaborativeTextHelper {
                                 }
                                 
                                 // Check if option with this ID already exists
-                                boolean optionExists = matchingStory.getOptions().stream()
-                                        .anyMatch(opt -> opt.getOptionId().equals(optionId));
+                                List<Option> matchingOptions = matchingStory.getOptions().stream()
+                                        .filter(opt -> opt.getOptionId().equals(optionId)).toList();
                                 
-                                if (!optionExists) {
+                                if (matchingOptions.isEmpty()) {
                                     // Add new option with subType.id as optionId and subType.label as successText
                                     Option newOption = new Option();
                                     newOption.setOptionText(optionText);
@@ -1015,11 +1029,21 @@ public class CollaborativeTextHelper {
                                     String originalAuthorId = createStoryFromTextSubmission(winner);
                                     newOption.setOutcomeAuthorId(originalAuthorId);
                                     matchingStory.getOptions().add(newOption);
+                                    newOption.setOutcomeForks(List.of(new OutcomeFork(winner)));
                                     
                                     // Update the story
                                     matchingStory.setGameCode(gameCode);
-                                    storyDAO.updateStory(matchingStory);
+                                } else {
+                                    Option option = matchingOptions.getFirst();
+                                    List<String> existingForkIds = option
+                                            .getOutcomeForks().stream().map(
+                                            outcomeFork -> outcomeFork.getTextSubmission().getSubmissionId()).toList();
+                                    if (!existingForkIds.contains(winner.getSubmissionId())) {
+                                        option.getOutcomeForks().add(new OutcomeFork(winner));
+                                    }
                                 }
+
+                                storyDAO.updateStory(matchingStory);
 
                                 // Remove the submission from WHAT_CAN_WE_TRY phase that matches subType.id
                                 if (whatCanWeTryPhase != null) {
@@ -1264,7 +1288,7 @@ public class CollaborativeTextHelper {
     /**
      * Creates PlayerStat entries for WHAT_ARE_WE_CAPABLE_OF phase (top 6)
      */
-    private void createPlayerStatsForCapablePhase(String gameCode, String phaseId, List<TextSubmission> winningSubmissions) {
+    private void createPlayerStatsForCapablePhase(String gameCode, List<TextSubmission> winningSubmissions) {
         try {
             // Get the game session to access the adventure map
             GameSession gameSession = getGameSession(gameCode);
