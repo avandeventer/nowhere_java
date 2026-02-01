@@ -54,6 +54,9 @@ public class OutcomeTypeHelper {
 
         // Calculate offset player index (wrapping if needed)
         int offsetPlayerIndex = (playerIndex + offset) % numPlayers;
+        if (offsetPlayerIndex < 0) {
+            offsetPlayerIndex = offsetPlayerIndex + numPlayers;
+        }
 
         if (numStories <= numPlayers || !shouldReturnMultiple) {
             // Fewer stories than players, or player hasn't made 2+ submissions: return one story with wrapping

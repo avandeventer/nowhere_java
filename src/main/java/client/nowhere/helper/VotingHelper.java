@@ -76,7 +76,7 @@ public class VotingHelper {
         boolean isWhatAreWeCapableOf = phaseIdState == GameState.WHAT_ARE_WE_CAPABLE_OF;
         int limit = isWhatDoWeFear ? Integer.MAX_VALUE : (isWhatAreWeCapableOf ? 6 : 5);
 
-        return phase.getSubmissions().stream()
+        List<TextSubmission> submissionsPlayerCanVoteOn = phase.getSubmissions().stream()
                 .filter(textSubmission -> isSubmissionAvailableForVoting(textSubmission, playerId, outcomeType))
                 .peek(textSubmission -> setOutcomeTypeWithLabelIfMatch(textSubmission, outcomeType))
                 .sorted((s1, s2) -> {
@@ -90,6 +90,12 @@ public class VotingHelper {
                 })
                 .limit(limit)
                 .toList();
+
+        if (submissionsPlayerCanVoteOn.isEmpty() && phaseIdState == GameState.MAKE_CHOICE_VOTING) {
+            activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+        }
+
+        return submissionsPlayerCanVoteOn;
     }
 
     /**
