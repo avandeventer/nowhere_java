@@ -1,0 +1,2371 @@
+{
+  "gameCode": "NX43AU",
+  "players": [
+    {
+      "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+      "userName": "Andy",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+            "label": "kddkdkkd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3c688312-7019-4273-881e-a63e7fa8ec1f",
+            "label": "asdfasdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "big fear uses up the whole box",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+            "label": "asldfakjsdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+            "label": "lots of text lots of text lots",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+            "label": "asdfasdfl",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+            "label": "asdfasfd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "playerCoordinates": null,
+      "gameCode": "NX43AU",
+      "joinedAt": 1770265915990,
+      "firstPlayer": true
+    },
+    {
+      "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+      "userName": "Joe",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+            "label": "kddkdkkd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3c688312-7019-4273-881e-a63e7fa8ec1f",
+            "label": "asdfasdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "big fear uses up the whole box",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+            "label": "asldfakjsdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+            "label": "lots of text lots of text lots",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+            "label": "asdfasdfl",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+            "label": "asdfasfd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "playerCoordinates": null,
+      "gameCode": "NX43AU",
+      "joinedAt": 1770265924454,
+      "firstPlayer": false
+    },
+    {
+      "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+      "userName": "Byron",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+            "label": "kddkdkkd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3c688312-7019-4273-881e-a63e7fa8ec1f",
+            "label": "asdfasdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "big fear uses up the whole box",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+            "label": "asldfakjsdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+            "label": "lots of text lots of text lots",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+            "label": "asdfasdfl",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+            "label": "asdfasfd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "playerCoordinates": null,
+      "gameCode": "NX43AU",
+      "joinedAt": 1770265930026,
+      "firstPlayer": false
+    },
+    {
+      "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+      "userName": "Kirsten",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+            "label": "kddkdkkd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3c688312-7019-4273-881e-a63e7fa8ec1f",
+            "label": "asdfasdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "big fear uses up the whole box",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+            "label": "asldfakjsdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+            "label": "lots of text lots of text lots",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+            "label": "asdfasdfl",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+            "label": "asdfasfd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "playerCoordinates": null,
+      "gameCode": "NX43AU",
+      "joinedAt": 1770265936726,
+      "firstPlayer": false
+    }
+  ],
+  "gameState": "WHAT_CAN_WE_TRY",
+  "activePlayerSession": {
+    "gameCode": "",
+    "playerId": "",
+    "playerChoiceOptionId": "",
+    "selectedLocationOptionId": "",
+    "story": {
+      "storyId": "",
+      "prompt": "",
+      "authorId": "",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "",
+      "playerIds": [],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": null,
+      "encounterLabel": null,
+      "location": null
+    },
+    "location": null,
+    "outcomeDisplay": [],
+    "locationOutcomeDisplay": [],
+    "ritualStory": null,
+    "setNextPlayerTurn": false,
+    "isPlayerDoneWithTurn": {
+      "abddf3d8-c59d-43d2-b91c-dc7ebc83da27": false,
+      "24fca1a7-efc5-4813-8530-448f0e5c29d1": false,
+      "884bcc3e-cd30-4714-91c2-b47827466f29": false,
+      "91732a20-794c-424a-8d69-8b4dedac4f85": false
+    },
+    "repercussions": {
+      "ending": null,
+      "locationDestroyed": null
+    },
+    "startTimer": false,
+    "writeTimerDone": false
+  },
+  "activeGameStateSession": {
+    "gameCode": "NX43AU",
+    "isPlayerDone": {
+      "abddf3d8-c59d-43d2-b91c-dc7ebc83da27": false,
+      "24fca1a7-efc5-4813-8530-448f0e5c29d1": false,
+      "884bcc3e-cd30-4714-91c2-b47827466f29": false,
+      "91732a20-794c-424a-8d69-8b4dedac4f85": false
+    }
+  },
+  "stories": [
+    {
+      "storyId": "c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a",
+      "prompt": "Mike skates up with his skateboard and winks at you beneath his sunglasses A \"Hey fella. You ever tried drugs?\" Mike croons. You're not sure if he's for or against drugs. D",
+      "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "NX43AU",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "DUNGEON_PLAYER",
+      "playerIds": [
+        "DUNGEON_PLAYER"
+      ],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": null,
+      "encounterLabel": {
+        "encounterId": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+        "encounterLabel": "Mike, the Velociraptor",
+        "textSubmission": {
+          "submissionId": "14260b28-2619-4e67-afe9-50945defb282",
+          "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+          "originalText": "",
+          "currentText": "Mike, the Velociraptor",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+              "addedText": "Mike, the Velociraptor",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      },
+      "location": null
+    },
+    {
+      "storyId": "efe64144-c636-4283-add7-974dc48a6039",
+      "prompt": "The Striped Bee Brigade rides up on you. They stride upon their enormous caterpillar steed. B",
+      "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "NX43AU",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "DUNGEON_PLAYER",
+      "playerIds": [
+        "DUNGEON_PLAYER"
+      ],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": null,
+      "encounterLabel": {
+        "encounterId": "de857546-c6b8-429b-af72-56f5260ed56a",
+        "encounterLabel": "Bee Knights",
+        "textSubmission": {
+          "submissionId": "f6bfa756-53de-4d90-912a-89e60f80a6fd",
+          "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+          "originalText": "",
+          "currentText": "Bee Knights",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+              "addedText": "Bee Knights",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      },
+      "location": null
+    },
+    {
+      "storyId": "7adad1bc-874b-4f6e-a70c-f8ba4aea658f",
+      "prompt": "There's a tea party here! Many fairies flutter down upon the cups C",
+      "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "NX43AU",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "DUNGEON_PLAYER",
+      "playerIds": [
+        "DUNGEON_PLAYER"
+      ],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": null,
+      "encounterLabel": {
+        "encounterId": "8983305a-343e-4f4b-9c9e-6d3b15551c6f",
+        "encounterLabel": "Teacups",
+        "textSubmission": {
+          "submissionId": "68ccd487-a923-4766-969b-1932398e83d6",
+          "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+          "originalText": "",
+          "currentText": "Teacups",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+              "addedText": "Teacups",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      },
+      "location": null
+    },
+    {
+      "storyId": "2646c831-3ab8-4445-ae4a-3696f25837ba",
+      "prompt": "Fish can laugh? You hear them tittering beneath the water of the nearby river D",
+      "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "NX43AU",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "DUNGEON_PLAYER",
+      "playerIds": [
+        "DUNGEON_PLAYER"
+      ],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": null,
+      "encounterLabel": {
+        "encounterId": "f1b96036-0bd7-4012-a9ca-91ea2b9369ca",
+        "encounterLabel": "Fish Laughter",
+        "textSubmission": {
+          "submissionId": "55a7537c-a208-4b12-8f9b-348e7eacfd1f",
+          "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+          "originalText": "",
+          "currentText": "Fish Laughter",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+              "addedText": "Fish Laughter",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      },
+      "location": null
+    }
+  ],
+  "adventureMap": {
+    "name": "The Dream Walk",
+    "adventureId": "ff231097-0a88-4bdd-b22a-4cbf82ab55e4",
+    "statTypes": [
+      {
+        "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+        "label": "kddkdkkd",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      },
+      {
+        "id": "3c688312-7019-4273-881e-a63e7fa8ec1f",
+        "label": "asdfasdf",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      },
+      {
+        "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+        "label": "favor",
+        "description": null,
+        "favorEntity": "big fear uses up the whole box",
+        "favorType": true
+      },
+      {
+        "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+        "label": "asldfakjsdf",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      },
+      {
+        "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+        "label": "lots of text lots of text lots",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      },
+      {
+        "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+        "label": "asdfasdfl",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      },
+      {
+        "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+        "label": "asdfasfd",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      }
+    ],
+    "gameSessionDisplay": {
+      "mapDescription": "Every year it comes. The Dream Walk. The adults all gather at the edge of the wood and usher the youngsters into the darkness of the Lost Lands. The texts left behind by the Gods tell us that the young people who travel into the wood will encounter the characters, creatures, and spirits who will guide them into adulthood. If they manage to make it through the Lost Lands alive they do so as adults. This year, finally, is our year. We hug our parents, clasp our hands together, and we embark.",
+      "goalDescription": "asdfasdlfas;kdflj asl;dfasl;dfjk",
+      "playerTitle": "",
+      "playerDescription": "lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text",
+      "endingDescription": "",
+      "successText": "",
+      "neutralText": "",
+      "failureText": "",
+      "entity": "big fear uses up the whole box",
+      "whereAreWeSubmission": {
+        "submissionId": "c7164ef7-ac35-4eb5-a28f-19b60187c801",
+        "authorId": "7735f72d-bfc5-42d9-939c-cf8b9b11f60e",
+        "originalText": ";lkj lasdfasd;flka jsdf asjdflkas asdf asd;flkajsdflajsdlf asdflkjasdfl ja sld;fjaslk;dfa kldsfasdfasd;fk adding stuff adding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuff",
+        "currentText": ";lkj lasdfasd;flka jsdf asjdflkas asdf asd;flkajsdflajsdlf asdflkjasdfl ja sld;fjaslk;dfa kldsfasdfasd;fk adding stuff adding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuff big text big textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig text",
+        "additions": [
+          {
+            "additionId": "",
+            "authorId": "49cca0ba-2e97-4f82-a9a7-3e763d8c26e1",
+            "addedText": ";lkj lasdfasd;flka jsdf asjdflkas asdf asd;flkajsdflajsdlf asdflkjasdfl ja sld;fjaslk;dfa kldsfasdfasd;fk",
+            "submissionId": null,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          },
+          {
+            "additionId": "",
+            "authorId": "7e4999a7-e829-4c90-8129-eacdfa1d15dd",
+            "addedText": "adding stuff adding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuff",
+            "submissionId": "80cca521-7a6e-471e-8f01-83759b89b909",
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          },
+          {
+            "additionId": "",
+            "authorId": "7735f72d-bfc5-42d9-939c-cf8b9b11f60e",
+            "addedText": "big text big textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig text",
+            "submissionId": "88155141-129e-4ed2-8a27-68d072de9e9f",
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          }
+        ],
+        "totalVotes": 0,
+        "averageRanking": 1.0,
+        "outcomeType": null,
+        "outcomeTypeWithLabel": {
+          "id": "",
+          "label": "",
+          "clarifier": "",
+          "subTypes": []
+        },
+        "finalized": false
+      },
+      "whoAreWeSubmission": {
+        "submissionId": "95f62b2f-f4fe-47b3-b334-f3a00fd13a23",
+        "authorId": "da8d7b2c-4221-4a0a-8bcf-dace2e41c630",
+        "originalText": "",
+        "currentText": "lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text",
+        "additions": [
+          {
+            "additionId": "",
+            "authorId": "da8d7b2c-4221-4a0a-8bcf-dace2e41c630",
+            "addedText": "lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text",
+            "submissionId": null,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          }
+        ],
+        "totalVotes": 0,
+        "averageRanking": 1.0,
+        "outcomeType": null,
+        "outcomeTypeWithLabel": {
+          "id": "",
+          "label": "",
+          "clarifier": "",
+          "subTypes": []
+        },
+        "finalized": false
+      },
+      "whatIsOurGoalSubmission": {
+        "submissionId": "41307964-229d-47d9-ba11-580d68016699",
+        "authorId": "da8d7b2c-4221-4a0a-8bcf-dace2e41c630",
+        "originalText": "asdfasdlfas;kdflj",
+        "currentText": "asdfasdlfas;kdflj asl;dfasl;dfjk",
+        "additions": [
+          {
+            "additionId": "",
+            "authorId": "49cca0ba-2e97-4f82-a9a7-3e763d8c26e1",
+            "addedText": "asdfasdlfas;kdflj",
+            "submissionId": null,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          },
+          {
+            "additionId": "",
+            "authorId": "da8d7b2c-4221-4a0a-8bcf-dace2e41c630",
+            "addedText": "asl;dfasl;dfjk",
+            "submissionId": "f4bc51be-a24e-4e83-97a9-74035e871a6c",
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          }
+        ],
+        "totalVotes": 0,
+        "averageRanking": 1.0,
+        "outcomeType": null,
+        "outcomeTypeWithLabel": {
+          "id": "",
+          "label": "",
+          "clarifier": "",
+          "subTypes": []
+        },
+        "finalized": false
+      }
+    },
+    "locations": [
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "7b95f641-d2d4-4772-a0bc-452b8cf552b4",
+        "label": "D",
+        "options": [
+          {
+            "optionId": "56126194-e242-4f96-b14f-0c5696527123",
+            "optionText": "D1",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+                    "label": "asdfasdfl",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+                    "label": "asdfasfd",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          },
+          {
+            "optionId": "9ed4f62e-f4ee-4bf2-b388-33a5cfd0ba1c",
+            "optionText": "D2",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+                    "label": "asdfasdfl",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+                    "label": "kddkdkkd",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "e73123ff-a03d-4280-b010-8cd39f39db95",
+        "label": "C",
+        "options": [
+          {
+            "optionId": "329ec502-7e8a-4bbc-b5ac-9ad76b683455",
+            "optionText": "C1",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+                    "label": "asldfakjsdf",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+                    "label": "asdfasdfl",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          },
+          {
+            "optionId": "2631a017-31dd-472a-8d1f-e76609f2ec69",
+            "optionText": "C2",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+                    "label": "asldfakjsdf",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+                    "label": "asdfasfd",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tree.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "21257059-ea44-45a5-a41f-1c930d1eaf16",
+        "label": "ccc",
+        "options": [
+          {
+            "optionId": "0ecc697f-4729-4a2b-8557-8d78c6f10423",
+            "optionText": "adfasdf",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+                    "label": "favor",
+                    "description": null,
+                    "favorEntity": "big fear uses up the whole box",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+                    "label": "lots of text lots of text lots",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          },
+          {
+            "optionId": "df5c4791-a49b-4e1e-8dd1-fca88d8f6118",
+            "optionText": "asdfadsf",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+                    "label": "favor",
+                    "description": null,
+                    "favorEntity": "big fear uses up the whole box",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+                    "label": "asldfakjsdf",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "47d18412-2b21-4abb-b931-8e78e30a4e45",
+        "label": "B",
+        "options": [
+          {
+            "optionId": "62b567f6-f23b-4160-87b0-8eb69e4b17e0",
+            "optionText": "B1",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+                    "label": "lots of text lots of text lots",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+                    "label": "asldfakjsdf",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          },
+          {
+            "optionId": "abd8e34b-5f13-4115-b2e8-56aa262b7dfc",
+            "optionText": "B2",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+                    "label": "lots of text lots of text lots",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+                    "label": "asdfasdfl",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+        "authorId": null
+      }
+    ],
+    "unusedLocations": null,
+    "ritual": {
+      "storyId": "52631364-468b-4eb9-b4d0-287f4cbd58be",
+      "prompt": "",
+      "authorId": "",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "",
+      "playerIds": [],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": null,
+      "encounterLabel": null,
+      "location": null
+    },
+    "encounterLabels": [
+      {
+        "encounterId": "f1b96036-0bd7-4012-a9ca-91ea2b9369ca",
+        "encounterLabel": "Fish Laughter",
+        "textSubmission": {
+          "submissionId": "55a7537c-a208-4b12-8f9b-348e7eacfd1f",
+          "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+          "originalText": "",
+          "currentText": "Fish Laughter",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+              "addedText": "Fish Laughter",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      },
+      {
+        "encounterId": "3aec41c0-367e-4065-af71-6e015b70c47c",
+        "encounterLabel": "DARE Instructors",
+        "textSubmission": {
+          "submissionId": "a62c1546-6cc9-43e7-8087-5cc2d8f42b06",
+          "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+          "originalText": "",
+          "currentText": "DARE Instructors",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+              "addedText": "DARE Instructors",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      },
+      {
+        "encounterId": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+        "encounterLabel": "Mike, the Velociraptor",
+        "textSubmission": {
+          "submissionId": "14260b28-2619-4e67-afe9-50945defb282",
+          "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+          "originalText": "",
+          "currentText": "Mike, the Velociraptor",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+              "addedText": "Mike, the Velociraptor",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      },
+      {
+        "encounterId": "de857546-c6b8-429b-af72-56f5260ed56a",
+        "encounterLabel": "Bee Knights",
+        "textSubmission": {
+          "submissionId": "f6bfa756-53de-4d90-912a-89e60f80a6fd",
+          "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+          "originalText": "",
+          "currentText": "Bee Knights",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+              "addedText": "Bee Knights",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      },
+      {
+        "encounterId": "5204b3c2-cfcf-4929-8e29-62b2e2d026ea",
+        "encounterLabel": "A Cerebellum",
+        "textSubmission": {
+          "submissionId": "118f1eac-4df5-4dd9-a040-47072326df52",
+          "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+          "originalText": "",
+          "currentText": "A Cerebellum",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+              "addedText": "A Cerebellum",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      },
+      {
+        "encounterId": "8983305a-343e-4f4b-9c9e-6d3b15551c6f",
+        "encounterLabel": "Teacups",
+        "textSubmission": {
+          "submissionId": "68ccd487-a923-4766-969b-1932398e83d6",
+          "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+          "originalText": "",
+          "currentText": "Teacups",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+              "addedText": "Teacups",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      }
+    ]
+  },
+  "didWeSucceed": false,
+  "totalPointsTowardsVictory": 0,
+  "endings": null,
+  "rituals": [],
+  "userProfileId": "c8d068ae-e180-44c9-940c-011ba632cba4",
+  "saveGameId": "b17282a9-cdea-435a-b3d9-1b7e9c436f17",
+  "storiesToWritePerRound": 1,
+  "storiesToPlayPerRound": 1,
+  "roundNumber": 1,
+  "gameMode": "DUNGEON_MODE",
+  "gameBoard": {
+    "playerCoordinates": {
+      "xCoordinate": 0,
+      "yCoordinate": 0
+    },
+    "dungeonGrid": {
+      "0,0": {
+        "encounterLabel": {
+          "encounterId": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+          "encounterLabel": "Mike, the Velociraptor",
+          "textSubmission": {
+            "submissionId": "14260b28-2619-4e67-afe9-50945defb282",
+            "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+            "originalText": "",
+            "currentText": "Mike, the Velociraptor",
+            "additions": [
+              {
+                "additionId": "",
+                "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+                "addedText": "Mike, the Velociraptor",
+                "submissionId": null,
+                "outcomeType": null,
+                "outcomeTypeWithLabel": null
+              }
+            ],
+            "totalVotes": 0,
+            "averageRanking": 1.0,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": {
+              "id": "",
+              "label": "",
+              "clarifier": "",
+              "subTypes": []
+            },
+            "finalized": false
+          }
+        },
+        "storyId": "c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a",
+        "storyPrompt": "Mike skates up with his skateboard and winks at you beneath his sunglasses A \"Hey fella. You ever tried drugs?\" Mike croons. You're not sure if he's for or against drugs. D",
+        "encounterType": "NORMAL",
+        "visited": false
+      },
+      "1,0": {
+        "encounterLabel": {
+          "encounterId": "de857546-c6b8-429b-af72-56f5260ed56a",
+          "encounterLabel": "Bee Knights",
+          "textSubmission": {
+            "submissionId": "f6bfa756-53de-4d90-912a-89e60f80a6fd",
+            "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+            "originalText": "",
+            "currentText": "Bee Knights",
+            "additions": [
+              {
+                "additionId": "",
+                "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+                "addedText": "Bee Knights",
+                "submissionId": null,
+                "outcomeType": null,
+                "outcomeTypeWithLabel": null
+              }
+            ],
+            "totalVotes": 0,
+            "averageRanking": 1.0,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": {
+              "id": "",
+              "label": "",
+              "clarifier": "",
+              "subTypes": []
+            },
+            "finalized": false
+          }
+        },
+        "storyId": "efe64144-c636-4283-add7-974dc48a6039",
+        "storyPrompt": "The Striped Bee Brigade rides up on you. They stride upon their enormous caterpillar steed. B",
+        "encounterType": "NORMAL",
+        "visited": false
+      },
+      "2,0": {
+        "encounterLabel": {
+          "encounterId": "8983305a-343e-4f4b-9c9e-6d3b15551c6f",
+          "encounterLabel": "Teacups",
+          "textSubmission": {
+            "submissionId": "68ccd487-a923-4766-969b-1932398e83d6",
+            "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+            "originalText": "",
+            "currentText": "Teacups",
+            "additions": [
+              {
+                "additionId": "",
+                "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+                "addedText": "Teacups",
+                "submissionId": null,
+                "outcomeType": null,
+                "outcomeTypeWithLabel": null
+              }
+            ],
+            "totalVotes": 0,
+            "averageRanking": 1.0,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": {
+              "id": "",
+              "label": "",
+              "clarifier": "",
+              "subTypes": []
+            },
+            "finalized": false
+          }
+        },
+        "storyId": "7adad1bc-874b-4f6e-a70c-f8ba4aea658f",
+        "storyPrompt": "There's a tea party here! Many fairies flutter down upon the cups C",
+        "encounterType": "NORMAL",
+        "visited": false
+      },
+      "3,0": {
+        "encounterLabel": {
+          "encounterId": "f1b96036-0bd7-4012-a9ca-91ea2b9369ca",
+          "encounterLabel": "Fish Laughter",
+          "textSubmission": {
+            "submissionId": "55a7537c-a208-4b12-8f9b-348e7eacfd1f",
+            "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+            "originalText": "",
+            "currentText": "Fish Laughter",
+            "additions": [
+              {
+                "additionId": "",
+                "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+                "addedText": "Fish Laughter",
+                "submissionId": null,
+                "outcomeType": null,
+                "outcomeTypeWithLabel": null
+              }
+            ],
+            "totalVotes": 0,
+            "averageRanking": 1.0,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": {
+              "id": "",
+              "label": "",
+              "clarifier": "",
+              "subTypes": []
+            },
+            "finalized": false
+          }
+        },
+        "storyId": "2646c831-3ab8-4445-ae4a-3696f25837ba",
+        "storyPrompt": "Fish can laugh? You hear them tittering beneath the water of the nearby river D",
+        "encounterType": "NORMAL",
+        "visited": false
+      }
+    },
+    "encounterAtPlayerCoordinates": {
+      "encounterLabel": {
+        "encounterId": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+        "encounterLabel": "Mike, the Velociraptor",
+        "textSubmission": {
+          "submissionId": "14260b28-2619-4e67-afe9-50945defb282",
+          "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+          "originalText": "",
+          "currentText": "Mike, the Velociraptor",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+              "addedText": "Mike, the Velociraptor",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      },
+      "storyId": "c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a",
+      "storyPrompt": "Mike skates up with his skateboard and winks at you beneath his sunglasses A \"Hey fella. You ever tried drugs?\" Mike croons. You're not sure if he's for or against drugs. D",
+      "encounterType": "NORMAL",
+      "visited": false
+    }
+  },
+  "collaborativeTextPhases": {
+    "WHAT_HAPPENS_HERE": {
+      "phaseId": "WHAT_HAPPENS_HERE",
+      "question": null,
+      "phaseType": null,
+      "submissions": [
+        {
+          "submissionId": "41458067-81bd-4946-9263-e9ea84573c4d",
+          "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+          "originalText": "",
+          "currentText": "Mike skates up with his skateboard and winks at you beneath his sunglasses A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+              "addedText": "Mike skates up with his skateboard and winks at you beneath his sunglasses A",
+              "submissionId": null,
+              "outcomeType": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+              "outcomeTypeWithLabel": {
+                "id": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+                "label": "Mike, the Velociraptor",
+                "clarifier": "",
+                "subTypes": []
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+          "outcomeTypeWithLabel": {
+            "id": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+            "label": "Mike, the Velociraptor",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "e85941e5-819d-42f0-82b1-5553c1aee345",
+          "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+          "originalText": "",
+          "currentText": "The Striped Bee Brigade rides up on you. They stride upon their enormous caterpillar steed. B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+              "addedText": "The Striped Bee Brigade rides up on you. They stride upon their enormous caterpillar steed. B",
+              "submissionId": null,
+              "outcomeType": "de857546-c6b8-429b-af72-56f5260ed56a",
+              "outcomeTypeWithLabel": {
+                "id": "de857546-c6b8-429b-af72-56f5260ed56a",
+                "label": "Bee Knights",
+                "clarifier": "",
+                "subTypes": []
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "de857546-c6b8-429b-af72-56f5260ed56a",
+          "outcomeTypeWithLabel": {
+            "id": "de857546-c6b8-429b-af72-56f5260ed56a",
+            "label": "Bee Knights",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "e384972c-9bf6-46fc-af93-585ddb10f6bc",
+          "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+          "originalText": "",
+          "currentText": "There's a tea party here! Many fairies flutter down upon the cups C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+              "addedText": "There's a tea party here! Many fairies flutter down upon the cups C",
+              "submissionId": null,
+              "outcomeType": "8983305a-343e-4f4b-9c9e-6d3b15551c6f",
+              "outcomeTypeWithLabel": {
+                "id": "8983305a-343e-4f4b-9c9e-6d3b15551c6f",
+                "label": "Teacups",
+                "clarifier": "",
+                "subTypes": []
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "8983305a-343e-4f4b-9c9e-6d3b15551c6f",
+          "outcomeTypeWithLabel": {
+            "id": "8983305a-343e-4f4b-9c9e-6d3b15551c6f",
+            "label": "Teacups",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "404df310-a347-497b-8300-469e1bed5c40",
+          "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+          "originalText": "",
+          "currentText": "Fish can laugh? You hear them tittering beneath the water of the nearby river D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+              "addedText": "Fish can laugh? You hear them tittering beneath the water of the nearby river D",
+              "submissionId": null,
+              "outcomeType": "f1b96036-0bd7-4012-a9ca-91ea2b9369ca",
+              "outcomeTypeWithLabel": {
+                "id": "f1b96036-0bd7-4012-a9ca-91ea2b9369ca",
+                "label": "Fish Laughter",
+                "clarifier": "",
+                "subTypes": []
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "f1b96036-0bd7-4012-a9ca-91ea2b9369ca",
+          "outcomeTypeWithLabel": {
+            "id": "f1b96036-0bd7-4012-a9ca-91ea2b9369ca",
+            "label": "Fish Laughter",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "bcf119c3-9d5a-4dea-ac61-d039c7387095",
+          "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+          "originalText": "Mike skates up with his skateboard and winks at you beneath his sunglasses A",
+          "currentText": "Mike skates up with his skateboard and winks at you beneath his sunglasses A \"Hey fella. You ever tried drugs?\" Mike croons. You're not sure if he's for or against drugs. D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+              "addedText": "Mike skates up with his skateboard and winks at you beneath his sunglasses A",
+              "submissionId": null,
+              "outcomeType": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+              "outcomeTypeWithLabel": {
+                "id": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+                "label": "Mike, the Velociraptor",
+                "clarifier": "",
+                "subTypes": []
+              }
+            },
+            {
+              "additionId": "",
+              "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+              "addedText": "\"Hey fella. You ever tried drugs?\" Mike croons. You're not sure if he's for or against drugs. D",
+              "submissionId": "41458067-81bd-4946-9263-e9ea84573c4d",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+          "outcomeTypeWithLabel": {
+            "id": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+            "label": "Mike, the Velociraptor",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      ],
+      "playerVotes": {},
+      "playersWhoSubmitted": [
+        "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+        "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+        "91732a20-794c-424a-8d69-8b4dedac4f85",
+        "884bcc3e-cd30-4714-91c2-b47827466f29"
+      ],
+      "playersWhoVoted": [],
+      "finalResult": null,
+      "submissionViews": {
+        "e384972c-9bf6-46fc-af93-585ddb10f6bc": [
+          "24fca1a7-efc5-4813-8530-448f0e5c29d1"
+        ],
+        "bcf119c3-9d5a-4dea-ac61-d039c7387095": [
+          "abddf3d8-c59d-43d2-b91c-dc7ebc83da27"
+        ],
+        "404df310-a347-497b-8300-469e1bed5c40": [
+          "91732a20-794c-424a-8d69-8b4dedac4f85"
+        ],
+        "41458067-81bd-4946-9263-e9ea84573c4d": [
+          "884bcc3e-cd30-4714-91c2-b47827466f29"
+        ],
+        "e85941e5-819d-42f0-82b1-5553c1aee345": [
+          "884bcc3e-cd30-4714-91c2-b47827466f29"
+        ]
+      },
+      "submissionsWithoutParentSubmissions": [
+        {
+          "submissionId": "e85941e5-819d-42f0-82b1-5553c1aee345",
+          "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+          "originalText": "",
+          "currentText": "The Striped Bee Brigade rides up on you. They stride upon their enormous caterpillar steed. B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+              "addedText": "The Striped Bee Brigade rides up on you. They stride upon their enormous caterpillar steed. B",
+              "submissionId": null,
+              "outcomeType": "de857546-c6b8-429b-af72-56f5260ed56a",
+              "outcomeTypeWithLabel": {
+                "id": "de857546-c6b8-429b-af72-56f5260ed56a",
+                "label": "Bee Knights",
+                "clarifier": "",
+                "subTypes": []
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "de857546-c6b8-429b-af72-56f5260ed56a",
+          "outcomeTypeWithLabel": {
+            "id": "de857546-c6b8-429b-af72-56f5260ed56a",
+            "label": "Bee Knights",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "e384972c-9bf6-46fc-af93-585ddb10f6bc",
+          "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+          "originalText": "",
+          "currentText": "There's a tea party here! Many fairies flutter down upon the cups C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+              "addedText": "There's a tea party here! Many fairies flutter down upon the cups C",
+              "submissionId": null,
+              "outcomeType": "8983305a-343e-4f4b-9c9e-6d3b15551c6f",
+              "outcomeTypeWithLabel": {
+                "id": "8983305a-343e-4f4b-9c9e-6d3b15551c6f",
+                "label": "Teacups",
+                "clarifier": "",
+                "subTypes": []
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "8983305a-343e-4f4b-9c9e-6d3b15551c6f",
+          "outcomeTypeWithLabel": {
+            "id": "8983305a-343e-4f4b-9c9e-6d3b15551c6f",
+            "label": "Teacups",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "404df310-a347-497b-8300-469e1bed5c40",
+          "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+          "originalText": "",
+          "currentText": "Fish can laugh? You hear them tittering beneath the water of the nearby river D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+              "addedText": "Fish can laugh? You hear them tittering beneath the water of the nearby river D",
+              "submissionId": null,
+              "outcomeType": "f1b96036-0bd7-4012-a9ca-91ea2b9369ca",
+              "outcomeTypeWithLabel": {
+                "id": "f1b96036-0bd7-4012-a9ca-91ea2b9369ca",
+                "label": "Fish Laughter",
+                "clarifier": "",
+                "subTypes": []
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "f1b96036-0bd7-4012-a9ca-91ea2b9369ca",
+          "outcomeTypeWithLabel": {
+            "id": "f1b96036-0bd7-4012-a9ca-91ea2b9369ca",
+            "label": "Fish Laughter",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "bcf119c3-9d5a-4dea-ac61-d039c7387095",
+          "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+          "originalText": "Mike skates up with his skateboard and winks at you beneath his sunglasses A",
+          "currentText": "Mike skates up with his skateboard and winks at you beneath his sunglasses A \"Hey fella. You ever tried drugs?\" Mike croons. You're not sure if he's for or against drugs. D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+              "addedText": "Mike skates up with his skateboard and winks at you beneath his sunglasses A",
+              "submissionId": null,
+              "outcomeType": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+              "outcomeTypeWithLabel": {
+                "id": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+                "label": "Mike, the Velociraptor",
+                "clarifier": "",
+                "subTypes": []
+              }
+            },
+            {
+              "additionId": "",
+              "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+              "addedText": "\"Hey fella. You ever tried drugs?\" Mike croons. You're not sure if he's for or against drugs. D",
+              "submissionId": "41458067-81bd-4946-9263-e9ea84573c4d",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+          "outcomeTypeWithLabel": {
+            "id": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+            "label": "Mike, the Velociraptor",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      ],
+      "complete": false
+    },
+    "SET_ENCOUNTERS": {
+      "phaseId": "SET_ENCOUNTERS",
+      "question": null,
+      "phaseType": null,
+      "submissions": [
+        {
+          "submissionId": "f6bfa756-53de-4d90-912a-89e60f80a6fd",
+          "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+          "originalText": "",
+          "currentText": "Bee Knights",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+              "addedText": "Bee Knights",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "55a7537c-a208-4b12-8f9b-348e7eacfd1f",
+          "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+          "originalText": "",
+          "currentText": "Fish Laughter",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+              "addedText": "Fish Laughter",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "68ccd487-a923-4766-969b-1932398e83d6",
+          "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+          "originalText": "",
+          "currentText": "Teacups",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+              "addedText": "Teacups",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "118f1eac-4df5-4dd9-a040-47072326df52",
+          "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+          "originalText": "",
+          "currentText": "A Cerebellum",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+              "addedText": "A Cerebellum",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "14260b28-2619-4e67-afe9-50945defb282",
+          "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+          "originalText": "",
+          "currentText": "Mike, the Velociraptor",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+              "addedText": "Mike, the Velociraptor",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "a62c1546-6cc9-43e7-8087-5cc2d8f42b06",
+          "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+          "originalText": "",
+          "currentText": "DARE Instructors",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+              "addedText": "DARE Instructors",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      ],
+      "playerVotes": {},
+      "playersWhoSubmitted": [
+        "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+        "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+        "91732a20-794c-424a-8d69-8b4dedac4f85",
+        "884bcc3e-cd30-4714-91c2-b47827466f29"
+      ],
+      "playersWhoVoted": [],
+      "finalResult": null,
+      "submissionViews": {
+        "55a7537c-a208-4b12-8f9b-348e7eacfd1f": [
+          "91732a20-794c-424a-8d69-8b4dedac4f85"
+        ],
+        "a62c1546-6cc9-43e7-8087-5cc2d8f42b06": [
+          "884bcc3e-cd30-4714-91c2-b47827466f29"
+        ],
+        "f6bfa756-53de-4d90-912a-89e60f80a6fd": [],
+        "68ccd487-a923-4766-969b-1932398e83d6": [
+          "abddf3d8-c59d-43d2-b91c-dc7ebc83da27"
+        ],
+        "14260b28-2619-4e67-afe9-50945defb282": [
+          "91732a20-794c-424a-8d69-8b4dedac4f85"
+        ],
+        "118f1eac-4df5-4dd9-a040-47072326df52": [
+          "24fca1a7-efc5-4813-8530-448f0e5c29d1"
+        ]
+      },
+      "submissionsWithoutParentSubmissions": [
+        {
+          "submissionId": "f6bfa756-53de-4d90-912a-89e60f80a6fd",
+          "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+          "originalText": "",
+          "currentText": "Bee Knights",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+              "addedText": "Bee Knights",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "55a7537c-a208-4b12-8f9b-348e7eacfd1f",
+          "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+          "originalText": "",
+          "currentText": "Fish Laughter",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+              "addedText": "Fish Laughter",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "68ccd487-a923-4766-969b-1932398e83d6",
+          "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+          "originalText": "",
+          "currentText": "Teacups",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "24fca1a7-efc5-4813-8530-448f0e5c29d1",
+              "addedText": "Teacups",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "118f1eac-4df5-4dd9-a040-47072326df52",
+          "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+          "originalText": "",
+          "currentText": "A Cerebellum",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+              "addedText": "A Cerebellum",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "14260b28-2619-4e67-afe9-50945defb282",
+          "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+          "originalText": "",
+          "currentText": "Mike, the Velociraptor",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+              "addedText": "Mike, the Velociraptor",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "a62c1546-6cc9-43e7-8087-5cc2d8f42b06",
+          "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+          "originalText": "",
+          "currentText": "DARE Instructors",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "91732a20-794c-424a-8d69-8b4dedac4f85",
+              "addedText": "DARE Instructors",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      ],
+      "complete": false
+    }
+  },
+  "storyAtCurrentPlayerCoordinates": {
+    "storyId": "c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a",
+    "prompt": "Mike skates up with his skateboard and winks at you beneath his sunglasses A \"Hey fella. You ever tried drugs?\" Mike croons. You're not sure if he's for or against drugs. D",
+    "authorId": "abddf3d8-c59d-43d2-b91c-dc7ebc83da27",
+    "outcomeAuthorId": "",
+    "prequelStorySucceeded": false,
+    "prequelStoryId": "",
+    "prequelStorySelectedOptionId": "",
+    "gameCode": "NX43AU",
+    "mainPlotStory": false,
+    "visited": false,
+    "playerId": "DUNGEON_PLAYER",
+    "playerIds": [
+      "DUNGEON_PLAYER"
+    ],
+    "selectedOptionId": "",
+    "playerSucceeded": false,
+    "prequelStoryPlayerId": "",
+    "successRepercussions": null,
+    "failureRepercussions": null,
+    "prequelOutcomeDisplay": null,
+    "sequelStory": false,
+    "saveGameStory": false,
+    "options": null,
+    "encounterLabel": {
+      "encounterId": "75100815-cc5d-4026-8a29-bd8eba4955ef",
+      "encounterLabel": "Mike, the Velociraptor",
+      "textSubmission": {
+        "submissionId": "14260b28-2619-4e67-afe9-50945defb282",
+        "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+        "originalText": "",
+        "currentText": "Mike, the Velociraptor",
+        "additions": [
+          {
+            "additionId": "",
+            "authorId": "884bcc3e-cd30-4714-91c2-b47827466f29",
+            "addedText": "Mike, the Velociraptor",
+            "submissionId": null,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          }
+        ],
+        "totalVotes": 0,
+        "averageRanking": 1.0,
+        "outcomeType": null,
+        "outcomeTypeWithLabel": {
+          "id": "",
+          "label": "",
+          "clarifier": "",
+          "subTypes": []
+        },
+        "finalized": false
+      }
+    },
+    "location": null
+  }
+}

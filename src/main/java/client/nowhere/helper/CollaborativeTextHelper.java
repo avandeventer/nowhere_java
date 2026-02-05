@@ -13,6 +13,8 @@ import com.google.cloud.Timestamp;
 import client.nowhere.exception.ValidationException;
 import client.nowhere.constants.AuthorConstants;
 
+import static client.nowhere.model.GameState.WHAT_CAN_WE_TRY;
+
 @Component
 public class CollaborativeTextHelper {
 
@@ -579,8 +581,8 @@ public class CollaborativeTextHelper {
                     }
                 }
                 case GameState.SET_ENCOUNTERS -> addAllSubmissionsToAdventureMap(gameCode, winningSubmissions);
-                case GameState.WHAT_HAPPENS_HERE -> handleWhatHappensHereStreamlined(gameCode, winningSubmissions);
-                case GameState.HOW_DOES_THIS_RESOLVE, GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> handleHowDoesThisResolve(gameCode, winningSubmissions);
+                case GameState.WHAT_HAPPENS_HERE -> handleWhatHappensHereStreamlined(gameSession, winningSubmissions);
+                case GameState.HOW_DOES_THIS_RESOLVE, GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> handleHowDoesThisResolve(gameSession, winningSubmissions);
                 case GameState.MAKE_CHOICE_VOTING -> handleMakeChoice(gameSession, winningSubmissions);
                 case GameState.MAKE_OUTCOME_CHOICE_VOTING -> handleMakeOutcomeChoices(gameSession, winningSubmissions);
                 case GameState.NAVIGATE_VOTING -> handleNavigation(gameCode, winningSubmissions);
@@ -788,13 +790,13 @@ public class CollaborativeTextHelper {
      * Handles WHAT_HAPPENS_HERE phase in streamlined mode: Creates stories for each winning submission
      * using encounterLabels from AdventureMap and places them on the game board
      */
-    private void handleWhatHappensHereStreamlined(String gameCode, List<TextSubmission> winningSubmissions) {
+    private void handleWhatHappensHereStreamlined(GameSession gameSession, List<TextSubmission> winningSubmissions) {
         try {
             if (winningSubmissions.isEmpty()) {
                 return;
             }
 
-            GameSession gameSession = getGameSession(gameCode);
+            String gameCode = gameSession.getGameCode();
             GameBoard gameBoard = gameSession.getGameBoard();
             if (gameBoard == null) {
                 gameBoard = new GameBoard();
@@ -970,20 +972,21 @@ public class CollaborativeTextHelper {
      * If a submission has outcomeTypeWithLabel with subTypes, adds a new option to the matching story
      * and removes the corresponding submission from WHAT_CAN_WE_TRY phase
      */
-    private void handleHowDoesThisResolve(String gameCode, List<TextSubmission> winningSubmissions) {
+    private void handleHowDoesThisResolve(GameSession gameSession, List<TextSubmission> winningSubmissions) {
         try {
             if (winningSubmissions.isEmpty()) {
                 return;
             }
 
-            List<Story> stories = storyDAO.getStories(gameCode);
+            String gameCode = gameSession.getGameCode();
+            List<Story> stories = gameSession.getStories();
 
             if (stories == null || stories.isEmpty()) {
                 return;
             }
 
             // Get WHAT_CAN_WE_TRY phase to remove submissions
-            CollaborativeTextPhase whatCanWeTryPhase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
+            CollaborativeTextPhase whatCanWeTryPhase = gameSession.getCollaborativeTextPhase(WHAT_CAN_WE_TRY.name());
 
             // Process each winning submission
             for (TextSubmission winner : winningSubmissions) {
@@ -1043,7 +1046,10 @@ public class CollaborativeTextHelper {
                                         List<String> existingForkIds = option.getOutcomeForks().stream().map(
                                                 outcomeFork -> outcomeFork.getTextSubmission().getSubmissionId()).toList();
                                         if (!existingForkIds.contains(winner.getSubmissionId())) {
-                                            option.getOutcomeForks().add(new OutcomeFork(winner));
+                                            List<OutcomeFork> outcomeForks = new ArrayList<>(option.getOutcomeForks());
+                                            outcomeForks.add(new OutcomeFork(winner));
+                                            option.setOutcomeForks(outcomeForks);
+                                            option.setSuccessText(winner.getOriginalText());
                                         }
                                     }
                                 }
@@ -1055,7 +1061,7 @@ public class CollaborativeTextHelper {
                                     boolean removed = whatCanWeTryPhase.removeSubmissionById(optionId);
                                     if (removed) {
                                         // Update the phase in Firestore
-                                        collaborativeTextDAO.updateCollaborativeTextPhaseAtomically(gameCode, GameState.WHAT_CAN_WE_TRY.name(), whatCanWeTryPhase);
+                                        collaborativeTextDAO.updateCollaborativeTextPhaseAtomically(gameCode, WHAT_CAN_WE_TRY.name(), whatCanWeTryPhase);
                                     }
                                 }
                             }
@@ -1206,7 +1212,7 @@ public class CollaborativeTextHelper {
         try {
             // Clear all story writing phases
             collaborativeTextDAO.clearPhase(gameCode, GameState.WHAT_HAPPENS_HERE.name(), true);
-            collaborativeTextDAO.clearPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name(), true);
+            collaborativeTextDAO.clearPhase(gameCode, WHAT_CAN_WE_TRY.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE_AGAIN.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.MAKE_CHOICE_VOTING.name(), false);
@@ -1544,7 +1550,7 @@ public class CollaborativeTextHelper {
                             })
                             .toList();
                 }
-            } else if (phaseId == GameState.WHAT_CAN_WE_TRY) {
+            } else if (phaseId == WHAT_CAN_WE_TRY) {
                 List<Story> allUnvisitedStories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();
                 
                 if (allUnvisitedStories.isEmpty()) {
@@ -1567,7 +1573,7 @@ public class CollaborativeTextHelper {
                 }
                 
                 // Check how many submissions the player has made for this phase
-                long playerSubmissionCount = getPlayerSubmissionCountForPhase(gameCode, playerId, GameState.WHAT_CAN_WE_TRY);
+                long playerSubmissionCount = getPlayerSubmissionCountForPhase(gameCode, playerId, WHAT_CAN_WE_TRY);
                 
                 // Only return multiple stories if player has made 2+ submissions
                 boolean shouldReturnMultiple = playerSubmissionCount >= 2;
@@ -1597,7 +1603,7 @@ public class CollaborativeTextHelper {
                 int playerIndex = playerResult.getPlayerIndex();
 
                 // Get WHAT_CAN_WE_TRY submissions to count related submissions per story
-                CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name());
+                CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, WHAT_CAN_WE_TRY.name());
                 List<TextSubmission> whatCanWeTrySubmissions = (whatCanWeTry != null && whatCanWeTry.getSubmissions() != null)
                         ? whatCanWeTry.getSubmissions()
                         : new ArrayList<>();
