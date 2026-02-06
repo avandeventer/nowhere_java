@@ -30,15 +30,19 @@ import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
 import client.nowhere.dao.AdventureMapDAO;
+import client.nowhere.dao.CollaborativeTextDAO;
 import client.nowhere.dao.EndingDAO;
 import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.RitualDAO;
 import client.nowhere.dao.StoryDAO;
+import client.nowhere.util.TestJsonLoader;
 
 import static client.nowhere.model.GameState.GENERATE_OCCUPATION_AUTHORS;
 import static client.nowhere.model.GameState.GENERATE_WRITE_OPTION_AUTHORS;
 import static client.nowhere.model.GameState.GENERATE_WRITE_PROMPT_AUTHORS;
 import static client.nowhere.model.GameState.LOCATION_SELECT;
+import static client.nowhere.model.GameState.MAKE_CHOICE_VOTING;
+import static client.nowhere.model.GameState.MAKE_CHOICE_WINNER;
 import static client.nowhere.model.GameState.WHAT_OCCUPATIONS_ARE_THERE;
 import static client.nowhere.model.GameState.WHERE_CAN_WE_GO;
 import static client.nowhere.model.GameState.WRITE_PROMPTS;
@@ -64,13 +68,16 @@ public class GameSessionHelperTest {
     private AdventureMapDAO adventureMapDAO;
 
     @Mock
-    private FeatureFlagHelper featureFlagHelper;
+    private CollaborativeTextDAO collaborativeTextDAO;
 
-    @InjectMocks
-    private GameSessionHelper gameSessionHelper;
+    @Mock
+    private FeatureFlagHelper featureFlagHelper;
 
     @Mock
     private CollaborativeTextHelper collaborativeTextHelper;
+
+    @InjectMocks
+    private GameSessionHelper gameSessionHelper;
 
     @BeforeEach
     void setup() {
@@ -434,7 +441,7 @@ public class GameSessionHelperTest {
             System.out.println("Exception thrown in updateToNextGameState: " + e.getMessage());
             e.printStackTrace();
             throw e;
-        }
+         }
 
         // Assert
         // The GENERATE_OCCUPATION_AUTHORS phase should advance to the next phase
@@ -585,14 +592,73 @@ public class GameSessionHelperTest {
         copy.setActiveGameStateSession(session.getActiveGameStateSession());
         copy.setAdventureMap(session.getAdventureMap());
         copy.setUserProfileId(session.getUserProfileId());
-        
+
         // Debug: Print player stats in the copy
         System.out.println("deepCopy - Players in copy:");
         for (Player player : copy.getPlayers()) {
             System.out.println("  Player " + player.getAuthorId() + " stats: " + player.getPlayerStats());
         }
-        
+
         return copy;
+    }
+
+    // ===== MAKE_CHOICE_VOTING PHASE TRANSITION TESTS =====
+
+    @Test
+    void testUpdateGameSession_MAKE_CHOICE_VOTING_TransitionsToMakeChoiceWinner() throws Exception {
+        // Arrange - Load test data from JSON
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        String gameCode = gameSession.getGameCode();
+
+        // Verify we're starting from MAKE_CHOICE_VOTING
+        assertEquals(MAKE_CHOICE_VOTING, gameSession.getGameState(),
+                "Test data should start in MAKE_CHOICE_VOTING state");
+
+        // Get the collaborative text phase for MAKE_CHOICE_VOTING
+        String phaseId = MAKE_CHOICE_VOTING.name();
+        CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhases().get(phaseId);
+        assertNotNull(phase, "MAKE_CHOICE_VOTING phase should exist in test data");
+
+        // Mock the dependencies
+        when(gameSessionDAO.getGame(gameCode))
+                .thenReturn(gameSession)
+                .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json"));
+        when(gameSessionDAO.updateGameSession(any(GameSession.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
+
+        // Act - Update the game session to trigger the MAKE_CHOICE_WINNER phase handling
+        GameSession updated = gameSessionHelper.updateToNextGameState(gameCode);
+
+        // Assert - Verify the transition occurred
+        System.out.println("=== MAKE_CHOICE_VOTING -> MAKE_CHOICE_WINNER Transition Test ===");
+        System.out.println("Initial game state: " + gameSession.getGameState());
+        System.out.println("Updated game state: " + updated.getGameState());
+        System.out.println("Stories in game: " + (gameSession.getStories() != null ? gameSession.getStories().size() : 0));
+
+        // Verify collaborativeTextHelper.calculateWinningSubmission was called
+        verify(collaborativeTextHelper).calculateWinningSubmission(gameCode);
+        assertEquals(GameState.MAKE_OUTCOME_CHOICE_WINNER, updated.getGameState());
+
+        // Print out stories with their options and forks for debugging
+        if (gameSession.getStories() != null) {
+            for (Story story : gameSession.getStories()) {
+                System.out.println("Story: " + story.getStoryId() + " - " + story.getPrompt());
+                if (story.getOptions() != null) {
+                    for (Option option : story.getOptions()) {
+                        System.out.println("  Option: " + option.getOptionId() + " - " + option.getOptionText());
+                        System.out.println("    Success Text: " + option.getSuccessText());
+                        if (option.getOutcomeForks() != null) {
+                            System.out.println("    Outcome Forks: " + option.getOutcomeForks().size());
+                            for (OutcomeFork fork : option.getOutcomeForks()) {
+                                System.out.println("      Fork: " + fork.getTextSubmission().getSubmissionId() +
+                                        " - " + fork.getTextSubmission().getCurrentText());
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

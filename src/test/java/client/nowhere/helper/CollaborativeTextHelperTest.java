@@ -11,8 +11,7 @@ import client.nowhere.dao.CollaborativeTextDAO;
 import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
 import client.nowhere.model.*;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import client.nowhere.util.TestJsonLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,7 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
@@ -58,13 +56,9 @@ public class CollaborativeTextHelperTest {
     @InjectMocks
     private CollaborativeTextHelper collaborativeTextHelper;
 
-    private ObjectMapper objectMapper;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     // ===== HELPER METHODS FOR LOADING TEST DATA =====
@@ -75,8 +69,7 @@ public class CollaborativeTextHelperTest {
      * @return The deserialized GameSession
      */
     private GameSession loadGameSessionFromJson(String fileName) throws IOException {
-        File jsonFile = new File("src/test/resources/" + fileName);
-        return objectMapper.readValue(jsonFile, GameSession.class);
+        return TestJsonLoader.loadGameSessionFromJson(fileName);
     }
 
     /**

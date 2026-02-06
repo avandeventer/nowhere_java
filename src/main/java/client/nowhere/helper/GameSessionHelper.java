@@ -232,8 +232,9 @@ public class GameSessionHelper {
                     break;
                 case MAKE_OUTCOME_CHOICE_VOTING:
                     if(collaborativeTextHelper.getMakeChoiceVotingOutcomeForks(gameSession).size() < 2) {
-                        gameSession.setGameStateToNext();
+                        gameSession.setGameStateToNext(true, gameSession.getRoundNumber());
                     }
+                    break;
                 case NAVIGATE_WINNER:
                     boolean encounterAtNext = collaborativeTextHelper.handleNavigationStreamlined(gameSession.getGameCode());
                     if (!encounterAtNext) {
