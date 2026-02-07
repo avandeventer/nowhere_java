@@ -1803,18 +1803,7 @@ public class CollaborativeTextHelper {
 
         String selectedOptionId = currentEncounterStory.getSelectedOptionId();
 
-        CollaborativeTextPhase howDoesThisResolve = gameSession.getCollaborativeTextPhase(String.valueOf(GameState.HOW_DOES_THIS_RESOLVE));
-        CollaborativeTextPhase howDoesThisResolveAgain = gameSession.getCollaborativeTextPhase(String.valueOf(GameState.HOW_DOES_THIS_RESOLVE_AGAIN));
-
-        List<TextSubmission> allResolveSubmissions = new ArrayList<>();
-        allResolveSubmissions.addAll(howDoesThisResolve.getSubmissionsWithoutParentSubmissions());
-        allResolveSubmissions.addAll(howDoesThisResolveAgain.getSubmissionsWithoutParentSubmissions());
-
-        return allResolveSubmissions.stream()
-            .filter(submission -> submission.getOutcomeType() != null
-                && submission.getOutcomeTypeWithLabel().getSubTypes() != null
-                && submission.getOutcomeTypeWithLabel().getSubTypes().stream()
-                    .anyMatch(subType -> selectedOptionId.equals(subType.getId())))
-            .collect(Collectors.toList());
+        Option selectedOption = currentEncounterStory.getOptions().stream().filter(option -> option.getOptionId().equals(selectedOptionId)).findFirst().get();
+        return selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
     }
 }
