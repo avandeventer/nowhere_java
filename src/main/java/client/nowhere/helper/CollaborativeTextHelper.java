@@ -105,7 +105,7 @@ public class CollaborativeTextHelper {
         String phaseId = phaseIdState.name();
 
         // Get phase from DAO
-        CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+        CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhase(phaseId);
         if (phase == null) {
             throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
         }

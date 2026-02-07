@@ -65,8 +65,7 @@ public class GameSessionHelper {
 
     public GameSession  updateToNextGameState(String gameCode) {
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
-        boolean streamlinedFeatureFlag = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
-        gameSession.setGameStateToNext(streamlinedFeatureFlag, gameSession.getRoundNumber());
+        gameSession.setGameStateToNext(true, gameSession.getRoundNumber());
         return updateGameSession(gameSession, false);
     }
 
@@ -105,7 +104,7 @@ public class GameSessionHelper {
 
             if (gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
                 collaborativeTextHelper.calculateWinningSubmission(gameSession.getGameCode());
-                if (!gameSession.getGameState().equals(NAVIGATE_WINNER) && !gameSession.getGameState().equals(MAKE_OUTCOME_CHOICE_VOTING)) {
+                if (!gameSession.getGameState().equals(NAVIGATE_WINNER) && !gameSession.getGameState().equals(MAKE_OUTCOME_CHOICE_WINNER)) {
                     gameSession.setGameStateToNext(true, gameSession.getRoundNumber());
                 }
             }

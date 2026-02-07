@@ -23,7 +23,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import org.mockito.InjectMocks;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -74,14 +74,29 @@ public class GameSessionHelperTest {
     private FeatureFlagHelper featureFlagHelper;
 
     @Mock
+    private AdventureMapHelper adventureMapHelper;
+
+    // Use real OutcomeTypeHelper for distribution logic
+    private final OutcomeTypeHelper outcomeTypeHelper = new OutcomeTypeHelper();
+
+    // Real CollaborativeTextHelper constructed in setup
     private CollaborativeTextHelper collaborativeTextHelper;
 
-    @InjectMocks
     private GameSessionHelper gameSessionHelper;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
+        // Construct real CollaborativeTextHelper with mocked DAOs
+        collaborativeTextHelper = new CollaborativeTextHelper(
+                gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
+                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper
+        );
+        // Construct GameSessionHelper with real CollaborativeTextHelper
+        gameSessionHelper = new GameSessionHelper(
+                gameSessionDAO, adventureMapDAO, storyDAO, endingDAO,
+                userProfileHelper, featureFlagHelper, collaborativeTextHelper
+        );
     }
 
     @ParameterizedTest
@@ -604,20 +619,33 @@ public class GameSessionHelperTest {
 
     // ===== MAKE_CHOICE_VOTING PHASE TRANSITION TESTS =====
 
-    @Test
-    void testUpdateGameSession_MAKE_CHOICE_VOTING_TransitionsToMakeChoiceWinner() throws Exception {
+    /**
+     * Tests the MAKE_OUTCOME_CHOICE_VOTING phase transition logic:
+     * - When there's only 1 outcome fork for the selected option, transition to MAKE_OUTCOME_CHOICE_WINNER
+     * - When there's 2+ outcome forks, stay in MAKE_OUTCOME_CHOICE_VOTING for players to vote
+     *
+     * Uses real CollaborativeTextHelper.getMakeChoiceVotingOutcomeForks to verify distribution logic.
+     */
+    @ParameterizedTest
+    @MethodSource("provideMakeOutcomeChoiceVotingScenarios")
+    void testUpdateGameSession_MAKE_OUTCOME_CHOICE_VOTING_TransitionLogic(
+            String scenarioName,
+            String selectedOptionId,
+            int expectedForkCount,
+            GameState expectedFinalState,
+            int xCoordinate,
+            int yCoordinate
+    ) throws Exception {
         // Arrange - Load test data from JSON
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
+        gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
         String gameCode = gameSession.getGameCode();
 
-        // Verify we're starting from MAKE_CHOICE_VOTING
-        assertEquals(MAKE_CHOICE_VOTING, gameSession.getGameState(),
-                "Test data should start in MAKE_CHOICE_VOTING state");
-
-        // Get the collaborative text phase for MAKE_CHOICE_VOTING
-        String phaseId = MAKE_CHOICE_VOTING.name();
-        CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhases().get(phaseId);
-        assertNotNull(phase, "MAKE_CHOICE_VOTING phase should exist in test data");
+        // Get the story at current player coordinates and set the selected option
+        Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+        assertNotNull(currentStory, "Story at current coordinates should exist");
+        currentStory.setSelectedOptionId(selectedOptionId);
 
         // Mock the dependencies
         when(gameSessionDAO.getGame(gameCode))
@@ -625,40 +653,66 @@ public class GameSessionHelperTest {
                 .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json"));
         when(gameSessionDAO.updateGameSession(any(GameSession.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
-        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
 
-        // Act - Update the game session to trigger the MAKE_CHOICE_WINNER phase handling
+        // Debug: Print the setup
+        System.out.println("=== " + scenarioName + " ===");
+        System.out.println("Selected Option ID: " + selectedOptionId);
+        System.out.println("Current Story: " + currentStory.getStoryId());
+
+        // Verify getMakeChoiceVotingOutcomeForks returns expected fork count
+        List<TextSubmission> outcomeForks = collaborativeTextHelper.getMakeChoiceVotingOutcomeForks(gameSession);
+        System.out.println("Outcome Forks Found: " + outcomeForks.size());
+        for (TextSubmission fork : outcomeForks) {
+            System.out.println("  Fork: " + fork.getSubmissionId() + " - " +
+                    (fork.getCurrentText() != null ? fork.getCurrentText().substring(0, Math.min(50, fork.getCurrentText().length())) + "..." : "null"));
+        }
+
+        assertEquals(expectedForkCount, outcomeForks.size(),
+                "Expected " + expectedForkCount + " outcome forks for selected option");
+
+        // Act - Update the game session
         GameSession updated = gameSessionHelper.updateToNextGameState(gameCode);
 
-        // Assert - Verify the transition occurred
-        System.out.println("=== MAKE_CHOICE_VOTING -> MAKE_CHOICE_WINNER Transition Test ===");
+        // Assert - Verify the correct transition occurred
         System.out.println("Initial game state: " + gameSession.getGameState());
         System.out.println("Updated game state: " + updated.getGameState());
-        System.out.println("Stories in game: " + (gameSession.getStories() != null ? gameSession.getStories().size() : 0));
+        assertEquals(expectedFinalState, updated.getGameState(),
+                "Game should transition to " + expectedFinalState + " when fork count is " + expectedForkCount);
 
-        // Verify collaborativeTextHelper.calculateWinningSubmission was called
-        verify(collaborativeTextHelper).calculateWinningSubmission(gameCode);
-        assertEquals(GameState.MAKE_OUTCOME_CHOICE_WINNER, updated.getGameState());
-
-        // Print out stories with their options and forks for debugging
-        if (gameSession.getStories() != null) {
-            for (Story story : gameSession.getStories()) {
-                System.out.println("Story: " + story.getStoryId() + " - " + story.getPrompt());
-                if (story.getOptions() != null) {
-                    for (Option option : story.getOptions()) {
-                        System.out.println("  Option: " + option.getOptionId() + " - " + option.getOptionText());
-                        System.out.println("    Success Text: " + option.getSuccessText());
-                        if (option.getOutcomeForks() != null) {
-                            System.out.println("    Outcome Forks: " + option.getOutcomeForks().size());
-                            for (OutcomeFork fork : option.getOutcomeForks()) {
-                                System.out.println("      Fork: " + fork.getTextSubmission().getSubmissionId() +
-                                        " - " + fork.getTextSubmission().getCurrentText());
-                            }
-                        }
-                    }
+        // Print story options and forks for verification
+        if (currentStory.getOptions() != null) {
+            for (Option option : currentStory.getOptions()) {
+                System.out.println("  Option: " + option.getOptionId() + " - " + option.getOptionText());
+                if (option.getOutcomeForks() != null) {
+                    System.out.println("    Stored Outcome Forks: " + option.getOutcomeForks().size());
                 }
             }
         }
+    }
+
+    static Stream<Arguments> provideMakeOutcomeChoiceVotingScenarios() {
+        // Based on MAKE_CHOICE_VOTING_START.json:
+        // Story at (0,0) has options with different numbers of outcome forks
+        // Option edefbad5-4e7f-4769-9637-c7aa3c246c7f has 1 fork
+        // Option d9c1d9e2-c577-40ca-bdad-e4d2797ecd9d has 2 forks
+        return Stream.of(
+                Arguments.of(
+                        "Single fork - transitions to MAKE_OUTCOME_CHOICE_WINNER",
+                        "edefbad5-4e7f-4769-9637-c7aa3c246c7f", // Option with 1 outcome fork
+                        1,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        0,
+                        0
+                ),
+                Arguments.of(
+                        "Multiple forks - stays in MAKE_OUTCOME_CHOICE_VOTING",
+                        "775136bb-2379-4f2b-9801-ce7fdd218d1f", // Option with 2+ outcome forks
+                        2,
+                        GameState.MAKE_OUTCOME_CHOICE_VOTING,
+                        2,
+                        0
+                )
+        );
     }
 
 }
