@@ -241,6 +241,7 @@ public class GameSessionHelper {
                         gameSession.setGameState(WHAT_HAPPENS_HERE);
                     }
                     gameSession.setRoundNumber(gameSession.getRoundNumber() + 1);
+                    break;
                 default:
                     break;
             }

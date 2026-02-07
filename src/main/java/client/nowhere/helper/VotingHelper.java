@@ -47,8 +47,6 @@ public class VotingHelper {
                 return new ArrayList<>();
             }
 
-            // Get submissions from HOW_DOES_THIS_RESOLVE and HOW_DOES_THIS_RESOLVE_AGAIN phases
-            // filtered by currentStory.selectedOptionId
             if (currentStory != null && !currentStory.getSelectedOptionId().isEmpty()) {
                 String selectedOptionId = currentStory.getSelectedOptionId();
                 Option selectedOption = currentStory.getOptions().stream().filter(option -> option.getOptionId().equals(selectedOptionId))
@@ -61,8 +59,8 @@ public class VotingHelper {
         }
 
         // Retrieve the phase
-        CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
-        List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameCode, playerId);
+        CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhase(phaseId);
+        List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameSession, playerId);
 
         OutcomeType outcomeType = outcomeTypes.isEmpty() ? null : outcomeTypes.getFirst();
         if (phase == null) {
@@ -195,7 +193,7 @@ public class VotingHelper {
 
     private void setNonActivePlayersToDone(GameSession gameSession) {
         for (Player player : gameSession.getPlayers()) {
-            List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameSession.getGameCode(), player.getAuthorId());
+            List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameSession, player.getAuthorId());
 
             if (outcomeTypes.isEmpty()) {
                 activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), player.getAuthorId(), true);
@@ -213,8 +211,7 @@ public class VotingHelper {
         }
     }
 
-    public List<OutcomeType> getMakeChoiceStoryOutcomes(String gameCode, String playerId) {
-        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+    public List<OutcomeType> getMakeChoiceStoryOutcomes(GameSession gameSession, String playerId) {
         GameState phaseId = gameSession.getGameState().getPhaseId();
 
         if (phaseId != GameState.MAKE_CHOICE_VOTING) {

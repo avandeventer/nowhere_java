@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import client.nowhere.dao.*;
+import client.nowhere.exception.GameStateException;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -591,8 +592,8 @@ public class CollaborativeTextHelper {
             // Update the GameSessionDisplay in the database
             adventureMapDAO.updateGameSessionDisplay(gameCode, display);
         } catch (Exception e) {
-            // Log error but don't fail the main operation
             System.err.println("Failed to update GameSessionDisplay with winning submissions: " + e.getMessage());
+            throw new GameStateException("Failed to update winning game content with winning submissions", e);
         }
     }
 

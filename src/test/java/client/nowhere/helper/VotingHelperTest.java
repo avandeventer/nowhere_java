@@ -1,0 +1,218 @@
+package client.nowhere.helper;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import client.nowhere.dao.CollaborativeTextDAO;
+import client.nowhere.dao.GameSessionDAO;
+import client.nowhere.model.*;
+import client.nowhere.util.TestJsonLoader;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
+/**
+ * Unit tests for VotingHelper.
+ * Tests the voting submission retrieval and player status updates for MAKE_CHOICE_VOTING phase.
+ */
+public class VotingHelperTest {
+
+    @Mock
+    private GameSessionDAO gameSessionDAO;
+
+    @Mock
+    private CollaborativeTextDAO collaborativeTextDAO;
+
+    @Mock
+    private ActiveSessionHelper activeSessionHelper;
+
+    // Use real OutcomeTypeHelper instead of mock
+    private final OutcomeTypeHelper outcomeTypeHelper = new OutcomeTypeHelper();
+
+    private VotingHelper votingHelper;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        // Manually construct VotingHelper with real OutcomeTypeHelper
+        votingHelper = new VotingHelper(gameSessionDAO, collaborativeTextDAO, activeSessionHelper, outcomeTypeHelper);
+    }
+
+    // ===== MAKE_CHOICE_VOTING TESTS =====
+
+    /**
+     * Tests that for MAKE_CHOICE_VOTING phase at different coordinates,
+     * exactly one player gets submissions (the active player) and the rest are set to done.
+     */
+    @ParameterizedTest
+    @MethodSource("provideCoordinates")
+    void testGetVotingSubmissionsForPlayer_MAKE_CHOICE_VOTING_OneActivePlayerPerCoordinate(
+            int xCoordinate,
+            int yCoordinate,
+            List<String> expectedActivePlayerIds
+    ) throws IOException {
+        // Arrange - Load test data
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        String gameCode = gameSession.getGameCode();
+
+        // Verify we're in MAKE_CHOICE_VOTING state
+        assertEquals(GameState.MAKE_CHOICE_VOTING, gameSession.getGameState(),
+                "Test data should be in MAKE_CHOICE_VOTING state");
+
+        // Set player coordinates to test different stories
+        PlayerCoordinates coords = new PlayerCoordinates();
+        coords.setxCoordinate(xCoordinate);
+        coords.setyCoordinate(yCoordinate);
+        gameSession.getGameBoard().setPlayerCoordinates(coords);
+
+        // Get the story at current player coordinates (computed by GameSession)
+        Story storyAtCoords = gameSession.getStoryAtCurrentPlayerCoordinates();
+        Encounter encounterAtCoords = gameSession.getGameBoard().getEncounterAtPlayerCoordinates();
+
+        // Mock the game session DAO
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+
+        System.out.println("=== Testing coordinates (" + xCoordinate + ", " + yCoordinate + ") ===");
+        System.out.println("Story at coordinates: " + (storyAtCoords != null ? storyAtCoords.getPrompt().substring(0, Math.min(50, storyAtCoords.getPrompt().length())) + "..." : "null"));
+        System.out.println("Encounter storyId: " + (encounterAtCoords != null ? encounterAtCoords.getStoryId() : "null"));
+
+        // Act - Call the method for each player and track results
+        int activePlayerCount = 0;
+        int inactivePlayerCount = 0;
+        List<String> activePlayerIds = new ArrayList<>();
+
+        for (Player player : gameSession.getPlayers()) {
+            String playerId = player.getAuthorId();
+            List<TextSubmission> submissions = votingHelper.getVotingSubmissionsForPlayer(gameCode, playerId);
+
+            if (submissions != null && !submissions.isEmpty()) {
+                activePlayerCount++;
+                activePlayerIds.add(playerId);
+                System.out.println("  ACTIVE: " + player.getUserName() + " - got " + submissions.size() + " submissions");
+            } else {
+                inactivePlayerCount++;
+                System.out.println("  INACTIVE: " + player.getUserName() + " - set to done");
+            }
+        }
+
+        System.out.println("Active players: " + activePlayerCount + ", Inactive players: " + inactivePlayerCount);
+
+        // Assert - All players should be accounted for
+        assertEquals(gameSession.getPlayers().size(), activePlayerCount + inactivePlayerCount, "All players should be accounted for");
+        assertEquals(expectedActivePlayerIds, activePlayerIds, "Active player IDs should rotate for each coordinate");
+
+        for(Player player : gameSession.getPlayers()) {
+            if (!expectedActivePlayerIds.contains(player.getAuthorId())) {
+                verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_CHOICE_VOTING), eq(player.getAuthorId()), eq(true));
+            }
+        }
+    }
+
+    static Stream<Arguments> provideCoordinates() {
+        return Stream.of(
+                Arguments.of(0, 0, List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1")),
+                Arguments.of(1, 0, List.of("91732a20-794c-424a-8d69-8b4dedac4f85")),
+                Arguments.of(2, 0, List.of("884bcc3e-cd30-4714-91c2-b47827466f29")),
+                Arguments.of(3, 0, List.of("abddf3d8-c59d-43d2-b91c-dc7ebc83da27"))
+        );
+    }
+
+    @Test
+    void testGetVotingSubmissionsForPlayer_MAKE_CHOICE_VOTING_AllPlayersIteration() throws IOException {
+        // Arrange - Load test data
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        String gameCode = gameSession.getGameCode();
+
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+
+        System.out.println("=== All Players Iteration Test ===");
+        System.out.println("Game Code: " + gameCode);
+        System.out.println("Game State: " + gameSession.getGameState());
+        System.out.println("Number of players: " + gameSession.getPlayers().size());
+        System.out.println("Number of stories: " + gameSession.getStories().size());
+
+        // Act - Iterate over all players
+        int activePlayerCount = 0;
+        int inactivePlayerCount = 0;
+
+        for (Player player : gameSession.getPlayers()) {
+            String playerId = player.getAuthorId();
+            List<TextSubmission> submissions = votingHelper.getVotingSubmissionsForPlayer(gameCode, playerId);
+
+            System.out.println("\nPlayer: " + player.getUserName());
+            System.out.println("  Author ID: " + playerId);
+            System.out.println("  Submissions count: " + (submissions != null ? submissions.size() : 0));
+
+            if (submissions != null && !submissions.isEmpty()) {
+                activePlayerCount++;
+                for (TextSubmission sub : submissions) {
+                    System.out.println("    - " + sub.getCurrentText().substring(0, Math.min(50, sub.getCurrentText().length())) + "...");
+                }
+            } else {
+                inactivePlayerCount++;
+            }
+        }
+
+        System.out.println("\n=== Summary ===");
+        System.out.println("Active players (got submissions): " + activePlayerCount);
+        System.out.println("Inactive players (empty/set to done): " + inactivePlayerCount);
+
+        // Assert - In MAKE_CHOICE_VOTING, typically only one player is active per story
+        // The sum should equal total players
+        assertEquals(gameSession.getPlayers().size(), activePlayerCount + inactivePlayerCount,
+                "All players should be accounted for");
+    }
+
+    @Test
+    void testGetVotingSubmissionsForPlayer_MAKE_CHOICE_VOTING_VerifySubmissionContent() throws IOException {
+        // Arrange
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        String gameCode = gameSession.getGameCode();
+        String phaseId = GameState.MAKE_CHOICE_VOTING.name();
+
+        CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhases().get(phaseId);
+        assertNotNull(phase, "MAKE_CHOICE_VOTING phase should exist");
+
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+
+        // Get the story at current coordinates
+        Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+        assertNotNull(currentStory, "Story at current coordinates should exist");
+
+        // Get the first player
+        Player firstPlayer = gameSession.getPlayers().get(0);
+
+        // Act
+        List<TextSubmission> submissions = votingHelper.getVotingSubmissionsForPlayer(gameCode, firstPlayer.getAuthorId());
+
+        // Assert
+        System.out.println("=== Submission Content Verification ===");
+        System.out.println("Current story: " + currentStory.getPrompt());
+        System.out.println("Player: " + firstPlayer.getUserName());
+        System.out.println("Submissions returned: " + (submissions != null ? submissions.size() : 0));
+
+        if (submissions != null && !submissions.isEmpty()) {
+            for (TextSubmission submission : submissions) {
+                System.out.println("  Submission: " + submission.getSubmissionId());
+                System.out.println("    Text: " + submission.getCurrentText());
+                System.out.println("    OutcomeType: " + submission.getOutcomeType());
+                System.out.println("    Additions: " + submission.getAdditions().size());
+
+                // Verify submission has required fields
+                assertNotNull(submission.getSubmissionId(), "Submission should have ID");
+                assertNotNull(submission.getCurrentText(), "Submission should have text");
+            }
+        }
+    }
+}

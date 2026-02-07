@@ -18,7 +18,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -50,27 +49,22 @@ public class CollaborativeTextHelperTest {
     @Mock
     private FeatureFlagHelper featureFlagHelper;
 
-    @Mock
-    private OutcomeTypeHelper outcomeTypeHelper;
+    // Use real OutcomeTypeHelper for distribution logic tests
+    private final OutcomeTypeHelper outcomeTypeHelper = new OutcomeTypeHelper();
 
-    @InjectMocks
     private CollaborativeTextHelper collaborativeTextHelper;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        // Manually construct with real OutcomeTypeHelper
+        collaborativeTextHelper = new CollaborativeTextHelper(
+                gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
+                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper
+        );
     }
 
     // ===== HELPER METHODS FOR LOADING TEST DATA =====
-
-    /**
-     * Loads a GameSession from a JSON file in test resources.
-     * @param fileName The name of the JSON file (without path)
-     * @return The deserialized GameSession
-     */
-    private GameSession loadGameSessionFromJson(String fileName) throws IOException {
-        return TestJsonLoader.loadGameSessionFromJson(fileName);
-    }
 
     /**
      * Loads a CollaborativeTextPhase from the GameSession's collaborativeTextPhases map.
@@ -87,7 +81,7 @@ public class CollaborativeTextHelperTest {
     @Test
     void testCalculateWinningSubmission_HOW_DOES_THIS_RESOLVE_ReturnsSubmissionsWithoutParents() throws IOException {
         // Arrange
-        GameSession gameSession = loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
         String gameCode = gameSession.getGameCode();
         String phaseId = GameState.HOW_DOES_THIS_RESOLVE.name();
 
@@ -129,7 +123,7 @@ public class CollaborativeTextHelperTest {
     @Test
     void testCalculateWinningSubmission_HOW_DOES_THIS_RESOLVE_GroupsByOutcomeType() throws IOException {
         // Arrange
-        GameSession gameSession = loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
         String gameCode = gameSession.getGameCode();
         String phaseId = GameState.HOW_DOES_THIS_RESOLVE.name();
 
@@ -163,7 +157,7 @@ public class CollaborativeTextHelperTest {
     @Test
     void testCalculateWinningSubmission_WHAT_HAPPENS_HERE_FiltersSiblingsByAdditions() throws IOException {
         // Arrange
-        GameSession gameSession = loadGameSessionFromJson("WHAT_HAPPENS_HERE_START.json");
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("WHAT_HAPPENS_HERE_START.json");
         // Modify game state to WHAT_HAPPENS_HERE for this test
         gameSession.setGameState(GameState.WHAT_HAPPENS_HERE);
 
@@ -251,10 +245,11 @@ public class CollaborativeTextHelperTest {
             String testName,
             GameState gameState,
             String phaseId,
-            String jsonFileName
+            String jsonFileName,
+            int expectedWinningSubmissionCount
     ) throws IOException {
         // Arrange
-        GameSession gameSession = loadGameSessionFromJson(jsonFileName);
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
         gameSession.setGameState(gameState);
 
         String gameCode = gameSession.getGameCode();
@@ -273,12 +268,16 @@ public class CollaborativeTextHelperTest {
 
         // Assert
         assertNotNull(winningSubmissions, "Winning submissions should not be null for: " + testName);
+        assertEquals(expectedWinningSubmissionCount, winningSubmissions.size());
 
         System.out.println("=== " + testName + " ===");
         System.out.println("Game State: " + gameState);
         System.out.println("Phase ID: " + phaseId);
         System.out.println("Submissions in phase: " + phase.getSubmissions().size());
         System.out.println("Winning submissions: " + winningSubmissions.size());
+        for (TextSubmission textSubmission : winningSubmissions) {
+            System.out.println("Winning submission -- " + textSubmission.getCurrentText() + " -- Submission Outcome Type -- " +  textSubmission.getOutcomeTypeWithLabel().getLabel());
+        }
     }
 
     static Stream<Arguments> provideGameStateScenarios() {
@@ -287,19 +286,22 @@ public class CollaborativeTextHelperTest {
                         "HOW_DOES_THIS_RESOLVE - Standard winner calculation",
                         GameState.HOW_DOES_THIS_RESOLVE,
                         "HOW_DOES_THIS_RESOLVE",
-                        "HOW_DOES_THIS_RESOLVE_START.json"
+                        "HOW_DOES_THIS_RESOLVE_START.json",
+                        6
                 ),
                 Arguments.of(
                         "WHAT_HAPPENS_HERE - Filter siblings by additions",
                         GameState.WHAT_HAPPENS_HERE,
                         "WHAT_HAPPENS_HERE",
-                        "HOW_DOES_THIS_RESOLVE_START.json"
+                        "HOW_DOES_THIS_RESOLVE_START.json",
+                        4
                 ),
                 Arguments.of(
                         "WHAT_CAN_WE_TRY - Standard winner calculation",
                         GameState.WHAT_CAN_WE_TRY,
                         "WHAT_CAN_WE_TRY",
-                        "HOW_DOES_THIS_RESOLVE_START.json"
+                        "HOW_DOES_THIS_RESOLVE_START.json",
+                        8
                 )
         );
     }
@@ -309,7 +311,7 @@ public class CollaborativeTextHelperTest {
     @Test
     void testHandleHowDoesThisResolve_AddsOptionsToStories() throws IOException {
         // Arrange
-        GameSession gameSession = loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
         String gameCode = gameSession.getGameCode();
         String phaseId = GameState.HOW_DOES_THIS_RESOLVE.name();
 
@@ -391,7 +393,7 @@ public class CollaborativeTextHelperTest {
     @Test
     void testWinningSubmissions_HaveValidOutcomeTypeSubTypes() throws IOException {
         // Arrange
-        GameSession gameSession = loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
         String gameCode = gameSession.getGameCode();
         String phaseId = GameState.HOW_DOES_THIS_RESOLVE.name();
 
@@ -425,5 +427,153 @@ public class CollaborativeTextHelperTest {
                 }
             }
         }
+    }
+
+    // ===== GET OUTCOME TYPES DISTRIBUTION TESTS =====
+
+    /**
+     * Tests that getOutcomeTypes correctly distributes stories to players based on
+     * the offset logic for each game state. Different phases use different offsets:
+     * - WHAT_CAN_WE_TRY: offset 1 (and offset 0 or 2 for second story)
+     * - HOW_DOES_THIS_RESOLVE: offset 2 for <=4 players, 3 for >4 players
+     * - WHAT_HAPPENS_HERE (round > 1): offset 2 for <=4 players, 1 for >4 players
+     */
+    @ParameterizedTest
+    @MethodSource("provideOutcomeTypeDistributionScenarios")
+    void testGetOutcomeTypes_DistributesStoriesCorrectlyPerPlayer(
+            String scenarioName,
+            String jsonFileName,
+            GameState gameState,
+            List<String> expectedStoryIdsPerPlayer
+    ) throws IOException {
+        // Arrange - Load test data
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
+        gameSession.setGameState(gameState);
+        String gameCode = gameSession.getGameCode();
+
+        // Mock dependencies
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+
+        // For HOW_DOES_THIS_RESOLVE, we need to mock the WHAT_CAN_WE_TRY phase
+        if (gameState == GameState.HOW_DOES_THIS_RESOLVE || gameState == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
+            CollaborativeTextPhase whatCanWeTryPhase = gameSession.getCollaborativeTextPhases().get(GameState.WHAT_CAN_WE_TRY.name());
+            when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name()))
+                    .thenReturn(whatCanWeTryPhase);
+        }
+
+        System.out.println("=== " + scenarioName + " ===");
+        System.out.println("Game State: " + gameState);
+        System.out.println("Number of players: " + gameSession.getPlayers().size());
+        System.out.println("Number of stories: " + (gameSession.getStories() != null ? gameSession.getStories().size() : 0));
+
+        // Get sorted players to match expected order
+        List<Player> sortedPlayers = gameSession.getPlayers().stream()
+                .filter(p -> p.getJoinedAt() != null)
+                .sorted((p1, p2) -> p1.getJoinedAt().compareTo(p2.getJoinedAt()))
+                .toList();
+
+        // Act & Assert - Iterate over each player and verify distribution
+        List<String> actualStoryIds = new java.util.ArrayList<>();
+
+        for (int i = 0; i < sortedPlayers.size(); i++) {
+            Player player = sortedPlayers.get(i);
+            String playerId = player.getAuthorId();
+
+            List<OutcomeType> outcomeTypes = collaborativeTextHelper.getOutcomeTypes(gameCode, playerId);
+
+            System.out.println("\nPlayer " + i + ": " + player.getUserName() + " (" + playerId + ")");
+            System.out.println("  OutcomeTypes returned: " + outcomeTypes.size());
+
+            if (!outcomeTypes.isEmpty()) {
+                // For WHAT_CAN_WE_TRY, might get multiple stories; take the first for comparison
+                OutcomeType firstOutcome = outcomeTypes.get(0);
+                String storyId = firstOutcome.getId();
+                actualStoryIds.add(storyId);
+
+                System.out.println("  First Story ID: " + storyId);
+                System.out.println("  Story Label: " + firstOutcome.getLabel());
+
+                if (firstOutcome.getSubTypes() != null && !firstOutcome.getSubTypes().isEmpty()) {
+                    System.out.println("  SubTypes: " + firstOutcome.getSubTypes().size());
+                    for (OutcomeType subType : firstOutcome.getSubTypes()) {
+                        System.out.println("    - " + subType.getId() + ": " +
+                                (subType.getLabel() != null ? subType.getLabel().substring(0, Math.min(40, subType.getLabel().length())) + "..." : "null"));
+                    }
+                }
+            } else {
+                actualStoryIds.add("EMPTY");
+                System.out.println("  No outcome types returned");
+            }
+        }
+
+        System.out.println("\n=== Distribution Summary ===");
+        System.out.println("Expected: " + expectedStoryIdsPerPlayer);
+        System.out.println("Actual:   " + actualStoryIds);
+
+        // Assert the story distribution matches expected
+        assertEquals(expectedStoryIdsPerPlayer.size(), actualStoryIds.size(),
+                "Should have outcome for each player");
+        assertEquals(expectedStoryIdsPerPlayer, actualStoryIds,
+                "Story distribution should match expected pattern for " + scenarioName);
+    }
+
+    static Stream<Arguments> provideOutcomeTypeDistributionScenarios() {
+        // Based on test JSON files with 4 players:
+        // Players sorted by joinedAt: Andy (0), Joe (1), Byron (2), Kirsten (3)
+        // Stories sorted by author order match player order
+        //
+        // WHAT_CAN_WE_TRY offset is 1:
+        //   Player 0 gets story at (0+1)%4 = 1
+        //   Player 1 gets story at (1+1)%4 = 2
+        //   Player 2 gets story at (2+1)%4 = 3
+        //   Player 3 gets story at (3+1)%4 = 0
+        //
+        // HOW_DOES_THIS_RESOLVE offset is 2 (for 4 players):
+        //   Player 0 gets story at (0+2)%4 = 2
+        //   Player 1 gets story at (1+2)%4 = 3
+        //   Player 2 gets story at (2+2)%4 = 0
+        //   Player 3 gets story at (3+2)%4 = 1
+
+        return Stream.of(
+                Arguments.of(
+                        "WHAT_CAN_WE_TRY - 4 players, offset 1",
+                        "WHAT_CAN_WE_TRY_START.json",
+                        GameState.WHAT_CAN_WE_TRY,
+                        // Expected story IDs per player (in player join order)
+                        // Stories: 0=c3fbfd4a (Andy), 1=efe64144 (Joe), 2=7adad1bc (Byron), 3=2646c831 (Kirsten)
+                        List.of(
+                                "efe64144-c636-4283-add7-974dc48a6039", // Player 0 (Andy) gets story 1
+                                "7adad1bc-874b-4f6e-a70c-f8ba4aea658f", // Player 1 (Joe) gets story 2
+                                "2646c831-3ab8-4445-ae4a-3696f25837ba", // Player 2 (Byron) gets story 3
+                                "c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a"  // Player 3 (Kirsten) gets story 0
+                        )
+                ),
+                Arguments.of(
+                        "HOW_DOES_THIS_RESOLVE - 4 players, offset 2",
+                        "HOW_DOES_THIS_RESOLVE_START.json",
+                        GameState.HOW_DOES_THIS_RESOLVE,
+                        // Expected story IDs per player (in player join order)
+                        // Stories: 0=704e29cf (Andy), 1=ce52535b (Joe), 2=af0925f5 (Byron), 3=80facdb7 (Kirsten)
+                        List.of(
+                                "af0925f5-e00d-4ac5-b63b-9f23e4b6be0d", // Player 0 (Andy) gets story 2
+                                "80facdb7-1cbb-465c-8486-92b588c543a4", // Player 1 (Joe) gets story 3
+                                "704e29cf-88a1-4fe9-832d-fc639adbe182", // Player 2 (Byron) gets story 0
+                                "ce52535b-f69c-467e-a042-06a1cfcb85c0"  // Player 3 (Kirsten) gets story 1
+                        )
+                ),
+                Arguments.of(
+                        "WHAT_HAPPENS_HERE - Round 1, all players get same encounter labels",
+                        "WHAT_HAPPENS_HERE_START.json",
+                        GameState.WHAT_HAPPENS_HERE,
+                        // Round 1: No story distribution - all players get the same encounter labels
+                        // The first encounter label ID is returned for all players
+                        List.of(
+                                "1d8a56a7-34b8-48a9-ad09-933f4190af86", // Player 0 (Andy) - same encounter
+                                "1d8a56a7-34b8-48a9-ad09-933f4190af86", // Player 1 (Joe) - same encounter
+                                "1d8a56a7-34b8-48a9-ad09-933f4190af86", // Player 2 (Byron) - same encounter
+                                "1d8a56a7-34b8-48a9-ad09-933f4190af86"  // Player 3 (Kirsten) - same encounter
+                        )
+                )
+        );
     }
 }
