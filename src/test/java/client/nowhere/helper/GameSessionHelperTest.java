@@ -23,7 +23,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -41,8 +40,6 @@ import static client.nowhere.model.GameState.GENERATE_OCCUPATION_AUTHORS;
 import static client.nowhere.model.GameState.GENERATE_WRITE_OPTION_AUTHORS;
 import static client.nowhere.model.GameState.GENERATE_WRITE_PROMPT_AUTHORS;
 import static client.nowhere.model.GameState.LOCATION_SELECT;
-import static client.nowhere.model.GameState.MAKE_CHOICE_VOTING;
-import static client.nowhere.model.GameState.MAKE_CHOICE_WINNER;
 import static client.nowhere.model.GameState.WHAT_OCCUPATIONS_ARE_THERE;
 import static client.nowhere.model.GameState.WHERE_CAN_WE_GO;
 import static client.nowhere.model.GameState.WRITE_PROMPTS;
@@ -645,6 +642,70 @@ public class GameSessionHelperTest {
         // Get the story at current player coordinates and set the selected option
         Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
         assertNotNull(currentStory, "Story at current coordinates should exist");
+        gameSession.getCollaborativeTextPhase(
+                String.valueOf(GameState.MAKE_CHOICE_VOTING)).addPlayerVote(
+                    new PlayerVote("", "", selectedOptionId, 1
+                )
+        );
+
+        // Mock the dependencies
+        when(gameSessionDAO.getGame(gameCode))
+                .thenReturn(gameSession)
+                .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json"));
+        when(gameSessionDAO.updateGameSession(any(GameSession.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        // Debug: Print the setup
+        System.out.println("=== " + scenarioName + " ===");
+        System.out.println("Selected Option ID: " + selectedOptionId);
+        System.out.println("Current Story: " + currentStory.getStoryId());
+
+        // Act - Update the game session
+        GameSession updated = gameSessionHelper.updateToNextGameState(gameCode);
+
+        // Assert - Verify the correct transition occurred
+        System.out.println("Initial game state: " + gameSession.getGameState());
+        System.out.println("Updated game state: " + updated.getGameState());
+        assertEquals(expectedFinalState, updated.getGameState(),
+                "Game should transition to " + expectedFinalState + " when fork count is " + expectedForkCount);
+
+        // Print story options and forks for verification
+        if (currentStory.getOptions() != null) {
+            for (Option option : currentStory.getOptions()) {
+                System.out.println("  Option: " + option.getOptionId() + " - " + option.getOptionText());
+                if (option.getOutcomeForks() != null) {
+                    System.out.println("    Stored Outcome Forks: " + option.getOutcomeForks().size());
+                }
+            }
+        }
+    }
+
+    /**
+     * Tests the MAKE_OUTCOME_CHOICE_VOTING phase transition logic:
+     * - When there's only 1 outcome fork for the selected option, transition to MAKE_OUTCOME_CHOICE_WINNER
+     * - When there's 2+ outcome forks, stay in MAKE_OUTCOME_CHOICE_VOTING for players to vote
+     *
+     * Uses real CollaborativeTextHelper.getMakeChoiceVotingOutcomeForks to verify distribution logic.
+     */
+    @ParameterizedTest
+    @MethodSource("provideMakeOutcomeChoiceVotingScenarios")
+    void testUpdateGameSession_MAKE_OUTCOME_CHOICE_VOTING_TestOutcomeForks(
+            String scenarioName,
+            String selectedOptionId,
+            int expectedForkCount,
+            GameState expectedFinalState,
+            int xCoordinate,
+            int yCoordinate
+    ) throws Exception {
+        // Arrange - Load test data from JSON
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
+        gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
+        String gameCode = gameSession.getGameCode();
+
+        // Get the story at current player coordinates and set the selected option
+        Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+        assertNotNull(currentStory, "Story at current coordinates should exist");
         currentStory.setSelectedOptionId(selectedOptionId);
 
         // Mock the dependencies
@@ -669,25 +730,6 @@ public class GameSessionHelperTest {
 
         assertEquals(expectedForkCount, outcomeForks.size(),
                 "Expected " + expectedForkCount + " outcome forks for selected option");
-
-        // Act - Update the game session
-        GameSession updated = gameSessionHelper.updateToNextGameState(gameCode);
-
-        // Assert - Verify the correct transition occurred
-        System.out.println("Initial game state: " + gameSession.getGameState());
-        System.out.println("Updated game state: " + updated.getGameState());
-        assertEquals(expectedFinalState, updated.getGameState(),
-                "Game should transition to " + expectedFinalState + " when fork count is " + expectedForkCount);
-
-        // Print story options and forks for verification
-        if (currentStory.getOptions() != null) {
-            for (Option option : currentStory.getOptions()) {
-                System.out.println("  Option: " + option.getOptionId() + " - " + option.getOptionText());
-                if (option.getOutcomeForks() != null) {
-                    System.out.println("    Stored Outcome Forks: " + option.getOutcomeForks().size());
-                }
-            }
-        }
     }
 
     static Stream<Arguments> provideMakeOutcomeChoiceVotingScenarios() {

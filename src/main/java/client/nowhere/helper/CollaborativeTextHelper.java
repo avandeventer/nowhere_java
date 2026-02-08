@@ -97,7 +97,11 @@ public class CollaborativeTextHelper {
     }
 
     public List<TextSubmission> calculateWinningSubmission(String gameCode) {
-        GameSession gameSession = getGameSession(gameCode);
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        return calculateWinningSubmission(gameSession);
+    }
+
+    public List<TextSubmission> calculateWinningSubmission(GameSession gameSession) {
         GameState phaseIdState = gameSession.getGameState().getPhaseId();
         if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());

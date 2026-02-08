@@ -103,7 +103,7 @@ public class GameSessionHelper {
             }
 
             if (gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
-                collaborativeTextHelper.calculateWinningSubmission(gameSession.getGameCode());
+                collaborativeTextHelper.calculateWinningSubmission(gameSession);
                 if (!gameSession.getGameState().equals(NAVIGATE_WINNER) && !gameSession.getGameState().equals(MAKE_OUTCOME_CHOICE_WINNER)) {
                     gameSession.setGameStateToNext(true, gameSession.getRoundNumber());
                 }
