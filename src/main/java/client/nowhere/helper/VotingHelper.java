@@ -218,9 +218,9 @@ public class VotingHelper {
             return new ArrayList<>();
         }
 
-        List<Story> allUnvisitedStories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();
+        List<Story> allStories = gameSession.getStories();
 
-        if (allUnvisitedStories.isEmpty()) {
+        if (allStories.isEmpty()) {
             return new ArrayList<>();
         }
 
@@ -233,7 +233,7 @@ public class VotingHelper {
         int playerIndex = playerResult.getPlayerIndex();
 
         // Sort stories by matching authorId to player order
-        List<Story> sortedStories = outcomeTypeHelper.sortStoriesByPlayerOrder(sortedPlayers, allUnvisitedStories);
+        List<Story> sortedStories = outcomeTypeHelper.sortStoriesByPlayerOrder(sortedPlayers, allStories);
 
         if (sortedStories.isEmpty()) {
             return new ArrayList<>();

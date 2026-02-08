@@ -58,12 +58,13 @@ public class VotingHelperTest {
     @ParameterizedTest
     @MethodSource("provideCoordinates")
     void testGetVotingSubmissionsForPlayer_MAKE_CHOICE_VOTING_OneActivePlayerPerCoordinate(
+            String gameSessionFileName,
             int xCoordinate,
             int yCoordinate,
             List<String> expectedActivePlayerIds
     ) throws IOException {
         // Arrange - Load test data
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(gameSessionFileName);
         String gameCode = gameSession.getGameCode();
 
         // Verify we're in MAKE_CHOICE_VOTING state
@@ -121,10 +122,15 @@ public class VotingHelperTest {
 
     static Stream<Arguments> provideCoordinates() {
         return Stream.of(
-                Arguments.of(0, 0, List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1")),
-                Arguments.of(1, 0, List.of("91732a20-794c-424a-8d69-8b4dedac4f85")),
-                Arguments.of(2, 0, List.of("884bcc3e-cd30-4714-91c2-b47827466f29")),
-                Arguments.of(3, 0, List.of("abddf3d8-c59d-43d2-b91c-dc7ebc83da27"))
+//                Arguments.of("MAKE_CHOICE_VOTING_START.json", 0, 0, List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1")),
+//                Arguments.of("MAKE_CHOICE_VOTING_START.json", 1, 0, List.of("91732a20-794c-424a-8d69-8b4dedac4f85")),
+//                Arguments.of("MAKE_CHOICE_VOTING_START.json", 2, 0, List.of("884bcc3e-cd30-4714-91c2-b47827466f29")),
+//                Arguments.of("MAKE_CHOICE_VOTING_START.json", 3, 0, List.of("abddf3d8-c59d-43d2-b91c-dc7ebc83da27")),
+                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 0, 0, List.of("7c7228ca-b43a-4b45-b94c-8593d6404a0e")),
+                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 1, 0, List.of("f1805f47-b2c5-49a8-9cf1-c8a61845ad7b")),
+                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 2, 0, List.of("eaa157ee-9d88-4d49-a728-4c8abca37119")),
+                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 3, 0, List.of("c0e0de02-3aae-4e32-ab15-0cac32557778"))
+
         );
     }
 

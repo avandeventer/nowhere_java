@@ -102,9 +102,9 @@ public class GameSessionHelper {
                 }
             }
 
-            if (gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
+            if (gameSession.getGameState().equals(phaseBaseInfo.winningState()) && !gameSession.getGameState().equals(NAVIGATE_WINNER)) {
                 collaborativeTextHelper.calculateWinningSubmission(gameSession);
-                if (!gameSession.getGameState().equals(NAVIGATE_WINNER) && !gameSession.getGameState().equals(MAKE_OUTCOME_CHOICE_WINNER)) {
+                if (!gameSession.getGameState().equals(MAKE_OUTCOME_CHOICE_WINNER)) {
                     gameSession.setGameStateToNext(true, gameSession.getRoundNumber());
                 }
             }
