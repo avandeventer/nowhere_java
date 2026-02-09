@@ -201,6 +201,7 @@ public class Story {
         this.selectedOptionId = selectedOptionId;
     }
 
+    @JsonIgnore
     public Option getSelectedOption() {
         if (this.getOptions() == null) {
             return null;
