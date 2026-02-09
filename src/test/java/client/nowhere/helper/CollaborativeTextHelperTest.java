@@ -106,6 +106,8 @@ public class CollaborativeTextHelperTest {
         System.out.println("Submissions without parents: " + expectedSubmissions.size());
         System.out.println("Winning submissions returned: " + winningSubmissions.size());
 
+        assertEquals(expectedSubmissions, winningSubmissions);
+
         for (TextSubmission submission : winningSubmissions) {
             System.out.println("  - " + submission.getSubmissionId() + ": " + submission.getCurrentText());
             System.out.println("    OutcomeType: " + submission.getOutcomeType());
