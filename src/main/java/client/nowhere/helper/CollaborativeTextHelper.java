@@ -775,7 +775,6 @@ public class CollaborativeTextHelper {
             for (String direction : directions) {
                 TextSubmission submission = new TextSubmission();
                 submission.setSubmissionId(direction);
-                submission.setAuthorId(AuthorConstants.DUNGEON_PLAYER);
                 submission.setOriginalText("");
                 submission.setCurrentText(direction);
                 submission.setCreatedAt(Timestamp.now());
@@ -846,7 +845,6 @@ public class CollaborativeTextHelper {
                 Story story = new Story();
                 story.setNewStoryId();
                 story.setPrompt(submission.getCurrentText());
-                story.setPlayerId(AuthorConstants.DUNGEON_PLAYER);
                 story.setGameCode(gameCode);
                 story.setEncounterLabel(encounterLabel);
                 story.setCreatedAt(Timestamp.now());
@@ -943,7 +941,6 @@ public class CollaborativeTextHelper {
                 story = new Story();
                 story.setNewStoryId();
                 story.setPrompt(winningSubmission.getCurrentText());
-                story.setPlayerId(AuthorConstants.DUNGEON_PLAYER);
                 story.setGameCode(gameCode);
                 story.setEncounterLabel(encounter.getEncounterLabel());
                 storyDAO.createStory(story);

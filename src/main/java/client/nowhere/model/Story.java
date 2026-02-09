@@ -27,7 +27,7 @@ public class Story {
     //Temporary player variables
     private boolean visited = false;
     private String playerId = "";
-    private ArrayList<String> playerIds = new ArrayList<>();
+    private List<String> playerIds = new ArrayList<>();
     private String selectedOptionId = "";
     private boolean playerSucceeded = false;
     private String prequelStoryPlayerId = "";
@@ -299,7 +299,7 @@ public class Story {
         return createdAt;
     }
 
-    public ArrayList<String> getPlayerIds() {
+    public List<String> getPlayerIds() {
         if (playerId != null && !playerId.isEmpty() && !playerIds.contains(playerId)) {
             playerIds.add(playerId);
         }
@@ -310,7 +310,7 @@ public class Story {
         this.playerIds.add(playerId);
     }
 
-    public void setPlayerIds(ArrayList<String> playerIds) {
+    public void setPlayerIds(List<String> playerIds) {
         this.playerIds = playerIds;
     }
 

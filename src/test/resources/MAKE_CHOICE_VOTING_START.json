@@ -420,10 +420,8 @@
       "gameCode": "NX43AU",
       "mainPlotStory": false,
       "visited": false,
-      "playerId": "DUNGEON_PLAYER",
-      "playerIds": [
-        "DUNGEON_PLAYER"
-      ],
+      "playerId": "",
+      "playerIds": [],
       "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStoryPlayerId": "",
@@ -617,10 +615,8 @@
       "gameCode": "NX43AU",
       "mainPlotStory": false,
       "visited": false,
-      "playerId": "DUNGEON_PLAYER",
-      "playerIds": [
-        "DUNGEON_PLAYER"
-      ],
+      "playerId": "",
+      "playerIds": [],
       "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStoryPlayerId": "",
@@ -806,10 +802,8 @@
       "gameCode": "NX43AU",
       "mainPlotStory": false,
       "visited": false,
-      "playerId": "DUNGEON_PLAYER",
-      "playerIds": [
-        "DUNGEON_PLAYER"
-      ],
+      "playerId": "",
+      "playerIds": [],
       "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStoryPlayerId": "",
@@ -992,10 +986,8 @@
       "gameCode": "NX43AU",
       "mainPlotStory": false,
       "visited": false,
-      "playerId": "DUNGEON_PLAYER",
-      "playerIds": [
-        "DUNGEON_PLAYER"
-      ],
+      "playerId": "",
+      "playerIds": [],
       "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStoryPlayerId": "",
@@ -4687,10 +4679,8 @@
     "gameCode": "NX43AU",
     "mainPlotStory": false,
     "visited": false,
-    "playerId": "DUNGEON_PLAYER",
-    "playerIds": [
-      "DUNGEON_PLAYER"
-    ],
+    "playerId": "",
+    "playerIds": [],
     "selectedOptionId": "",
     "playerSucceeded": false,
     "prequelStoryPlayerId": "",

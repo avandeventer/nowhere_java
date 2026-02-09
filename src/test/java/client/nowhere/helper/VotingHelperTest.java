@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import client.nowhere.dao.CollaborativeTextDAO;
 import client.nowhere.dao.GameSessionDAO;
+import client.nowhere.dao.StoryDAO;
 import client.nowhere.model.*;
 import client.nowhere.util.TestJsonLoader;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -37,6 +39,9 @@ public class VotingHelperTest {
     @Mock
     private ActiveSessionHelper activeSessionHelper;
 
+    @Mock
+    private StoryDAO storyDAO;
+
     // Use real OutcomeTypeHelper instead of mock
     private final OutcomeTypeHelper outcomeTypeHelper = new OutcomeTypeHelper();
 
@@ -46,7 +51,13 @@ public class VotingHelperTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         // Manually construct VotingHelper with real OutcomeTypeHelper
-        votingHelper = new VotingHelper(gameSessionDAO, collaborativeTextDAO, activeSessionHelper, outcomeTypeHelper);
+        votingHelper = new VotingHelper(
+                gameSessionDAO,
+                collaborativeTextDAO,
+                activeSessionHelper,
+                outcomeTypeHelper,
+                storyDAO
+        );
     }
 
     // ===== MAKE_CHOICE_VOTING TESTS =====
@@ -122,10 +133,10 @@ public class VotingHelperTest {
 
     static Stream<Arguments> provideCoordinates() {
         return Stream.of(
-//                Arguments.of("MAKE_CHOICE_VOTING_START.json", 0, 0, List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1")),
-//                Arguments.of("MAKE_CHOICE_VOTING_START.json", 1, 0, List.of("91732a20-794c-424a-8d69-8b4dedac4f85")),
-//                Arguments.of("MAKE_CHOICE_VOTING_START.json", 2, 0, List.of("884bcc3e-cd30-4714-91c2-b47827466f29")),
-//                Arguments.of("MAKE_CHOICE_VOTING_START.json", 3, 0, List.of("abddf3d8-c59d-43d2-b91c-dc7ebc83da27")),
+                Arguments.of("MAKE_CHOICE_VOTING_START.json", 0, 0, List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1")),
+                Arguments.of("MAKE_CHOICE_VOTING_START.json", 1, 0, List.of("91732a20-794c-424a-8d69-8b4dedac4f85")),
+                Arguments.of("MAKE_CHOICE_VOTING_START.json", 2, 0, List.of("884bcc3e-cd30-4714-91c2-b47827466f29")),
+                Arguments.of("MAKE_CHOICE_VOTING_START.json", 3, 0, List.of("abddf3d8-c59d-43d2-b91c-dc7ebc83da27")),
                 Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 0, 0, List.of("7c7228ca-b43a-4b45-b94c-8593d6404a0e")),
                 Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 1, 0, List.of("f1805f47-b2c5-49a8-9cf1-c8a61845ad7b")),
                 Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 2, 0, List.of("eaa157ee-9d88-4d49-a728-4c8abca37119")),
@@ -187,22 +198,16 @@ public class VotingHelperTest {
         String gameCode = gameSession.getGameCode();
         String phaseId = GameState.MAKE_CHOICE_VOTING.name();
 
-        CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhases().get(phaseId);
-        assertNotNull(phase, "MAKE_CHOICE_VOTING phase should exist");
-
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
 
         // Get the story at current coordinates
         Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
         assertNotNull(currentStory, "Story at current coordinates should exist");
 
-        // Get the first player
         Player firstPlayer = gameSession.getPlayers().get(0);
 
-        // Act
         List<TextSubmission> submissions = votingHelper.getVotingSubmissionsForPlayer(gameCode, firstPlayer.getAuthorId());
 
-        // Assert
         System.out.println("=== Submission Content Verification ===");
         System.out.println("Current story: " + currentStory.getPrompt());
         System.out.println("Player: " + firstPlayer.getUserName());
@@ -220,5 +225,29 @@ public class VotingHelperTest {
                 assertNotNull(submission.getCurrentText(), "Submission should have text");
             }
         }
+    }
+
+    @Test
+    void testPlayerIdsSetOnMakeChoiceVote() throws IOException {
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        String gameCode = gameSession.getGameCode();
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        PlayerVote playerVote = new PlayerVote("", "24fca1a7-efc5-4813-8530-448f0e5c29d1", "edefbad5-4e7f-4769-9637-c7aa3c246c7f", 1);
+        votingHelper.submitPlayerVotes(
+                gameSession.getGameCode(),
+                List.of(playerVote)
+        );
+        ArgumentCaptor<Story> storyCaptor = ArgumentCaptor.forClass(Story.class);
+        verify(storyDAO, times(1)).updateStory(storyCaptor.capture());
+
+        Story capturedStory = storyCaptor.getValue();
+        assertEquals(List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1"), capturedStory.getPlayerIds());
+
+        for(Player player : gameSession.getPlayers()) {
+            if (!capturedStory.getPlayerIds().contains(player.getAuthorId())) {
+                verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_CHOICE_VOTING), eq(player.getAuthorId()), eq(true));
+            }
+        }
+
     }
 }

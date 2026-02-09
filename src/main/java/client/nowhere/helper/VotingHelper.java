@@ -2,6 +2,7 @@ package client.nowhere.helper;
 
 import client.nowhere.dao.CollaborativeTextDAO;
 import client.nowhere.dao.GameSessionDAO;
+import client.nowhere.dao.StoryDAO;
 import client.nowhere.exception.ValidationException;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +19,20 @@ public class VotingHelper {
     private final CollaborativeTextDAO collaborativeTextDAO;
     private final ActiveSessionHelper activeSessionHelper;
     private final OutcomeTypeHelper outcomeTypeHelper;
+    private final StoryDAO storyDAO;
 
     @Autowired
-    public VotingHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, ActiveSessionHelper activeSessionHelper, OutcomeTypeHelper outcomeTypeHelper) {
+    public VotingHelper(GameSessionDAO gameSessionDAO,
+                        CollaborativeTextDAO collaborativeTextDAO,
+                        ActiveSessionHelper activeSessionHelper,
+                        OutcomeTypeHelper outcomeTypeHelper,
+                        StoryDAO storyDAO
+    ) {
         this.gameSessionDAO = gameSessionDAO;
         this.collaborativeTextDAO = collaborativeTextDAO;
         this.activeSessionHelper = activeSessionHelper;
         this.outcomeTypeHelper = outcomeTypeHelper;
+        this.storyDAO = storyDAO;
     }
 
     /**
@@ -181,6 +189,7 @@ public class VotingHelper {
 
         if (phaseIdState == GameState.MAKE_CHOICE_VOTING) {
             setNonActivePlayersToDone(gameSession);
+            setActivePlayerIds(gameSession, playerVotes);
         }
 
         if (phaseIdState == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
@@ -189,6 +198,14 @@ public class VotingHelper {
 
         // Return updated phase
         return collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+    }
+
+    private void setActivePlayerIds(GameSession gameSession, List<PlayerVote> playerVotes) {
+        Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+        List<String> playerIds = currentStory.getPlayerIds();
+        playerIds.add(playerVotes.getFirst().getPlayerId());
+        currentStory.setPlayerIds(playerIds);
+        storyDAO.updateStory(currentStory);
     }
 
     private void setNonActivePlayersToDone(GameSession gameSession) {
