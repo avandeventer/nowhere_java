@@ -52,6 +52,7 @@ public class VotingHelper {
         if (phaseIdState == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
             Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
             if (currentStory != null && currentStory.getPlayerIds().contains(playerId)) {
+                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
                 return new ArrayList<>();
             }
 

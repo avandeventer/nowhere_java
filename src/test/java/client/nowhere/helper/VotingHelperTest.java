@@ -78,10 +78,6 @@ public class VotingHelperTest {
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(gameSessionFileName);
         String gameCode = gameSession.getGameCode();
 
-        // Verify we're in MAKE_CHOICE_VOTING state
-        assertEquals(GameState.MAKE_CHOICE_VOTING, gameSession.getGameState(),
-                "Test data should be in MAKE_CHOICE_VOTING state");
-
         // Set player coordinates to test different stories
         PlayerCoordinates coords = new PlayerCoordinates();
         coords.setxCoordinate(xCoordinate);
@@ -126,7 +122,7 @@ public class VotingHelperTest {
 
         for(Player player : gameSession.getPlayers()) {
             if (!expectedActivePlayerIds.contains(player.getAuthorId())) {
-                verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_CHOICE_VOTING), eq(player.getAuthorId()), eq(true));
+                verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(gameSession.getGameState()), eq(player.getAuthorId()), eq(true));
             }
         }
     }
@@ -140,8 +136,8 @@ public class VotingHelperTest {
                 Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 0, 0, List.of("7c7228ca-b43a-4b45-b94c-8593d6404a0e")),
                 Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 1, 0, List.of("f1805f47-b2c5-49a8-9cf1-c8a61845ad7b")),
                 Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 2, 0, List.of("eaa157ee-9d88-4d49-a728-4c8abca37119")),
-                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 3, 0, List.of("c0e0de02-3aae-4e32-ab15-0cac32557778"))
-
+                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 3, 0, List.of("c0e0de02-3aae-4e32-ab15-0cac32557778")),
+                Arguments.of("MAKE_OUTCOME_CHOICE_VOTING_START.json", 2, 0, List.of("c0e0de02-3aae-4e32-ab15-0cac32557778", "7c7228ca-b43a-4b45-b94c-8593d6404a0e", "f1805f47-b2c5-49a8-9cf1-c8a61845ad7b"))
         );
     }
 
@@ -204,7 +200,7 @@ public class VotingHelperTest {
         Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
         assertNotNull(currentStory, "Story at current coordinates should exist");
 
-        Player firstPlayer = gameSession.getPlayers().get(0);
+        Player firstPlayer = gameSession.getPlayers().getFirst();
 
         List<TextSubmission> submissions = votingHelper.getVotingSubmissionsForPlayer(gameCode, firstPlayer.getAuthorId());
 
@@ -248,6 +244,5 @@ public class VotingHelperTest {
                 verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_CHOICE_VOTING), eq(player.getAuthorId()), eq(true));
             }
         }
-
     }
 }
