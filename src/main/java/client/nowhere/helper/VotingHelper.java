@@ -211,20 +211,24 @@ public class VotingHelper {
 
     private void setNonActivePlayersToDone(GameSession gameSession) {
         for (Player player : gameSession.getPlayers()) {
-            List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameSession, player.getAuthorId());
+            if (!gameSession.getActiveGameStateSession().getIsPlayerDone().get(player.getAuthorId())) {
+                List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameSession, player.getAuthorId());
 
-            if (outcomeTypes.isEmpty()) {
-                activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), player.getAuthorId(), true);
+                if (outcomeTypes.isEmpty()) {
+                    activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), player.getAuthorId(), true);
+                }
             }
         }
     }
 
     private void setActivePlayersToDone(GameSession gameSession) {
         for (Player player : gameSession.getPlayers()) {
-            Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
+            if (!gameSession.getActiveGameStateSession().getIsPlayerDone().get(player.getAuthorId())) {
+                Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
 
-            if (story.getPlayerIds().contains(player.getAuthorId())) {
-                activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), player.getAuthorId(), true);
+                if (story.getPlayerIds().contains(player.getAuthorId())) {
+                    activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), player.getAuthorId(), true);
+                }
             }
         }
     }

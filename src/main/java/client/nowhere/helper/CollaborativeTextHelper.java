@@ -605,7 +605,7 @@ public class CollaborativeTextHelper {
         Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
         if (!winningSubmissions.isEmpty() && winningSubmissions.getFirst().getCurrentText() != null) {
             String selectedOptionId = winningSubmissions.getFirst().getOutcomeTypeWithLabel().getSubTypes().getFirst().getId();
-            Option selectedOption = story.getOptions().stream().filter(option -> option.getOptionId().equals(selectedOptionId)).findFirst().orElse(null);
+            Option selectedOption = story.getSelectedOption();
             if (selectedOption != null) {
                 selectedOption.setSuccessText(winningSubmissions.getFirst().getCurrentText());
                 storyDAO.updateStory(story);
@@ -1104,6 +1104,7 @@ public class CollaborativeTextHelper {
             story.setSelectedOptionId(selectedOptionId);
             story.setGameCode(gameSession.getGameCode()); // Ensure gameCode is set for updateStory
 
+            initializeMakeOutcomeChoiceVotingPhase(gameSession);
             // Use the DAO's updateStory method
             storyDAO.updateStory(story);
         } catch (Exception e) {
@@ -1258,6 +1259,30 @@ public class CollaborativeTextHelper {
                 }
 
                 collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to initialize MAKE_CHOICE_VOTING phase: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Initializes the MAKE_OUTCOME_CHOICE_VOTING phase with submissions based on winning submissions from HOW_DOES_THIS_RESOLVE
+     * Each submission uses outcomeType (optionId) as submissionId and has new timestamps
+     */
+    public void initializeMakeOutcomeChoiceVotingPhase(GameSession gameSession) {
+        try {
+            Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
+            Option selectedOption = story.getSelectedOption();
+            if (selectedOption == null || selectedOption.getOutcomeForks() == null || selectedOption.getOutcomeForks().isEmpty()) {
+                System.err.println("No forks found for selectedOption in MAKE_OUTCOME_CHOICE_VOTING initialization");
+                return;
+            }
+
+            String phaseId = GameState.MAKE_OUTCOME_CHOICE_VOTING.name();
+
+            for (OutcomeFork outcomeFork : selectedOption.getOutcomeForks()) {
+                collaborativeTextDAO.addSubmissionAtomically(gameSession.getGameCode(), phaseId, outcomeFork.getTextSubmission());
             }
         } catch (Exception e) {
             System.err.println("Failed to initialize MAKE_CHOICE_VOTING phase: " + e.getMessage());
@@ -1804,7 +1829,7 @@ public class CollaborativeTextHelper {
 
         String selectedOptionId = currentEncounterStory.getSelectedOptionId();
 
-        Option selectedOption = currentEncounterStory.getOptions().stream().filter(option -> option.getOptionId().equals(selectedOptionId)).findFirst().get();
+        Option selectedOption = currentEncounterStory.getSelectedOption();
         return selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
     }
 }

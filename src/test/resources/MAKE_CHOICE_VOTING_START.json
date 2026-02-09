@@ -402,10 +402,10 @@
   "activeGameStateSession": {
     "gameCode": "NX43AU",
     "isPlayerDone": {
-      "abddf3d8-c59d-43d2-b91c-dc7ebc83da27": true,
+      "abddf3d8-c59d-43d2-b91c-dc7ebc83da27": false,
       "24fca1a7-efc5-4813-8530-448f0e5c29d1": false,
-      "884bcc3e-cd30-4714-91c2-b47827466f29": true,
-      "91732a20-794c-424a-8d69-8b4dedac4f85": true
+      "884bcc3e-cd30-4714-91c2-b47827466f29": false,
+      "91732a20-794c-424a-8d69-8b4dedac4f85": false
     }
   },
   "stories": [

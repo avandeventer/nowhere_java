@@ -201,6 +201,16 @@ public class Story {
         this.selectedOptionId = selectedOptionId;
     }
 
+    public Option getSelectedOption() {
+        if (this.getOptions() == null) {
+            return null;
+        }
+
+        Optional<Option> optionOptional = this.getOptions().stream()
+                .filter(option -> option.getOptionId().equals(selectedOptionId)).findFirst();
+        return optionOptional.orElse(null);
+    }
+
     public boolean isVisited() {
         return visited;
     }

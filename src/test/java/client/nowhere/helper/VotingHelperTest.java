@@ -245,4 +245,21 @@ public class VotingHelperTest {
             }
         }
     }
+
+    @Test
+    void testPlayerIdsSetOnMakeOutcomeChoiceVote() throws IOException {
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_OUTCOME_CHOICE_VOTING_START.json");
+        String gameCode = gameSession.getGameCode();
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        PlayerVote playerVoteRank1 = new PlayerVote("", "f1805f47-b2c5-49a8-9cf1-c8a61845ad7b", "7d19c18e-d8c8-4189-8c22-87167321d840", 1);
+        PlayerVote playerVoteRank2 = new PlayerVote("", "f1805f47-b2c5-49a8-9cf1-c8a61845ad7b", "0658b409-70a7-4f78-9633-455f2437ec26", 2);
+
+        votingHelper.submitPlayerVotes(
+                gameSession.getGameCode(),
+                List.of(playerVoteRank1, playerVoteRank2)
+        );
+
+        //Verify active player for the story is set to done instead of being allowed to vote on their own outcomes
+        verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_OUTCOME_CHOICE_VOTING), eq("eaa157ee-9d88-4d49-a728-4c8abca37119"), eq(true));
+    }
 }
