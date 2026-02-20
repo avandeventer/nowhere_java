@@ -1476,7 +1476,7 @@ public class CollaborativeTextHelper {
                 } else if (gameState == GameState.NAVIGATE_WINNER) {
                     yield "We see the encounters ahead";
                 } else {
-                    yield "The winning submission is...";
+                    yield "The player whose turn it is should read their story out loud!";
                 }
             }
         };
