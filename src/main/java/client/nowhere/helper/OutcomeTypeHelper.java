@@ -50,13 +50,11 @@ public class OutcomeTypeHelper {
     List<OutcomeType> distributeStoriesToPlayer(List<Story> sortedStories, List<Player> sortedPlayers, int playerIndex, int offset, boolean shouldReturnMultiple) {
         int numPlayers = sortedPlayers.size();
         int numStories = sortedStories.size();
-        List<OutcomeType> assignedStories = new ArrayList<>();
 
         // Calculate offset player index (wrapping if needed)
-        int offsetPlayerIndex = (playerIndex + offset) % numPlayers;
-        if (offsetPlayerIndex < 0) {
-            offsetPlayerIndex = offsetPlayerIndex + numPlayers;
-        }
+        int offsetPlayerIndex = getOffsetPlayerIndex(playerIndex, offset, numPlayers);
+
+        List<OutcomeType> assignedStories = new ArrayList<>();
 
         if (numStories <= numPlayers || !shouldReturnMultiple) {
             // Fewer stories than players, or player hasn't made 2+ submissions: return one story with wrapping
@@ -91,5 +89,13 @@ public class OutcomeTypeHelper {
         }
 
         return assignedStories;
+    }
+
+    public static int getOffsetPlayerIndex(int playerIndex, int offset, int numPlayers) {
+        int offsetPlayerIndex = (playerIndex + offset) % numPlayers;
+        if (offsetPlayerIndex < 0) {
+            offsetPlayerIndex = offsetPlayerIndex + numPlayers;
+        }
+        return offsetPlayerIndex;
     }
 }

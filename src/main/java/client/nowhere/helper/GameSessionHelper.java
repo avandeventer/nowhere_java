@@ -237,9 +237,13 @@ public class GameSessionHelper {
                 case NAVIGATE_WINNER:
                     boolean encounterAtNext = collaborativeTextHelper.handleNavigationStreamlined(gameSession.getGameCode());
                     if (!encounterAtNext) {
-                        gameSession.setGameState(WHAT_HAPPENS_HERE);
+                        if (gameSession.getRoundNumber() < 2) {
+                            gameSession.setGameState(WHAT_HAPPENS_HERE);
+                            gameSession.setRoundNumber(gameSession.getRoundNumber() + 1);
+                        } else {
+                            gameSession.setGameState(WRITE_EPILOGUES);
+                        }
                     }
-                    gameSession.setRoundNumber(gameSession.getRoundNumber() + 1);
                     break;
                 default:
                     break;

@@ -67,6 +67,8 @@ public enum GameState {
         MAKE_OUTCOME_CHOICE_WINNER,
         NAVIGATE_VOTING,
         NAVIGATE_WINNER,
+        WRITE_EPILOGUES,
+        WRITE_EPILOGUES_WINNER,
         CAMPFIRE,
         CAMPFIRE_WINNERS,
         EPILOGUE_PREAMBLE,
@@ -125,6 +127,12 @@ public enum GameState {
                 case NAVIGATE_WINNER -> {
                     //Loops back to make choice. This loop is broken in NAVIGATE_WINNER case in GameSessionHelper.updateGameSession
                     return MAKE_CHOICE_VOTING;
+                }
+                case WRITE_EPILOGUES -> {
+                    return WRITE_EPILOGUES_WINNER;
+                }
+                case WRITE_EPILOGUES_WINNER -> {
+                    return FINALE;
                 }
                 default -> {
                     return GameState.INIT;
@@ -345,8 +353,9 @@ public enum GameState {
                         case WHAT_CAN_WE_TRY, WHAT_CAN_WE_TRY_VOTING, WHAT_CAN_WE_TRY_WINNERS -> WHAT_CAN_WE_TRY;
                         case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNERS -> HOW_DOES_THIS_RESOLVE;
                         case HOW_DOES_THIS_RESOLVE_AGAIN, HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> HOW_DOES_THIS_RESOLVE_AGAIN;
+                        case WRITE_EPILOGUES, WRITE_EPILOGUES_WINNER -> WRITE_EPILOGUES_WINNER;
                         case MAKE_CHOICE_VOTING, MAKE_CHOICE_WINNER -> MAKE_CHOICE_VOTING;
-                    case MAKE_OUTCOME_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_WINNER ->  MAKE_OUTCOME_CHOICE_VOTING;
+                        case MAKE_OUTCOME_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_WINNER ->  MAKE_OUTCOME_CHOICE_VOTING;
                         case NAVIGATE_VOTING, NAVIGATE_WINNER -> NAVIGATE_VOTING;
                         case CAMPFIRE, CAMPFIRE_WINNERS -> CAMPFIRE;
                         default -> null;
@@ -518,12 +527,27 @@ public enum GameState {
                 }
                 if (phaseId == MAKE_OUTCOME_CHOICE_VOTING) {
                     return new PhaseBaseInfo(
-                            "Oh? Many paths lay before you",
-                            "Decide your friend's fate!",
+                            this == MAKE_OUTCOME_CHOICE_VOTING
+                                ? "Oh? Many paths lay before you"
+                                : "Our path is set",
+                            this == MAKE_OUTCOME_CHOICE_VOTING
+                                ? "Decide your friend's fate!"
+                                : "Read what happens out loud!",
                             CollaborativeMode.SHARE_TEXT,
                             null,
                             MAKE_OUTCOME_CHOICE_VOTING,
                             MAKE_OUTCOME_CHOICE_WINNER,
+                            false
+                    );
+                }
+                if (phaseId == WRITE_EPILOGUES) {
+                    return new PhaseBaseInfo(
+                            "How have we grown?",
+                            "See which of your friends you've been assigned and write how they've changed from their adventure!",
+                            CollaborativeMode.SHARE_TEXT,
+                            WRITE_EPILOGUES,
+                            null,
+                            WRITE_EPILOGUES_WINNER,
                             false
                     );
                 }
