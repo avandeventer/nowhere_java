@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import com.google.cloud.Timestamp;
 
 import client.nowhere.exception.ValidationException;
-import client.nowhere.constants.AuthorConstants;
 
 import static client.nowhere.model.GameState.WHAT_CAN_WE_TRY;
+import static client.nowhere.model.GameState.WHAT_HAPPENS_HERE;
 
 @Component
 public class CollaborativeTextHelper {
@@ -264,48 +264,6 @@ public class CollaborativeTextHelper {
         return newSubmission;
     }
 
-    // ===== STORY DISTRIBUTION HELPERS =====
-
-    private record StoryDistributionContext(
-        List<Story> sortedStories,
-        List<Player> sortedPlayers,
-        int playerIndex
-    ) {}
-
-    /**
-     * Common setup for story distribution: filters stories, sorts players by joinedAt,
-     * and sorts stories by player order.
-     * @param gameSession The game session
-     * @param playerId The player ID to find index for
-     * @param visited Whether to filter for visited (true) or unvisited (false) stories
-     * @return StoryDistributionContext with sorted stories, players, and player index, or null if any step yields empty results
-     */
-    private StoryDistributionContext getStoryDistributionContext(GameSession gameSession, String playerId, boolean visited) {
-        List<Story> stories = gameSession.getStories().stream()
-                .filter(story -> story.isVisited() == visited)
-                .toList();
-
-        if (stories.isEmpty()) {
-            return null;
-        }
-
-        PlayerSortResult playerResult = gameSession.getSortedPlayersAndIndex(playerId);
-        if (playerResult == null) {
-            return null;
-        }
-
-        List<Player> sortedPlayers = playerResult.getSortedPlayers();
-        int playerIndex = playerResult.getPlayerIndex();
-
-        List<Story> sortedStories = outcomeTypeHelper.sortStoriesByPlayerOrder(sortedPlayers, stories);
-
-        if (sortedStories.isEmpty()) {
-            return null;
-        }
-
-        return new StoryDistributionContext(sortedStories, sortedPlayers, playerIndex);
-    }
-
     // ===== GENERALIZED VALIDATION METHODS =====
 
     private GameSession getGameSession(String gameCode) {
@@ -457,11 +415,10 @@ public class CollaborativeTextHelper {
         Comparator<TextSubmission> rankingComparator = Comparator
                 .comparingDouble(TextSubmission::getAverageRanking);
 
-        if (gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS
-                || gameState == GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN) {
+        if (gameState == WHAT_HAPPENS_HERE) {
             // Rank by most submissions PER outcomeType
             List<String> uniqueOutcomeTypes = phase.getSubmissions().stream()
-                    .map(TextSubmission::getOutcomeType)
+                    .map(textSubmission -> textSubmission.getOutcomeTypeWithLabel().getId())
                     .filter(outcomeType -> outcomeType != null && !outcomeType.isEmpty())
                     .distinct()
                     .toList();
@@ -897,7 +854,7 @@ public class CollaborativeTextHelper {
                 
                 // Set authorId to the original author from the first addition (for branched submissions)
                 // or use the submission's authorId (for new submissions)
-                String originalAuthorId = createStoryFromTextSubmission(submission);
+                String originalAuthorId = getAuthorIdFromTextSubmission(submission);
                 story.setAuthorId(originalAuthorId);
                 storyDAO.createStory(story);
 
@@ -922,10 +879,10 @@ public class CollaborativeTextHelper {
         }
     }
 
-    private String createStoryFromTextSubmission(TextSubmission submission) {
+    private String getAuthorIdFromTextSubmission(TextSubmission submission) {
         String originalAuthorId = submission.getAuthorId();
         if (submission.getAdditions() != null && !submission.getAdditions().isEmpty()) {
-            TextAddition firstAddition = submission.getAdditions().get(0);
+            TextAddition firstAddition = submission.getAdditions().getFirst();
             if (firstAddition.getAuthorId() != null && !firstAddition.getAuthorId().isEmpty()) {
                 originalAuthorId = firstAddition.getAuthorId();
             }
@@ -1018,6 +975,9 @@ public class CollaborativeTextHelper {
      */
     private void handleHowDoesThisResolve(GameSession gameSession, List<TextSubmission> winningSubmissions) {
         try {
+
+            //TODO: This game phase handler should remove stories which have no resulting options connected.
+            //TODO: Make MAKE_CHOICE_VOTING handle players who end up with no stories as a result. They should wrap around and collab.
             if (winningSubmissions.isEmpty()) {
                 return;
             }
@@ -1072,7 +1032,7 @@ public class CollaborativeTextHelper {
                                     newOption.setOptionText(optionText);
                                     newOption.setOptionId(optionId);
                                     newOption.setSuccessText(winner.getCurrentText());
-                                    String originalAuthorId = createStoryFromTextSubmission(winner);
+                                    String originalAuthorId = getAuthorIdFromTextSubmission(winner);
                                     newOption.setOutcomeAuthorId(originalAuthorId);
                                     matchingStory.getOptions().add(newOption);
                                     newOption.setOutcomeForks(List.of(new OutcomeFork(winner)));
@@ -1551,7 +1511,7 @@ public class CollaborativeTextHelper {
                             .toList();
                 } else {
                     // Round > 0: Distribute visited stories and filter encounters
-                    StoryDistributionContext ctx = getStoryDistributionContext(gameSession, playerId, true);
+                    StoryDistributionContext ctx = outcomeTypeHelper.getStoryDistributionContext(gameSession, playerId, true);
                     if (ctx == null) {
                         return new ArrayList<>();
                     }
@@ -1565,7 +1525,7 @@ public class CollaborativeTextHelper {
                     List<Story> sortedVisitedStories = ctx.sortedStories();
                     
                     // Distribute stories to player
-                    List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedVisitedStories, sortedPlayers, playerIndex, offsetValue, false);
+                    List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedVisitedStories, sortedPlayers, playerIndex, offsetValue);
                     
                     if (assignedStories.isEmpty()) {
                         return new ArrayList<>();
@@ -1613,27 +1573,21 @@ public class CollaborativeTextHelper {
                             .toList();
                 }
             } else if (phaseId == WHAT_CAN_WE_TRY) {
-                StoryDistributionContext ctx = getStoryDistributionContext(gameSession, playerId, false);
+                StoryDistributionContext ctx = outcomeTypeHelper.getStoryDistributionContext(gameSession, playerId, false);
                 if (ctx == null) {
                     return new ArrayList<>();
                 }
 
-                // Check how many submissions the player has made for this phase
-                long playerSubmissionCount = getPlayerSubmissionCountForPhase(gameCode, playerId, WHAT_CAN_WE_TRY);
-
-                // Only return multiple stories if player has made 2+ submissions
-                boolean shouldReturnMultiple = playerSubmissionCount >= 2;
-
                 // Get next player's stories (offset by 1)
-                List<OutcomeType> nextPlayersStories = outcomeTypeHelper.distributeStoriesToPlayer(ctx.sortedStories(), ctx.sortedPlayers(), ctx.playerIndex(), 1, shouldReturnMultiple);
+                List<OutcomeType> nextPlayersStories = outcomeTypeHelper.distributeStoriesToPlayer(ctx.sortedStories(), ctx.sortedPlayers(), ctx.playerIndex(), 1);
 
                 // Get next next player's stories (offset by 2 if more than 4 players, else 0)
                 int nextNextOffset = ctx.sortedPlayers().size() > 4 ? 2 : 0;
-                List<OutcomeType> nextNextPlayerStories = outcomeTypeHelper.distributeStoriesToPlayer(ctx.sortedStories(), ctx.sortedPlayers(), ctx.playerIndex(), nextNextOffset, shouldReturnMultiple);
+                List<OutcomeType> nextNextPlayerStories = outcomeTypeHelper.distributeStoriesToPlayer(ctx.sortedStories(), ctx.sortedPlayers(), ctx.playerIndex(), nextNextOffset);
                 nextPlayersStories.addAll(nextNextPlayerStories);
                 return nextPlayersStories;
             } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE || phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
-                StoryDistributionContext ctx = getStoryDistributionContext(gameSession, playerId, false);
+                StoryDistributionContext ctx = outcomeTypeHelper.getStoryDistributionContext(gameSession, playerId, false);
                 if (ctx == null) {
                     return new ArrayList<>();
                 }
@@ -1652,7 +1606,7 @@ public class CollaborativeTextHelper {
                 int offsetPlayerIndex = (playerIndex + offsetValue) % numPlayers;
 
                 // Get assigned story (only one story per player for this phase)
-                List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, offsetValue, false);
+                List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, offsetValue);
 
                 if (assignedStories.isEmpty()) {
                     return new ArrayList<>();
@@ -1755,7 +1709,7 @@ public class CollaborativeTextHelper {
                 }
             } else if (phaseId == GameState.WRITE_EPILOGUES){
                 // Round > 0: Distribute visited stories and filter encounters
-                StoryDistributionContext ctx = getStoryDistributionContext(gameSession, playerId, true);
+                StoryDistributionContext ctx = outcomeTypeHelper.getStoryDistributionContext(gameSession, playerId, true);
                 if (ctx == null) {
                     return new ArrayList<>();
                 }
@@ -1769,7 +1723,7 @@ public class CollaborativeTextHelper {
                 List<Story> sortedVisitedStories = ctx.sortedStories();
 
                 // Distribute stories to player
-                List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedVisitedStories, sortedPlayers, playerIndex, offsetValue, false);
+                List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedVisitedStories, sortedPlayers, playerIndex, offsetValue);
 
                 int assignedPlayerIndex = OutcomeTypeHelper.getOffsetPlayerIndex(playerIndex, offsetValue, sortedPlayers.size());
                 OutcomeType playerOutcome = new OutcomeType(

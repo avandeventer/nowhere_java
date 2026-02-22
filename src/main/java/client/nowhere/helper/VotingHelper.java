@@ -240,29 +240,11 @@ public class VotingHelper {
             return new ArrayList<>();
         }
 
-        List<Story> allStories = gameSession.getStories();
-
-        if (allStories.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        PlayerSortResult playerResult = gameSession.getSortedPlayersAndIndex(playerId);
-        if (playerResult == null) {
-            return new ArrayList<>();
-        }
-
-        List<Player> sortedPlayers = playerResult.getSortedPlayers();
-        int playerIndex = playerResult.getPlayerIndex();
-
-        // Sort stories by matching authorId to player order
-        List<Story> sortedStories = outcomeTypeHelper.sortStoriesByPlayerOrder(sortedPlayers, allStories);
-
-        if (sortedStories.isEmpty()) {
-            return new ArrayList<>();
-        }
+        StoryDistributionContext ctx = outcomeTypeHelper.getStoryDistributionContext(gameSession, playerId, false);
 
         // Get assigned stories with offset of 3
-        List<OutcomeType> assignedPlayerStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, -1, false);
+        List<OutcomeType> assignedPlayerStories = outcomeTypeHelper.distributeStoriesToPlayer(ctx.sortedStories(), ctx.sortedPlayers(), ctx.playerIndex(), -1);
+
         List<String> storyIds = assignedPlayerStories.stream().map(OutcomeType::getId).toList();
 
         Encounter encounter = gameSession.getGameBoard().getEncounterAtPlayerCoordinates();

@@ -1,9 +1,6 @@
 package client.nowhere.helper;
 
-import client.nowhere.model.Option;
-import client.nowhere.model.OutcomeType;
-import client.nowhere.model.Player;
-import client.nowhere.model.Story;
+import client.nowhere.model.*;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -44,22 +41,23 @@ public class OutcomeTypeHelper {
      * @param sortedStories List of stories sorted by createdAt
      * @param sortedPlayers List of players sorted by joinedAt
      * @param playerIndex The index of the player in the sorted players list
-     * @param shouldReturnMultiple Whether to return multiple stories (player has 2+ submissions)
      * @return List of OutcomeType objects representing the assigned stories
      */
-    List<OutcomeType> distributeStoriesToPlayer(List<Story> sortedStories, List<Player> sortedPlayers, int playerIndex, int offset, boolean shouldReturnMultiple) {
+    List<OutcomeType> distributeStoriesToPlayer(List<Story> sortedStories, List<Player> sortedPlayers, int playerIndex, int offset) {
         int numPlayers = sortedPlayers.size();
-        int numStories = sortedStories.size();
 
         // Calculate offset player index (wrapping if needed)
         int offsetPlayerIndex = getOffsetPlayerIndex(playerIndex, offset, numPlayers);
 
-        List<OutcomeType> assignedStories = new ArrayList<>();
+        List<OutcomeType> assignedStoryOutcomeTypes = new ArrayList<>();
+        Player assignedPlayer = sortedPlayers.get(offsetPlayerIndex);
 
-        if (numStories <= numPlayers || !shouldReturnMultiple) {
-            // Fewer stories than players, or player hasn't made 2+ submissions: return one story with wrapping
-            int storyIndex = offsetPlayerIndex % numStories;
-            Story assignedStory = sortedStories.get(storyIndex);
+        List<Story> assignedStories = sortedStories.stream().filter(story -> story.getAuthorId().equals(assignedPlayer.getAuthorId())).toList();
+        if (assignedStories.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        for (Story assignedStory : assignedStories) {
             OutcomeType outcomeType = new OutcomeType(assignedStory.getStoryId(), assignedStory.getPrompt());
             String prequelStoryId = assignedStory.getPrequelStoryId();
             if (prequelStoryId != null && !prequelStoryId.isEmpty()) {
@@ -71,24 +69,10 @@ public class OutcomeTypeHelper {
                     outcomeType.getSubTypes().add(new OutcomeType(option.getOptionId(), option.getOptionText()));
                 }
             }
-
-            assignedStories.add(outcomeType);
-        } else {
-            // More stories than players AND player has 2+ submissions: return multiple stories
-            for (int i = 0; i < sortedStories.size(); i++) {
-                if (i % numPlayers == offsetPlayerIndex) {
-                    Story story = sortedStories.get(i);
-                    OutcomeType outcomeType = new OutcomeType(story.getStoryId(), story.getPrompt());
-                    String prequelStoryId = story.getPrequelStoryId();
-                    if (prequelStoryId != null && !prequelStoryId.isEmpty()) {
-                        outcomeType.setClarifier(prequelStoryId);
-                    }
-                    assignedStories.add(outcomeType);
-                }
-            }
+            assignedStoryOutcomeTypes.add(outcomeType);
         }
 
-        return assignedStories;
+        return assignedStoryOutcomeTypes;
     }
 
     public static int getOffsetPlayerIndex(int playerIndex, int offset, int numPlayers) {
@@ -97,5 +81,39 @@ public class OutcomeTypeHelper {
             offsetPlayerIndex = offsetPlayerIndex + numPlayers;
         }
         return offsetPlayerIndex;
+    }
+
+    /**
+     * Common setup for story distribution: filters stories, sorts players by joinedAt,
+     * and sorts stories by player order.
+     * @param gameSession The game session
+     * @param playerId The player ID to find index for
+     * @param visited Whether to filter for visited (true) or unvisited (false) stories
+     * @return StoryDistributionContext with sorted stories, players, and player index, or null if any step yields empty results
+     */
+    public StoryDistributionContext getStoryDistributionContext(GameSession gameSession, String playerId, boolean visited) {
+        List<Story> stories = gameSession.getStories().stream()
+                .filter(story -> story.isVisited() == visited)
+                .toList();
+
+        if (stories.isEmpty()) {
+            return null;
+        }
+
+        PlayerSortResult playerResult = gameSession.getSortedPlayersAndIndex(playerId);
+        if (playerResult == null) {
+            return null;
+        }
+
+        List<Player> sortedPlayers = playerResult.getSortedPlayers();
+        int playerIndex = playerResult.getPlayerIndex();
+
+        List<Story> sortedStories = sortStoriesByPlayerOrder(sortedPlayers, stories);
+
+        if (sortedStories.isEmpty()) {
+            return null;
+        }
+
+        return new StoryDistributionContext(sortedStories, sortedPlayers, playerIndex);
     }
 }

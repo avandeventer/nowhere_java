@@ -20,7 +20,6 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -133,11 +132,19 @@ public class VotingHelperTest {
                 Arguments.of("MAKE_CHOICE_VOTING_START.json", 1, 0, List.of("91732a20-794c-424a-8d69-8b4dedac4f85")),
                 Arguments.of("MAKE_CHOICE_VOTING_START.json", 2, 0, List.of("884bcc3e-cd30-4714-91c2-b47827466f29")),
                 Arguments.of("MAKE_CHOICE_VOTING_START.json", 3, 0, List.of("abddf3d8-c59d-43d2-b91c-dc7ebc83da27")),
-                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 0, 0, List.of("7c7228ca-b43a-4b45-b94c-8593d6404a0e")),
+                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 0, 0, List.of()), // The story at this encounter has already been visited
                 Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 1, 0, List.of("f1805f47-b2c5-49a8-9cf1-c8a61845ad7b")),
                 Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 2, 0, List.of("eaa157ee-9d88-4d49-a728-4c8abca37119")),
                 Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 3, 0, List.of("c0e0de02-3aae-4e32-ab15-0cac32557778")),
-                Arguments.of("MAKE_OUTCOME_CHOICE_VOTING_START.json", 2, 0, List.of("c0e0de02-3aae-4e32-ab15-0cac32557778", "7c7228ca-b43a-4b45-b94c-8593d6404a0e", "f1805f47-b2c5-49a8-9cf1-c8a61845ad7b"))
+                Arguments.of("MAKE_OUTCOME_CHOICE_VOTING_START.json", 2, 0, List.of("c0e0de02-3aae-4e32-ab15-0cac32557778", "7c7228ca-b43a-4b45-b94c-8593d6404a0e", "f1805f47-b2c5-49a8-9cf1-c8a61845ad7b")),
+                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 4, 0, List.of("eb0c6d8d-9c29-4fad-ad84-71e1b7c80c80")),
+                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 5, 0, List.of("eb0c6d8d-9c29-4fad-ad84-71e1b7c80c80")),
+                // The gameboard is borked and includes two stories written by the same author so that player is distributed to the same other player.
+                // This should not happen, but this is what should happen in the event that it does
+                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 6, 0, List.of("8512bfbf-88b8-4f19-9fc9-92dfea497fa8")),
+                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 7, 0, List.of())
+                //Player c1abb5c9-ab39-4ed9-9cfa-9c34d3f7e84e gets assigned to the story at the (7,0) encounter, but the story doesn't have any options to choose
+                //Correctly sets no player to active
         );
     }
 

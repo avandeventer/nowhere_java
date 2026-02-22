@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -156,11 +157,23 @@ public class CollaborativeTextHelperTest {
 
     // ===== WHAT_HAPPENS_HERE TESTS =====
 
-    @Test
-    void testCalculateWinningSubmission_WHAT_HAPPENS_HERE_FiltersSiblingsByAdditions() throws IOException {
+    /**
+     * Expected submission data for parameterized WHAT_HAPPENS_HERE tests.
+     * @param submissionId The expected submission ID
+     * @param currentText The expected currentText
+     * @param additionsSize The expected number of additions
+     */
+    record ExpectedSubmission(String submissionId, String currentText, int additionsSize) {}
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideWhatHappensHereScenarios")
+    void testCalculateWinningSubmission_WHAT_HAPPENS_HERE_FiltersSiblingsByAdditions(
+            String scenarioName,
+            String jsonFileName,
+            List<ExpectedSubmission> expectedSubmissions
+    ) throws IOException {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("WHAT_HAPPENS_HERE_START.json");
-        // Modify game state to WHAT_HAPPENS_HERE for this test
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
         gameSession.setGameState(GameState.WHAT_HAPPENS_HERE);
 
         String gameCode = gameSession.getGameCode();
@@ -168,7 +181,7 @@ public class CollaborativeTextHelperTest {
 
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
         if (phase == null) {
-            System.out.println("WHAT_HAPPENS_HERE phase not found in test data, skipping test");
+            System.out.println("WHAT_HAPPENS_HERE phase not found in test data, skipping test: " + scenarioName);
             return;
         }
 
@@ -181,53 +194,41 @@ public class CollaborativeTextHelperTest {
         // Assert
         assertNotNull(winningSubmissions, "Winning submissions should not be null");
 
-        System.out.println("=== WHAT_HAPPENS_HERE Test Results ===");
+        System.out.println("=== " + scenarioName + " ===");
         System.out.println("Total submissions in phase: " + phase.getSubmissions().size());
         System.out.println("Winning submissions returned: " + winningSubmissions.size());
 
-        // Verify that siblings with the same parent are filtered to keep only the one with most additions
         for (TextSubmission submission : winningSubmissions) {
             System.out.println("  - " + submission.getSubmissionId() + ": " + submission.getCurrentText());
             System.out.println("    Additions count: " + (submission.getAdditions() != null ? submission.getAdditions().size() : 0));
         }
 
         // Assert correct number of winning submissions
-        assertEquals(4, winningSubmissions.size(), "Should have 4 winning submissions");
+        assertEquals(expectedSubmissions.size(), winningSubmissions.size(),
+                "Should have " + expectedSubmissions.size() + " winning submissions");
 
-        // Assert each winning submission has correct text and additions count
+        // Build a lookup of expected submissions by ID for flexible ordering
+        Map<String, ExpectedSubmission> expectedById = expectedSubmissions.stream()
+                .collect(java.util.stream.Collectors.toMap(ExpectedSubmission::submissionId, e -> e));
+
+        // Assert each winning submission matches expected data
         for (TextSubmission submission : winningSubmissions) {
-            switch (submission.getSubmissionId()) {
-                case "8ad070ef-9fd7-4d26-a88d-018e1e93d985":
-                    assertEquals("A clown in a dumpy brown sack outfit walks up to you silently holding a sign that says \"Potatoes the Clown\". C He extends his hand and begins juggling the biggest potatoes you've ever seen. B He offers to teach you. What do you do? C",
-                            submission.getCurrentText());
-                    assertEquals(3, submission.getAdditions().size(), "Potatoes the Clown submission should have 3 additions");
-                    break;
-                case "1cda23db-449f-4f41-9461-440b26d0e009":
-                    assertEquals("Tommy Toad and the Bug Brigade block your path. They cross their many legs and stare down at you. A You feel intimidated. They're so small yet so intimidating! D",
-                            submission.getCurrentText());
-                    assertEquals(2, submission.getAdditions().size(), "Tommy Toad submission should have 2 additions");
-                    break;
-                case "b169ebdb-89a2-47b8-8157-e8b15dfbb432":
-                    assertEquals("The Plasma Ranger arrives just in the nick of time. You go toe to toe with your rival and the Plasma Ranger keeps switching sides? B",
-                            submission.getCurrentText());
-                    assertEquals(1, submission.getAdditions().size(), "Plasma Ranger submission should have 1 addition");
-                    break;
-                case "efd46f30-c24c-437b-907c-3a7f5d649405":
-                    assertEquals("Friggin Skummy Steve is here. What a scumbag. He challenges you to a snot-off. D",
-                            submission.getCurrentText());
-                    assertEquals(1, submission.getAdditions().size(), "Skummy Steve submission should have 1 addition");
-                    break;
-                default:
-                    fail("Unexpected submission ID: " + submission.getSubmissionId());
-            }
+            ExpectedSubmission expected = expectedById.get(submission.getSubmissionId());
+            assertNotNull(expected, "Unexpected submission ID: " + submission.getSubmissionId());
+            assertEquals(expected.currentText(), submission.getCurrentText(),
+                    "currentText mismatch for submission " + submission.getSubmissionId());
+            assertEquals(expected.additionsSize(),
+                    submission.getAdditions() != null ? submission.getAdditions().size() : 0,
+                    "additions size mismatch for submission " + submission.getSubmissionId());
         }
 
         // Verify storyDAO.createStory was called for each winning submission
         ArgumentCaptor<Story> storyCaptor = ArgumentCaptor.forClass(Story.class);
-        verify(storyDAO, times(4)).createStory(storyCaptor.capture());
+        verify(storyDAO, times(expectedSubmissions.size())).createStory(storyCaptor.capture());
 
         List<Story> createdStories = storyCaptor.getAllValues();
-        assertEquals(4, createdStories.size(), "Should have 4 stories created via StoryDAO");
+        assertEquals(expectedSubmissions.size(), createdStories.size(),
+                "Should have " + expectedSubmissions.size() + " stories created via StoryDAO");
 
         // Verify each created story has a prompt matching a winning submission's text
         for (Story story : createdStories) {
@@ -237,6 +238,47 @@ public class CollaborativeTextHelperTest {
                             .anyMatch(ws -> ws.getCurrentText().equals(story.getPrompt())),
                     "Story prompt should match a winning submission's text: " + story.getPrompt());
         }
+    }
+
+    static Stream<Arguments> provideWhatHappensHereScenarios() {
+        return Stream.of(
+                Arguments.of(
+                        "WHAT_HAPPENS_HERE Round 1 - Filter siblings by additions",
+                        "WHAT_HAPPENS_HERE_START.json",
+                        List.of(
+                                new ExpectedSubmission("8ad070ef-9fd7-4d26-a88d-018e1e93d985",
+                                        "A clown in a dumpy brown sack outfit walks up to you silently holding a sign that says \"Potatoes the Clown\". C He extends his hand and begins juggling the biggest potatoes you've ever seen. B He offers to teach you. What do you do? C",
+                                        3),
+                                new ExpectedSubmission("1cda23db-449f-4f41-9461-440b26d0e009",
+                                        "Tommy Toad and the Bug Brigade block your path. They cross their many legs and stare down at you. A You feel intimidated. They're so small yet so intimidating! D",
+                                        2),
+                                new ExpectedSubmission("b169ebdb-89a2-47b8-8157-e8b15dfbb432",
+                                        "The Plasma Ranger arrives just in the nick of time. You go toe to toe with your rival and the Plasma Ranger keeps switching sides? B",
+                                        1),
+                                new ExpectedSubmission("efd46f30-c24c-437b-907c-3a7f5d649405",
+                                        "Friggin Skummy Steve is here. What a scumbag. He challenges you to a snot-off. D",
+                                        1)
+                        )
+                ),
+                Arguments.of(
+                        "WHAT_HAPPENS_HERE Round 2 - Multiple branching story prompt submissions resolve to a single story per encounter",
+                        "WHAT_HAPPENS_HERE_ROUND2_END.json",
+                        List.of(
+                                new ExpectedSubmission("3e815691-f6f1-4110-bfa1-44b48ac9a765",
+                                        "Ooh yuck the people here are super gross C Ew yucky. Why are they like that. D",
+                                        2),
+                                new ExpectedSubmission("fea030da-8566-4173-af42-181ad25b6022",
+                                        "There are more flowers here! A",
+                                        1),
+                                new ExpectedSubmission("94a0575f-1987-43ee-a47a-b8cc4c69e394",
+                                        "You pull off the interstate and stop for gas D",
+                                        1),
+                                new ExpectedSubmission("16aed1b4-f771-410e-9fa1-929fe4cd3067",
+                                        "The dreaded submission appears again. You Auto Submit B",
+                                        1)
+                        )
+                )
+        );
     }
 
     // ===== PARAMETERIZED TESTS FOR MULTIPLE GAME STATES =====
