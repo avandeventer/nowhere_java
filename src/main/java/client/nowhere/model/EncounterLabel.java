@@ -13,6 +13,11 @@ public class EncounterLabel {
         this.textSubmission = new TextSubmission();
     }
 
+    public EncounterLabel(String encounterLabel) {
+        this.encounterId = UUID.randomUUID().toString();
+        this.encounterLabel = encounterLabel;
+    }
+
     public EncounterLabel(String encounterLabel, TextSubmission textSubmission) {
         this.encounterId = UUID.randomUUID().toString();
         this.encounterLabel = encounterLabel;

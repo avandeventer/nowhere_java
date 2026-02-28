@@ -1,5 +1,7 @@
 package client.nowhere.helper;
 
+import static client.nowhere.model.GameState.HOW_DOES_THIS_RESOLVE;
+import static client.nowhere.model.GameState.HOW_DOES_THIS_RESOLVE_AGAIN;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -84,7 +86,7 @@ public class CollaborativeTextHelperTest {
         // Arrange
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
         String gameCode = gameSession.getGameCode();
-        String phaseId = GameState.HOW_DOES_THIS_RESOLVE.name();
+        String phaseId = HOW_DOES_THIS_RESOLVE.name();
 
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
         assertNotNull(phase, "HOW_DOES_THIS_RESOLVE phase should exist in test data");
@@ -128,7 +130,7 @@ public class CollaborativeTextHelperTest {
         // Arrange
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
         String gameCode = gameSession.getGameCode();
-        String phaseId = GameState.HOW_DOES_THIS_RESOLVE.name();
+        String phaseId = HOW_DOES_THIS_RESOLVE.name();
 
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
 
@@ -328,7 +330,7 @@ public class CollaborativeTextHelperTest {
         return Stream.of(
                 Arguments.of(
                         "HOW_DOES_THIS_RESOLVE - Standard winner calculation",
-                        GameState.HOW_DOES_THIS_RESOLVE,
+                        HOW_DOES_THIS_RESOLVE,
                         "HOW_DOES_THIS_RESOLVE",
                         "HOW_DOES_THIS_RESOLVE_START.json",
                         6
@@ -352,15 +354,27 @@ public class CollaborativeTextHelperTest {
 
     // ===== STORY OPTION INTEGRATION TESTS =====
 
-    @Test
-    void testHandleHowDoesThisResolve_AddsOptionsToStories() throws IOException {
+    /**
+     * Expected option data for parameterized HOW_DOES_THIS_RESOLVE option tests.
+     * submissionId = optionId, currentText = expected successText, additionsSize = expected outcomeForks count.
+     */
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideHowDoesThisResolveScenarios")
+    void testHandleHowDoesThisResolve_AddsOptionsToStories(
+            String scenarioName,
+            String jsonFileName,
+            List<ExpectedSubmission> expectedOptions,
+            GameState expectedGameState
+    ) throws IOException {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
+        gameSession.setGameState(expectedGameState);
         String gameCode = gameSession.getGameCode();
-        String phaseId = GameState.HOW_DOES_THIS_RESOLVE.name();
+        String phaseId = expectedGameState.name();
 
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
-        List<Story> stories = gameSession.getStories();
+        List<Story> stories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
         when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
@@ -369,8 +383,8 @@ public class CollaborativeTextHelperTest {
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
 
         // Assert - Verify the structure needed for story option integration
-        System.out.println("=== Story Option Integration Test ===");
-        System.out.println("Stories in game session: " + stories.size());
+        System.out.println("=== " + scenarioName + " ===");
+        System.out.println("Stories in game session for this round: " + stories.size());
 
         for (Story story : stories) {
             System.out.println("Story: " + story.getStoryId() + " - " + story.getPrompt());
@@ -381,48 +395,41 @@ public class CollaborativeTextHelperTest {
                         System.out.println("  Fork: " + fork.getTextSubmission().getSubmissionId() + " - " + fork.getTextSubmission().getCurrentText());
                     }
                 }
+            } else {
+                verify(gameSessionDAO).updateDungeonGrid(gameCode, gameSession.getGameBoard());
             }
         }
 
-        // Assert correct resolution of successText and outcomeFork texts
+        // Build a lookup of expected options by optionId
+        Map<String, ExpectedSubmission> expectedByOptionId = expectedOptions.stream()
+                .collect(java.util.stream.Collectors.toMap(ExpectedSubmission::submissionId, e -> e));
+
+        // Assert correct resolution of successText and outcomeFork count
         for (Story story : stories) {
-            if (story.getOptions() == null) continue;
+            if (story.getOptions() == null || story.getOptions().isEmpty()) {
+                GameBoard gameBoard = gameSession.getGameBoard();
+                assertNotNull(gameBoard, "GameBoard should not be null when a story has no options");
+                boolean presentInGrid = gameBoard.getDungeonGrid().values().stream()
+                        .anyMatch(encounter -> story.getStoryId().equals(encounter.getStoryId()));
+                assertFalse(presentInGrid,
+                        "Story with no options should have been removed from dungeonGrid: " + story.getStoryId());
+                continue;
+            }
 
             for (Option option : story.getOptions()) {
-                switch (option.getOptionId()) {
-                    case "5e244119-9bdc-4f48-bc14-7669ef2a4d1a":
-                        assertEquals("Heh heh heh the plan works out perfectly <:) C Heheheh nice B", option.getSuccessText());
-                        assertEquals(1, option.getOutcomeForks().size());
-                        assertEquals("Heh heh heh the plan works out perfectly <:) C Heheheh nice B",
-                                option.getOutcomeForks().getFirst().getTextSubmission().getCurrentText());
-                        break;
-                    case "92e425ef-5cbc-4906-8259-9ac509550564":
-                        assertEquals("You stick your leg out you jerk! They fall! D", option.getSuccessText());
-                        assertEquals(1, option.getOutcomeForks().size());
-                        assertEquals("You stick your leg out you jerk! They fall! D",
-                                option.getOutcomeForks().getFirst().getTextSubmission().getCurrentText());
-                        break;
-                    case "d33a9299-86ea-48f6-afd1-719608b674f4":
-                        assertEquals("You give em a coin! They toss it! A", option.getSuccessText());
-                        assertEquals(2, option.getOutcomeForks().size());
-                        assertTrue(option.getOutcomeForks().stream()
-                                .anyMatch(f -> f.getTextSubmission().getCurrentText().equals("You give em a coin! They toss it! A Friggin Tossers! B")));
-                        assertTrue(option.getOutcomeForks().stream()
-                                .anyMatch(f -> f.getTextSubmission().getCurrentText().equals("You give em a coin! They toss it! A You start to see their way of life! C")));
-                        break;
-                    case "057da387-0a28-4e18-ae90-6dceb66a7e09":
-                        assertEquals("Phew you get the scalpel and it helps a lot! B", option.getSuccessText());
-                        assertEquals(2, option.getOutcomeForks().size());
-                        assertTrue(option.getOutcomeForks().stream()
-                                .anyMatch(f -> f.getTextSubmission().getCurrentText().equals("Phew you get the scalpel and it helps a lot! B Wow you're basically a doctor now! A")));
-                        assertTrue(option.getOutcomeForks().stream()
-                                .anyMatch(f -> f.getTextSubmission().getCurrentText().equals("Phew you get the scalpel and it helps a lot! B You earn a PHD in doctoring C")));
-                        break;
+                ExpectedSubmission expected = expectedByOptionId.get(option.getOptionId());
+                if (expected == null) {
+                    fail("Option ID " + option.getOptionId() + " with success text " + option.getSuccessText() + " was not expected");
                 }
+
+                assertEquals(expected.currentText(), option.getSuccessText(),
+                        "successText mismatch for option " + option.getOptionId());
+                assertEquals(expected.additionsSize(), option.getOutcomeForks().size(),
+                        "outcomeForks count mismatch for option " + option.getOptionId());
             }
         }
 
-        // Verify winning submissions have the required outcomeType information
+        // Log winning submissions and their outcome types
         for (TextSubmission submission : winningSubmissions) {
             OutcomeType outcomeTypeWithLabel = submission.getOutcomeTypeWithLabel();
             if (outcomeTypeWithLabel != null && outcomeTypeWithLabel.getSubTypes() != null) {
@@ -434,12 +441,47 @@ public class CollaborativeTextHelperTest {
         }
     }
 
+    static Stream<Arguments> provideHowDoesThisResolveScenarios() {
+        return Stream.of(
+                Arguments.of(
+                        "HOW_DOES_THIS_RESOLVE - Adds options to stories",
+                        "HOW_DOES_THIS_RESOLVE_START.json",
+                        List.of(
+                                new ExpectedSubmission("5e244119-9bdc-4f48-bc14-7669ef2a4d1a",
+                                        "Heh heh heh the plan works out perfectly <:) C Heheheh nice B", 1),
+                                new ExpectedSubmission("92e425ef-5cbc-4906-8259-9ac509550564",
+                                        "You stick your leg out you jerk! They fall! D", 1),
+                                new ExpectedSubmission("d33a9299-86ea-48f6-afd1-719608b674f4",
+                                        "You give em a coin! They toss it! A", 2),
+                                new ExpectedSubmission("057da387-0a28-4e18-ae90-6dceb66a7e09",
+                                        "Phew you get the scalpel and it helps a lot! B", 2)
+                        ),
+                        HOW_DOES_THIS_RESOLVE
+                ),
+                Arguments.of(
+                        "HOW_DOES_THIS_RESOLVE_AGAIN - Story with no options submitted",
+                        "HOW_DOES_THIS_RESOLVE_AGAIN_MISSING_OPTIONS.json",
+                        List.of(
+                                new ExpectedSubmission("d1238b9e-6b52-49e8-aac7-a71b67b009f9",
+                                        "You hightail it outta there! A", 1),
+                                new ExpectedSubmission("c5f78f46-b6ee-4858-940b-0b62aba87aa6",
+                                        "You ask the king to REMOVE THEM AT ONCE. B", 2),
+                                new ExpectedSubmission("6ff0f385-f95c-4d4c-9e1d-cc807612c66e",
+                                        "Wow you smell EVEN BETTER. C", 1),
+                                new ExpectedSubmission("bc5bbc80-1aca-455d-b283-c4ad55cfd9dc",
+                                        "You punch the submission... into... submission... D", 1)
+                        ),
+                        HOW_DOES_THIS_RESOLVE_AGAIN
+                )
+        );
+    }
+
     @Test
     void testWinningSubmissions_HaveValidOutcomeTypeSubTypes() throws IOException {
         // Arrange
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
         String gameCode = gameSession.getGameCode();
-        String phaseId = GameState.HOW_DOES_THIS_RESOLVE.name();
+        String phaseId = HOW_DOES_THIS_RESOLVE.name();
 
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
 
@@ -499,7 +541,7 @@ public class CollaborativeTextHelperTest {
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
 
         // For HOW_DOES_THIS_RESOLVE, we need to mock the WHAT_CAN_WE_TRY phase
-        if (gameState == GameState.HOW_DOES_THIS_RESOLVE || gameState == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
+        if (gameState == HOW_DOES_THIS_RESOLVE || gameState == HOW_DOES_THIS_RESOLVE_AGAIN) {
             CollaborativeTextPhase whatCanWeTryPhase = gameSession.getCollaborativeTextPhases().get(GameState.WHAT_CAN_WE_TRY.name());
             when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name()))
                     .thenReturn(whatCanWeTryPhase);
@@ -595,7 +637,7 @@ public class CollaborativeTextHelperTest {
                 Arguments.of(
                         "HOW_DOES_THIS_RESOLVE - 4 players, offset 2",
                         "HOW_DOES_THIS_RESOLVE_START.json",
-                        GameState.HOW_DOES_THIS_RESOLVE,
+                        HOW_DOES_THIS_RESOLVE,
                         // Expected story IDs per player (in player join order)
                         // Stories: 0=704e29cf (Andy), 1=ce52535b (Joe), 2=af0925f5 (Byron), 3=80facdb7 (Kirsten)
                         List.of(

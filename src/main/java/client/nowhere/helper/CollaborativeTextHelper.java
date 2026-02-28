@@ -654,116 +654,6 @@ public class CollaborativeTextHelper {
     }
 
     /**
-     * Initializes dungeon grid with winning submission at (0,0) and adjacent encounters
-     */
-    private void initializeDungeonGridWithEncounters(String gameCode, String phaseId, List<TextSubmission> winningSubmissions, GameSessionDisplay display) {
-        try {
-            if (winningSubmissions.isEmpty()) return;
-
-            GameSession gameSession = getGameSession(gameCode);
-            CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
-            if (phase == null) return;
-
-            AdventureMap adventureMap = gameSession.getAdventureMap();
-            if (adventureMap == null) {
-                adventureMap = new AdventureMap();
-                gameSession.setAdventureMap(adventureMap);
-            }
-
-            if (adventureMap.getEncounterLabels() == null) {
-                adventureMap.setEncounterLabels(new ArrayList<>());
-            }
-
-            // Create EncounterLabels for all submissions with votes
-            List<EncounterLabel> encounterLabels = new ArrayList<>();
-            for (TextSubmission submission : winningSubmissions) {
-                EncounterLabel label = new EncounterLabel(
-                    submission.getCurrentText(),
-                    submission
-                );
-                encounterLabels.add(label);
-            }
-            adventureMap.getEncounterLabels().addAll(encounterLabels);
-
-            EncounterLabel winningLabel = encounterLabels.get(0);
-            GameBoard gameBoard = new GameBoard();
-            
-            // Place winning submission at (0, 0)
-            gameBoard.setEncounter(0, 0, new Encounter(winningLabel, EncounterType.NORMAL, "", ""));
-
-            int entityXPosition = Math.random() < 0.5 ? -1 : 1;
-            int entityYPosition =  Math.random() < 0.5 ? -1 : 1;
-
-            gameBoard.setEncounter(entityXPosition, entityYPosition, new Encounter(new EncounterLabel(display.getEntity(), new TextSubmission()), EncounterType.MAIN, "", ""));
-
-            List<int[]> allPositions = new ArrayList<>();
-            for (int y = -4; y <= 4; y++) {
-                for (int x = -4; x <= 4; x++) {
-                    // Exclude starting position (0, 0) and entity position
-                    // Use OR because we want to exclude when BOTH coordinates match the excluded position
-                    if ((x != 0 || y != 0) && (x != entityXPosition || y != entityYPosition)) {
-                        allPositions.add(new int[]{x, y});
-                    }
-                }
-            }
-            Collections.shuffle(allPositions, new Random());
-
-            // Create weighted list of EncounterLabels based on ranking (higher ranked = more occurrences)
-            // Skip the first one (winning submission) as it's already placed at (0,0)
-            List<EncounterLabel> weightedLabels = new ArrayList<>();
-            for (int i = 1; i < encounterLabels.size(); i++) {
-                EncounterLabel label = encounterLabels.get(i);
-                // Higher ranked (lower index) get more placements
-                // Rank 1 (index 1) gets 5 copies, rank 2 gets 4, rank 3 gets 3, etc.
-                int copies = Math.max(1, 6 - i);
-                for (int j = 0; j < copies; j++) {
-                    weightedLabels.add(label);
-                }
-            }
-
-            // If we don't have enough labels, repeat the higher ranked ones
-            if (weightedLabels.isEmpty()) {
-                if (encounterLabels.size() > 1) {
-                    // If only one other submission, repeat it
-                    EncounterLabel otherLabel = encounterLabels.get(1);
-                    for (int i = 0; i < allPositions.size(); i++) {
-                        weightedLabels.add(otherLabel);
-                    }
-                } else {
-                    // Only winning submission exists, use it for all positions
-                    for (int i = 0; i < allPositions.size(); i++) {
-                        weightedLabels.add(winningLabel);
-                    }
-                }
-            }
-
-            // Place encounters at all positions
-            for (int i = 0; i < allPositions.size(); i++) {
-                int[] pos = allPositions.get(i);
-                int x = pos[0];
-                int y = pos[1];
-                EncounterLabel label = weightedLabels.isEmpty()
-                    ? winningLabel
-                    : weightedLabels.get(i % weightedLabels.size());
-                
-                gameBoard.setEncounter(x, y, new Encounter(label, EncounterType.NORMAL, "", ""));
-            }
-            gameBoard.setPlayerCoordinates(new PlayerCoordinates(0, 0));
-            // Update GameSession in Firestore via DAO
-            gameSessionDAO.initializeDungeonGrid(
-                gameCode,
-                gameBoard,
-                adventureMap.getEncounterLabels()
-            );
-
-            // Initialize NAVIGATE_VOTING phase with directional submissions
-            initializeNavigateVotingPhase(gameCode);
-        } catch (Exception e) {
-            System.err.println("Failed to initialize dungeon grid: " + e.getMessage());
-        }
-    }
-
-    /**
      * Initializes the NAVIGATE_VOTING phase with four directional submissions (NORTH, SOUTH, EAST, WEST)
      */
     private void initializeNavigateVotingPhase(String gameCode) {
@@ -854,7 +744,7 @@ public class CollaborativeTextHelper {
                 
                 // Set authorId to the original author from the first addition (for branched submissions)
                 // or use the submission's authorId (for new submissions)
-                String originalAuthorId = getAuthorIdFromTextSubmission(submission);
+                String originalAuthorId = submission.getOriginalAuthorId();
                 story.setAuthorId(originalAuthorId);
                 storyDAO.createStory(story);
 
@@ -871,6 +761,23 @@ public class CollaborativeTextHelper {
                 gameBoard.setEncounter(x, y, encounter);
             }
 
+            // Create pre-canned stories for players who didn't contribute a winning submission
+            List<Story> preCannedStories = getPreCannedStories(gameSession, winningSubmissions);
+            for (int i = 0; i < preCannedStories.size(); i++) {
+                Story preCannedStory = preCannedStories.get(i);
+                storyDAO.createStory(preCannedStory);
+
+                Encounter encounter = new Encounter(
+                    preCannedStory.getEncounterLabel(),
+                    EncounterType.NORMAL,
+                    preCannedStory.getStoryId(),
+                    preCannedStory.getPrompt()
+                );
+
+                int x = currentX + winningSubmissions.size() + i;
+                gameBoard.setEncounter(x, y, encounter);
+            }
+
             // Update the game board in Firestore
             gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
         } catch (Exception e) {
@@ -879,93 +786,47 @@ public class CollaborativeTextHelper {
         }
     }
 
-    private String getAuthorIdFromTextSubmission(TextSubmission submission) {
-        String originalAuthorId = submission.getAuthorId();
-        if (submission.getAdditions() != null && !submission.getAdditions().isEmpty()) {
-            TextAddition firstAddition = submission.getAdditions().getFirst();
-            if (firstAddition.getAuthorId() != null && !firstAddition.getAuthorId().isEmpty()) {
-                originalAuthorId = firstAddition.getAuthorId();
+    private List<Story> getPreCannedStories(GameSession gameSession, List<TextSubmission> winningSubmissions) {
+        Set<String> winningAuthorIds = winningSubmissions.stream()
+                .map(TextSubmission::getOriginalAuthorId)
+                .collect(Collectors.toSet());
+
+        List<Story> preCannedStories = new ArrayList<>();
+        for (Player player : gameSession.getPlayers()) {
+            if (winningAuthorIds.contains(player.getAuthorId())) {
+                continue;
             }
+
+            Story story = new Story();
+            story.setNewStoryId();
+
+            List<List<String>> preCannedPrompts = new ArrayList<>(List.of(
+                    List.of("The Slime Lord", "The local slime lord can't find his favorite barrel to occupy..."),
+                    List.of("Rather Handsome Cherry Dabniel", "Rather Handsome Cherry Dabniel has fallen into a bottomless ale tankard.  He's too handsome to survive amongst the magic fiends that dwell in that enchanted place, you must save Rather Handsome Cherry Dabniel!"),
+                    List.of("Fight Bugs", "You chance upon bugs, locked in deadly battle."),
+                    List.of("Regular Sized Cats", "You waltz into ye ole tavern. There are two ye ole cats waiting to take your order. They are not fat, rather regular sized."),
+                    List.of("The Magic Maze", "The ground opens up beneath you and you find yourself flung into a magic underground labyrinth."),
+                    List.of("A Swarm of Lightening Bugs", "It’s dusk and the creatures are all singing their nightly serenades - you know … hoo hoo and chirp… you notice a little deeper in and under the canopy - a thousand lightening bugs swarming around something big… you hike in to see what it’s all about…"),
+                    List.of("A Festival!", "A Festival is in full motion, kites sail, children laugh, and fried goods can be acquired on every street corner."),
+                    List.of("A Shady Tavern", "A hooded figure sits in the shadowed corner of the tavern, there is an air of skullduggery and magic about them. They give you a knowing look and beckon you over. You leave your stool at the bar and join them away from the hustle and bustle."),
+                    List.of("Strange Ritual Grounds", "Masked cultists block your way saying you are trespassing on their sacred site, and you must pay tribute for their god's blessing or die for the disrespect."),
+                    List.of("The Crown and Stag Pub", "You stop for a hard earned ale when your old flame, Sam Longbutt, sidles up to you. \"Been a while.\" they say and wink."),
+                    List.of("A Pastoral Altar", "You see an old man here vandalizing the altar to the God of Harvest, Erysus! As he turns to you his eyes appear dark and black! What do you do!?")
+            ));
+
+            Collections.shuffle(preCannedPrompts);
+            List<String> selectedStory = preCannedPrompts.subList(0, 1).getFirst();
+            String selectedEncounter = selectedStory.get(0);
+            story.setEncounterLabel(new EncounterLabel(selectedEncounter));
+            String selectedPrompt = selectedStory.get(1);
+            story.setPrompt(selectedPrompt);
+
+            story.setAuthorId(player.getAuthorId());
+            story.setGameCode(gameSession.getGameCode());
+            story.setCreatedAt(Timestamp.now());
+            preCannedStories.add(story);
         }
-        return originalAuthorId;
-    }
-
-    /**
-     * Handles WHAT_HAPPENS_HERE phase: Creates a Story from the winning submission
-     * and updates the Encounter at player coordinates
-     */
-    private void handleWhatHappensHere(String gameCode, List<TextSubmission> winningSubmissions) {
-        try {
-            if (winningSubmissions.isEmpty()) {
-                return;
-            }
-
-            // Get the single winning submission
-            TextSubmission winningSubmission = winningSubmissions.getFirst();
-
-            // Single fetch to ensure data consistency
-            GameSession gameSession = getGameSession(gameCode);
-            GameBoard gameBoard = gameSession.getGameBoard();
-            if (gameBoard == null) {
-                gameBoard = new GameBoard();
-                gameSession.setGameBoard(gameBoard);
-            }
-
-            PlayerCoordinates playerCoords = gameBoard.getPlayerCoordinates();
-            if (playerCoords == null) {
-                System.err.println("Player coordinates not found for game: " + gameCode);
-                return;
-            }
-
-            Encounter encounter = gameBoard.getEncounter(
-                playerCoords.getxCoordinate(),
-                playerCoords.getyCoordinate()
-            );
-            if (encounter == null) {
-                System.err.println("Encounter not found at coordinates (" + playerCoords.getxCoordinate() + ", " + playerCoords.getyCoordinate() + ")");
-                return;
-            }
-
-            // Look up story using the encounter's storyId directly (no re-fetch)
-            Story story = null;
-            if (encounter.getStoryId() != null && !encounter.getStoryId().isEmpty()) {
-                List<Story> stories = storyDAO.getAuthorStoriesByStoryId(gameCode, encounter.getStoryId());
-                if (stories != null && !stories.isEmpty()) {
-                    story = stories.getFirst();
-                }
-            }
-
-            //Create or update the existing story
-            if (story == null) {
-                story = new Story();
-                story.setNewStoryId();
-                story.setPrompt(winningSubmission.getCurrentText());
-                story.setGameCode(gameCode);
-                story.setEncounterLabel(encounter.getEncounterLabel());
-                storyDAO.createStory(story);
-            } else {
-                story.setPrompt(winningSubmission.getCurrentText());
-                storyDAO.updateStory(story);
-            }
-
-            // Update the Encounter at player coordinates
-            encounter.setStoryId(story.getStoryId());
-            encounter.setStoryPrompt(story.getPrompt());
-            encounter.setVisited(true);
-
-            // Update the encounter in the game board
-            gameBoard.setEncounter(
-                playerCoords.getxCoordinate(),
-                playerCoords.getyCoordinate(),
-                encounter
-            );
-
-            // Update the game board in Firestore
-            gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
-        } catch (Exception e) {
-            System.err.println("Failed to handle WHAT_HAPPENS_HERE: " + e.getMessage());
-            e.printStackTrace();
-        }
+        return preCannedStories;
     }
 
     /**
@@ -976,7 +837,6 @@ public class CollaborativeTextHelper {
     private void handleHowDoesThisResolve(GameSession gameSession, List<TextSubmission> winningSubmissions) {
         try {
 
-            //TODO: This game phase handler should remove stories which have no resulting options connected.
             //TODO: Make MAKE_CHOICE_VOTING handle players who end up with no stories as a result. They should wrap around and collab.
             if (winningSubmissions.isEmpty()) {
                 return;
@@ -1032,7 +892,7 @@ public class CollaborativeTextHelper {
                                     newOption.setOptionText(optionText);
                                     newOption.setOptionId(optionId);
                                     newOption.setSuccessText(winner.getCurrentText());
-                                    String originalAuthorId = getAuthorIdFromTextSubmission(winner);
+                                    String originalAuthorId = winner.getOriginalAuthorId();
                                     newOption.setOutcomeAuthorId(originalAuthorId);
                                     matchingStory.getOptions().add(newOption);
                                     newOption.setOutcomeForks(List.of(new OutcomeFork(winner)));
@@ -1074,11 +934,41 @@ public class CollaborativeTextHelper {
                 }
             }
 
+            if (gameSession.getGameState() == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
+                removeEncountersWithNoOptions(gameSession, stories, gameCode);
+            }
             // Initialize MAKE_CHOICE_VOTING phase with submissions for each option
             initializeMakeChoiceVotingPhase(gameCode, winningSubmissions);
         } catch (Exception e) {
             System.err.println("Failed to handle HOW_DOES_THIS_RESOLVE: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private void removeEncountersWithNoOptions(GameSession gameSession, List<Story> stories, String gameCode) {
+        // Remove encounters whose stories have no option and shift remaining encounters to the left
+        GameBoard gameBoard = gameSession.getGameBoard();
+        if (gameBoard != null && gameBoard.getDungeonGrid() != null) {
+            Set<String> storyIdsWithNoOptions = stories.stream()
+                    .filter(story -> story.getOptions() == null || story.getOptions().isEmpty())
+                    .map(Story::getStoryId)
+                    .collect(Collectors.toSet());
+
+            if (!storyIdsWithNoOptions.isEmpty()) {
+                Map<String, Encounter> grid = gameBoard.getDungeonGrid();
+                GameBoard shiftedGameBoard = new GameBoard();
+
+                int newIndex = 0;
+                for (Map.Entry<String, Encounter> entry : grid.entrySet()) {
+                    if (!storyIdsWithNoOptions.contains(entry.getValue().getStoryId())) {
+                        shiftedGameBoard.setEncounter(newIndex, 0, entry.getValue());
+                        newIndex++;
+                    }
+                }
+
+                gameBoard.setDungeonGrid(shiftedGameBoard.getDungeonGrid());
+                gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
+            }
         }
     }
 
@@ -1603,7 +1493,6 @@ public class CollaborativeTextHelper {
                 
                 // Calculate offset player index for use in shared index logic
                 int numPlayers = sortedPlayers.size();
-                int offsetPlayerIndex = (playerIndex + offsetValue) % numPlayers;
 
                 // Get assigned story (only one story per player for this phase)
                 List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, offsetValue);
@@ -1647,6 +1536,7 @@ public class CollaborativeTextHelper {
 
                 // Check if player index is shared (wraps around when numPlayers > numStories)
                 // A player shares if: offsetPlayerIndex >= numStories OR offsetPlayerIndex < (numPlayers - numStories)
+                int offsetPlayerIndex = OutcomeTypeHelper.getOffsetPlayerIndex(playerIndex, offsetValue, numPlayers);
                 boolean isSharedIndex = numPlayers > numStories &&
                         (offsetPlayerIndex >= numStories || offsetPlayerIndex < (numPlayers - numStories));
 
@@ -1787,7 +1677,7 @@ public class CollaborativeTextHelper {
             "Use your feet",
             "Try to be brave"
         );
-        
+
         // Randomly select 3 options
         List<String> shuffled = new ArrayList<>(preCannedOptions);
         Collections.shuffle(shuffled);

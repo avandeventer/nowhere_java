@@ -95,4 +95,15 @@ public class TextSubmission {
     public void incrementVotes() {
         this.totalVotes++;
     }
+
+    public String getOriginalAuthorId() {
+        String originalAuthorId = this.authorId;
+        if (this.additions != null && !this.additions.isEmpty()) {
+            TextAddition firstAddition = this.additions.getFirst();
+            if (firstAddition.getAuthorId() != null && !firstAddition.getAuthorId().isEmpty()) {
+                originalAuthorId = firstAddition.getAuthorId();
+            }
+        }
+        return originalAuthorId;
+    }
 }
