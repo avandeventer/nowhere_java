@@ -252,7 +252,7 @@ public class GameSessionHelperTest {
                         .collect(Collectors.toList());
                 // With the new logic, all options in a story should have the SAME author
                 if (outcomeAuthorIds.size() > 1) {
-                    String firstAuthorId = outcomeAuthorIds.get(0);
+                    String firstAuthorId = outcomeAuthorIds.getFirst();
                     assertThat(outcomeAuthorIds).allMatch(id -> id.equals(firstAuthorId),
                         "All options in story " + story.getStoryId() + " should have the same outcome author");
                 }

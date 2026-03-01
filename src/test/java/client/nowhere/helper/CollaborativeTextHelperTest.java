@@ -226,19 +226,27 @@ public class CollaborativeTextHelperTest {
 
         // Verify storyDAO.createStory was called for each winning submission
         ArgumentCaptor<Story> storyCaptor = ArgumentCaptor.forClass(Story.class);
-        verify(storyDAO, times(expectedSubmissions.size())).createStory(storyCaptor.capture());
+        verify(storyDAO, times(gameSession.getPlayers().size())).createStory(storyCaptor.capture());
 
         List<Story> createdStories = storyCaptor.getAllValues();
-        assertEquals(expectedSubmissions.size(), createdStories.size(),
-                "Should have " + expectedSubmissions.size() + " stories created via StoryDAO");
+        assertEquals(gameSession.getPlayers().size(), createdStories.size(),
+                "Should have " + gameSession.getPlayers() + " stories created via StoryDAO");
 
         // Verify each created story has a prompt matching a winning submission's text
         for (Story story : createdStories) {
             assertNotNull(story.getStoryId(), "Story should have an ID");
             assertNotNull(story.getPrompt(), "Story should have a prompt");
-            assertTrue(winningSubmissions.stream()
-                            .anyMatch(ws -> ws.getCurrentText().equals(story.getPrompt())),
-                    "Story prompt should match a winning submission's text: " + story.getPrompt());
+            boolean matchesCorrectSubmissions = winningSubmissions.stream()
+                    .anyMatch(ws -> ws.getCurrentText().equals(story.getPrompt()));
+
+            if (winningSubmissions.size() < gameSession.getPlayers().size()) {
+                boolean matchesDefaultSubmission = CollaborativeTextHelper.getPreCannedEncounters().stream()
+                        .anyMatch(preCannedEncounter -> preCannedEncounter.get(1).equals(story.getPrompt()));
+                matchesCorrectSubmissions = matchesCorrectSubmissions || matchesDefaultSubmission;
+            }
+
+            assertTrue(matchesCorrectSubmissions,
+                    "Story prompt should match a winning submission's text or a default encounter submission's text: " + story.getPrompt());
         }
     }
 
@@ -277,6 +285,21 @@ public class CollaborativeTextHelperTest {
                                         1),
                                 new ExpectedSubmission("16aed1b4-f771-410e-9fa1-929fe4cd3067",
                                         "The dreaded submission appears again. You Auto Submit B",
+                                        1)
+                        )
+                ),
+                Arguments.of(
+                        "WHAT_HAPPENS_HERE Round 1 - Add default story",
+                        "WHAT_HAPPENS_HERE_START_DEFAULT_STORY.json",
+                        List.of(
+                                new ExpectedSubmission("6e7b2bab-5da6-466b-9533-aed7d2b83d43",
+                                        "We all pick Yams and they're delicious B Mmmm tasty yams C",
+                                        2),
+                                new ExpectedSubmission("a0cc1ef4-1518-43e2-ace0-896a7ca87b18",
+                                        "Oooooo spooky ghosties C OOoooooo so spooky B",
+                                        2),
+                                new ExpectedSubmission("ff0591b1-cabf-4da9-a6de-1bf9dd3204d8",
+                                        "A friggin goodie two shoes is here. Man. Auto Submit A",
                                         1)
                         )
                 )

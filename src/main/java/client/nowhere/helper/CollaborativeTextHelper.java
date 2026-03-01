@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import client.nowhere.dao.*;
 import client.nowhere.exception.GameStateException;
 import client.nowhere.model.*;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -800,19 +801,7 @@ public class CollaborativeTextHelper {
             Story story = new Story();
             story.setNewStoryId();
 
-            List<List<String>> preCannedPrompts = new ArrayList<>(List.of(
-                    List.of("The Slime Lord", "The local slime lord can't find his favorite barrel to occupy..."),
-                    List.of("Rather Handsome Cherry Dabniel", "Rather Handsome Cherry Dabniel has fallen into a bottomless ale tankard.  He's too handsome to survive amongst the magic fiends that dwell in that enchanted place, you must save Rather Handsome Cherry Dabniel!"),
-                    List.of("Fight Bugs", "You chance upon bugs, locked in deadly battle."),
-                    List.of("Regular Sized Cats", "You waltz into ye ole tavern. There are two ye ole cats waiting to take your order. They are not fat, rather regular sized."),
-                    List.of("The Magic Maze", "The ground opens up beneath you and you find yourself flung into a magic underground labyrinth."),
-                    List.of("A Swarm of Lightening Bugs", "It’s dusk and the creatures are all singing their nightly serenades - you know … hoo hoo and chirp… you notice a little deeper in and under the canopy - a thousand lightening bugs swarming around something big… you hike in to see what it’s all about…"),
-                    List.of("A Festival!", "A Festival is in full motion, kites sail, children laugh, and fried goods can be acquired on every street corner."),
-                    List.of("A Shady Tavern", "A hooded figure sits in the shadowed corner of the tavern, there is an air of skullduggery and magic about them. They give you a knowing look and beckon you over. You leave your stool at the bar and join them away from the hustle and bustle."),
-                    List.of("Strange Ritual Grounds", "Masked cultists block your way saying you are trespassing on their sacred site, and you must pay tribute for their god's blessing or die for the disrespect."),
-                    List.of("The Crown and Stag Pub", "You stop for a hard earned ale when your old flame, Sam Longbutt, sidles up to you. \"Been a while.\" they say and wink."),
-                    List.of("A Pastoral Altar", "You see an old man here vandalizing the altar to the God of Harvest, Erysus! As he turns to you his eyes appear dark and black! What do you do!?")
-            ));
+            List<List<String>> preCannedPrompts = getPreCannedEncounters();
 
             Collections.shuffle(preCannedPrompts);
             List<String> selectedStory = preCannedPrompts.subList(0, 1).getFirst();
@@ -827,6 +816,22 @@ public class CollaborativeTextHelper {
             preCannedStories.add(story);
         }
         return preCannedStories;
+    }
+
+    public static @NonNull List<List<String>> getPreCannedEncounters() {
+        return new ArrayList<>(List.of(
+                List.of("The Slime Lord", "The local slime lord can't find his favorite barrel to occupy..."),
+                List.of("Rather Handsome Cherry Dabniel", "Rather Handsome Cherry Dabniel has fallen into a bottomless ale tankard.  He's too handsome to survive amongst the magic fiends that dwell in that enchanted place, you must save Rather Handsome Cherry Dabniel!"),
+                List.of("Fight Bugs", "You chance upon bugs, locked in deadly battle."),
+                List.of("Regular Sized Cats", "You waltz into ye ole tavern. There are two ye ole cats waiting to take your order. They are not fat, rather regular sized."),
+                List.of("The Magic Maze", "The ground opens up beneath you and you find yourself flung into a magic underground labyrinth."),
+                List.of("A Swarm of Lightening Bugs", "It’s dusk and the creatures are all singing their nightly serenades - you know … hoo hoo and chirp… you notice a little deeper in and under the canopy - a thousand lightening bugs swarming around something big… you hike in to see what it’s all about…"),
+                List.of("A Festival!", "A Festival is in full motion, kites sail, children laugh, and fried goods can be acquired on every street corner."),
+                List.of("A Shady Tavern", "A hooded figure sits in the shadowed corner of the tavern, there is an air of skullduggery and magic about them. They give you a knowing look and beckon you over. You leave your stool at the bar and join them away from the hustle and bustle."),
+                List.of("Strange Ritual Grounds", "Masked cultists block your way saying you are trespassing on their sacred site, and you must pay tribute for their god's blessing or die for the disrespect."),
+                List.of("The Crown and Stag Pub", "You stop for a hard earned ale when your old flame, Sam Longbutt, sidles up to you. \"Been a while.\" they say and wink."),
+                List.of("A Pastoral Altar", "You see an old man here vandalizing the altar to the God of Harvest, Erysus! As he turns to you his eyes appear dark and black! What do you do!?")
+        ));
     }
 
     /**

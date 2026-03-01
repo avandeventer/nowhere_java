@@ -1,0 +1,1889 @@
+{
+  "gameCode": "746K7D",
+  "players": [
+    {
+      "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+      "userName": "Andy",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+            "label": "kddkdkkd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3c688312-7019-4273-881e-a63e7fa8ec1f",
+            "label": "asdfasdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "big fear uses up the whole box",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+            "label": "asldfakjsdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+            "label": "lots of text lots of text lots",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+            "label": "asdfasdfl",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+            "label": "asdfasfd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "playerCoordinates": null,
+      "gameCode": "746K7D",
+      "joinedAt": 1772307167522,
+      "firstPlayer": true
+    },
+    {
+      "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+      "userName": "Joe",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+            "label": "kddkdkkd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3c688312-7019-4273-881e-a63e7fa8ec1f",
+            "label": "asdfasdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "big fear uses up the whole box",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+            "label": "asldfakjsdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+            "label": "lots of text lots of text lots",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+            "label": "asdfasdfl",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+            "label": "asdfasfd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "playerCoordinates": null,
+      "gameCode": "746K7D",
+      "joinedAt": 1772307174433,
+      "firstPlayer": false
+    },
+    {
+      "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+      "userName": "Byron",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+            "label": "kddkdkkd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3c688312-7019-4273-881e-a63e7fa8ec1f",
+            "label": "asdfasdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "big fear uses up the whole box",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+            "label": "asldfakjsdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+            "label": "lots of text lots of text lots",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+            "label": "asdfasdfl",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+            "label": "asdfasfd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "playerCoordinates": null,
+      "gameCode": "746K7D",
+      "joinedAt": 1772307182646,
+      "firstPlayer": false
+    },
+    {
+      "authorId": "48a8e280-3c23-445a-9289-baf1aeeb6a25",
+      "userName": "Kirsten",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+            "label": "kddkdkkd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3c688312-7019-4273-881e-a63e7fa8ec1f",
+            "label": "asdfasdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "big fear uses up the whole box",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+            "label": "asldfakjsdf",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+            "label": "lots of text lots of text lots",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+            "label": "asdfasdfl",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+            "label": "asdfasfd",
+            "description": null,
+            "favorEntity": "",
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "playerCoordinates": null,
+      "gameCode": "746K7D",
+      "joinedAt": 1772307187800,
+      "firstPlayer": false
+    }
+  ],
+  "gameState": "WHAT_HAPPENS_HERE",
+  "activePlayerSession": {
+    "gameCode": "",
+    "playerId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+    "playerChoiceOptionId": "",
+    "selectedLocationOptionId": "",
+    "story": {
+      "storyId": "",
+      "prompt": "",
+      "authorId": "",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "",
+      "playerIds": [],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": [],
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": [],
+      "encounterLabel": null,
+      "location": {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "",
+        "label": "",
+        "options": [],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+        "authorId": null
+      }
+    },
+    "location": null,
+    "outcomeDisplay": [],
+    "locationOutcomeDisplay": [],
+    "ritualStory": null,
+    "setNextPlayerTurn": false,
+    "isPlayerDoneWithTurn": {
+      "01f0280e-ed50-42b6-9c1a-190a430fbdfa": false,
+      "5e483450-db1d-4a2c-9f07-b297d2f70648": false,
+      "54454e92-74bc-4b81-b2cf-56f859ae8bbd": false,
+      "48a8e280-3c23-445a-9289-baf1aeeb6a25": false
+    },
+    "repercussions": {
+      "ending": null,
+      "locationDestroyed": null
+    },
+    "startTimer": true,
+    "writeTimerDone": false
+  },
+  "activeGameStateSession": {
+    "gameCode": "746K7D",
+    "isPlayerDone": {
+      "01f0280e-ed50-42b6-9c1a-190a430fbdfa": false,
+      "5e483450-db1d-4a2c-9f07-b297d2f70648": false,
+      "54454e92-74bc-4b81-b2cf-56f859ae8bbd": false,
+      "48a8e280-3c23-445a-9289-baf1aeeb6a25": false
+    }
+  },
+  "stories": null,
+  "adventureMap": {
+    "name": "The Dream Walk",
+    "adventureId": "ff231097-0a88-4bdd-b22a-4cbf82ab55e4",
+    "statTypes": [
+      {
+        "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+        "label": "kddkdkkd",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      },
+      {
+        "id": "3c688312-7019-4273-881e-a63e7fa8ec1f",
+        "label": "asdfasdf",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      },
+      {
+        "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+        "label": "favor",
+        "description": null,
+        "favorEntity": "big fear uses up the whole box",
+        "favorType": true
+      },
+      {
+        "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+        "label": "asldfakjsdf",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      },
+      {
+        "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+        "label": "lots of text lots of text lots",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      },
+      {
+        "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+        "label": "asdfasdfl",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      },
+      {
+        "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+        "label": "asdfasfd",
+        "description": null,
+        "favorEntity": "",
+        "favorType": false
+      }
+    ],
+    "gameSessionDisplay": {
+      "mapDescription": "Every year it comes. The Dream Walk. The adults all gather at the edge of the wood and usher the youngsters into the darkness of the Lost Lands. The texts left behind by the Gods tell us that the young people who travel into the wood will encounter the characters, creatures, and spirits who will guide them into adulthood. If they manage to make it through the Lost Lands alive they do so as adults. This year, finally, is our year. We hug our parents, clasp our hands together, and we embark.",
+      "goalDescription": "asdfasdlfas;kdflj asl;dfasl;dfjk",
+      "playerTitle": "",
+      "playerDescription": "lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text",
+      "endingDescription": "",
+      "successText": "",
+      "neutralText": "",
+      "failureText": "",
+      "entity": "big fear uses up the whole box",
+      "whereAreWeSubmission": {
+        "submissionId": "c7164ef7-ac35-4eb5-a28f-19b60187c801",
+        "authorId": "7735f72d-bfc5-42d9-939c-cf8b9b11f60e",
+        "originalText": ";lkj lasdfasd;flka jsdf asjdflkas asdf asd;flkajsdflajsdlf asdflkjasdfl ja sld;fjaslk;dfa kldsfasdfasd;fk adding stuff adding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuff",
+        "currentText": ";lkj lasdfasd;flka jsdf asjdflkas asdf asd;flkajsdflajsdlf asdflkjasdfl ja sld;fjaslk;dfa kldsfasdfasd;fk adding stuff adding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuff big text big textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig text",
+        "additions": [
+          {
+            "additionId": "",
+            "authorId": "49cca0ba-2e97-4f82-a9a7-3e763d8c26e1",
+            "addedText": ";lkj lasdfasd;flka jsdf asjdflkas asdf asd;flkajsdflajsdlf asdflkjasdfl ja sld;fjaslk;dfa kldsfasdfasd;fk",
+            "submissionId": null,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          },
+          {
+            "additionId": "",
+            "authorId": "7e4999a7-e829-4c90-8129-eacdfa1d15dd",
+            "addedText": "adding stuff adding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuffadding stuff",
+            "submissionId": "80cca521-7a6e-471e-8f01-83759b89b909",
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          },
+          {
+            "additionId": "",
+            "authorId": "7735f72d-bfc5-42d9-939c-cf8b9b11f60e",
+            "addedText": "big text big textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig textbig text",
+            "submissionId": "88155141-129e-4ed2-8a27-68d072de9e9f",
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          }
+        ],
+        "totalVotes": 0,
+        "averageRanking": 1.0,
+        "outcomeType": null,
+        "outcomeTypeWithLabel": {
+          "id": "",
+          "label": "",
+          "clarifier": "",
+          "subTypes": []
+        },
+        "originalAuthorId": "49cca0ba-2e97-4f82-a9a7-3e763d8c26e1",
+        "finalized": false
+      },
+      "whoAreWeSubmission": {
+        "submissionId": "95f62b2f-f4fe-47b3-b334-f3a00fd13a23",
+        "authorId": "da8d7b2c-4221-4a0a-8bcf-dace2e41c630",
+        "originalText": "",
+        "currentText": "lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text",
+        "additions": [
+          {
+            "additionId": "",
+            "authorId": "da8d7b2c-4221-4a0a-8bcf-dace2e41c630",
+            "addedText": "lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text lots of text",
+            "submissionId": null,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          }
+        ],
+        "totalVotes": 0,
+        "averageRanking": 1.0,
+        "outcomeType": null,
+        "outcomeTypeWithLabel": {
+          "id": "",
+          "label": "",
+          "clarifier": "",
+          "subTypes": []
+        },
+        "originalAuthorId": "da8d7b2c-4221-4a0a-8bcf-dace2e41c630",
+        "finalized": false
+      },
+      "whatIsOurGoalSubmission": {
+        "submissionId": "41307964-229d-47d9-ba11-580d68016699",
+        "authorId": "da8d7b2c-4221-4a0a-8bcf-dace2e41c630",
+        "originalText": "asdfasdlfas;kdflj",
+        "currentText": "asdfasdlfas;kdflj asl;dfasl;dfjk",
+        "additions": [
+          {
+            "additionId": "",
+            "authorId": "49cca0ba-2e97-4f82-a9a7-3e763d8c26e1",
+            "addedText": "asdfasdlfas;kdflj",
+            "submissionId": null,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          },
+          {
+            "additionId": "",
+            "authorId": "da8d7b2c-4221-4a0a-8bcf-dace2e41c630",
+            "addedText": "asl;dfasl;dfjk",
+            "submissionId": "f4bc51be-a24e-4e83-97a9-74035e871a6c",
+            "outcomeType": null,
+            "outcomeTypeWithLabel": null
+          }
+        ],
+        "totalVotes": 0,
+        "averageRanking": 1.0,
+        "outcomeType": null,
+        "outcomeTypeWithLabel": {
+          "id": "",
+          "label": "",
+          "clarifier": "",
+          "subTypes": []
+        },
+        "originalAuthorId": "49cca0ba-2e97-4f82-a9a7-3e763d8c26e1",
+        "finalized": false
+      }
+    },
+    "locations": [
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "7b95f641-d2d4-4772-a0bc-452b8cf552b4",
+        "label": "D",
+        "options": [
+          {
+            "optionId": "56126194-e242-4f96-b14f-0c5696527123",
+            "optionText": "D1",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+                    "label": "asdfasdfl",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+                    "label": "asdfasfd",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          },
+          {
+            "optionId": "9ed4f62e-f4ee-4bf2-b388-33a5cfd0ba1c",
+            "optionText": "D2",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+                    "label": "asdfasdfl",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9da72cfd-001e-4950-8fd0-4212b943a116",
+                    "label": "kddkdkkd",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "e73123ff-a03d-4280-b010-8cd39f39db95",
+        "label": "C",
+        "options": [
+          {
+            "optionId": "329ec502-7e8a-4bbc-b5ac-9ad76b683455",
+            "optionText": "C1",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+                    "label": "asldfakjsdf",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+                    "label": "asdfasdfl",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          },
+          {
+            "optionId": "2631a017-31dd-472a-8d1f-e76609f2ec69",
+            "optionText": "C2",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+                    "label": "asldfakjsdf",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "5c933775-7a8a-4bd7-a412-b9f645e1b4af",
+                    "label": "asdfasfd",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tree.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "21257059-ea44-45a5-a41f-1c930d1eaf16",
+        "label": "ccc",
+        "options": [
+          {
+            "optionId": "0ecc697f-4729-4a2b-8557-8d78c6f10423",
+            "optionText": "adfasdf",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+                    "label": "favor",
+                    "description": null,
+                    "favorEntity": "big fear uses up the whole box",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+                    "label": "lots of text lots of text lots",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          },
+          {
+            "optionId": "df5c4791-a49b-4e1e-8dd1-fca88d8f6118",
+            "optionText": "asdfadsf",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "5e9a3907-3aee-4ea5-9812-209c8ea53d32",
+                    "label": "favor",
+                    "description": null,
+                    "favorEntity": "big fear uses up the whole box",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+                    "label": "asldfakjsdf",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "47d18412-2b21-4abb-b931-8e78e30a4e45",
+        "label": "B",
+        "options": [
+          {
+            "optionId": "62b567f6-f23b-4160-87b0-8eb69e4b17e0",
+            "optionText": "B1",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+                    "label": "lots of text lots of text lots",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "16a5273e-6d94-4008-a9d1-164c569acfdb",
+                    "label": "asldfakjsdf",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          },
+          {
+            "optionId": "abd8e34b-5f13-4115-b2e8-56aa262b7dfc",
+            "optionText": "B2",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "87a8aaa7-9c04-453b-81ff-cf07bf3eb5a5",
+                    "label": "lots of text lots of text lots",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "3b607590-eaa1-4e8f-a539-bb9f811d0b10",
+                    "label": "asdfasdfl",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+        "authorId": null
+      }
+    ],
+    "unusedLocations": null,
+    "ritual": {
+      "storyId": "52631364-468b-4eb9-b4d0-287f4cbd58be",
+      "prompt": "",
+      "authorId": "",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "",
+      "playerIds": [],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "successRepercussions": null,
+      "failureRepercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": null,
+      "encounterLabel": null,
+      "location": null
+    },
+    "encounterLabels": [
+      {
+        "encounterId": "51578098-4c20-45cf-868d-f4c99cfe3965",
+        "encounterLabel": "Bats A",
+        "textSubmission": {
+          "submissionId": "94b7cac2-57e5-4f2b-9f9c-b2ce3c1531d0",
+          "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "originalText": "",
+          "currentText": "Bats A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+              "addedText": "Bats A",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "finalized": false
+        }
+      },
+      {
+        "encounterId": "2400e282-63dd-4fb9-b38a-ccc257d7bc81",
+        "encounterLabel": "Candy A",
+        "textSubmission": {
+          "submissionId": "2afb448e-675b-43ea-b81d-2af5960ba8ea",
+          "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "originalText": "",
+          "currentText": "Candy A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+              "addedText": "Candy A",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "finalized": false
+        }
+      },
+      {
+        "encounterId": "8894bbef-68b6-42b8-9dd8-6c32606eed43",
+        "encounterLabel": "A Good Samaritan D",
+        "textSubmission": {
+          "submissionId": "11e24397-6daa-4a3d-8f61-e637ec42bf17",
+          "authorId": "48a8e280-3c23-445a-9289-baf1aeeb6a25",
+          "originalText": "",
+          "currentText": "A Good Samaritan D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "48a8e280-3c23-445a-9289-baf1aeeb6a25",
+              "addedText": "A Good Samaritan D",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "48a8e280-3c23-445a-9289-baf1aeeb6a25",
+          "finalized": false
+        }
+      },
+      {
+        "encounterId": "5887105c-f6dc-416a-8f78-4334478e194b",
+        "encounterLabel": "Ghosts C",
+        "textSubmission": {
+          "submissionId": "8ac72879-0b1e-46e5-a2c6-9fef5f56dd4e",
+          "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "originalText": "",
+          "currentText": "Ghosts C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+              "addedText": "Ghosts C",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "finalized": false
+        }
+      },
+      {
+        "encounterId": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+        "encounterLabel": "Yams B",
+        "textSubmission": {
+          "submissionId": "73109269-67e7-4e0c-a24b-ea53daf8f8f6",
+          "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "originalText": "",
+          "currentText": "Yams B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+              "addedText": "Yams B",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "finalized": false
+        }
+      }
+    ]
+  },
+  "didWeSucceed": false,
+  "totalPointsTowardsVictory": 0,
+  "endings": null,
+  "rituals": [],
+  "userProfileId": "c8d068ae-e180-44c9-940c-011ba632cba4",
+  "saveGameId": "b17282a9-cdea-435a-b3d9-1b7e9c436f17",
+  "storiesToWritePerRound": 1,
+  "storiesToPlayPerRound": 1,
+  "roundNumber": 1,
+  "gameMode": "DUNGEON_MODE",
+  "gameBoard": {
+    "playerCoordinates": null,
+    "dungeonGrid": {},
+    "encounterAtPlayerCoordinates": null
+  },
+  "collaborativeTextPhases": {
+    "WHAT_HAPPENS_HERE": {
+      "phaseId": "WHAT_HAPPENS_HERE",
+      "question": null,
+      "phaseType": null,
+      "submissions": [
+        {
+          "submissionId": "6f3b337b-861b-4fcf-9d7e-b6dfc4e0ccb1",
+          "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "originalText": "",
+          "currentText": "We all pick Yams and they're delicious B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+              "addedText": "We all pick Yams and they're delicious B",
+              "submissionId": null,
+              "outcomeType": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+              "outcomeTypeWithLabel": {
+                "id": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+                "label": "Yams B",
+                "clarifier": "",
+                "subTypes": []
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+          "outcomeTypeWithLabel": {
+            "id": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+            "label": "Yams B",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "finalized": false
+        },
+        {
+          "submissionId": "c7a21e19-b7f3-4ee6-b681-5a04156b3967",
+          "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "originalText": "",
+          "currentText": "Oooooo spooky ghosties C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+              "addedText": "Oooooo spooky ghosties C",
+              "submissionId": null,
+              "outcomeType": "5887105c-f6dc-416a-8f78-4334478e194b",
+              "outcomeTypeWithLabel": {
+                "id": "5887105c-f6dc-416a-8f78-4334478e194b",
+                "label": "Ghosts C",
+                "clarifier": "",
+                "subTypes": []
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "5887105c-f6dc-416a-8f78-4334478e194b",
+          "outcomeTypeWithLabel": {
+            "id": "5887105c-f6dc-416a-8f78-4334478e194b",
+            "label": "Ghosts C",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "finalized": false
+        },
+        {
+          "submissionId": "6e7b2bab-5da6-466b-9533-aed7d2b83d43",
+          "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "originalText": "We all pick Yams and they're delicious B",
+          "currentText": "We all pick Yams and they're delicious B Mmmm tasty yams C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+              "addedText": "We all pick Yams and they're delicious B",
+              "submissionId": null,
+              "outcomeType": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+              "outcomeTypeWithLabel": {
+                "id": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+                "label": "Yams B",
+                "clarifier": "",
+                "subTypes": []
+              }
+            },
+            {
+              "additionId": "",
+              "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+              "addedText": "Mmmm tasty yams C",
+              "submissionId": "6f3b337b-861b-4fcf-9d7e-b6dfc4e0ccb1",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+          "outcomeTypeWithLabel": {
+            "id": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+            "label": "Yams B",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "finalized": false
+        },
+        {
+          "submissionId": "a0cc1ef4-1518-43e2-ace0-896a7ca87b18",
+          "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "originalText": "Oooooo spooky ghosties C",
+          "currentText": "Oooooo spooky ghosties C OOoooooo so spooky B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+              "addedText": "Oooooo spooky ghosties C",
+              "submissionId": null,
+              "outcomeType": "5887105c-f6dc-416a-8f78-4334478e194b",
+              "outcomeTypeWithLabel": {
+                "id": "5887105c-f6dc-416a-8f78-4334478e194b",
+                "label": "Ghosts C",
+                "clarifier": "",
+                "subTypes": []
+              }
+            },
+            {
+              "additionId": "",
+              "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+              "addedText": "OOoooooo so spooky B",
+              "submissionId": "c7a21e19-b7f3-4ee6-b681-5a04156b3967",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "5887105c-f6dc-416a-8f78-4334478e194b",
+          "outcomeTypeWithLabel": {
+            "id": "5887105c-f6dc-416a-8f78-4334478e194b",
+            "label": "Ghosts C",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "finalized": false
+        },
+        {
+          "submissionId": "42a442c6-e898-4c7d-b4b9-4897eb3eaf8c",
+          "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "originalText": "We all pick Yams and they're delicious B",
+          "currentText": "We all pick Yams and they're delicious B We steal them all C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+              "addedText": "We all pick Yams and they're delicious B",
+              "submissionId": null,
+              "outcomeType": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+              "outcomeTypeWithLabel": {
+                "id": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+                "label": "Yams B",
+                "clarifier": "",
+                "subTypes": []
+              }
+            },
+            {
+              "additionId": "",
+              "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+              "addedText": "We steal them all C",
+              "submissionId": "6f3b337b-861b-4fcf-9d7e-b6dfc4e0ccb1",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+          "outcomeTypeWithLabel": {
+            "id": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+            "label": "Yams B",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "finalized": false
+        },
+        {
+          "submissionId": "ff0591b1-cabf-4da9-a6de-1bf9dd3204d8",
+          "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "originalText": "",
+          "currentText": "A friggin goodie two shoes is here. Man. Auto Submit A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+              "addedText": "A friggin goodie two shoes is here. Man. Auto Submit A",
+              "submissionId": null,
+              "outcomeType": "8894bbef-68b6-42b8-9dd8-6c32606eed43",
+              "outcomeTypeWithLabel": {
+                "id": "8894bbef-68b6-42b8-9dd8-6c32606eed43",
+                "label": "A Good Samaritan D",
+                "clarifier": "",
+                "subTypes": []
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "8894bbef-68b6-42b8-9dd8-6c32606eed43",
+          "outcomeTypeWithLabel": {
+            "id": "8894bbef-68b6-42b8-9dd8-6c32606eed43",
+            "label": "A Good Samaritan D",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "finalized": false
+        }
+      ],
+      "playerVotes": {},
+      "playersWhoSubmitted": [
+        "5e483450-db1d-4a2c-9f07-b297d2f70648",
+        "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+        "01f0280e-ed50-42b6-9c1a-190a430fbdfa"
+      ],
+      "playersWhoVoted": [],
+      "finalResult": null,
+      "submissionViews": {
+        "a0cc1ef4-1518-43e2-ace0-896a7ca87b18": [
+          "54454e92-74bc-4b81-b2cf-56f859ae8bbd"
+        ],
+        "c7a21e19-b7f3-4ee6-b681-5a04156b3967": [
+          "5e483450-db1d-4a2c-9f07-b297d2f70648"
+        ],
+        "6f3b337b-861b-4fcf-9d7e-b6dfc4e0ccb1": [
+          "54454e92-74bc-4b81-b2cf-56f859ae8bbd"
+        ],
+        "6e7b2bab-5da6-466b-9533-aed7d2b83d43": [
+          "5e483450-db1d-4a2c-9f07-b297d2f70648"
+        ]
+      },
+      "submissionsWithoutParentSubmissions": [
+        {
+          "submissionId": "6e7b2bab-5da6-466b-9533-aed7d2b83d43",
+          "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "originalText": "We all pick Yams and they're delicious B",
+          "currentText": "We all pick Yams and they're delicious B Mmmm tasty yams C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+              "addedText": "We all pick Yams and they're delicious B",
+              "submissionId": null,
+              "outcomeType": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+              "outcomeTypeWithLabel": {
+                "id": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+                "label": "Yams B",
+                "clarifier": "",
+                "subTypes": []
+              }
+            },
+            {
+              "additionId": "",
+              "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+              "addedText": "Mmmm tasty yams C",
+              "submissionId": "6f3b337b-861b-4fcf-9d7e-b6dfc4e0ccb1",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+          "outcomeTypeWithLabel": {
+            "id": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+            "label": "Yams B",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "finalized": false
+        },
+        {
+          "submissionId": "a0cc1ef4-1518-43e2-ace0-896a7ca87b18",
+          "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "originalText": "Oooooo spooky ghosties C",
+          "currentText": "Oooooo spooky ghosties C OOoooooo so spooky B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+              "addedText": "Oooooo spooky ghosties C",
+              "submissionId": null,
+              "outcomeType": "5887105c-f6dc-416a-8f78-4334478e194b",
+              "outcomeTypeWithLabel": {
+                "id": "5887105c-f6dc-416a-8f78-4334478e194b",
+                "label": "Ghosts C",
+                "clarifier": "",
+                "subTypes": []
+              }
+            },
+            {
+              "additionId": "",
+              "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+              "addedText": "OOoooooo so spooky B",
+              "submissionId": "c7a21e19-b7f3-4ee6-b681-5a04156b3967",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "5887105c-f6dc-416a-8f78-4334478e194b",
+          "outcomeTypeWithLabel": {
+            "id": "5887105c-f6dc-416a-8f78-4334478e194b",
+            "label": "Ghosts C",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "finalized": false
+        },
+        {
+          "submissionId": "42a442c6-e898-4c7d-b4b9-4897eb3eaf8c",
+          "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "originalText": "We all pick Yams and they're delicious B",
+          "currentText": "We all pick Yams and they're delicious B We steal them all C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+              "addedText": "We all pick Yams and they're delicious B",
+              "submissionId": null,
+              "outcomeType": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+              "outcomeTypeWithLabel": {
+                "id": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+                "label": "Yams B",
+                "clarifier": "",
+                "subTypes": []
+              }
+            },
+            {
+              "additionId": "",
+              "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+              "addedText": "We steal them all C",
+              "submissionId": "6f3b337b-861b-4fcf-9d7e-b6dfc4e0ccb1",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+          "outcomeTypeWithLabel": {
+            "id": "87e1338e-f3b6-43e2-9bd6-4f39da68ef86",
+            "label": "Yams B",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "finalized": false
+        }
+      ],
+      "complete": false
+    },
+    "SET_ENCOUNTERS": {
+      "phaseId": "SET_ENCOUNTERS",
+      "question": null,
+      "phaseType": null,
+      "submissions": [
+        {
+          "submissionId": "94b7cac2-57e5-4f2b-9f9c-b2ce3c1531d0",
+          "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "originalText": "",
+          "currentText": "Bats A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+              "addedText": "Bats A",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "finalized": false
+        },
+        {
+          "submissionId": "2afb448e-675b-43ea-b81d-2af5960ba8ea",
+          "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "originalText": "",
+          "currentText": "Candy A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+              "addedText": "Candy A",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "finalized": false
+        },
+        {
+          "submissionId": "73109269-67e7-4e0c-a24b-ea53daf8f8f6",
+          "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "originalText": "",
+          "currentText": "Yams B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+              "addedText": "Yams B",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "finalized": false
+        },
+        {
+          "submissionId": "8ac72879-0b1e-46e5-a2c6-9fef5f56dd4e",
+          "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "originalText": "",
+          "currentText": "Ghosts C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+              "addedText": "Ghosts C",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "finalized": false
+        },
+        {
+          "submissionId": "11e24397-6daa-4a3d-8f61-e637ec42bf17",
+          "authorId": "48a8e280-3c23-445a-9289-baf1aeeb6a25",
+          "originalText": "",
+          "currentText": "A Good Samaritan D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "48a8e280-3c23-445a-9289-baf1aeeb6a25",
+              "addedText": "A Good Samaritan D",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "48a8e280-3c23-445a-9289-baf1aeeb6a25",
+          "finalized": false
+        }
+      ],
+      "playerVotes": {},
+      "playersWhoSubmitted": [
+        "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+        "5e483450-db1d-4a2c-9f07-b297d2f70648",
+        "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+        "48a8e280-3c23-445a-9289-baf1aeeb6a25"
+      ],
+      "playersWhoVoted": [],
+      "finalResult": null,
+      "submissionViews": {
+        "8ac72879-0b1e-46e5-a2c6-9fef5f56dd4e": [
+          "01f0280e-ed50-42b6-9c1a-190a430fbdfa"
+        ],
+        "73109269-67e7-4e0c-a24b-ea53daf8f8f6": [
+          "48a8e280-3c23-445a-9289-baf1aeeb6a25"
+        ],
+        "94b7cac2-57e5-4f2b-9f9c-b2ce3c1531d0": [
+          "5e483450-db1d-4a2c-9f07-b297d2f70648"
+        ],
+        "11e24397-6daa-4a3d-8f61-e637ec42bf17": [
+          "54454e92-74bc-4b81-b2cf-56f859ae8bbd"
+        ],
+        "2afb448e-675b-43ea-b81d-2af5960ba8ea": [
+          "5e483450-db1d-4a2c-9f07-b297d2f70648"
+        ]
+      },
+      "submissionsWithoutParentSubmissions": [
+        {
+          "submissionId": "94b7cac2-57e5-4f2b-9f9c-b2ce3c1531d0",
+          "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "originalText": "",
+          "currentText": "Bats A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+              "addedText": "Bats A",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "finalized": false
+        },
+        {
+          "submissionId": "2afb448e-675b-43ea-b81d-2af5960ba8ea",
+          "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "originalText": "",
+          "currentText": "Candy A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+              "addedText": "Candy A",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "01f0280e-ed50-42b6-9c1a-190a430fbdfa",
+          "finalized": false
+        },
+        {
+          "submissionId": "73109269-67e7-4e0c-a24b-ea53daf8f8f6",
+          "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "originalText": "",
+          "currentText": "Yams B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+              "addedText": "Yams B",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "5e483450-db1d-4a2c-9f07-b297d2f70648",
+          "finalized": false
+        },
+        {
+          "submissionId": "8ac72879-0b1e-46e5-a2c6-9fef5f56dd4e",
+          "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "originalText": "",
+          "currentText": "Ghosts C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+              "addedText": "Ghosts C",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "54454e92-74bc-4b81-b2cf-56f859ae8bbd",
+          "finalized": false
+        },
+        {
+          "submissionId": "11e24397-6daa-4a3d-8f61-e637ec42bf17",
+          "authorId": "48a8e280-3c23-445a-9289-baf1aeeb6a25",
+          "originalText": "",
+          "currentText": "A Good Samaritan D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "48a8e280-3c23-445a-9289-baf1aeeb6a25",
+              "addedText": "A Good Samaritan D",
+              "submissionId": null,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "originalAuthorId": "48a8e280-3c23-445a-9289-baf1aeeb6a25",
+          "finalized": false
+        }
+      ],
+      "complete": false
+    }
+  },
+  "storyAtCurrentPlayerCoordinates": null
+}
