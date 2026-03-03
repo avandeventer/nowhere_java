@@ -240,19 +240,16 @@ public class VotingHelper {
             return new ArrayList<>();
         }
 
-        StoryDistributionContext ctx = outcomeTypeHelper.getStoryDistributionContext(gameSession, playerId, false);
+        StoryDistributionContext assignedPlayerStoryContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, false, -1);
 
-        // Get assigned stories with offset of 3
-        List<OutcomeType> assignedPlayerStories = outcomeTypeHelper.distributeStoriesToPlayer(ctx.sortedStories(), ctx.sortedPlayers(), ctx.playerIndex(), -1);
-
-        List<String> storyIds = assignedPlayerStories.stream().map(OutcomeType::getId).toList();
+        List<String> storyIds = assignedPlayerStoryContext.assignedStories().stream().map(OutcomeType::getId).toList();
 
         Encounter encounter = gameSession.getGameBoard().getEncounterAtPlayerCoordinates();
 
         if (!storyIds.isEmpty()
                 && encounter != null
                 && storyIds.contains(encounter.getStoryId())) {
-            return assignedPlayerStories;
+            return assignedPlayerStoryContext.assignedStories();
         } else {
             return new ArrayList<>();
         }

@@ -1400,35 +1400,30 @@ public class CollaborativeTextHelper {
             if (phaseId == GameState.WHAT_HAPPENS_HERE) {
                 if (gameSession.getRoundNumber() == 1) {
                     List<EncounterLabel> encounterLabels = getEncounterLabels(gameCode);
+                    int offsetValue = gameSession.getPlayers().size() > 4 ? 1 : 2;
+                    PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, playerId, offsetValue);
 
-                    return encounterLabels.stream()
+                    List<EncounterLabel> assignedEncounterLabels = encounterLabels.stream()
+                            .filter(encounterLabel -> encounterLabel.getTextSubmission()
+                                    .getAuthorId().equals(playerSortResult.getAssignedPlayer().getAuthorId())).toList();
+
+                    return assignedEncounterLabels.stream()
                             .map(label -> new OutcomeType(label.getEncounterId(), label.getEncounterLabel()))
                             .toList();
                 } else {
-                    // Round > 0: Distribute visited stories and filter encounters
-                    StoryDistributionContext ctx = outcomeTypeHelper.getStoryDistributionContext(gameSession, playerId, true);
-                    if (ctx == null) {
-                        return new ArrayList<>();
-                    }
+                    int offsetValue = gameSession.getPlayers().size() > 4 ? 1 : 2;
 
-                    List<Player> sortedPlayers = ctx.sortedPlayers();
-                    int playerIndex = ctx.playerIndex();
-
-                    // Calculate offset: 1 for 4 players, 2 for more than 4 players
-                    int offsetValue = sortedPlayers.size() > 4 ? 1 : 2;
-
-                    List<Story> sortedVisitedStories = ctx.sortedStories();
-                    
                     // Distribute stories to player
-                    List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedVisitedStories, sortedPlayers, playerIndex, offsetValue);
-                    
+                    StoryDistributionContext ctx = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, true, offsetValue);
+                    List<OutcomeType> assignedStories = ctx.assignedStories();
+
                     if (assignedStories.isEmpty()) {
                         return new ArrayList<>();
                     }
                     
                     // Get the assigned story's encounter label ID
                     String assignedStoryId = assignedStories.getFirst().getId();
-                    Story assignedStory = sortedVisitedStories.stream()
+                    Story assignedStory = ctx.sortedStories().stream()
                             .filter(story -> story.getStoryId().equals(assignedStoryId))
                             .findFirst()
                             .orElse(null);
@@ -1441,7 +1436,7 @@ public class CollaborativeTextHelper {
                     List<EncounterLabel> allEncounterLabels = getEncounterLabels(gameCode);
                     
                     // Get encounter label IDs used in stories (except the assigned one)
-                    Set<String> usedEncounterLabelIds = sortedVisitedStories.stream()
+                    Set<String> usedEncounterLabelIds = ctx.sortedStories().stream()
                             .filter(story -> story.getEncounterLabel() != null)
                             .map(story -> story.getEncounterLabel().getEncounterId())
                             .filter(id -> !id.equals(assignedEncounterLabelId)) // Keep the assigned one
@@ -1468,39 +1463,19 @@ public class CollaborativeTextHelper {
                             .toList();
                 }
             } else if (phaseId == WHAT_CAN_WE_TRY) {
-                StoryDistributionContext ctx = outcomeTypeHelper.getStoryDistributionContext(gameSession, playerId, false);
-                if (ctx == null) {
-                    return new ArrayList<>();
-                }
-
-                // Get next player's stories (offset by 1)
-                List<OutcomeType> nextPlayersStories = outcomeTypeHelper.distributeStoriesToPlayer(ctx.sortedStories(), ctx.sortedPlayers(), ctx.playerIndex(), 1);
-
-                // Get next next player's stories (offset by 2 if more than 4 players, else 0)
-                int nextNextOffset = ctx.sortedPlayers().size() > 4 ? 2 : 0;
-                List<OutcomeType> nextNextPlayerStories = outcomeTypeHelper.distributeStoriesToPlayer(ctx.sortedStories(), ctx.sortedPlayers(), ctx.playerIndex(), nextNextOffset);
-                nextPlayersStories.addAll(nextNextPlayerStories);
-                return nextPlayersStories;
+                StoryDistributionContext nextPlayerStoryContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, false, 1);
+                int nextNextOffset = gameSession.getPlayers().size() > 4 ? 2 : 0;
+                StoryDistributionContext nextNextPlayerStoryContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, false, nextNextOffset);
+                List<OutcomeType> allStories = nextPlayerStoryContext.assignedStories();
+                allStories.addAll(nextNextPlayerStoryContext.assignedStories());
+                return allStories;
             } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE || phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
-                StoryDistributionContext ctx = outcomeTypeHelper.getStoryDistributionContext(gameSession, playerId, false);
-                if (ctx == null) {
-                    return new ArrayList<>();
-                }
-
-                List<Story> sortedStories = ctx.sortedStories();
-                List<Player> sortedPlayers = ctx.sortedPlayers();
-                int playerIndex = ctx.playerIndex();
-
-                int numStories = sortedStories.size();
-
                 // Calculate offset: 3 if more than 4 players, else 2
-                int offsetValue = sortedPlayers.size() > 4 ? 3 : 2;
-                
-                // Calculate offset player index for use in shared index logic
-                int numPlayers = sortedPlayers.size();
+                int offsetValue = gameSession.getPlayers().size() > 4 ? 3 : 2;
 
                 // Get assigned story (only one story per player for this phase)
-                List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedStories, sortedPlayers, playerIndex, offsetValue);
+                StoryDistributionContext storyContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, false, -1);
+                List<OutcomeType> assignedStories = storyContext.assignedStories();
 
                 if (assignedStories.isEmpty()) {
                     return new ArrayList<>();
@@ -1509,13 +1484,7 @@ public class CollaborativeTextHelper {
                 // Get the assigned story ID and prompt (first story from the list)
                 OutcomeType assignedStoryOutcomeType = assignedStories.getFirst();
                 String assignedStoryId = assignedStoryOutcomeType.getId();
-
-                // Find the assigned story to get its prompt
-                final String storyPrompt = sortedStories.stream()
-                        .filter(story -> story.getStoryId().equals(assignedStoryId))
-                        .findFirst()
-                        .map(story -> story.getPrompt() != null ? story.getPrompt() : "")
-                        .orElse("");
+                String storyPrompt = assignedStoryOutcomeType.getLabel();
 
                 // Get WHAT_CAN_WE_TRY submissions to count related submissions per story
                 CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, WHAT_CAN_WE_TRY.name());
@@ -1541,7 +1510,9 @@ public class CollaborativeTextHelper {
 
                 // Check if player index is shared (wraps around when numPlayers > numStories)
                 // A player shares if: offsetPlayerIndex >= numStories OR offsetPlayerIndex < (numPlayers - numStories)
-                int offsetPlayerIndex = OutcomeTypeHelper.getOffsetPlayerIndex(playerIndex, offsetValue, numPlayers);
+                int numPlayers = gameSession.getPlayers().size();
+                int numStories = Math.toIntExact(gameSession.getStories().stream().filter(story -> !story.isVisited()).count());
+                int offsetPlayerIndex = OutcomeTypeHelper.getOffsetPlayerIndex(storyContext.playerIndex(), offsetValue, numPlayers);
                 boolean isSharedIndex = numPlayers > numStories &&
                         (offsetPlayerIndex >= numStories || offsetPlayerIndex < (numPlayers - numStories));
 
@@ -1603,27 +1574,16 @@ public class CollaborativeTextHelper {
                     return List.of(storyOutcomeType);
                 }
             } else if (phaseId == GameState.WRITE_EPILOGUES){
-                // Round > 0: Distribute visited stories and filter encounters
-                StoryDistributionContext ctx = outcomeTypeHelper.getStoryDistributionContext(gameSession, playerId, true);
-                if (ctx == null) {
-                    return new ArrayList<>();
-                }
-
-                List<Player> sortedPlayers = ctx.sortedPlayers();
-                int playerIndex = ctx.playerIndex();
-
                 // Calculate offset: 1 for 4 players, 2 for more than 4 players
-                int offsetValue = sortedPlayers.size() > 4 ? -2 : -1;
+                int offsetValue = gameSession.getPlayers().size() > 4 ? -2 : -1;
 
-                List<Story> sortedVisitedStories = ctx.sortedStories();
+                StoryDistributionContext ctx = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, true, offsetValue);
+                List<OutcomeType> assignedStories = ctx.assignedStories();
 
-                // Distribute stories to player
-                List<OutcomeType> assignedStories = outcomeTypeHelper.distributeStoriesToPlayer(sortedVisitedStories, sortedPlayers, playerIndex, offsetValue);
-
-                int assignedPlayerIndex = OutcomeTypeHelper.getOffsetPlayerIndex(playerIndex, offsetValue, sortedPlayers.size());
+                int assignedPlayerIndex = OutcomeTypeHelper.getOffsetPlayerIndex(ctx.playerIndex(), offsetValue, gameSession.getPlayers().size());
                 OutcomeType playerOutcome = new OutcomeType(
-                        sortedPlayers.get(assignedPlayerIndex).getAuthorId(),
-                        sortedPlayers.get(assignedPlayerIndex).getUserName()
+                        gameSession.getPlayers().get(assignedPlayerIndex).getAuthorId(),
+                        gameSession.getPlayers().get(assignedPlayerIndex).getUserName()
                 );
                 playerOutcome.setSubTypes(assignedStories);
                 return List.of(playerOutcome);
@@ -1634,23 +1594,6 @@ public class CollaborativeTextHelper {
             System.err.println("Failed to get outcome types: " + e.getMessage());
             return new ArrayList<>();
         }
-    }
-
-    /**
-     * Gets the count of submissions a player has made for a specific collaborative text phase.
-     * @param gameCode The game code
-     * @param playerId The player ID
-     * @param phase The game state phase to check
-     * @return The count of submissions made by the player for this phase
-     */
-    private long getPlayerSubmissionCountForPhase(String gameCode, String playerId, GameState phase) {
-        CollaborativeTextPhase phaseData = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phase.name());
-        if (phaseData == null || phaseData.getSubmissions() == null) {
-            return 0;
-        }
-        return phaseData.getSubmissions().stream()
-                .filter(submission -> playerId.equals(submission.getAuthorId()))
-                .count();
     }
 
     /**

@@ -14,8 +14,12 @@ public class PlayerSortResult {
     @Getter
     final int playerIndex;
 
-    PlayerSortResult(List<Player> sortedPlayers, int playerIndex) {
+    @Getter
+    final Player assignedPlayer;
+
+    public PlayerSortResult(List<Player> sortedPlayers, int playerIndex, Player assignedPlayer) {
         this.sortedPlayers = sortedPlayers;
         this.playerIndex = playerIndex;
+        this.assignedPlayer = assignedPlayer;
     }
 }

@@ -7,5 +7,6 @@ import java.util.List;
 public record StoryDistributionContext(
         List<Story> sortedStories,
         List<Player> sortedPlayers,
-        int playerIndex
+        int playerIndex,
+        List<OutcomeType> assignedStories
 ) {}

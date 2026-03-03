@@ -664,23 +664,23 @@ public class CollaborativeTextHelperTest {
                         // Expected story IDs per player (in player join order)
                         // Stories: 0=704e29cf (Andy), 1=ce52535b (Joe), 2=af0925f5 (Byron), 3=80facdb7 (Kirsten)
                         List.of(
-                                "af0925f5-e00d-4ac5-b63b-9f23e4b6be0d", // Player 0 (Andy) gets story 2
                                 "80facdb7-1cbb-465c-8486-92b588c543a4", // Player 1 (Joe) gets story 3
                                 "704e29cf-88a1-4fe9-832d-fc639adbe182", // Player 2 (Byron) gets story 0
-                                "ce52535b-f69c-467e-a042-06a1cfcb85c0"  // Player 3 (Kirsten) gets story 1
+                                "ce52535b-f69c-467e-a042-06a1cfcb85c0", // Player 3 (Kirsten) gets story 1
+                                "af0925f5-e00d-4ac5-b63b-9f23e4b6be0d" // Player 0 (Andy) gets story 2
                         )
                 ),
                 Arguments.of(
                         "WHAT_HAPPENS_HERE - Round 1, all players get same encounter labels",
                         "WHAT_HAPPENS_HERE_START.json",
                         GameState.WHAT_HAPPENS_HERE,
-                        // Round 1: No story distribution - all players get the same encounter labels
+                        // Round 1: Players get all encounter labels from one other player
                         // The first encounter label ID is returned for all players
                         List.of(
-                                "1d8a56a7-34b8-48a9-ad09-933f4190af86", // Player 0 (Andy) - same encounter
-                                "1d8a56a7-34b8-48a9-ad09-933f4190af86", // Player 1 (Joe) - same encounter
-                                "1d8a56a7-34b8-48a9-ad09-933f4190af86", // Player 2 (Byron) - same encounter
-                                "1d8a56a7-34b8-48a9-ad09-933f4190af86"  // Player 3 (Kirsten) - same encounter
+                                "1d8a56a7-34b8-48a9-ad09-933f4190af86", // Player 0 (Andy) - encounter written by Byron
+                                "ac69cefe-d2f8-4203-a046-20b2a25d1250", // Player 1 (Joe) - encounter written by Kirsten
+                                "1b2c7a37-35a7-479e-bb23-b2d3c577cf36", // Player 2 (Byron) - encounter written by Andy
+                                "8f4b1306-aac6-454a-be85-a769f91a4250"  // Player 3 (Kirsten) - encounter written by Joe
                         )
                 )
         );
