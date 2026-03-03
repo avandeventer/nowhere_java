@@ -176,7 +176,7 @@ public class CollaborativeTextHelperTest {
     ) throws IOException {
         // Arrange
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
-        gameSession.setGameState(GameState.WHAT_HAPPENS_HERE);
+        gameSession.setGameState(GameState.WHAT_HAPPENS_HERE_WINNER);
 
         String gameCode = gameSession.getGameCode();
         String phaseId = GameState.WHAT_HAPPENS_HERE.name();

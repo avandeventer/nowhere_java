@@ -416,7 +416,7 @@ public class CollaborativeTextHelper {
         Comparator<TextSubmission> rankingComparator = Comparator
                 .comparingDouble(TextSubmission::getAverageRanking);
 
-        if (gameState == WHAT_HAPPENS_HERE) {
+        if (gameState.getPhaseId() == WHAT_HAPPENS_HERE) {
             // Rank by most submissions PER outcomeType
             List<String> uniqueOutcomeTypes = phase.getSubmissions().stream()
                     .map(textSubmission -> textSubmission.getOutcomeTypeWithLabel().getId())
