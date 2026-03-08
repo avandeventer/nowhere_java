@@ -74,6 +74,12 @@ public class AdventureMapController {
         return this.adventureMapHelper.getGlobal(adventureId);
     }
 
+    @GetMapping("/adventure-map/traits")
+    @ResponseBody
+    public List<Trait> getTraits(@RequestParam String gameCode) {
+        return this.adventureMapHelper.getTraits(gameCode);
+    }
+
     @GetMapping("/location-images")
     @ResponseBody
     public List<String> getLocationImages() {

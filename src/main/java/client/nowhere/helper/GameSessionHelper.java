@@ -63,14 +63,16 @@ public class GameSessionHelper {
         return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, adventureMap, saveGameId, storiesToWritePerRound, storiesToPlayPerRound, gameMode);
     }
 
-    public GameSession  updateToNextGameState(String gameCode) {
+    public GameSession updateToNextGameState(String gameCode) {
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
-        gameSession.setGameStateToNext(true, gameSession.getRoundNumber());
+        boolean includeTraits = featureFlagHelper.getFlagValue("includeTraits");
+        gameSession.setGameStateToNext(includeTraits);
         return updateGameSession(gameSession, false);
     }
 
     public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
         GameSession existingSession = gameSessionDAO.getGame(gameSession.getGameCode());
+        boolean includeTraits = featureFlagHelper.getFlagValue("includeTraits");
 
         if(existingSession.getGameState().equals(gameSession.getGameState())) {
             return existingSession;
@@ -78,12 +80,6 @@ public class GameSessionHelper {
 
         try {
             PhaseBaseInfo phaseBaseInfo = gameSession.getGameState().getPhaseBaseInfo("", gameSession.getRoundNumber());
-
-//            if (gameSession.getGameState().equals(MAKE_CHOICE_WINNER)
-//                    || gameSession.getGameState().equals(NAVIGATE_WINNER)
-//                    || !gameSession.getGameState().equals(phaseBaseInfo.winningState())) {
-//                gameSessionDAO.updateGameSession(gameSession);
-//            }
 
             List<Player> players = existingSession.getPlayers();
             ActiveGameStateSession gameStateSession =
@@ -105,7 +101,7 @@ public class GameSessionHelper {
             if (gameSession.getGameState().equals(phaseBaseInfo.winningState()) && !gameSession.getGameState().equals(NAVIGATE_WINNER)) {
                 collaborativeTextHelper.calculateWinningSubmission(gameSession);
                 if (!gameSession.getGameState().equals(MAKE_OUTCOME_CHOICE_WINNER)) {
-                    gameSession.setGameStateToNext(true, gameSession.getRoundNumber());
+                    gameSession.setGameStateToNext(includeTraits);
                 }
             }
 
@@ -231,7 +227,7 @@ public class GameSessionHelper {
                     break;
                 case MAKE_OUTCOME_CHOICE_VOTING:
                     if(collaborativeTextHelper.getMakeChoiceVotingOutcomeForks(gameSession).size() < 2) {
-                        gameSession.setGameStateToNext(true, gameSession.getRoundNumber());
+                        gameSession.setGameStateToNext(includeTraits);
                     }
                     break;
                 case NAVIGATE_WINNER:

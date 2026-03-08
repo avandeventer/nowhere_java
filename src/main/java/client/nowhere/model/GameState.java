@@ -46,10 +46,14 @@ public enum GameState {
         ENDING,
         FINALE,
 
-        //Dungeon Mode:
+        //Collaborative Text Mode:
         SET_ENCOUNTERS,
         SET_ENCOUNTERS_VOTING,
         SET_ENCOUNTERS_WINNERS,
+        SET_TRAITS,
+        SET_TRAITS_WINNERS,
+        WHO_ARE_YOU,
+        WHO_ARE_YOU_WINNERS,
         WHAT_HAPPENS_HERE,
         WHAT_HAPPENS_HERE_VOTING,
         WHAT_HAPPENS_HERE_WINNER,
@@ -61,6 +65,8 @@ public enum GameState {
         HOW_DOES_THIS_RESOLVE_VOTING,
         HOW_DOES_THIS_RESOLVE_WINNERS,
         HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN,
+        WHAT_DOES_IT_MEAN,
+        WHAT_DOES_IT_MEAN_WINNERS,
         MAKE_CHOICE_VOTING,
         MAKE_CHOICE_WINNER,
         MAKE_OUTCOME_CHOICE_VOTING,
@@ -74,129 +80,84 @@ public enum GameState {
         EPILOGUE_PREAMBLE,
         LOCATION_SELECT_COLLABORATIVE;
 
-        public GameState getNextGameState(GameMode gameMode, boolean streamlinedCollaborativeStories, int roundNumber) {
+        public GameState getNextGameState(GameMode gameMode, boolean includeTraits) {
             if (gameMode == GameMode.TOWN_MODE) {
                 return getNextGameStateTownMode();
             } else {
-                return getNextGameStateDungeonMode(streamlinedCollaborativeStories, roundNumber);
+                return getNextGameStateDungeonMode(includeTraits);
             }
         }
 
-    private GameState getNextGameStateDungeonMode(boolean streamlinedCollaborativeStories, int roundNumber) {
-        if (streamlinedCollaborativeStories) {
-            switch (this) {
-                case INIT -> {
-                    return GameState.PREAMBLE;
-                }
-                case PREAMBLE -> {
-                    return GameState.SET_ENCOUNTERS;
-                }
-                case SET_ENCOUNTERS -> {
-                    return GameState.SET_ENCOUNTERS_WINNERS;
-                } case SET_ENCOUNTERS_WINNERS -> {
-                    return GameState.WHAT_HAPPENS_HERE;
-                } case GameState.WHAT_HAPPENS_HERE ->  {
-                    return GameState.WHAT_HAPPENS_HERE_WINNER;
-                } case GameState.WHAT_HAPPENS_HERE_WINNER -> {
-                    return GameState.WHAT_CAN_WE_TRY;
-                } case GameState.WHAT_CAN_WE_TRY -> {
-                    return GameState.WHAT_CAN_WE_TRY_WINNERS;
-                } case GameState.WHAT_CAN_WE_TRY_WINNERS -> {
-                    return GameState.HOW_DOES_THIS_RESOLVE;
-                } case GameState.HOW_DOES_THIS_RESOLVE -> {
-                    return GameState.HOW_DOES_THIS_RESOLVE_WINNERS;
-                } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS -> {
-                    return GameState.HOW_DOES_THIS_RESOLVE_AGAIN;
-                } case GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> {
-                    return GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN;
-                } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> {
-                    return GameState.MAKE_CHOICE_VOTING;
-                }
-                case MAKE_CHOICE_VOTING -> {
-                    return GameState.MAKE_CHOICE_WINNER;
-                }
-                case MAKE_CHOICE_WINNER -> {
-                    return GameState.MAKE_OUTCOME_CHOICE_VOTING;
-                }
-                case MAKE_OUTCOME_CHOICE_VOTING -> {
-                    return GameState.MAKE_OUTCOME_CHOICE_WINNER;
-                }
-                case MAKE_OUTCOME_CHOICE_WINNER -> {
-                    return GameState.NAVIGATE_WINNER;
-                }
-                case NAVIGATE_WINNER -> {
-                    //Loops back to make choice. This loop is broken in NAVIGATE_WINNER case in GameSessionHelper.updateGameSession
-                    return MAKE_CHOICE_VOTING;
-                }
-                case WRITE_EPILOGUES -> {
-                    return WRITE_EPILOGUES_WINNER;
-                }
-                case WRITE_EPILOGUES_WINNER -> {
-                    return FINALE;
-                }
-                default -> {
-                    return GameState.INIT;
-                }
+    private GameState getNextGameStateDungeonMode(boolean includeTraits) {
+        switch (this) {
+            case INIT -> {
+                return GameState.PREAMBLE;
             }
-        } else {
-            switch (this) {
-                case INIT -> {
-                    return GameState.PREAMBLE;
+            case PREAMBLE -> {
+                return GameState.SET_ENCOUNTERS;
+            }
+            case SET_ENCOUNTERS -> {
+                return GameState.SET_ENCOUNTERS_WINNERS;
+            }
+            case SET_ENCOUNTERS_WINNERS -> {
+                if (includeTraits) {
+                    return SET_TRAITS;
                 }
-                case PREAMBLE -> {
-                    return GameState.SET_ENCOUNTERS;
+                return GameState.WHAT_HAPPENS_HERE;
+            } case SET_TRAITS -> {
+                return SET_TRAITS_WINNERS;
+            } case WHO_ARE_YOU -> {
+                return WHO_ARE_YOU_WINNERS;
+            } case WHO_ARE_YOU_WINNERS -> {
+                return WHAT_HAPPENS_HERE;
+            } case GameState.WHAT_HAPPENS_HERE ->  {
+                return GameState.WHAT_HAPPENS_HERE_WINNER;
+            } case GameState.WHAT_HAPPENS_HERE_WINNER -> {
+                return GameState.WHAT_CAN_WE_TRY;
+            } case GameState.WHAT_CAN_WE_TRY -> {
+                return GameState.WHAT_CAN_WE_TRY_WINNERS;
+            } case GameState.WHAT_CAN_WE_TRY_WINNERS -> {
+                return GameState.HOW_DOES_THIS_RESOLVE;
+            } case GameState.HOW_DOES_THIS_RESOLVE -> {
+                return GameState.HOW_DOES_THIS_RESOLVE_WINNERS;
+            } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS -> {
+                return GameState.HOW_DOES_THIS_RESOLVE_AGAIN;
+            } case GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> {
+                return GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN;
+            } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> {
+                if (includeTraits) {
+                    return GameState.WHAT_DOES_IT_MEAN;
                 }
-                case SET_ENCOUNTERS -> {
-                    return GameState.SET_ENCOUNTERS_VOTING;
-                }
-                case SET_ENCOUNTERS_VOTING -> {
-                    return GameState.SET_ENCOUNTERS_WINNERS;
-                }
-                case SET_ENCOUNTERS_WINNERS, NAVIGATE_WINNER -> {
-                    return GameState.WHAT_HAPPENS_HERE;
-                }
-                case WHAT_HAPPENS_HERE -> {
-                    return GameState.WHAT_HAPPENS_HERE_VOTING;
-                }
-                case WHAT_HAPPENS_HERE_VOTING -> {
-                    return GameState.WHAT_HAPPENS_HERE_WINNER;
-                }
-                case WHAT_HAPPENS_HERE_WINNER -> {
-                    return GameState.WHAT_CAN_WE_TRY;
-                }
-                case WHAT_CAN_WE_TRY -> {
-                    return GameState.WHAT_CAN_WE_TRY_VOTING;
-                }
-                case WHAT_CAN_WE_TRY_VOTING -> {
-                    return GameState.WHAT_CAN_WE_TRY_WINNERS;
-                }
-                case WHAT_CAN_WE_TRY_WINNERS -> {
-                    return GameState.HOW_DOES_THIS_RESOLVE;
-                }
-                case HOW_DOES_THIS_RESOLVE -> {
-                    return GameState.HOW_DOES_THIS_RESOLVE_VOTING;
-                }
-                case HOW_DOES_THIS_RESOLVE_VOTING -> {
-                    return GameState.HOW_DOES_THIS_RESOLVE_WINNERS;
-                }
-                case HOW_DOES_THIS_RESOLVE_WINNERS -> {
-                    return GameState.LOCATION_SELECT_COLLABORATIVE;
-                }
-                case LOCATION_SELECT_COLLABORATIVE -> {
-                    return GameState.MAKE_CHOICE_VOTING;
-                }
-                case MAKE_CHOICE_VOTING -> {
-                    return GameState.MAKE_CHOICE_WINNER;
-                }
-                case MAKE_CHOICE_WINNER -> {
-                    return GameState.NAVIGATE_VOTING;
-                }
-                case NAVIGATE_VOTING -> {
-                    return GameState.NAVIGATE_WINNER;
-                }
-                default -> {
-                    return GameState.INIT;
-                }
+                return GameState.MAKE_CHOICE_VOTING;
+            } case GameState.WHAT_DOES_IT_MEAN -> {
+                return WHAT_DOES_IT_MEAN_WINNERS;
+            } case GameState.WHAT_DOES_IT_MEAN_WINNERS -> {
+                return MAKE_CHOICE_VOTING;
+            }
+            case MAKE_CHOICE_VOTING -> {
+                return GameState.MAKE_CHOICE_WINNER;
+            }
+            case MAKE_CHOICE_WINNER -> {
+                return GameState.MAKE_OUTCOME_CHOICE_VOTING;
+            }
+            case MAKE_OUTCOME_CHOICE_VOTING -> {
+                return GameState.MAKE_OUTCOME_CHOICE_WINNER;
+            }
+            case MAKE_OUTCOME_CHOICE_WINNER -> {
+                return GameState.NAVIGATE_WINNER;
+            }
+            case NAVIGATE_WINNER -> {
+                //Loops back to make choice. This loop is broken in NAVIGATE_WINNER case in GameSessionHelper.updateGameSession
+                return MAKE_CHOICE_VOTING;
+            }
+            case WRITE_EPILOGUES -> {
+                return WRITE_EPILOGUES_WINNER;
+            }
+            case WRITE_EPILOGUES_WINNER -> {
+                return FINALE;
+            }
+            default -> {
+                return GameState.INIT;
             }
         }
     }
@@ -349,14 +310,17 @@ public enum GameState {
                         case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE, WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> WHAT_ARE_WE_CAPABLE_OF;
                         case WHAT_WILL_BECOME_OF_US, WHAT_WILL_BECOME_OF_US_VOTE, WHAT_WILL_BECOME_OF_US_VOTE_WINNER -> WHAT_WILL_BECOME_OF_US;
                         case SET_ENCOUNTERS, SET_ENCOUNTERS_VOTING, SET_ENCOUNTERS_WINNERS -> SET_ENCOUNTERS;
+                        case SET_TRAITS, SET_TRAITS_WINNERS -> SET_TRAITS;
+                        case WHO_ARE_YOU, WHO_ARE_YOU_WINNERS -> WHO_ARE_YOU;
                         case WHAT_HAPPENS_HERE, WHAT_HAPPENS_HERE_VOTING, WHAT_HAPPENS_HERE_WINNER -> WHAT_HAPPENS_HERE;
                         case WHAT_CAN_WE_TRY, WHAT_CAN_WE_TRY_VOTING, WHAT_CAN_WE_TRY_WINNERS -> WHAT_CAN_WE_TRY;
                         case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNERS -> HOW_DOES_THIS_RESOLVE;
                         case HOW_DOES_THIS_RESOLVE_AGAIN, HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> HOW_DOES_THIS_RESOLVE_AGAIN;
-                        case WRITE_EPILOGUES, WRITE_EPILOGUES_WINNER -> WRITE_EPILOGUES_WINNER;
+                        case WHAT_DOES_IT_MEAN, WHAT_DOES_IT_MEAN_WINNERS -> WHAT_DOES_IT_MEAN;
                         case MAKE_CHOICE_VOTING, MAKE_CHOICE_WINNER -> MAKE_CHOICE_VOTING;
                         case MAKE_OUTCOME_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_WINNER ->  MAKE_OUTCOME_CHOICE_VOTING;
                         case NAVIGATE_VOTING, NAVIGATE_WINNER -> NAVIGATE_VOTING;
+                        case WRITE_EPILOGUES, WRITE_EPILOGUES_WINNER -> WRITE_EPILOGUES_WINNER;
                         case CAMPFIRE, CAMPFIRE_WINNERS -> CAMPFIRE;
                         default -> null;
                 };
@@ -459,6 +423,28 @@ public enum GameState {
                                 false
                         );
                 }
+                if (phaseId == SET_TRAITS) {
+                    return new PhaseBaseInfo(
+                            "What can we become here?",
+                            "Name some traits that we might gain on our adventure through this place",
+                            CollaborativeMode.RAPID_FIRE,
+                            SET_TRAITS,
+                            null,
+                            SET_TRAITS_WINNERS,
+                            false
+                    );
+                }
+                if (phaseId == WHO_ARE_YOU) {
+                    return new PhaseBaseInfo(
+                            "Who are we?",
+                            "Decide who you are! Choose a class and some traits that represent your character",
+                            CollaborativeMode.PLAYER_CONTENT,
+                            WHO_ARE_YOU,
+                            null,
+                            WHO_ARE_YOU_WINNERS,
+                            false
+                    );
+                }
                 if (phaseId == WHAT_HAPPENS_HERE) {
                         return new PhaseBaseInfo(
                                 "What happens here?",
@@ -500,6 +486,17 @@ public enum GameState {
                             HOW_DOES_THIS_RESOLVE_AGAIN,
                             null,
                             HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN,
+                            false
+                    );
+                }
+                if (phaseId == WHAT_DOES_IT_MEAN) {
+                    return new PhaseBaseInfo(
+                            "What happens when we have made our choices?",
+                            "Use your player class to affect how the outcomes will change the world around us!",
+                            CollaborativeMode.SHARE_TEXT,
+                            WHAT_DOES_IT_MEAN,
+                            null,
+                            WHAT_DOES_IT_MEAN_WINNERS,
                             false
                     );
                 }

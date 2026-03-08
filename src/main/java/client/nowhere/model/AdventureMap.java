@@ -13,6 +13,7 @@ public class AdventureMap {
     List<Location> unusedLocations;
     Story ritual;
     List<EncounterLabel> encounterLabels;
+    List<Trait> traits;
 
     public AdventureMap() {
         this.name = "";
@@ -36,6 +37,7 @@ public class AdventureMap {
 //            this.statTypes.add(defaultStat.getStatType());
 //        }
         this.encounterLabels = new ArrayList<>();
+        this.traits = new ArrayList<>();
     }
 
     public String getName() {
@@ -224,6 +226,7 @@ public class AdventureMap {
         this.updateStatTypes(adventureMapUpdates.getStatTypes());
         this.updateLocations(adventureMapUpdates.getLocations());
         this.updateEncounterLabels(adventureMapUpdates.getEncounterLabels());
+        this.updateTraits(adventureMapUpdates.getTraits());
     }
 
     public void updateRitualOptions(Story ritual) {
@@ -256,6 +259,29 @@ public class AdventureMap {
 
     public void setEncounterLabels(List<EncounterLabel> encounterLabels) {
         this.encounterLabels = encounterLabels;
+    }
+
+    public List<Trait> getTraits() {
+        return traits;
+    }
+
+    public void setTraits(List<Trait> traits) {
+        this.traits = traits;
+    }
+
+    public void updateTraits(List<Trait> traits) {
+        Map<String, Trait> traitMap = this.traits.stream()
+                .collect(Collectors.toMap(Trait::getTraitId, Function.identity()));
+
+        for (Trait trait : traits) {
+            if (!trait.getTraitId().isEmpty() && !trait.getTraitLabel().isEmpty()) {
+                if (!traitMap.containsKey(trait.getTraitId())) {
+                    traitMap.put(trait.getTraitId(), trait);
+                }
+            }
+        }
+
+        this.traits = new ArrayList<>(traitMap.values());
     }
 
     @Override

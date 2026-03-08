@@ -32,6 +32,14 @@ public class AdventureMapHelper {
         return this.adventureMapDAO.getLocations(gameCode);
     }
 
+    public List<Trait> getTraits(String gameCode) {
+        AdventureMap adventureMap = this.adventureMapDAO.get(gameCode);
+        if (adventureMap == null || adventureMap.getTraits() == null) {
+            return new ArrayList<>();
+        }
+        return adventureMap.getTraits();
+    }
+
     public GameSessionDisplay getGameSessionDisplay(String gameCode) {
         GameSessionDisplay gameSessionDisplay = this.adventureMapDAO.getGameSessionDisplay(gameCode);
         if (gameSessionDisplay.getEntity() == null || gameSessionDisplay.getEntity().isEmpty()) {

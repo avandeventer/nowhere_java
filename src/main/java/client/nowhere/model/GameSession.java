@@ -80,12 +80,12 @@ public class GameSession {
         this.gameState = gameState;
     }
 
-    public void setGameStateToNext(boolean streamlinedCollaborativeStories, int roundNumber) {
-        this.gameState = this.gameState.getNextGameState(this.gameMode, streamlinedCollaborativeStories, roundNumber);
+    public void setGameStateToNext(boolean includeTraits) {
+        this.gameState = this.gameState.getNextGameState(this.gameMode, includeTraits);
     }
 
     public void setGameStateToNext() {
-        this.gameState = this.gameState.getNextGameState(this.gameMode, false, 1);
+        this.gameState = this.gameState.getNextGameState(this.gameMode, false);
     }
 
     public ActivePlayerSession getActivePlayerSession() {

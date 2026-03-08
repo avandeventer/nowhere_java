@@ -17,6 +17,7 @@ public class Player {
     private int magic = 4;
     private int favor = 4;
     private List<PlayerStat> playerStats;
+    private List<Trait> traits;
     private PlayerCoordinates playerCoordinates;
     private String gameCode;
     private boolean isFirstPlayer = false;
@@ -150,6 +151,14 @@ public class Player {
         }
     }
 
+    public List<Trait> getTraits() {
+        return traits;
+    }
+
+    public void setTraits(List<Trait> traits) {
+        this.traits = traits;
+    }
+
     public void updatePlayer(Player player) {
         this.setStrength(player.getStrength());
         this.setIntellect(player.getIntellect());
@@ -159,6 +168,7 @@ public class Player {
         this.setMagic(player.getMagic());
         this.setFavor(player.getFavor());
         this.setPlayerStats(player.getPlayerStats());
+        this.setTraits(player.getTraits());
     }
 
     public boolean getFirstPlayer() {

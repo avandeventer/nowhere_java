@@ -586,6 +586,7 @@ public class CollaborativeTextHelper {
                     }
                 }
                 case GameState.SET_ENCOUNTERS -> addAllSubmissionsToAdventureMap(gameCode, winningSubmissions);
+                case GameState.SET_TRAITS -> addAllTraitsToAdventureMap(gameCode, winningSubmissions);
                 case GameState.WHAT_HAPPENS_HERE -> handleWhatHappensHereStreamlined(gameSession, winningSubmissions);
                 case GameState.HOW_DOES_THIS_RESOLVE, GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> handleHowDoesThisResolve(gameSession, winningSubmissions);
                 case GameState.MAKE_CHOICE_VOTING -> handleMakeChoice(gameSession, winningSubmissions);
@@ -650,6 +651,46 @@ public class CollaborativeTextHelper {
             adventureMapDAO.updateGameSessionAdventureMap(gameSession.getGameCode(), adventureMap);
         } catch (Exception e) {
             System.err.println("Failed to add submissions to AdventureMap: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Adds all submissions to AdventureMap as Traits (for SET_TRAITS phase)
+     */
+    private void addAllTraitsToAdventureMap(String gameCode, List<TextSubmission> winningSubmissions) {
+        try {
+            if (winningSubmissions.isEmpty()) {
+                return;
+            }
+
+            GameSession gameSession = getGameSession(gameCode);
+            AdventureMap adventureMap = gameSession.getAdventureMap();
+            if (adventureMap == null) {
+                adventureMap = new AdventureMap();
+                gameSession.setAdventureMap(adventureMap);
+            }
+
+            if (adventureMap.getTraits() == null) {
+                adventureMap.setTraits(new ArrayList<>());
+            }
+
+            // Create Traits for all submissions
+            List<Trait> traits = new ArrayList<>();
+            for (TextSubmission submission : winningSubmissions) {
+                Trait trait = new Trait(
+                    submission.getCurrentText(),
+                    submission
+                );
+                traits.add(trait);
+            }
+            adventureMap.getTraits().addAll(traits);
+
+            // Update AdventureMap in Firestore
+            gameSession.setAdventureMap(adventureMap);
+            adventureMapDAO.updateGameSessionAdventureMap(gameSession.getGameCode(), adventureMap);
+        } catch (Exception e) {
+            System.err.println("Failed to add traits to AdventureMap: " + e.getMessage());
             e.printStackTrace();
         }
     }
