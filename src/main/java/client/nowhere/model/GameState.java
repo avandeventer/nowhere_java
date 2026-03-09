@@ -106,6 +106,8 @@ public enum GameState {
                 return GameState.WHAT_HAPPENS_HERE;
             } case SET_TRAITS -> {
                 return SET_TRAITS_WINNERS;
+            } case SET_TRAITS_WINNERS -> {
+                return WHO_ARE_YOU;
             } case WHO_ARE_YOU -> {
                 return WHO_ARE_YOU_WINNERS;
             } case WHO_ARE_YOU_WINNERS -> {
