@@ -2,10 +2,13 @@ package client.nowhere.controller;
 
 import client.nowhere.helper.GameSessionHelper;
 import client.nowhere.model.Player;
+import client.nowhere.model.PlayerClass;
+import client.nowhere.model.PlayerClassOption;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @CrossOrigin(maxAge = 3600)
@@ -17,6 +20,18 @@ public class PlayerController {
     @Autowired
     public PlayerController(GameSessionHelper gameSessionHelper) {
         this.gameSessionHelper = gameSessionHelper;
+    }
+
+    @GetMapping("/player/classes")
+    @ResponseBody
+    public List<PlayerClassOption> getPlayerClasses() {
+        return Arrays.stream(PlayerClass.values())
+                .map(pc -> new PlayerClassOption(
+                        pc.name,
+                        pc.description,
+                        pc.repercussionTypes.stream().map(Enum::name).toList()
+                ))
+                .toList();
     }
 
     @GetMapping("/player")
