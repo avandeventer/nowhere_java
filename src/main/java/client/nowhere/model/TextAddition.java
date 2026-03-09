@@ -11,6 +11,7 @@ public class TextAddition {
     private String submissionId; // Reference to the original submission
     private String outcomeType; // Optional: "success", "neutral", or "failure" - used for WHAT_WILL_BECOME_OF_US phase
     private OutcomeType outcomeTypeWithLabel;
+    private Repercussion repercussion;
 
     public TextAddition() {
         this.addedAt = Timestamp.now();
@@ -52,4 +53,11 @@ public class TextAddition {
     public void setOutcomeTypeWithLabel(OutcomeType outcomeTypeWithLabel) {
         this.outcomeTypeWithLabel = outcomeTypeWithLabel;
     }
-}
+
+    public Repercussion getRepercussion() {
+        return repercussion;
+    }
+
+    public void setRepercussion(Repercussion repercussion) {
+        this.repercussion = repercussion;
+    }}

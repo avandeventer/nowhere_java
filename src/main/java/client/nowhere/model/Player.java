@@ -1,8 +1,5 @@
 package client.nowhere.model;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,9 +23,10 @@ public class Player {
     private boolean isFirstPlayer = false;
     private Date joinedAt;
 
-    @Getter
-    @Setter
-    private PlayerClass playerClass;
+    private PlayerClassOption playerClass;
+
+    public PlayerClassOption getPlayerClass() { return playerClass; }
+    public void setPlayerClass(PlayerClassOption playerClass) { this.playerClass = playerClass; }
 
     public Player() { }
 

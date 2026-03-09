@@ -32,8 +32,6 @@ public class Story {
     private boolean playerSucceeded = false;
     private String prequelStoryPlayerId = "";
 
-    private List<Repercussion> successRepercussions;
-    private List<Repercussion> failureRepercussions;
     private List<String> prequelOutcomeDisplay;
     private boolean sequelStory;
     private boolean saveGameStory;
@@ -145,22 +143,6 @@ public class Story {
 
     public void setGameCode(String gameCode) {
         this.gameCode = gameCode;
-    }
-
-    public List<Repercussion> getSuccessRepercussions() {
-        return successRepercussions;
-    }
-
-    public void setSuccessRepercussions(List<Repercussion> successRepercussions) {
-        this.successRepercussions = successRepercussions;
-    }
-
-    public List<Repercussion> getFailureRepercussions() {
-        return failureRepercussions;
-    }
-
-    public void setFailureRepercussions(List<Repercussion> failureRepercussions) {
-        this.failureRepercussions = failureRepercussions;
     }
 
     public Location getLocation() {
