@@ -73,4 +73,10 @@ public class CollaborativeTextController {
     public CollaborativeTextPhase submitPlayerVotes(@RequestBody List<PlayerVote> playerVotes, @RequestParam String gameCode) {
         return this.votingHelper.submitPlayerVotes(gameCode, playerVotes);
     }
+
+    @GetMapping("/collaborativeText/repercussionTypes")
+    @ResponseBody
+    public List<RepercussionTypeOption> getPlayerRepercussionTypes(@RequestParam String gameCode, @RequestParam String authorId) {
+        return this.collaborativeTextHelper.getPlayerRepercussionTypes(gameCode, authorId);
+    }
 }

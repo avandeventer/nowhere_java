@@ -1296,6 +1296,32 @@ public class CollaborativeTextHelper {
         }
     }
 
+    public List<RepercussionTypeOption> getPlayerRepercussionTypes(String gameCode, String authorId) {
+        GameSession gameSession = getGameSession(gameCode);
+        Player player = gameSession.getPlayers().stream()
+                .filter(p -> p.getAuthorId().equals(authorId))
+                .findFirst()
+                .orElse(null);
+        if (player == null || player.getPlayerClass() == null) {
+            return new ArrayList<>();
+        }
+        List<String> repercussionTypeNames = player.getPlayerClass().getRepercussionTypes();
+        if (repercussionTypeNames == null) {
+            return new ArrayList<>();
+        }
+        return repercussionTypeNames.stream()
+                .map(name -> {
+                    try {
+                        RepercussionType rt = RepercussionType.valueOf(name);
+                        return new RepercussionTypeOption(rt.name, rt.label, rt.instruction, rt.description);
+                    } catch (IllegalArgumentException e) {
+                        return null;
+                    }
+                })
+                .filter(rt -> rt != null)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Gets the phase information for collaborative text based on the current game state
      * @param gameCode The game code

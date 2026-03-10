@@ -18,7 +18,6 @@ public class Player {
     private int favor = 4;
     private List<PlayerStat> playerStats;
     private List<Trait> traits;
-    private PlayerCoordinates playerCoordinates;
     private String gameCode;
     private boolean isFirstPlayer = false;
     private Date joinedAt;
@@ -191,13 +190,5 @@ public class Player {
 
     public void setJoinedAt(Date now) {
         this.joinedAt = now;
-    }
-
-    public PlayerCoordinates getPlayerCoordinates() {
-        return playerCoordinates;
-    }
-
-    public void setPlayerCoordinates(PlayerCoordinates playerCoordinates) {
-        this.playerCoordinates = playerCoordinates;
     }
 }
