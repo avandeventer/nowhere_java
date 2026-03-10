@@ -53,7 +53,6 @@ public enum GameState {
         SET_TRAITS,
         SET_TRAITS_WINNERS,
         WHO_ARE_YOU,
-        WHO_ARE_YOU_WINNERS,
         WHAT_HAPPENS_HERE,
         WHAT_HAPPENS_HERE_VOTING,
         WHAT_HAPPENS_HERE_WINNER,
@@ -109,8 +108,6 @@ public enum GameState {
             } case SET_TRAITS_WINNERS -> {
                 return WHO_ARE_YOU;
             } case WHO_ARE_YOU -> {
-                return WHO_ARE_YOU_WINNERS;
-            } case WHO_ARE_YOU_WINNERS -> {
                 return WHAT_HAPPENS_HERE;
             } case GameState.WHAT_HAPPENS_HERE ->  {
                 return GameState.WHAT_HAPPENS_HERE_WINNER;
@@ -298,7 +295,7 @@ public enum GameState {
             }
         }
 
-    /**
+        /**
          * Gets the phase ID for this game state.
          * Returns the phase identifier that groups related game states together.
          * @return The phase ID string, or null if this game state doesn't belong to a collaborative text phase
@@ -313,7 +310,7 @@ public enum GameState {
                         case WHAT_WILL_BECOME_OF_US, WHAT_WILL_BECOME_OF_US_VOTE, WHAT_WILL_BECOME_OF_US_VOTE_WINNER -> WHAT_WILL_BECOME_OF_US;
                         case SET_ENCOUNTERS, SET_ENCOUNTERS_VOTING, SET_ENCOUNTERS_WINNERS -> SET_ENCOUNTERS;
                         case SET_TRAITS, SET_TRAITS_WINNERS -> SET_TRAITS;
-                        case WHO_ARE_YOU, WHO_ARE_YOU_WINNERS -> WHO_ARE_YOU;
+                        case WHO_ARE_YOU -> WHO_ARE_YOU;
                         case WHAT_HAPPENS_HERE, WHAT_HAPPENS_HERE_VOTING, WHAT_HAPPENS_HERE_WINNER -> WHAT_HAPPENS_HERE;
                         case WHAT_CAN_WE_TRY, WHAT_CAN_WE_TRY_VOTING, WHAT_CAN_WE_TRY_WINNERS -> WHAT_CAN_WE_TRY;
                         case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNERS -> HOW_DOES_THIS_RESOLVE;
@@ -443,7 +440,7 @@ public enum GameState {
                             CollaborativeMode.PLAYER_CONTENT,
                             WHO_ARE_YOU,
                             null,
-                            WHO_ARE_YOU_WINNERS,
+                            null,
                             false
                     );
                 }
