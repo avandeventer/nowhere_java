@@ -37,7 +37,9 @@ public class AdventureMapHelper {
         if (adventureMap == null || adventureMap.getTraits() == null) {
             return new ArrayList<>();
         }
-        return adventureMap.getTraits();
+        return adventureMap.getTraits().stream()
+                .peek(trait -> trait.textSubmission = null)
+                .toList();
     }
 
     public GameSessionDisplay getGameSessionDisplay(String gameCode) {
