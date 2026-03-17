@@ -190,7 +190,6 @@ public class VotingHelper {
 
         if (phaseIdState == GameState.MAKE_CHOICE_VOTING) {
             setNonActivePlayersToDone(gameSession);
-            setActivePlayerIds(gameSession, playerVotes);
         }
 
         if (phaseIdState == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
@@ -199,14 +198,6 @@ public class VotingHelper {
 
         // Return updated phase
         return collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
-    }
-
-    private void setActivePlayerIds(GameSession gameSession, List<PlayerVote> playerVotes) {
-        Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
-        List<String> playerIds = currentStory.getPlayerIds();
-        playerIds.add(playerVotes.getFirst().getPlayerId());
-        currentStory.setPlayerIds(playerIds);
-        storyDAO.updateStory(currentStory);
     }
 
     private void setNonActivePlayersToDone(GameSession gameSession) {
@@ -240,16 +231,10 @@ public class VotingHelper {
             return new ArrayList<>();
         }
 
-        StoryDistributionContext assignedPlayerStoryContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, false, -1);
+        Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
 
-        List<String> storyIds = assignedPlayerStoryContext.assignedStories().stream().map(OutcomeType::getId).toList();
-
-        Encounter encounter = gameSession.getGameBoard().getEncounterAtPlayerCoordinates();
-
-        if (!storyIds.isEmpty()
-                && encounter != null
-                && storyIds.contains(encounter.getStoryId())) {
-            return assignedPlayerStoryContext.assignedStories();
+        if (story.getPlayerIds().contains(playerId)) {
+            return outcomeTypeHelper.distributeStoriesToPlayer(List.of(story), story.getAuthorId());
         } else {
             return new ArrayList<>();
         }

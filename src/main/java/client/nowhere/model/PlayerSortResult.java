@@ -15,11 +15,15 @@ public class PlayerSortResult {
     final int playerIndex;
 
     @Getter
-    final Player assignedPlayer;
+    final Player assignedAuthor;
 
-    public PlayerSortResult(List<Player> sortedPlayers, int playerIndex, Player assignedPlayer) {
+    @Getter
+    final Player player;
+
+    public PlayerSortResult(List<Player> sortedPlayers, int playerIndex, Player assignedAuthor, Player player) {
         this.sortedPlayers = sortedPlayers;
         this.playerIndex = playerIndex;
-        this.assignedPlayer = assignedPlayer;
+        this.assignedAuthor = assignedAuthor;
+        this.player = player;
     }
 }

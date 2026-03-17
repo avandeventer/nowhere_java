@@ -172,7 +172,8 @@ public class CollaborativeTextHelperTest {
     void testCalculateWinningSubmission_WHAT_HAPPENS_HERE_FiltersSiblingsByAdditions(
             String scenarioName,
             String jsonFileName,
-            List<ExpectedSubmission> expectedSubmissions
+            List<ExpectedSubmission> expectedSubmissions,
+            Map<String, List<String>> expectedStoryPlayerIds
     ) throws IOException {
         // Arrange
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
@@ -230,7 +231,7 @@ public class CollaborativeTextHelperTest {
 
         List<Story> createdStories = storyCaptor.getAllValues();
         assertEquals(gameSession.getPlayers().size(), createdStories.size(),
-                "Should have " + gameSession.getPlayers() + " stories created via StoryDAO");
+                "Should have " + gameSession.getPlayers().size() + " stories created via StoryDAO");
 
         // Verify each created story has a prompt matching a winning submission's text
         for (Story story : createdStories) {
@@ -245,8 +246,11 @@ public class CollaborativeTextHelperTest {
                 matchesCorrectSubmissions = matchesCorrectSubmissions || matchesDefaultSubmission;
             }
 
+            System.out.println("Story ID: " + story.getStoryId() + " Author IDs: " + story.getAuthorId() + " Player IDs: " + story.getPlayerIds());
             assertTrue(matchesCorrectSubmissions,
                     "Story prompt should match a winning submission's text or a default encounter submission's text: " + story.getPrompt());
+            assertEquals(expectedStoryPlayerIds.get(story.getAuthorId()), story.getPlayerIds(),
+                    "Player IDs mismatch for story authored by " + story.getAuthorId());
         }
     }
 
@@ -268,6 +272,12 @@ public class CollaborativeTextHelperTest {
                                 new ExpectedSubmission("efd46f30-c24c-437b-907c-3a7f5d649405",
                                         "Friggin Skummy Steve is here. What a scumbag. He challenges you to a snot-off. D",
                                         1)
+                        ),
+                        Map.of(
+                                "0ec19af6-8825-4f9a-a0e8-4dadd05158b3", List.of("780a931b-e7f6-498b-917b-a96a3e343f3d"),
+                                "b90c8f3a-88dc-4a10-ae87-164a3913a217", List.of("f819c5d9-dc41-485a-8970-6daa98df6308"),
+                                "f819c5d9-dc41-485a-8970-6daa98df6308", List.of("0ec19af6-8825-4f9a-a0e8-4dadd05158b3"),
+                                "780a931b-e7f6-498b-917b-a96a3e343f3d", List.of("b90c8f3a-88dc-4a10-ae87-164a3913a217")
                         )
                 ),
                 Arguments.of(
@@ -286,6 +296,12 @@ public class CollaborativeTextHelperTest {
                                 new ExpectedSubmission("16aed1b4-f771-410e-9fa1-929fe4cd3067",
                                         "The dreaded submission appears again. You Auto Submit B",
                                         1)
+                        ),
+                        Map.of(
+                                "e459f092-e43b-4ad2-8b3e-579f1636b2e9", List.of("eb0c6d8d-9c29-4fad-ad84-71e1b7c80c80"),
+                                "c1abb5c9-ab39-4ed9-9cfa-9c34d3f7e84e", List.of("8512bfbf-88b8-4f19-9fc9-92dfea497fa8"),
+                                "eb0c6d8d-9c29-4fad-ad84-71e1b7c80c80", List.of("c1abb5c9-ab39-4ed9-9cfa-9c34d3f7e84e"),
+                                "8512bfbf-88b8-4f19-9fc9-92dfea497fa8", List.of("e459f092-e43b-4ad2-8b3e-579f1636b2e9")
                         )
                 ),
                 Arguments.of(
@@ -301,6 +317,12 @@ public class CollaborativeTextHelperTest {
                                 new ExpectedSubmission("ff0591b1-cabf-4da9-a6de-1bf9dd3204d8",
                                         "A friggin goodie two shoes is here. Man. Auto Submit A",
                                         1)
+                        ),
+                        Map.of(
+                                "5e483450-db1d-4a2c-9f07-b297d2f70648", List.of("54454e92-74bc-4b81-b2cf-56f859ae8bbd"),
+                                "54454e92-74bc-4b81-b2cf-56f859ae8bbd", List.of("48a8e280-3c23-445a-9289-baf1aeeb6a25"),
+                                "01f0280e-ed50-42b6-9c1a-190a430fbdfa", List.of("5e483450-db1d-4a2c-9f07-b297d2f70648"),
+                                "48a8e280-3c23-445a-9289-baf1aeeb6a25", List.of("01f0280e-ed50-42b6-9c1a-190a430fbdfa", "01f0280e-ed50-42b6-9c1a-190a430fbdfa")
                         )
                 )
         );
@@ -553,7 +575,7 @@ public class CollaborativeTextHelperTest {
             String scenarioName,
             String jsonFileName,
             GameState gameState,
-            List<String> expectedStoryIdsPerPlayer
+            Map<String, String> expectedStoryIdByPlayerName
     ) throws IOException {
         // Arrange - Load test data
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
@@ -582,22 +604,20 @@ public class CollaborativeTextHelperTest {
                 .toList();
 
         // Act & Assert - Iterate over each player and verify distribution
-        List<String> actualStoryIds = new java.util.ArrayList<>();
-
         for (int i = 0; i < sortedPlayers.size(); i++) {
             Player player = sortedPlayers.get(i);
             String playerId = player.getAuthorId();
+            String playerName = player.getUserName();
 
             List<OutcomeType> outcomeTypes = collaborativeTextHelper.getOutcomeTypes(gameCode, playerId);
 
-            System.out.println("\nPlayer " + i + ": " + player.getUserName() + " (" + playerId + ")");
+            System.out.println("\nPlayer " + i + ": " + playerName + " (" + playerId + ")");
             System.out.println("  OutcomeTypes returned: " + outcomeTypes.size());
 
             if (!outcomeTypes.isEmpty()) {
                 // For WHAT_CAN_WE_TRY, might get multiple stories; take the first for comparison
-                OutcomeType firstOutcome = outcomeTypes.get(0);
+                OutcomeType firstOutcome = outcomeTypes.getFirst();
                 String storyId = firstOutcome.getId();
-                actualStoryIds.add(storyId);
 
                 System.out.println("  First Story ID: " + storyId);
                 System.out.println("  Story Label: " + firstOutcome.getLabel());
@@ -609,21 +629,15 @@ public class CollaborativeTextHelperTest {
                                 (subType.getLabel() != null ? subType.getLabel().substring(0, Math.min(40, subType.getLabel().length())) + "..." : "null"));
                     }
                 }
+
+                assertEquals(expectedStoryIdByPlayerName.get(playerName), storyId,
+                        playerName + " should be assigned to the expected story");
             } else {
-                actualStoryIds.add("EMPTY");
                 System.out.println("  No outcome types returned");
+                assertNull(expectedStoryIdByPlayerName.get(playerName),
+                        playerName + " should have no expected story assignment");
             }
         }
-
-        System.out.println("\n=== Distribution Summary ===");
-        System.out.println("Expected: " + expectedStoryIdsPerPlayer);
-        System.out.println("Actual:   " + actualStoryIds);
-
-        // Assert the story distribution matches expected
-        assertEquals(expectedStoryIdsPerPlayer.size(), actualStoryIds.size(),
-                "Should have outcome for each player");
-        assertEquals(expectedStoryIdsPerPlayer, actualStoryIds,
-                "Story distribution should match expected pattern for " + scenarioName);
     }
 
     static Stream<Arguments> provideOutcomeTypeDistributionScenarios() {
@@ -648,39 +662,38 @@ public class CollaborativeTextHelperTest {
                         "WHAT_CAN_WE_TRY - 4 players, offset 1",
                         "WHAT_CAN_WE_TRY_START.json",
                         GameState.WHAT_CAN_WE_TRY,
-                        // Expected story IDs per player (in player join order)
                         // Stories: 0=c3fbfd4a (Andy), 1=efe64144 (Joe), 2=7adad1bc (Byron), 3=2646c831 (Kirsten)
-                        List.of(
-                                "efe64144-c636-4283-add7-974dc48a6039", // Player 0 (Andy) gets story 1
-                                "7adad1bc-874b-4f6e-a70c-f8ba4aea658f", // Player 1 (Joe) gets story 2
-                                "2646c831-3ab8-4445-ae4a-3696f25837ba", // Player 2 (Byron) gets story 3
-                                "c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a"  // Player 3 (Kirsten) gets story 0
+                        // offset 1: Andy→story 1, Joe→story 2, Byron→story 3, Kirsten→story 0
+                        Map.of(
+                                "Andy",    "efe64144-c636-4283-add7-974dc48a6039",
+                                "Joe",     "7adad1bc-874b-4f6e-a70c-f8ba4aea658f",
+                                "Byron",   "2646c831-3ab8-4445-ae4a-3696f25837ba",
+                                "Kirsten", "c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a"
                         )
                 ),
                 Arguments.of(
                         "HOW_DOES_THIS_RESOLVE - 4 players, offset 2",
                         "HOW_DOES_THIS_RESOLVE_START.json",
                         HOW_DOES_THIS_RESOLVE,
-                        // Expected story IDs per player (in player join order)
                         // Stories: 0=704e29cf (Andy), 1=ce52535b (Joe), 2=af0925f5 (Byron), 3=80facdb7 (Kirsten)
-                        List.of(
-                                "80facdb7-1cbb-465c-8486-92b588c543a4", // Player 1 (Joe) gets story 3
-                                "704e29cf-88a1-4fe9-832d-fc639adbe182", // Player 2 (Byron) gets story 0
-                                "ce52535b-f69c-467e-a042-06a1cfcb85c0", // Player 3 (Kirsten) gets story 1
-                                "af0925f5-e00d-4ac5-b63b-9f23e4b6be0d" // Player 0 (Andy) gets story 2
+                        // offset 2: Andy→story 2, Joe→story 3, Byron→story 0, Kirsten→story 1
+                        Map.of(
+                                "Andy",    "af0925f5-e00d-4ac5-b63b-9f23e4b6be0d",
+                                "Joe",     "80facdb7-1cbb-465c-8486-92b588c543a4",
+                                "Byron",   "704e29cf-88a1-4fe9-832d-fc639adbe182",
+                                "Kirsten", "ce52535b-f69c-467e-a042-06a1cfcb85c0"
                         )
                 ),
                 Arguments.of(
-                        "WHAT_HAPPENS_HERE - Round 1, all players get same encounter labels",
+                        "WHAT_HAPPENS_HERE - Round 1, Players get all encounter labels from one other player",
                         "WHAT_HAPPENS_HERE_START.json",
                         GameState.WHAT_HAPPENS_HERE,
                         // Round 1: Players get all encounter labels from one other player
-                        // The first encounter label ID is returned for all players
-                        List.of(
-                                "1d8a56a7-34b8-48a9-ad09-933f4190af86", // Player 0 (Andy) - encounter written by Byron
-                                "ac69cefe-d2f8-4203-a046-20b2a25d1250", // Player 1 (Joe) - encounter written by Kirsten
-                                "1b2c7a37-35a7-479e-bb23-b2d3c577cf36", // Player 2 (Byron) - encounter written by Andy
-                                "8f4b1306-aac6-454a-be85-a769f91a4250"  // Player 3 (Kirsten) - encounter written by Joe
+                        Map.of(
+                                "Andy",    "1d8a56a7-34b8-48a9-ad09-933f4190af86", // encounter written by Byron
+                                "Joe",     "ac69cefe-d2f8-4203-a046-20b2a25d1250", // encounter written by Kirsten
+                                "Byron",   "1b2c7a37-35a7-479e-bb23-b2d3c577cf36", // encounter written by Andy
+                                "Kirsten", "8f4b1306-aac6-454a-be85-a769f91a4250"  // encounter written by Joe
                         )
                 )
         );

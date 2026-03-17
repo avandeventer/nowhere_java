@@ -806,11 +806,8 @@
       "gameCode": "PUDFKW",
       "mainPlotStory": false,
       "visited": true,
-      "playerId": "DUNGEON_PLAYER",
-      "playerIds": [
-        "DUNGEON_PLAYER",
-        "eaa157ee-9d88-4d49-a728-4c8abca37119"
-      ],
+      "playerId": "eaa157ee-9d88-4d49-a728-4c8abca37119",
+      "playerIds": ["eaa157ee-9d88-4d49-a728-4c8abca37119"],
       "selectedOptionId": "7fb22a66-2817-4df5-a037-2aa8e8ca9cde",
       "playerSucceeded": false,
       "prequelStoryPlayerId": "",

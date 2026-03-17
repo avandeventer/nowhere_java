@@ -231,7 +231,7 @@ public class VotingHelperTest {
     }
 
     @Test
-    void testPlayerIdsSetOnMakeChoiceVote() throws IOException {
+    void testNonActivePlayersSetToDone() throws IOException {
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
         String gameCode = gameSession.getGameCode();
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
@@ -240,14 +240,12 @@ public class VotingHelperTest {
                 gameSession.getGameCode(),
                 List.of(playerVote)
         );
-        ArgumentCaptor<Story> storyCaptor = ArgumentCaptor.forClass(Story.class);
-        verify(storyDAO, times(1)).updateStory(storyCaptor.capture());
 
-        Story capturedStory = storyCaptor.getValue();
-        assertEquals(List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1"), capturedStory.getPlayerIds());
+        Story activeStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+        assertEquals(List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1"), activeStory.getPlayerIds());
 
         for(Player player : gameSession.getPlayers()) {
-            if (!capturedStory.getPlayerIds().contains(player.getAuthorId())) {
+            if (!activeStory.getPlayerIds().contains(player.getAuthorId())) {
                 verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_CHOICE_VOTING), eq(player.getAuthorId()), eq(true));
             }
         }

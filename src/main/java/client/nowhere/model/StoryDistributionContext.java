@@ -8,5 +8,6 @@ public record StoryDistributionContext(
         List<Story> sortedStories,
         List<Player> sortedPlayers,
         int playerIndex,
-        List<OutcomeType> assignedStories
+        List<OutcomeType> assignedStories,
+        Player assignedPlayer
 ) {}

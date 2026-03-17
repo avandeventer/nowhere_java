@@ -259,7 +259,7 @@ public class GameSession {
             return null;
         }
 
-        return new PlayerSortResult(sortedPlayers, playerIndex, new Player());
+        return new PlayerSortResult(sortedPlayers, playerIndex, new Player(), sortedPlayers.get(playerIndex));
     }
 
     public Story getStoryAtCurrentPlayerCoordinates() {

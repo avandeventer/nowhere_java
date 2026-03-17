@@ -753,6 +753,12 @@ public class CollaborativeTextHelper {
             int currentX = playerCoords.getxCoordinate();
             int y = playerCoords.getyCoordinate();
 
+            Map<String, PlayerSortResult> playersAssignedForDistribution = new HashMap<>();
+            for (Player player: gameSession.getPlayers()) {
+                PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, player.getAuthorId(), -1);
+                playersAssignedForDistribution.put(playerSortResult.getAssignedAuthor().getAuthorId(), playerSortResult);
+            }
+
             for (int i = 0; i < winningSubmissions.size(); i++) {
                 TextSubmission submission = winningSubmissions.get(i);
                 String encounterLabelId = submission.getOutcomeType();
@@ -788,6 +794,15 @@ public class CollaborativeTextHelper {
                 // or use the submission's authorId (for new submissions)
                 String originalAuthorId = submission.getOriginalAuthorId();
                 story.setAuthorId(originalAuthorId);
+                String playerId = playersAssignedForDistribution.get(originalAuthorId).getPlayer().getAuthorId();
+                story.setPlayerId(playerId);
+                if (story.getPlayerIds() == null) {
+                    story.setPlayerIds(new ArrayList<>());
+                }
+                if (!story.getPlayerIds().contains(playerId)) {
+                    story.getPlayerIds().add(playerId);
+                }
+
                 storyDAO.createStory(story);
 
                 // Create encounter with the story
@@ -807,6 +822,10 @@ public class CollaborativeTextHelper {
             List<Story> preCannedStories = getPreCannedStories(gameSession, winningSubmissions);
             for (int i = 0; i < preCannedStories.size(); i++) {
                 Story preCannedStory = preCannedStories.get(i);
+                String playerId = playersAssignedForDistribution.get(preCannedStory.getAuthorId()).getPlayer().getAuthorId();
+                preCannedStory.setPlayerId(playerId);
+                preCannedStory.getPlayerIds().add(playerId);
+
                 storyDAO.createStory(preCannedStory);
 
                 Encounter encounter = new Encounter(
@@ -1472,7 +1491,7 @@ public class CollaborativeTextHelper {
 
                     List<EncounterLabel> assignedEncounterLabels = encounterLabels.stream()
                             .filter(encounterLabel -> encounterLabel.getTextSubmission()
-                                    .getAuthorId().equals(playerSortResult.getAssignedPlayer().getAuthorId())).toList();
+                                    .getAuthorId().equals(playerSortResult.getAssignedAuthor().getAuthorId())).toList();
 
                     return assignedEncounterLabels.stream()
                             .map(label -> new OutcomeType(label.getEncounterId(), label.getEncounterLabel()))
@@ -1541,7 +1560,7 @@ public class CollaborativeTextHelper {
                 int offsetValue = gameSession.getPlayers().size() > 4 ? 3 : 2;
 
                 // Get assigned story (only one story per player for this phase)
-                StoryDistributionContext storyContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, false, -1);
+                StoryDistributionContext storyContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, false, offsetValue);
                 List<OutcomeType> assignedStories = storyContext.assignedStories();
 
                 if (assignedStories.isEmpty()) {
@@ -1552,6 +1571,9 @@ public class CollaborativeTextHelper {
                 OutcomeType assignedStoryOutcomeType = assignedStories.getFirst();
                 String assignedStoryId = assignedStoryOutcomeType.getId();
                 String storyPrompt = assignedStoryOutcomeType.getLabel();
+
+                // Build trait options from players associated with this story
+                List<OutcomeType> traitSubTypes = buildTraitSubTypes(storyContext, assignedStoryId, gameSession);
 
                 // Get WHAT_CAN_WE_TRY submissions to count related submissions per story
                 CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, WHAT_CAN_WE_TRY.name());
@@ -1572,74 +1594,27 @@ public class CollaborativeTextHelper {
                         .toList();
 
                 if (relatedSubmissions.isEmpty()) {
-                    return createPreCannedOptions(assignedStoryId, storyPrompt);
+                    List<OutcomeType> preCanned = createPreCannedOptions(assignedStoryId, storyPrompt);
+                    preCanned.get(0).getSubTypes().addAll(traitSubTypes);
+                    return preCanned;
                 }
 
-                // Check if player index is shared (wraps around when numPlayers > numStories)
-                // A player shares if: offsetPlayerIndex >= numStories OR offsetPlayerIndex < (numPlayers - numStories)
-                int numPlayers = gameSession.getPlayers().size();
-                int numStories = Math.toIntExact(gameSession.getStories().stream().filter(story -> !story.isVisited()).count());
-                int offsetPlayerIndex = OutcomeTypeHelper.getOffsetPlayerIndex(storyContext.playerIndex(), offsetValue, numPlayers);
-                boolean isSharedIndex = numPlayers > numStories &&
-                        (offsetPlayerIndex >= numStories || offsetPlayerIndex < (numPlayers - numStories));
+                // Player has unique story assignment - return all related submissions as subTypes
+                List<OutcomeType> allSubTypes = new ArrayList<>(relatedSubmissions.stream()
+                        .map(submission -> new OutcomeType(
+                            submission.getSubmissionId(),
+                            submission.getCurrentText()
+                        ))
+                        .toList());
+                allSubTypes.addAll(traitSubTypes);
 
-                if (isSharedIndex) {
-                    // Multiple players share this story - distribute submissions evenly using modulus
-                    // Find all players that share this story (same story index after modulus)
-                    int storyIndex = offsetPlayerIndex % numStories;
-                    List<Integer> sharingPlayerIndices = new ArrayList<>();
-                    for (int i = 0; i < numPlayers; i++) {
-                        if ((i % numStories) == storyIndex) {
-                            sharingPlayerIndices.add(i);
-                        }
-                    }
-
-                    // Find this player's position among the sharing players (sorted by player index)
-                    sharingPlayerIndices.sort(Integer::compareTo);
-                    int playerPositionInSharing = sharingPlayerIndices.indexOf(offsetPlayerIndex);
-                    int numSharingPlayers = sharingPlayerIndices.size();
-
-                    // Sort submissions by createdAt and distribute using modulus
-                    List<TextSubmission> sortedRelatedSubmissions = relatedSubmissions.stream()
-                            .sorted(Comparator.comparing(TextSubmission::getCreatedAt))
-                            .toList();
-
-                    // Create subTypes for distributed submissions
-                    List<OutcomeType> distributedSubTypes = new ArrayList<>();
-                    for (int i = 0; i < sortedRelatedSubmissions.size(); i++) {
-                        if (i % numSharingPlayers == playerPositionInSharing) {
-                            TextSubmission submission = sortedRelatedSubmissions.get(i);
-                            distributedSubTypes.add(new OutcomeType(
-                                submission.getSubmissionId(),
-                                submission.getCurrentText()
-                            ));
-                        }
-                    }
-
-                    // Return single OutcomeType with story info and subTypes array
-                    OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt);
-                    if (assignedStoryOutcomeType.getClarifier() != null && !assignedStoryOutcomeType.getClarifier().isEmpty()) {
-                        storyOutcomeType.setClarifier(assignedStoryOutcomeType.getClarifier());
-                    }
-                    storyOutcomeType.setSubTypes(distributedSubTypes);
-                    return List.of(storyOutcomeType);
-                } else {
-                    // Player has unique story assignment - return all related submissions as subTypes
-                    List<OutcomeType> allSubTypes = relatedSubmissions.stream()
-                            .map(submission -> new OutcomeType(
-                                submission.getSubmissionId(),
-                                submission.getCurrentText()
-                            ))
-                            .toList();
-
-                    // Return single OutcomeType with story info and subTypes array
-                    OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt);
-                    if (assignedStoryOutcomeType.getClarifier() != null && !assignedStoryOutcomeType.getClarifier().isEmpty()) {
-                        storyOutcomeType.setClarifier(assignedStoryOutcomeType.getClarifier());
-                    }
-                    storyOutcomeType.setSubTypes(allSubTypes);
-                    return List.of(storyOutcomeType);
+                // Return single OutcomeType with story info and subTypes array
+                OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt);
+                if (assignedStoryOutcomeType.getClarifier() != null && !assignedStoryOutcomeType.getClarifier().isEmpty()) {
+                    storyOutcomeType.setClarifier(assignedStoryOutcomeType.getClarifier());
                 }
+                storyOutcomeType.setSubTypes(allSubTypes);
+                return List.of(storyOutcomeType);
             } else if (phaseId == GameState.WRITE_EPILOGUES){
                 // Calculate offset: 1 for 4 players, 2 for more than 4 players
                 int offsetValue = gameSession.getPlayers().size() > 4 ? -2 : -1;
@@ -1661,6 +1636,62 @@ public class CollaborativeTextHelper {
             System.err.println("Failed to get outcome types: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    private List<OutcomeType> buildTraitSubTypes(StoryDistributionContext storyContext, String assignedStoryId, GameSession gameSession) {
+        Story assignedStory = storyContext.sortedStories().stream()
+                .filter(s -> s.getStoryId().equals(assignedStoryId))
+                .findFirst()
+                .orElse(null);
+
+        if (assignedStory == null || assignedStory.getPlayerIds().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<String> storyPlayerIds = assignedStory.getPlayerIds();
+        List<Player> storyPlayers = gameSession.getPlayers().stream()
+                .filter(p -> storyPlayerIds.contains(p.getAuthorId()))
+                .filter(p -> p.getTraits() != null && !p.getTraits().isEmpty())
+                .toList();
+
+        if (storyPlayers.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Trait> sharedTraits;
+        if (storyPlayers.size() == 1) {
+            sharedTraits = new ArrayList<>(storyPlayers.getFirst().getTraits());
+        } else {
+            sharedTraits = getSharedTraits(storyPlayers);
+            if (sharedTraits.isEmpty()) {
+                return new ArrayList<>();
+            }
+        }
+
+        return sharedTraits.stream()
+                .map(trait -> new OutcomeType(trait.getTraitId(), "use trait: " + trait.getTraitLabel()))
+                .collect(Collectors.toList());
+    }
+
+    private List<Trait> getSharedTraits(List<Player> players) {
+        Set<String> commonIds = null;
+        for (Player player : players) {
+            Set<String> playerTraitIds = player.getTraits().stream()
+                    .map(Trait::getTraitId)
+                    .collect(Collectors.toSet());
+            if (commonIds == null) {
+                commonIds = new HashSet<>(playerTraitIds);
+            } else {
+                commonIds.retainAll(playerTraitIds);
+            }
+        }
+        if (commonIds == null || commonIds.isEmpty()) {
+            return new ArrayList<>();
+        }
+        final Set<String> finalCommonIds = commonIds;
+        return players.getFirst().getTraits().stream()
+                .filter(t -> finalCommonIds.contains(t.getTraitId()))
+                .collect(Collectors.toList());
     }
 
     /**

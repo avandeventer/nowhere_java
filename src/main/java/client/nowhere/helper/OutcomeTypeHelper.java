@@ -14,10 +14,10 @@ public class OutcomeTypeHelper {
      * @param relevantStories List of stories sorted by createdAt
      * @return List of OutcomeType objects representing the assigned stories
      */
-    List<OutcomeType> distributeStoriesToPlayer(List<Story> relevantStories, Player assignedPlayer) {
+    List<OutcomeType> distributeStoriesToPlayer(List<Story> relevantStories, String assignedAuthorId) {
         List<OutcomeType> assignedStoryOutcomeTypes = new ArrayList<>();
 
-        List<Story> assignedStories = relevantStories.stream().filter(story -> story.getAuthorId().equals(assignedPlayer.getAuthorId())).toList();
+        List<Story> assignedStories = relevantStories.stream().filter(story -> story.getAuthorId().equals(assignedAuthorId)).toList();
         if (assignedStories.isEmpty()) {
             return new ArrayList<>();
         }
@@ -64,8 +64,8 @@ public class OutcomeTypeHelper {
 
         PlayerSortResult playerAssignment = OutcomeTypeHelper.getPlayerAssignment(gameSession, playerId, offset);
 
-        List<OutcomeType> assignedStories = distributeStoriesToPlayer(stories, playerAssignment.getAssignedPlayer());
-        return new StoryDistributionContext(stories, playerAssignment.getSortedPlayers(), playerAssignment.getPlayerIndex(), assignedStories);
+        List<OutcomeType> assignedStories = distributeStoriesToPlayer(stories, playerAssignment.getAssignedAuthor().getAuthorId());
+        return new StoryDistributionContext(stories, playerAssignment.getSortedPlayers(), playerAssignment.getPlayerIndex(), assignedStories, playerAssignment.getAssignedAuthor());
     }
 
     public static @NonNull PlayerSortResult getPlayerAssignment(GameSession gameSession, String playerId, int offset) {
@@ -76,7 +76,8 @@ public class OutcomeTypeHelper {
         int offsetPlayerIndex = getOffsetPlayerIndex(playerIndex, offset, numPlayers);
 
         List<Player> sortedPlayers = playerResult.getSortedPlayers();
+        Player player = sortedPlayers.get(playerIndex);
         Player assignedPlayer = sortedPlayers.get(offsetPlayerIndex);
-        return new PlayerSortResult(sortedPlayers, playerIndex, assignedPlayer);
+        return new PlayerSortResult(sortedPlayers, playerIndex, assignedPlayer, player);
     }
 }
