@@ -272,4 +272,9 @@ public class GameSession {
                 .filter(story -> story.getStoryId().equals(encounter.storyId))
                 .toList().stream().findFirst().orElse(null);
     }
+
+    public boolean areAllPlayersDone() {
+        return this.getPlayers().stream()
+                .allMatch(player -> Boolean.TRUE.equals(this.getActiveGameStateSession().getIsPlayerDone().get(player.getAuthorId())));
+    }
 }

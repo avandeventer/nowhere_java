@@ -14,11 +14,13 @@ public class ActiveSessionHelper {
 
     private final ActiveSessionDAO activeSessionDAO;
     private final GameSessionHelper gameSessionHelper;
+    private final FeatureFlagHelper featureFlagHelper;
 
     @Autowired
-    public ActiveSessionHelper(ActiveSessionDAO activeSessionDAO, GameSessionHelper gameSessionHelper) {
+    public ActiveSessionHelper(ActiveSessionDAO activeSessionDAO, GameSessionHelper gameSessionHelper, FeatureFlagHelper featureFlagHelper) {
         this.activeSessionDAO = activeSessionDAO;
         this.gameSessionHelper = gameSessionHelper;
+        this.featureFlagHelper = featureFlagHelper;
     }
 
     public ActivePlayerSession update(ActivePlayerSession activeSession) {
@@ -31,7 +33,7 @@ public class ActiveSessionHelper {
     public void update(String gameCode, GameState gamePhase, String authorId, boolean isDone) {
         boolean gameProgressionNeeded = this.activeSessionDAO.update(gameCode, gamePhase, authorId, isDone);
         
-        if (gameProgressionNeeded) {
+        if (gameProgressionNeeded && !(featureFlagHelper.getFlagValue("includeTraits") && gamePhase.equals(GameState.INIT))) {
             System.out.println("All players are done, progressing game state via GameSessionHelper");
             this.gameSessionHelper.updateToNextGameState(gameCode);
         }

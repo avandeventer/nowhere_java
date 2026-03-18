@@ -66,6 +66,11 @@ public class GameSessionHelper {
     public GameSession updateToNextGameState(String gameCode) {
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
         boolean includeTraits = featureFlagHelper.getFlagValue("includeTraits");
+        if (includeTraits && gameSession.getGameState().equals(INIT)) {
+            if (!gameSession.areAllPlayersDone()) {
+                throw new GameStateException("Some players are still working on their character!");
+            }
+        }
         gameSession.setGameStateToNext(includeTraits);
         return updateGameSession(gameSession, false);
     }

@@ -75,7 +75,7 @@ public class ActiveSessionDAO {
                     System.out.println("Player " + authorId + " marked as done");
                     
                     // Check if all players are done - if so, we'll need to progress the game
-                    if (areAllPlayersDone(game, activeSessionToUpdate)) {
+                    if (game.areAllPlayersDone()) {
                         System.out.println("All players are done - game progression needed");
                         // Don't progress here - just mark that progression is needed
                         // The helper layer will handle the actual progression
@@ -84,7 +84,7 @@ public class ActiveSessionDAO {
                 
                 // Update only the active game state session
                 transaction.update(gameSessionRef, "activeGameStateSession", activeSessionToUpdate);
-                return areAllPlayersDone(game, activeSessionToUpdate); // Return true if progression needed, false otherwise
+                return game.areAllPlayersDone(); // Return true if progression needed, false otherwise
                 
             }).get();
             
@@ -92,13 +92,5 @@ public class ActiveSessionDAO {
             e.printStackTrace();
             throw new ResourceException("Failed to update game state session", e);
         }
-    }
-
-    /**
-     * Check if all players in the game have completed the current phase
-     */
-    public boolean areAllPlayersDone(GameSession game, ActiveGameStateSession activeSession) {
-        return game.getPlayers().stream()
-            .allMatch(player -> Boolean.TRUE.equals(activeSession.getIsPlayerDone().get(player.getAuthorId())));
     }
 }
