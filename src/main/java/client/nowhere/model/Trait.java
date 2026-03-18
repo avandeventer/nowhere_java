@@ -18,6 +18,11 @@ public class Trait {
         this.traitLabel = traitLabel;
     }
 
+    public Trait(String traitId, String traitLabel) {
+        this.traitId = traitId;
+        this.traitLabel = traitLabel;
+    }
+
     public Trait(String traitLabel, TextSubmission textSubmission) {
         this.traitId = UUID.randomUUID().toString();
         this.traitLabel = traitLabel;

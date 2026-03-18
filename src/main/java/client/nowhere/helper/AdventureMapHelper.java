@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class AdventureMapHelper {
@@ -37,9 +36,30 @@ public class AdventureMapHelper {
         if (adventureMap == null || adventureMap.getTraits() == null) {
             return new ArrayList<>();
         }
-        return adventureMap.getTraits().stream()
+
+        List<Trait> preCannedTraits = new ArrayList<>(getPreCannedTraits());
+        List<Trait> customTraits = adventureMap.getTraits().stream()
                 .peek(trait -> trait.textSubmission = null)
                 .toList();
+        preCannedTraits.addAll(customTraits);
+        return preCannedTraits;
+    }
+
+    private List<Trait> getPreCannedTraits() {
+        return List.of (
+                new Trait("0", "Charming"),
+                new Trait("1", "Smart"),
+                new Trait("2", "Strong"),
+                new Trait("3", "Fast"),
+                new Trait("4", "Wealthy"),
+                new Trait("5", "Saucy"),
+                new Trait("6", "Undead"),
+                new Trait("7", "In Love"),
+                new Trait("8", "Shifty"),
+                new Trait("9", "Gluttonous"),
+                new Trait("10", "Magical"),
+                new Trait("11", "Alcoholic")
+        );
     }
 
     public GameSessionDisplay getGameSessionDisplay(String gameCode) {
@@ -130,7 +150,7 @@ public class AdventureMapHelper {
                 story.getPlayerId().equals(playerId)
                         && story.getSelectedOptionId().isBlank()
                         && story.getAuthorId().isBlank()
-        ).collect(Collectors.toList());
+        ).toList();
 
         List<Location> locations = this.adventureMapDAO.getLocations(gameCode);
         

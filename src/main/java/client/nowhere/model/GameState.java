@@ -99,9 +99,9 @@ public enum GameState {
                 return GameState.SET_ENCOUNTERS_WINNERS;
             }
             case SET_ENCOUNTERS_WINNERS -> {
-                if (includeTraits) {
-                    return SET_TRAITS;
-                }
+//                if (includeTraits) {
+//                    return SET_TRAITS;
+//                }
                 return GameState.WHAT_HAPPENS_HERE;
             } case SET_TRAITS -> {
                 return SET_TRAITS_WINNERS;
