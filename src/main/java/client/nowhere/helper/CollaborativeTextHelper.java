@@ -55,7 +55,7 @@ public class CollaborativeTextHelper {
         if (textAddition.getAuthorId() == null || textAddition.getAuthorId().trim().isEmpty()) {
             throw new ValidationException("Author ID cannot be null or empty");
         }
-        if (textAddition.getAddedText() == null || textAddition.getAddedText().trim().isEmpty()) {
+        if (textAddition.getAddedText() == null || (textAddition.getAddedText().trim().isEmpty() && textAddition.getRepercussion().getRepercussionSubmission().isEmpty())) {
             throw new ValidationException("Added text cannot be null or empty");
         }
 
