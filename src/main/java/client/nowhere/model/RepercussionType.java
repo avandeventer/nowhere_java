@@ -7,25 +7,29 @@ public enum RepercussionType {
             "Spread",
             "",
             "Spread outcome effects to all players",
-            "Outcome effects will spread to all players"
+            "Outcome effects will spread to all players",
+            "#7b1fa2"
     ),
     TITLE (
             "Title",
             "Add title",
             "Give a title to the player who chooses this",
-            "Player will receive this title"
+            "Player will receive this title",
+            "#f57c00"
     ),
     TRAIT (
             "Trait",
             "Add player trait",
             "Give a trait to the player who chooses this",
-            "Player will receive this trait"
+            "Player will receive this trait",
+            "#0288d1"
     ),
     SEQUEL (
             "Sequel",
             "",
             "Trigger sequel",
-            "This outcome sets up a sequel"
+            "This outcome sets up a sequel",
+            "#388e3c"
     );
 
     @Getter
@@ -40,10 +44,14 @@ public enum RepercussionType {
     @Getter
     public final String description; //Toggle on
 
-    RepercussionType(String name, String label, String instruction, String description) {
+    @Getter
+    public final String color;
+
+    RepercussionType(String name, String label, String instruction, String description, String color) {
         this.name = name;
         this.label = label;
         this.instruction = instruction;
         this.description = description;
+        this.color = color;
     }
 }

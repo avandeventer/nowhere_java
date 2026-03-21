@@ -5,14 +5,16 @@ public class RepercussionTypeOption {
     private String label;
     private String instruction;
     private String description;
+    private String color;
 
     public RepercussionTypeOption() {}
 
-    public RepercussionTypeOption(String name, String label, String instruction, String description) {
+    public RepercussionTypeOption(String name, String label, String instruction, String description, String color) {
         this.name = name;
         this.label = label;
         this.instruction = instruction;
         this.description = description;
+        this.color = color;
     }
 
     public String getName() { return name; }
@@ -26,4 +28,7 @@ public class RepercussionTypeOption {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public String getColor() { return color; }
+    public void setColor(String color) { this.color = color; }
 }

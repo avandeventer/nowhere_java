@@ -19,4 +19,13 @@ public class Repercussion {
     public void setRepercussionType(String repercussionType) {
         this.repercussionType = repercussionType;
     }
+
+    public String getColor() {
+        if (repercussionType == null) return null;
+        try {
+            return RepercussionType.valueOf(repercussionType.toUpperCase()).getColor();
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
 }

@@ -1331,7 +1331,7 @@ public class CollaborativeTextHelper {
                 .map(name -> {
                     try {
                         RepercussionType rt = RepercussionType.valueOf(name);
-                        return new RepercussionTypeOption(rt.name, rt.label, rt.instruction, rt.description);
+                        return new RepercussionTypeOption(rt.name, rt.label, rt.instruction, rt.description, rt.color);
                     } catch (IllegalArgumentException e) {
                         return null;
                     }
