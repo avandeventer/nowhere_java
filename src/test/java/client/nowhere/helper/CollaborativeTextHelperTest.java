@@ -517,6 +517,21 @@ public class CollaborativeTextHelperTest {
                                         "You punch the submission... into... submission... D", 1)
                         ),
                         HOW_DOES_THIS_RESOLVE_AGAIN
+                ),
+                Arguments.of(
+                        "HOW_DOES_THIS_RESOLVE - Adds options to stories",
+                        "HOW_DOES_THIS_RESOLVE_TRAITS.json",
+                        List.of(
+                                new ExpectedSubmission("7b7d3fee-e839-408d-836e-211dfbb1c34b",
+                                        "The bear loves the hard scritches! C", 1),
+                                new ExpectedSubmission("6",
+                                        "You hire Michael Jackson to do a cool thriller party! D", 1),
+                                new ExpectedSubmission("0e9339d9-3c0a-478a-93e0-a631e1ddede4",
+                                        "You rev up your legs and try to beat the snails! A", 1),
+                                new ExpectedSubmission("11",
+                                        "You go back in time to correct your alcoholism B", 2)
+                        ),
+                        HOW_DOES_THIS_RESOLVE
                 )
         );
     }

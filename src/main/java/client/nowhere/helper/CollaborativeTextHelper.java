@@ -605,7 +605,6 @@ public class CollaborativeTextHelper {
     private void handleMakeOutcomeChoices(GameSession gameSession, List<TextSubmission> winningSubmissions) {
         Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
         if (!winningSubmissions.isEmpty() && winningSubmissions.getFirst().getCurrentText() != null) {
-            String selectedOptionId = winningSubmissions.getFirst().getOutcomeTypeWithLabel().getSubTypes().getFirst().getId();
             Option selectedOption = story.getSelectedOption();
             if (selectedOption != null) {
                 selectedOption.setSuccessText(winningSubmissions.getFirst().getCurrentText());

@@ -96,6 +96,7 @@ public class TextSubmission {
         this.totalVotes++;
     }
 
+    @JsonIgnore
     public String getOriginalAuthorId() {
         String originalAuthorId = this.authorId;
         if (this.additions != null && !this.additions.isEmpty()) {
