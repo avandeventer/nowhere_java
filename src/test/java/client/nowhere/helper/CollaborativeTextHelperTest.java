@@ -590,7 +590,30 @@ public class CollaborativeTextHelperTest {
             String scenarioName,
             String jsonFileName,
             GameState gameState,
-            Map<String, String> expectedStoryIdByPlayerName
+            Map<String, String> expectedStoryIdByPlayerName,
+            Map<String, List<String>> expectedSubTypeLabelsByPlayerName
+    ) throws IOException {
+        runOutcomeTypeDistributionTest(scenarioName, jsonFileName, gameState, expectedStoryIdByPlayerName, expectedSubTypeLabelsByPlayerName);
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideHowDoesThisResolveSubTypeScenarios")
+    void testGetOutcomeTypes_HowDoesThisResolve_SubTypesCorrect(
+            String scenarioName,
+            String jsonFileName,
+            GameState gameState,
+            Map<String, String> expectedStoryIdByPlayerName,
+            Map<String, List<String>> expectedSubTypeLabelsByPlayerName
+    ) throws IOException {
+        runOutcomeTypeDistributionTest(scenarioName, jsonFileName, gameState, expectedStoryIdByPlayerName, expectedSubTypeLabelsByPlayerName);
+    }
+
+    private void runOutcomeTypeDistributionTest(
+            String scenarioName,
+            String jsonFileName,
+            GameState gameState,
+            Map<String, String> expectedStoryIdByPlayerName,
+            Map<String, List<String>> expectedSubTypeLabelsByPlayerName
     ) throws IOException {
         // Arrange - Load test data
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
@@ -630,7 +653,6 @@ public class CollaborativeTextHelperTest {
             System.out.println("  OutcomeTypes returned: " + outcomeTypes.size());
 
             if (!outcomeTypes.isEmpty()) {
-                // For WHAT_CAN_WE_TRY, might get multiple stories; take the first for comparison
                 OutcomeType firstOutcome = outcomeTypes.getFirst();
                 String storyId = firstOutcome.getId();
 
@@ -647,6 +669,18 @@ public class CollaborativeTextHelperTest {
 
                 assertEquals(expectedStoryIdByPlayerName.get(playerName), storyId,
                         playerName + " should be assigned to the expected story");
+
+                List<String> expectedSubTypeLabels = expectedSubTypeLabelsByPlayerName.get(playerName);
+                if (expectedSubTypeLabels != null && !expectedSubTypeLabels.isEmpty()) {
+                    assertNotNull(firstOutcome.getSubTypes(), playerName + " should have subtypes");
+                    List<String> actualSubTypeLabels = firstOutcome.getSubTypes().stream()
+                            .map(OutcomeType::getLabel)
+                            .toList();
+                    for (String expectedLabel : expectedSubTypeLabels) {
+                        assertTrue(actualSubTypeLabels.stream().anyMatch(label -> label != null && label.startsWith(expectedLabel)),
+                                playerName + " missing subtype with label starting with '" + expectedLabel + "'. Actual labels: " + actualSubTypeLabels);
+                    }
+                }
             } else {
                 System.out.println("  No outcome types returned");
                 assertNull(expectedStoryIdByPlayerName.get(playerName),
@@ -684,20 +718,8 @@ public class CollaborativeTextHelperTest {
                                 "Joe",     "7adad1bc-874b-4f6e-a70c-f8ba4aea658f",
                                 "Byron",   "2646c831-3ab8-4445-ae4a-3696f25837ba",
                                 "Kirsten", "c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a"
-                        )
-                ),
-                Arguments.of(
-                        "HOW_DOES_THIS_RESOLVE - 4 players, offset 2",
-                        "HOW_DOES_THIS_RESOLVE_START.json",
-                        HOW_DOES_THIS_RESOLVE,
-                        // Stories: 0=704e29cf (Andy), 1=ce52535b (Joe), 2=af0925f5 (Byron), 3=80facdb7 (Kirsten)
-                        // offset 2: Andy→story 2, Joe→story 3, Byron→story 0, Kirsten→story 1
-                        Map.of(
-                                "Andy",    "af0925f5-e00d-4ac5-b63b-9f23e4b6be0d",
-                                "Joe",     "80facdb7-1cbb-465c-8486-92b588c543a4",
-                                "Byron",   "704e29cf-88a1-4fe9-832d-fc639adbe182",
-                                "Kirsten", "ce52535b-f69c-467e-a042-06a1cfcb85c0"
-                        )
+                        ),
+                        Map.of()
                 ),
                 Arguments.of(
                         "WHAT_HAPPENS_HERE - Round 1, Players get all encounter labels from one other player",
@@ -709,6 +731,54 @@ public class CollaborativeTextHelperTest {
                                 "Joe",     "ac69cefe-d2f8-4203-a046-20b2a25d1250", // encounter written by Kirsten
                                 "Byron",   "1b2c7a37-35a7-479e-bb23-b2d3c577cf36", // encounter written by Andy
                                 "Kirsten", "8f4b1306-aac6-454a-be85-a769f91a4250"  // encounter written by Joe
+                        ),
+                        Map.of()
+                )
+        );
+    }
+
+    static Stream<Arguments> provideHowDoesThisResolveSubTypeScenarios() {
+        // HOW_DOES_THIS_RESOLVE offset is 2 (for 4 players):
+        //   Player 0 gets story at (0+2)%4 = 2
+        //   Player 1 gets story at (1+2)%4 = 3
+        //   Player 2 gets story at (2+2)%4 = 0
+        //   Player 3 gets story at (3+2)%4 = 1
+
+        return Stream.of(
+                Arguments.of(
+                        "HOW_DOES_THIS_RESOLVE - 4 players, offset 2",
+                        "HOW_DOES_THIS_RESOLVE_START.json",
+                        HOW_DOES_THIS_RESOLVE,
+                        // Stories: 0=704e29cf (Andy), 1=ce52535b (Joe), 2=af0925f5 (Byron), 3=80facdb7 (Kirsten)
+                        // offset 2: Andy→story 2, Joe→story 3, Byron→story 0, Kirsten→story 1
+                        Map.of(
+                                "Andy",    "af0925f5-e00d-4ac5-b63b-9f23e4b6be0d",
+                                "Joe",     "80facdb7-1cbb-465c-8486-92b588c543a4",
+                                "Byron",   "704e29cf-88a1-4fe9-832d-fc639adbe182",
+                                "Kirsten", "ce52535b-f69c-467e-a042-06a1cfcb85c0"
+                        ),
+                        Map.of(
+                                "Andy",    List.of("Give em a coin C", "Throw em! C"),
+                                "Joe",     List.of("Get the scalpel D"),
+                                "Byron",   List.of("Oh yeah I get it ;) A", "heheheheh D"),
+                                "Kirsten", List.of("Trip em! A", "Race em! A", "PSHEW! Fight em! B")
+                        )
+                ),
+                Arguments.of(
+                        "HOW_DOES_THIS_RESOLVE - 4 players, offset 2, remove already used traits",
+                        "HOW_DOES_THIS_RESOLVE_AGAIN_TRAITS.json",
+                        HOW_DOES_THIS_RESOLVE,
+                        Map.of(
+                                "Andy",    "0e60c788-3b6f-4b94-a1a7-9d395fdca8f8",
+                                "Joe",     "fda9b2db-6841-4632-9109-f30bb7cd2fe0",
+                                "Subodh",  "aabbf4a3-e6e7-4543-a316-2fc50acd8175",
+                                "Kirsten", "bb705625-dee4-46a3-a269-03ee382f2fa1"
+                        ),
+                        Map.of(
+                                "Andy",    List.of("use trait: In Love", "use trait: Alcoholic", "use trait: Fast"),
+                                "Joe",     List.of("Travel to the past C", "Travel forward A", "Travel back D", "use trait: Strong", "use trait: In Love"), //Already wrote for trait "Alcoholic"
+                                "Subodh",  List.of("Pet them hard A", "use trait: Charming", "use trait: Saucy", "use trait: Strong"),
+                                "Kirsten", List.of("Dance! A", "Jump Around A", "Dance with em! A", "Tell em to quiet down A", "Make cakes B", "use trait: Gluttonous", "use trait: Shifty") //Already wrote for trait "Undead"
                         )
                 )
         );

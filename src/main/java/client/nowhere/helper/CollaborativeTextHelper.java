@@ -1594,7 +1594,7 @@ public class CollaborativeTextHelper {
 
                 if (relatedSubmissions.isEmpty()) {
                     List<OutcomeType> preCanned = createPreCannedOptions(assignedStoryId, storyPrompt);
-                    preCanned.get(0).getSubTypes().addAll(traitSubTypes);
+                    preCanned.getFirst().getSubTypes().addAll(traitSubTypes);
                     return preCanned;
                 }
 
@@ -1657,17 +1657,22 @@ public class CollaborativeTextHelper {
             return new ArrayList<>();
         }
 
-        List<Trait> sharedTraits;
-        if (storyPlayers.size() == 1) {
-            sharedTraits = new ArrayList<>(storyPlayers.getFirst().getTraits());
-        } else {
-            sharedTraits = getSharedTraits(storyPlayers);
-            if (sharedTraits.isEmpty()) {
+        List<Trait> relevantTraits = new ArrayList<>(storyPlayers.getFirst().getTraits());
+
+        List<String> existingOptionIds = storyContext.assignedStories().stream().flatMap(story -> story.getSubTypes().stream()).map(OutcomeType::getId).toList();
+
+        if (!existingOptionIds.isEmpty()) {
+            relevantTraits = relevantTraits.stream().filter(trait -> !existingOptionIds.contains(trait.traitId)).toList();
+        }
+
+        if (storyPlayers.size() > 1) {
+            relevantTraits = getSharedTraits(storyPlayers);
+            if (relevantTraits.isEmpty()) {
                 return new ArrayList<>();
             }
         }
 
-        return sharedTraits.stream()
+        return relevantTraits.stream()
                 .map(trait -> new OutcomeType(trait.getTraitId(), "use trait: " + trait.getTraitLabel()))
                 .collect(Collectors.toList());
     }
