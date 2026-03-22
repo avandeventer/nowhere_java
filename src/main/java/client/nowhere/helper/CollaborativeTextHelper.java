@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import client.nowhere.dao.*;
+import client.nowhere.dao.ActiveSessionDAO;
 import client.nowhere.exception.GameStateException;
 import client.nowhere.model.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -27,9 +28,10 @@ public class CollaborativeTextHelper {
     private final StoryDAO storyDAO;
     private final FeatureFlagHelper featureFlagHelper;
     private final OutcomeTypeHelper outcomeTypeHelper;
+    private final ActiveSessionDAO activeSessionDAO;
 
     @Autowired
-    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO, AdventureMapHelper adventureMapHelper, StoryDAO storyDAO, FeatureFlagHelper featureFlagHelper, OutcomeTypeHelper outcomeTypeHelper) {
+    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO, AdventureMapHelper adventureMapHelper, StoryDAO storyDAO, FeatureFlagHelper featureFlagHelper, OutcomeTypeHelper outcomeTypeHelper, ActiveSessionDAO activeSessionDAO) {
         this.gameSessionDAO = gameSessionDAO;
         this.collaborativeTextDAO = collaborativeTextDAO;
         this.adventureMapDAO = adventureMapDAO;
@@ -37,6 +39,7 @@ public class CollaborativeTextHelper {
         this.storyDAO = storyDAO;
         this.featureFlagHelper = featureFlagHelper;
         this.outcomeTypeHelper = outcomeTypeHelper;
+        this.activeSessionDAO = activeSessionDAO;
     }
 
     // ===== PUBLIC API METHODS =====
@@ -604,13 +607,137 @@ public class CollaborativeTextHelper {
 
     private void handleMakeOutcomeChoices(GameSession gameSession, List<TextSubmission> winningSubmissions) {
         Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
-        if (!winningSubmissions.isEmpty() && winningSubmissions.getFirst().getCurrentText() != null) {
-            Option selectedOption = story.getSelectedOption();
-            if (selectedOption != null) {
-                selectedOption.setSuccessText(winningSubmissions.getFirst().getCurrentText());
-                storyDAO.updateStory(story);
+        TextSubmission winningSubmission = winningSubmissions.getFirst();
+
+        // Update story successText (existing behavior)
+        if (story != null && !winningSubmissions.isEmpty()) {
+            String successText = winningSubmission.getCurrentText();
+            if (successText != null && !successText.isEmpty()) {
+                Option selectedOption = story.getSelectedOption();
+                if (selectedOption != null) {
+                    selectedOption.setSuccessText(successText);
+                    selectedOption.setSelectedForkId(winningSubmission.getSubmissionId());
+                }
             }
         }
+
+
+        List<Repercussion> repercussions = winningSubmission.getAdditions().stream().filter(addition ->
+                        addition.getRepercussion() != null && !addition.getRepercussion().getRepercussionType().isEmpty())
+                .map(TextAddition::getRepercussion).toList();
+
+        if (!repercussions.isEmpty()) {
+            if (story != null) {
+                story.getSelectedOption().getSelectedOutcomeFork().setRepercussions(repercussions);
+                storyDAO.updateStory(story);
+            }
+            handleRepercussions(gameSession, story, repercussions);
+        }
+    }
+
+    private void handleRepercussions(GameSession gameSession, Story story, List<Repercussion> repercussions) {
+        // Resolve which players are at this story vs all players
+        List<String> storyPlayerIds = (story != null && story.getPlayerIds() != null)
+                ? story.getPlayerIds() : List.of();
+        List<Player> allPlayers = gameSession.getPlayers();
+        List<Player> storyPlayers = allPlayers.stream()
+                .filter(p -> storyPlayerIds.contains(p.getAuthorId()))
+                .toList();
+
+        AdventureMap adventureMap = gameSession.getAdventureMap();
+        List<String> outcomeDisplay = new ArrayList<>();
+
+        List<Trait> newTraits = repercussions.stream()
+                .filter(a -> (
+                        RepercussionType.TRAIT.getName().equals(a.getRepercussionType())
+                        || RepercussionType.TITLE.getName().equals(a.getRepercussionType())
+                ))
+                .map(Trait::new)
+                .toList();
+
+        Set<String> updatedPlayerIds = new HashSet<>();
+
+        if (!newTraits.isEmpty()) {
+            updatedPlayerIds.addAll(
+                    handleNewTraitRepercussions(newTraits, storyPlayers, outcomeDisplay, adventureMap, gameSession.getGameCode())
+            );
+        }
+
+        boolean hasSpread = repercussions.stream()
+                .anyMatch(a -> RepercussionType.SPREAD.getName().equals(a.getRepercussionType()));
+
+        if (hasSpread) {
+            updatedPlayerIds.addAll(
+                    handleSpread(newTraits, story, outcomeDisplay, allPlayers, storyPlayerIds)
+            );
+        }
+
+        // Persist affected players
+        for (Player player : allPlayers) {
+            if (updatedPlayerIds.contains(player.getAuthorId())) {
+                player.setGameCode(gameSession.getGameCode());
+                gameSessionDAO.updatePlayer(player);
+            }
+        }
+
+        // Persist outcomeDisplay on the active player session
+        if (!outcomeDisplay.isEmpty()) {
+            ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
+            activePlayerSession.setGameCode(gameSession.getGameCode());
+            activePlayerSession.setOutcomeDisplay(outcomeDisplay);
+            activeSessionDAO.update(activePlayerSession);
+        }
+    }
+
+    private Set<String> handleSpread(List<Trait> newTraits, Story story, List<String> outcomeDisplay, List<Player> allPlayers, List<String> storyPlayerIds) {
+        Set<String> updatedPlayerIds = new HashSet<>();
+        if (newTraits.isEmpty()) {
+            String encounterLabel = (story != null && story.getEncounterLabel() != null
+                    && story.getEncounterLabel().getEncounterLabel() != null)
+                    ? story.getEncounterLabel().getEncounterLabel()
+                    : "this encounter";
+            outcomeDisplay.add("If we encounter \"" + encounterLabel + "\" again, we must all rise to the challenge together.");
+        } else {
+            List<Player> nonStoryPlayers = allPlayers.stream()
+                    .filter(p -> !storyPlayerIds.contains(p.getAuthorId()))
+                    .toList();
+            for (Trait trait : newTraits) {
+                updatedPlayerIds.addAll(applyTraitToPlayers(trait, nonStoryPlayers));
+                String typeWord = trait.getTraitType() == TraitType.TITLE ? "title" : "trait";
+                outcomeDisplay.add("All players gained the " + typeWord + " \"" + trait.getTraitLabel() + "\"!");
+            }
+        }
+        return updatedPlayerIds;
+    }
+
+    private @NonNull Set<String> handleNewTraitRepercussions(List<Trait> newTraits, List<Player> storyPlayers, List<String> outcomeDisplay, AdventureMap adventureMap, String gameCode) {
+        // TRAIT + TITLE repercussions → story players only
+        Set<String> updatedPlayerIds = new HashSet<>();
+        for (Trait trait : newTraits) {
+            updatedPlayerIds.addAll(applyTraitToPlayers(trait, storyPlayers));
+            String typeWord = trait.getTraitType() == TraitType.TITLE ? "title" : "trait";
+            outcomeDisplay.add("You gained the " + typeWord + " \"" + trait.getTraitLabel() + "\"!");
+        }
+
+        // Persist new traits to AdventureMap
+        if (!newTraits.isEmpty()) {
+            adventureMap.updateTraits(newTraits);
+            adventureMapDAO.updateGameSessionAdventureMap(gameCode, adventureMap);
+        }
+        return updatedPlayerIds;
+    }
+
+    private Set<String> applyTraitToPlayers(Trait trait, List<Player> players) {
+        Set<String> updatedPlayerIds = new HashSet<>();
+        for (Player player : players) {
+            if (player.getTraits() == null) player.setTraits(new ArrayList<>());
+            player.getTraits().add(trait);
+            if (trait.getTraitType() == TraitType.TITLE) {
+                player.setUserName(player.getUserName() + ", " + trait.getTraitLabel());
+            }
+            updatedPlayerIds.add(player.getAuthorId());
+        }
+        return updatedPlayerIds;
     }
 
     /**
@@ -787,6 +914,18 @@ public class CollaborativeTextHelper {
                 String clarifier = submission.getOutcomeTypeWithLabel().getClarifier();
                 if (clarifier != null && !clarifier.isEmpty()) {
                     story.setPrequelStoryId(clarifier);
+                    Story prequelStory = gameSession.getStories().stream().filter(existingStory -> existingStory.getStoryId().equals(clarifier)).findFirst().orElse(null);
+                    if (prequelStory != null) {
+                        OutcomeFork outcomeFork = prequelStory.getSelectedOption().getSelectedOutcomeFork();
+
+                        if (outcomeFork != null) {
+                            List<String> repercussionTypes = outcomeFork.getRepercussions()
+                                    .stream().map(Repercussion::getRepercussionType).toList();
+                            if (repercussionTypes.stream().allMatch(t -> RepercussionType.SPREAD.getName().equals(t))) {
+                                story.setPlayerIds(gameSession.getPlayers().stream().map(Player::getAuthorId).toList());
+                            }
+                        }
+                    }
                 }
                 
                 // Set authorId to the original author from the first addition (for branched submissions)
@@ -1502,16 +1641,25 @@ public class CollaborativeTextHelper {
                     StoryDistributionContext ctx = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, true, offsetValue);
                     List<OutcomeType> assignedStories = ctx.assignedStories();
 
-                    if (assignedStories.isEmpty()) {
-                        return new ArrayList<>();
+                    Story assignedStory = null;
+                    if (!assignedStories.isEmpty()) {
+                        String assignedStoryId = assignedStories.getFirst().getId();
+                        assignedStory = ctx.sortedStories().stream()
+                                .filter(story -> story.getStoryId().equals(assignedStoryId))
+                                .findFirst()
+                                .orElse(null);
+
+                        if (assignedStory != null) {
+                            List<Repercussion> nonSpreadOutcomes = assignedStory.getSelectedOption().getSelectedOutcomeFork()
+                                    .getRepercussions().stream().filter(repercussion ->
+                                            !repercussion.getRepercussionType().equals(RepercussionType.SPREAD.getName())
+                                    ).toList();
+                            if(!nonSpreadOutcomes.isEmpty()) {
+                                assignedStory = null;
+                            }
+                        }
                     }
-                    
-                    // Get the assigned story's encounter label ID
-                    String assignedStoryId = assignedStories.getFirst().getId();
-                    Story assignedStory = ctx.sortedStories().stream()
-                            .filter(story -> story.getStoryId().equals(assignedStoryId))
-                            .findFirst()
-                            .orElse(null);
+
                     
                     final String assignedEncounterLabelId = (assignedStory != null && assignedStory.getEncounterLabel() != null)
                             ? assignedStory.getEncounterLabel().getEncounterId()
@@ -1536,10 +1684,12 @@ public class CollaborativeTextHelper {
                             .toList();
                     
                     // Build OutcomeType list from filtered encounters
+                    final Story finalAssignedStory = assignedStory;
+                    final String assignedStoryId = assignedStory == null ? null : assignedStory.getStoryId();
                     return availableEncounterLabels.stream()
                             .map(label -> {
-                                if (assignedStory != null
-                                        && label.getEncounterId().equals(assignedStory.getEncounterLabel().getEncounterId())) {
+                                if (finalAssignedStory != null
+                                        && label.getEncounterId().equals(finalAssignedStory.getEncounterLabel().getEncounterId())) {
                                     return new OutcomeType(label.getEncounterId(), label.getEncounterLabel(), assignedStoryId);
                                 } else {
                                     return new OutcomeType(label.getEncounterId(), label.getEncounterLabel());
@@ -1673,7 +1823,8 @@ public class CollaborativeTextHelper {
         }
 
         return relevantTraits.stream()
-                .map(trait -> new OutcomeType(trait.getTraitId(), "use trait: " + trait.getTraitLabel()))
+                .map(trait -> new OutcomeType(trait.getTraitId(),
+                        ((trait.getTraitType() != null && trait.getTraitType().equals(TraitType.TITLE)) ? "use title: " : "use trait: ") + trait.getTraitLabel()))
                 .collect(Collectors.toList());
     }
 

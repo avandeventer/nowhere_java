@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import client.nowhere.dao.*;
 import client.nowhere.model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,12 +29,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
-import client.nowhere.dao.AdventureMapDAO;
-import client.nowhere.dao.CollaborativeTextDAO;
-import client.nowhere.dao.EndingDAO;
-import client.nowhere.dao.GameSessionDAO;
-import client.nowhere.dao.RitualDAO;
-import client.nowhere.dao.StoryDAO;
 import client.nowhere.util.TestJsonLoader;
 
 import static client.nowhere.model.GameState.GENERATE_OCCUPATION_AUTHORS;
@@ -73,6 +68,9 @@ public class GameSessionHelperTest {
     @Mock
     private AdventureMapHelper adventureMapHelper;
 
+    @Mock
+    private ActiveSessionDAO activeSessionDAO;
+
     // Use real OutcomeTypeHelper for distribution logic
     private final OutcomeTypeHelper outcomeTypeHelper = new OutcomeTypeHelper();
 
@@ -87,7 +85,8 @@ public class GameSessionHelperTest {
         // Construct real CollaborativeTextHelper with mocked DAOs
         collaborativeTextHelper = new CollaborativeTextHelper(
                 gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
-                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper
+                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper,
+                activeSessionDAO
         );
         // Construct GameSessionHelper with real CollaborativeTextHelper
         gameSessionHelper = new GameSessionHelper(

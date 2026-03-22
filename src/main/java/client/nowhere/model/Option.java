@@ -29,6 +29,10 @@ public class Option {
     @Setter
     List<OutcomeFork> outcomeForks;
 
+    @Getter
+    @Setter
+    String selectedForkId = "";
+
     public Option () {
         this.optionId = UUID.randomUUID().toString();
         this.playerStatDCs = new ArrayList<>();
@@ -268,6 +272,17 @@ public class Option {
 
     public void setStatRequirements(List<StatRequirement> statRequirements) {
         this.statRequirements = statRequirements;
+    }
+
+    @JsonIgnore
+    public OutcomeFork getSelectedOutcomeFork() {
+        if (this.getOutcomeForks() == null) {
+            return null;
+        }
+
+        Optional<OutcomeFork> forkOptional = this.getOutcomeForks().stream()
+                .filter(fork -> fork.getTextSubmission().getSubmissionId().equals(selectedForkId)).findFirst();
+        return forkOptional.orElse(null);
     }
 
     @Override
