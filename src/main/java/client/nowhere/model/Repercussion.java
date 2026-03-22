@@ -1,5 +1,8 @@
 package client.nowhere.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Repercussion {
     String repercussionType;
     String repercussionSubmission;
