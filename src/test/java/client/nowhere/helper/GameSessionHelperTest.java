@@ -630,10 +630,11 @@ public class GameSessionHelperTest {
             int expectedForkCount,
             GameState expectedFinalState,
             int xCoordinate,
-            int yCoordinate
+            int yCoordinate,
+            String testFileName
     ) throws Exception {
         // Arrange - Load test data from JSON
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
         gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
         gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
         String gameCode = gameSession.getGameCode();
@@ -650,9 +651,10 @@ public class GameSessionHelperTest {
         // Mock the dependencies
         when(gameSessionDAO.getGame(gameCode))
                 .thenReturn(gameSession)
-                .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json"));
+                .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson(testFileName));
         when(gameSessionDAO.updateGameSession(any(GameSession.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        when(featureFlagHelper.getFlagValue("includeTraits")).thenReturn(true);
 
         // Debug: Print the setup
         System.out.println("=== " + scenarioName + " ===");
@@ -694,10 +696,11 @@ public class GameSessionHelperTest {
             int expectedForkCount,
             GameState expectedFinalState,
             int xCoordinate,
-            int yCoordinate
+            int yCoordinate,
+            String testFileName
     ) throws Exception {
         // Arrange - Load test data from JSON
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
         gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
         gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
         String gameCode = gameSession.getGameCode();
@@ -710,9 +713,11 @@ public class GameSessionHelperTest {
         // Mock the dependencies
         when(gameSessionDAO.getGame(gameCode))
                 .thenReturn(gameSession)
-                .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json"));
+                .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson(testFileName));
         when(gameSessionDAO.updateGameSession(any(GameSession.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        when(featureFlagHelper.getFlagValue("includeTraits")).thenReturn(true);
+
 
         // Debug: Print the setup
         System.out.println("=== " + scenarioName + " ===");
@@ -743,7 +748,8 @@ public class GameSessionHelperTest {
                         1,
                         GameState.MAKE_OUTCOME_CHOICE_WINNER,
                         0,
-                        0
+                        0,
+                        "MAKE_CHOICE_VOTING_START.json"
                 ),
                 Arguments.of(
                         "Multiple forks - stays in MAKE_OUTCOME_CHOICE_VOTING",
@@ -751,7 +757,17 @@ public class GameSessionHelperTest {
                         2,
                         GameState.MAKE_OUTCOME_CHOICE_VOTING,
                         2,
-                        0
+                        0,
+                        "MAKE_CHOICE_VOTING_START.json"
+                ),
+                Arguments.of(
+                        "Single fork - transitions to MAKE_OUTCOME_CHOICE_WINNER with Repercussions",
+                        "7b7d3fee-e839-408d-836e-211dfbb1c34b", // Option with 1 outcome fork and Repercussions to process
+                        1,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        0,
+                        0,
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json"
                 )
         );
     }

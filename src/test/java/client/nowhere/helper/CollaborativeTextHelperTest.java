@@ -745,25 +745,25 @@ public class CollaborativeTextHelperTest {
         //   Player 3 gets story at (3+2)%4 = 1
 
         return Stream.of(
-//                Arguments.of(
-//                        "HOW_DOES_THIS_RESOLVE - 4 players, offset 2",
-//                        "HOW_DOES_THIS_RESOLVE_START.json",
-//                        HOW_DOES_THIS_RESOLVE,
-//                        // Stories: 0=704e29cf (Andy), 1=ce52535b (Joe), 2=af0925f5 (Byron), 3=80facdb7 (Kirsten)
-//                        // offset 2: Andy→story 2, Joe→story 3, Byron→story 0, Kirsten→story 1
-//                        Map.of(
-//                                "Andy",    "af0925f5-e00d-4ac5-b63b-9f23e4b6be0d",
-//                                "Joe",     "80facdb7-1cbb-465c-8486-92b588c543a4",
-//                                "Byron",   "704e29cf-88a1-4fe9-832d-fc639adbe182",
-//                                "Kirsten", "ce52535b-f69c-467e-a042-06a1cfcb85c0"
-//                        ),
-//                        Map.of(
-//                                "Andy",    List.of("Give em a coin C", "Throw em! C"),
-//                                "Joe",     List.of("Get the scalpel D"),
-//                                "Byron",   List.of("Oh yeah I get it ;) A", "heheheheh D"),
-//                                "Kirsten", List.of("Trip em! A", "Race em! A", "PSHEW! Fight em! B")
-//                        )
-//                ),
+                Arguments.of(
+                        "HOW_DOES_THIS_RESOLVE - 4 players, offset 2",
+                        "HOW_DOES_THIS_RESOLVE_START.json",
+                        HOW_DOES_THIS_RESOLVE,
+                        // Stories: 0=704e29cf (Andy), 1=ce52535b (Joe), 2=af0925f5 (Byron), 3=80facdb7 (Kirsten)
+                        // offset 2: Andy→story 2, Joe→story 3, Byron→story 0, Kirsten→story 1
+                        Map.of(
+                                "Andy",    "af0925f5-e00d-4ac5-b63b-9f23e4b6be0d",
+                                "Joe",     "80facdb7-1cbb-465c-8486-92b588c543a4",
+                                "Byron",   "704e29cf-88a1-4fe9-832d-fc639adbe182",
+                                "Kirsten", "ce52535b-f69c-467e-a042-06a1cfcb85c0"
+                        ),
+                        Map.of(
+                                "Andy",    List.of("Give em a coin C", "Throw em! C"),
+                                "Joe",     List.of("Get the scalpel D"),
+                                "Byron",   List.of("Oh yeah I get it ;) A", "heheheheh D"),
+                                "Kirsten", List.of("Trip em! A", "Race em! A", "PSHEW! Fight em! B")
+                        )
+                ),
                 Arguments.of(
                         "HOW_DOES_THIS_RESOLVE - 4 players, offset 2, remove already used traits",
                         "HOW_DOES_THIS_RESOLVE_AGAIN_TRAITS.json",

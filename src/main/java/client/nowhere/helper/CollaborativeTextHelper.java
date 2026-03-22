@@ -621,7 +621,6 @@ public class CollaborativeTextHelper {
             }
         }
 
-
         List<Repercussion> repercussions = winningSubmission.getAdditions().stream().filter(addition ->
                         addition.getRepercussion() != null && !addition.getRepercussion().getRepercussionType().isEmpty())
                 .map(TextAddition::getRepercussion).toList();
@@ -1200,6 +1199,9 @@ public class CollaborativeTextHelper {
             story.setGameCode(gameSession.getGameCode()); // Ensure gameCode is set for updateStory
 
             initializeMakeOutcomeChoiceVotingPhase(gameSession);
+            if (story.getSelectedOption().getOutcomeForks().size() == 1) {
+                handleMakeOutcomeChoices(gameSession, story.getSelectedOption().getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList());
+            }
             // Use the DAO's updateStory method
             storyDAO.updateStory(story);
         } catch (Exception e) {
@@ -1903,9 +1905,10 @@ public class CollaborativeTextHelper {
             return new ArrayList<>();
         }
 
-        String selectedOptionId = currentEncounterStory.getSelectedOptionId();
-
         Option selectedOption = currentEncounterStory.getSelectedOption();
+        if (selectedOption.getOutcomeForks() == null) {
+            return new ArrayList<>();
+        }
         return selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
     }
 }

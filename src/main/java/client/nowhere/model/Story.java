@@ -362,6 +362,9 @@ public class Story {
         setVisited(false);
         setPlayerSucceeded(false);
         setSelectedOptionId("");
+        for (Option option : options) {
+            option.setSelectedForkId("");
+        }
         if (!this.prequelStoryPlayerId.isBlank()) {
             setPrequelStoryPlayerId(AuthorConstants.GLOBAL_PLAYER_SEQUEL);
             setLocation(new Location());
