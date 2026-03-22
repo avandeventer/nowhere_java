@@ -24,6 +24,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -631,7 +632,8 @@ public class GameSessionHelperTest {
             GameState expectedFinalState,
             int xCoordinate,
             int yCoordinate,
-            String testFileName
+            String testFileName,
+            List<String> expectedUpdatedPlayerIds
     ) throws Exception {
         // Arrange - Load test data from JSON
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
@@ -678,6 +680,14 @@ public class GameSessionHelperTest {
                     System.out.println("    Stored Outcome Forks: " + option.getOutcomeForks().size());
                 }
             }
+        }
+
+        // Assert - Verify repercussion side effects
+        if (!expectedUpdatedPlayerIds.isEmpty()) {
+            for (String playerId : expectedUpdatedPlayerIds) {
+                verify(gameSessionDAO).updatePlayer(argThat(p -> playerId.equals(p.getAuthorId())));
+            }
+            verify(activeSessionDAO).update(any(ActivePlayerSession.class));
         }
     }
 
@@ -749,7 +759,8 @@ public class GameSessionHelperTest {
                         GameState.MAKE_OUTCOME_CHOICE_WINNER,
                         0,
                         0,
-                        "MAKE_CHOICE_VOTING_START.json"
+                        "MAKE_CHOICE_VOTING_START.json",
+                        List.of()
                 ),
                 Arguments.of(
                         "Multiple forks - stays in MAKE_OUTCOME_CHOICE_VOTING",
@@ -758,7 +769,8 @@ public class GameSessionHelperTest {
                         GameState.MAKE_OUTCOME_CHOICE_VOTING,
                         2,
                         0,
-                        "MAKE_CHOICE_VOTING_START.json"
+                        "MAKE_CHOICE_VOTING_START.json",
+                        List.of()
                 ),
                 Arguments.of(
                         "Single fork - transitions to MAKE_OUTCOME_CHOICE_WINNER with Repercussions",
@@ -767,7 +779,8 @@ public class GameSessionHelperTest {
                         GameState.MAKE_OUTCOME_CHOICE_WINNER,
                         0,
                         0,
-                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json"
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
+                        List.of("e8852f24-cdc8-465c-b244-56ce08029584") // Joe
                 )
         );
     }
