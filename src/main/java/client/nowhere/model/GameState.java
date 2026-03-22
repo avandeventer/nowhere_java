@@ -124,9 +124,9 @@ public enum GameState {
             } case GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> {
                 return GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN;
             } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> {
-                if (includeTraits) {
-                    return GameState.WHAT_DOES_IT_MEAN;
-                }
+//                if (includeTraits) {
+//                    return GameState.WHAT_DOES_IT_MEAN;
+//                }
                 return GameState.MAKE_CHOICE_VOTING;
             } case GameState.WHAT_DOES_IT_MEAN -> {
                 return WHAT_DOES_IT_MEAN_WINNERS;
