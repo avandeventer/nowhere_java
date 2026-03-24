@@ -1199,8 +1199,9 @@ public class CollaborativeTextHelper {
             story.setGameCode(gameSession.getGameCode()); // Ensure gameCode is set for updateStory
 
             initializeMakeOutcomeChoiceVotingPhase(gameSession);
-            if (story.getSelectedOption().getOutcomeForks().size() == 1) {
-                handleMakeOutcomeChoices(gameSession, story.getSelectedOption().getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList());
+            Option selectedOption = story.getSelectedOption();
+            if (selectedOption != null && selectedOption.getOutcomeForks().size() == 1) {
+                handleMakeOutcomeChoices(gameSession, selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList());
             }
             // Use the DAO's updateStory method
             storyDAO.updateStory(story);

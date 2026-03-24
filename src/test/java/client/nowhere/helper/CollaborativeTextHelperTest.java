@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 import client.nowhere.dao.*;
@@ -573,6 +574,193 @@ public class CollaborativeTextHelperTest {
                 }
             }
         }
+    }
+
+    // ===== MAKE_CHOICE_VOTING REPERCUSSION TESTS =====
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideMakeChoiceVotingRepercussionScenarios")
+    void testHandleMakeChoiceVoting_AppliesRepercussionsToPlayers(
+            String scenarioName,
+            int xCoordinate,
+            String votedOptionId,
+            Map<String, String> expectedTraitLabelByPlayerId,
+            List<String> expectedOutcomeDisplayMessages
+    ) throws IOException {
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
+        gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
+        gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(0);
+        String gameCode = gameSession.getGameCode();
+
+        gameSession.getCollaborativeTextPhase(GameState.MAKE_CHOICE_VOTING.name())
+                .addPlayerVote(new PlayerVote("", "", votedOptionId, 1));
+
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+
+        System.out.println("=== " + scenarioName + " ===");
+
+        collaborativeTextHelper.calculateWinningSubmission(gameCode);
+
+        for (Map.Entry<String, String> entry : expectedTraitLabelByPlayerId.entrySet()) {
+            String playerId = entry.getKey();
+            String expectedLabel = entry.getValue();
+            verify(gameSessionDAO).updatePlayer(argThat(p ->
+                    playerId.equals(p.getAuthorId()) &&
+                    p.getTraits() != null &&
+                    p.getTraits().stream().anyMatch(t -> expectedLabel.equals(t.getTraitLabel()))
+            ));
+        }
+        if (!expectedOutcomeDisplayMessages.isEmpty()) {
+            ArgumentCaptor<ActivePlayerSession> captor = ArgumentCaptor.forClass(ActivePlayerSession.class);
+            verify(activeSessionDAO).update(captor.capture());
+            List<String> actualDisplay = captor.getValue().getOutcomeDisplay();
+            for (String expectedMsg : expectedOutcomeDisplayMessages) {
+                assertTrue(actualDisplay.contains(expectedMsg),
+                        scenarioName + " - expected outcomeDisplay to contain: " + expectedMsg + ". Actual: " + actualDisplay);
+            }
+        }
+    }
+
+    static Stream<Arguments> provideMakeChoiceVotingRepercussionScenarios() {
+        return Stream.of(
+                Arguments.of(
+                        "Bears (0,0) - Pet HARD - Joe gets trait Bear scritcher",
+                        0,
+                        "7b7d3fee-e839-408d-836e-211dfbb1c34b",
+                        Map.of("e8852f24-cdc8-465c-b244-56ce08029584", "Bear scritcher A"), // Joe
+                        List.of("You gained the trait \"Bear scritcher A\"!")
+                ),
+                Arguments.of(
+                        "FUN PEOPLE (1,0) - use trait Shifty - Subodh gets trait Greedy",
+                        1,
+                        "8",
+                        Map.of("63ca67f3-d11d-4cc8-a667-6b68a1bb432b", "Greedy A"), // Subodh
+                        List.of("You gained the trait \"Greedy A\"!")
+                ),
+                Arguments.of(
+                        "Snailz (2,0) - Race them - Kirsten gets title Snail Champion",
+                        2,
+                        "0e9339d9-3c0a-478a-93e0-a631e1ddede4",
+                        Map.of("ddfc6892-16dd-4e38-9252-27a3688ae038", "Snail Champion"), // Kirsten
+                        List.of("You gained the title \"Snail Champion\"!")
+                ),
+                Arguments.of(
+                        "Time Travelers (3,0) - use trait Alcoholic - 3 forks, no auto-resolve",
+                        3,
+                        "11",
+                        Map.of(), // No player updates at MAKE_CHOICE_VOTING stage
+                        List.of()  // No outcomeDisplay at this stage
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideTimeTravelersOutcomeChoiceScenarios")
+    void testHandleMakeOutcomeChoiceVoting_TimeTravelers_AppliesRepercussionsToPlayers(
+            String scenarioName,
+            String selectedOptionId,
+            String votedSubmissionId,
+            Map<String, String> expectedTraitLabelByPlayerId,
+            List<String> expectedOutcomeDisplayMessages
+    ) throws IOException {
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
+        gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(3);
+        gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(0);
+        gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_VOTING);
+        String gameCode = gameSession.getGameCode();
+
+        Story timeTravelersStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+        timeTravelersStory.setSelectedOptionId(selectedOptionId);
+
+        Option selectedOption = timeTravelersStory.getSelectedOption();
+        CollaborativeTextPhase makeOutcomePhase = gameSession.getCollaborativeTextPhases()
+                .computeIfAbsent(GameState.MAKE_OUTCOME_CHOICE_VOTING.name(), k -> new CollaborativeTextPhase());
+        for (OutcomeFork fork : selectedOption.getOutcomeForks()) {
+            makeOutcomePhase.addSubmission(fork.getTextSubmission());
+        }
+        makeOutcomePhase.addPlayerVote(new PlayerVote("", "", votedSubmissionId, 1));
+
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+
+        System.out.println("=== " + scenarioName + " ===");
+
+        collaborativeTextHelper.calculateWinningSubmission(gameCode);
+
+        for (Map.Entry<String, String> entry : expectedTraitLabelByPlayerId.entrySet()) {
+            String playerId = entry.getKey();
+            String expectedLabel = entry.getValue();
+            verify(gameSessionDAO).updatePlayer(argThat(p ->
+                    playerId.equals(p.getAuthorId()) &&
+                    p.getTraits() != null &&
+                    p.getTraits().stream().anyMatch(t -> expectedLabel.equals(t.getTraitLabel()))
+            ));
+        }
+        if (!expectedOutcomeDisplayMessages.isEmpty()) {
+            ArgumentCaptor<ActivePlayerSession> captor = ArgumentCaptor.forClass(ActivePlayerSession.class);
+            verify(activeSessionDAO).update(captor.capture());
+            List<String> actualDisplay = captor.getValue().getOutcomeDisplay();
+            for (String expectedMsg : expectedOutcomeDisplayMessages) {
+                assertTrue(actualDisplay.contains(expectedMsg),
+                        scenarioName + " - expected outcomeDisplay to contain: " + expectedMsg + ". Actual: " + actualDisplay);
+            }
+        }
+    }
+
+    static Stream<Arguments> provideTimeTravelersOutcomeChoiceScenarios() {
+        return Stream.of(
+                // Option "11" (use trait: Alcoholic) forks
+                Arguments.of(
+                        "Time Travelers (3,0) - option 11 - Fork: Recovering Alcoholic trait → Andy",
+                        "11",
+                        "08ad7197-ee03-4241-87e9-6dc416bdbeaf",
+                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "Recovering Alcoholic"), // Andy
+                        List.of("You gained the trait \"Recovering Alcoholic\"!")
+                ),
+                Arguments.of(
+                        "Time Travelers (3,0) - option 11 - Fork: Future Sober D title → Andy",
+                        "11",
+                        "e9f00d95-c2d5-4cc5-9b2f-48db47384497",
+                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "Future Sober D"), // Andy
+                        List.of("You gained the title \"Future Sober D\"!")
+                ),
+                Arguments.of(
+                        "Time Travelers (3,0) - option 11 - Fork: Spread only → encounter message, no player updates",
+                        "11",
+                        "a80ef30c-e3fb-4a6c-99fc-bc9a39684b05",
+                        Map.of(), // No player trait updates
+                        List.of("If we encounter \"Time Travelers B\" again, we must all rise to the challenge together.")
+                ),
+                // Option "8ff69655" (Travel forward A) forks
+                Arguments.of(
+                        "Time Travelers (3,0) - option Travel forward A - Fork: At Peace A trait → Andy",
+                        "8ff69655-42c9-48a7-aaf1-ac26f08cb3a9",
+                        "fcb534df-b504-4d56-8375-041eed493387",
+                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "At Peace A"), // Andy
+                        List.of("You gained the trait \"At Peace A\"!")
+                ),
+                Arguments.of(
+                        "Time Travelers (3,0) - option Travel forward A - Fork: Last Human D title → Andy",
+                        "8ff69655-42c9-48a7-aaf1-ac26f08cb3a9",
+                        "11c21b3e-9122-4f82-b624-e2ebfe00a5ed",
+                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "Last Human D"), // Andy
+                        List.of("You gained the title \"Last Human D\"!")
+                ),
+                Arguments.of(
+                        "Time Travelers (3,0) - option Travel forward A - Fork: Last Human D title + Spread → all players",
+                        "8ff69655-42c9-48a7-aaf1-ac26f08cb3a9",
+                        "d69bd9df-9e33-4c1c-855a-49428b70448b",
+                        Map.of(
+                                "80569dbf-52d4-4169-b51f-d2977d2e94b0", "Last Human D", // Andy (story player)
+                                "e8852f24-cdc8-465c-b244-56ce08029584", "Last Human D", // Joe (spread)
+                                "63ca67f3-d11d-4cc8-a667-6b68a1bb432b", "Last Human D", // Subodh (spread)
+                                "ddfc6892-16dd-4e38-9252-27a3688ae038", "Last Human D"  // Kirsten (spread)
+                        ),
+                        List.of(
+                                "You gained the title \"Last Human D\"!",
+                                "All players gained the title \"Last Human D\"!"
+                        )
+                )
+        );
     }
 
     // ===== GET OUTCOME TYPES DISTRIBUTION TESTS =====

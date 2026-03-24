@@ -164,6 +164,9 @@ public class Player {
     }
 
     public void updatePlayer(Player player) {
+        if (player.getUserName() != null && !player.getUserName().isEmpty()) {
+            this.setUserName(player.getUserName());
+        }
         this.setStrength(player.getStrength());
         this.setIntellect(player.getIntellect());
         this.setCharisma(player.getCharisma());
