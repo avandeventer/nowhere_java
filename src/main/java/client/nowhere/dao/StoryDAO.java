@@ -179,6 +179,11 @@ public class StoryDAO {
                                     resultOption.getOutcomeAuthorId(),
                             resultOption.getPlayerStatDCs()
                     );
+
+                    if(!inputOption.getSelectedForkId().isEmpty()) {
+                        resultOption.setSelectedForkId(inputOption.getSelectedForkId());
+                    }
+                    
                     if (inputOption.getOutcomeForks() != null && !inputOption.getOutcomeForks().isEmpty()) {
                         optionToUpdate.setOutcomeForks(inputOption.getOutcomeForks());
                     }
