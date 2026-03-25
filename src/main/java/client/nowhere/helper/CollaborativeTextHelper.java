@@ -1652,7 +1652,8 @@ public class CollaborativeTextHelper {
                                 .findFirst()
                                 .orElse(null);
 
-                        if (assignedStory != null) {
+                        if (assignedStory != null
+                                && assignedStory.getSelectedOption().getSelectedOutcomeFork() != null) {
                             List<Repercussion> nonSpreadOutcomes = assignedStory.getSelectedOption().getSelectedOutcomeFork()
                                     .getRepercussions().stream().filter(repercussion ->
                                             !repercussion.getRepercussionType().equals(RepercussionType.SPREAD.getName())

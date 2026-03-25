@@ -181,9 +181,9 @@ public class StoryDAO {
                     );
 
                     if(!inputOption.getSelectedForkId().isEmpty()) {
-                        resultOption.setSelectedForkId(inputOption.getSelectedForkId());
+                        optionToUpdate.setSelectedForkId(inputOption.getSelectedForkId());
                     }
-                    
+
                     if (inputOption.getOutcomeForks() != null && !inputOption.getOutcomeForks().isEmpty()) {
                         optionToUpdate.setOutcomeForks(inputOption.getOutcomeForks());
                     }

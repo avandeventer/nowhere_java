@@ -1425,6 +1425,194 @@
             "impactedStat": "WEALTH",
             "statChange": 1
           }
+        ],
+        "outcomeForks": [
+          {
+            "textSubmission": {
+              "submissionId": "08ad7197-ee03-4241-87e9-6dc416bdbeaf",
+              "authorId": "80569dbf-52d4-4169-b51f-d2977d2e94b0",
+              "originalText": "You go back in time to correct your alcoholism B",
+              "currentText": "You go back in time to correct your alcoholism B Recovering Alcoholic",
+              "additions": [
+                {
+                  "additionId": "",
+                  "authorId": "e8852f24-cdc8-465c-b244-56ce08029584",
+                  "addedText": "You go back in time to correct your alcoholism B",
+                  "submissionId": null,
+                  "outcomeType": "11",
+                  "outcomeTypeWithLabel": {
+                    "id": "fda9b2db-6841-4632-9109-f30bb7cd2fe0",
+                    "label": "Man this time travel stuff is for cool people",
+                    "clarifier": "",
+                    "subTypes": [
+                      {
+                        "id": "11",
+                        "label": "use trait: Alcoholic",
+                        "clarifier": "",
+                        "subTypes": []
+                      }
+                    ]
+                  },
+                  "repercussion": null
+                },
+                {
+                  "additionId": "",
+                  "authorId": "80569dbf-52d4-4169-b51f-d2977d2e94b0",
+                  "addedText": "Recovering Alcoholic",
+                  "submissionId": "796c81c5-72b1-4cfe-8788-c5cc76f2a998",
+                  "outcomeType": null,
+                  "outcomeTypeWithLabel": null,
+                  "repercussion": {
+                    "repercussionType": "Trait",
+                    "repercussionSubmission": "Recovering Alcoholic",
+                    "color": "#0288d1"
+                  }
+                }
+              ],
+              "totalVotes": 0,
+              "averageRanking": 0.0,
+              "outcomeType": "11",
+              "outcomeTypeWithLabel": {
+                "id": "fda9b2db-6841-4632-9109-f30bb7cd2fe0",
+                "label": "Man this time travel stuff is for cool people",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "11",
+                    "label": "use trait: Alcoholic",
+                    "clarifier": "",
+                    "subTypes": []
+                  }
+                ]
+              },
+              "finalized": false
+            },
+            "repercussions": null
+          },
+          {
+            "textSubmission": {
+              "submissionId": "e9f00d95-c2d5-4cc5-9b2f-48db47384497",
+              "authorId": "ddfc6892-16dd-4e38-9252-27a3688ae038",
+              "originalText": "You go back in time to correct your alcoholism B",
+              "currentText": "You go back in time to correct your alcoholism B ",
+              "additions": [
+                {
+                  "additionId": "",
+                  "authorId": "e8852f24-cdc8-465c-b244-56ce08029584",
+                  "addedText": "You go back in time to correct your alcoholism B",
+                  "submissionId": null,
+                  "outcomeType": "11",
+                  "outcomeTypeWithLabel": {
+                    "id": "fda9b2db-6841-4632-9109-f30bb7cd2fe0",
+                    "label": "Man this time travel stuff is for cool people",
+                    "clarifier": "",
+                    "subTypes": [
+                      {
+                        "id": "11",
+                        "label": "use trait: Alcoholic",
+                        "clarifier": "",
+                        "subTypes": []
+                      }
+                    ]
+                  },
+                  "repercussion": null
+                },
+                {
+                  "additionId": "",
+                  "authorId": "ddfc6892-16dd-4e38-9252-27a3688ae038",
+                  "addedText": "",
+                  "submissionId": "796c81c5-72b1-4cfe-8788-c5cc76f2a998",
+                  "outcomeType": null,
+                  "outcomeTypeWithLabel": null,
+                  "repercussion": {
+                    "repercussionType": "Title",
+                    "repercussionSubmission": "Future Sober D",
+                    "color": "#f57c00"
+                  }
+                }
+              ],
+              "totalVotes": 0,
+              "averageRanking": 0.0,
+              "outcomeType": "11",
+              "outcomeTypeWithLabel": {
+                "id": "fda9b2db-6841-4632-9109-f30bb7cd2fe0",
+                "label": "Man this time travel stuff is for cool people",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "11",
+                    "label": "use trait: Alcoholic",
+                    "clarifier": "",
+                    "subTypes": []
+                  }
+                ]
+              },
+              "finalized": false
+            },
+            "repercussions": null
+          },
+          {
+            "textSubmission": {
+              "submissionId": "a80ef30c-e3fb-4a6c-99fc-bc9a39684b05",
+              "authorId": "63ca67f3-d11d-4cc8-a667-6b68a1bb432b",
+              "originalText": "You go back in time to correct your alcoholism B",
+              "currentText": "You go back in time to correct your alcoholism B As a result of your choices all of your friends feel the echoes of your recovery.",
+              "additions": [
+                {
+                  "additionId": "",
+                  "authorId": "e8852f24-cdc8-465c-b244-56ce08029584",
+                  "addedText": "You go back in time to correct your alcoholism B",
+                  "submissionId": null,
+                  "outcomeType": "11",
+                  "outcomeTypeWithLabel": {
+                    "id": "fda9b2db-6841-4632-9109-f30bb7cd2fe0",
+                    "label": "Man this time travel stuff is for cool people",
+                    "clarifier": "",
+                    "subTypes": [
+                      {
+                        "id": "11",
+                        "label": "use trait: Alcoholic",
+                        "clarifier": "",
+                        "subTypes": []
+                      }
+                    ]
+                  },
+                  "repercussion": null
+                },
+                {
+                  "additionId": "",
+                  "authorId": "63ca67f3-d11d-4cc8-a667-6b68a1bb432b",
+                  "addedText": "As a result of your choices all of your friends feel the echoes of your recovery.",
+                  "submissionId": "796c81c5-72b1-4cfe-8788-c5cc76f2a998",
+                  "outcomeType": null,
+                  "outcomeTypeWithLabel": null,
+                  "repercussion": {
+                    "repercussionType": "Spread",
+                    "repercussionSubmission": null,
+                    "color": "#7b1fa2"
+                  }
+                }
+              ],
+              "totalVotes": 0,
+              "averageRanking": 0.0,
+              "outcomeType": "11",
+              "outcomeTypeWithLabel": {
+                "id": "fda9b2db-6841-4632-9109-f30bb7cd2fe0",
+                "label": "Man this time travel stuff is for cool people",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "11",
+                    "label": "use trait: Alcoholic",
+                    "clarifier": "",
+                    "subTypes": []
+                  }
+                ]
+              },
+              "finalized": false
+            },
+            "repercussions": null
+          }
         ]
       },
       {

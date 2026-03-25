@@ -4,10 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import client.nowhere.exception.ResourceException;
-import client.nowhere.model.AdventureMap;
-import client.nowhere.model.DefaultLocation;
-import client.nowhere.model.Location;
-import client.nowhere.model.Story;
+import client.nowhere.model.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutures;
@@ -20,6 +17,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -120,7 +118,16 @@ public class StoryDAOTest {
 
         storyToUpdate.setLocation(townLocale);
         storyToUpdate.setVisited(true);
+        storyToUpdate.setSelectedOptionId("d274a490-52ff-48df-bf2a-4086c2b86e83");
         storyToUpdate.setPlayerId(playerId);
+        Option optionOne = new Option();
+        optionOne.setOptionId("d274a490-52ff-48df-bf2a-4086c2b86e83");
+        optionOne.setOutcomeForks(List.of(new OutcomeFork(new TextSubmission("a80ef30c-e3fb-4a6c-99fc-bc9a39684b05", "player1", "Test test"))));
+        optionOne.setSelectedForkId("a80ef30c-e3fb-4a6c-99fc-bc9a39684b05");
+        Option optionTwo = new Option();
+        optionTwo.setOptionId("cf70f59c-75f1-428b-a784-af1e84d2819e");
+
+        storyToUpdate.setOptions(List.of(optionOne, optionTwo));
 
         // Verify interactions
         try {
@@ -133,6 +140,7 @@ public class StoryDAOTest {
             assertEquals(playerId, updatedStory.getPlayerId());
 
             assertEquals(townLocale, updatedStory.getLocation());
+            assertEquals("a80ef30c-e3fb-4a6c-99fc-bc9a39684b05", updatedStory.getSelectedOption().getSelectedOutcomeFork().getTextSubmission().getSubmissionId());
 
             File rawUpdatedStories = new File("src/test/resources/WRITE_OPTIONS_AGAIN_stories_updated.json");
             List<Story> expectedStories = objectMapper.readValue(
@@ -183,30 +191,5 @@ public class StoryDAOTest {
             }
 
             return mockGameSessionRef;
-        }
-
-        @Test
-        void testUpdateStory_storyNotFound() throws Exception {
-//            // Arrange
-//            String gameCode = "GAME123";
-//            String storyId = "NON_EXISTENT_STORY";
-//
-//            Story updatedStory = new Story();
-//            updatedStory.setGameCode(gameCode);
-//            updatedStory.setStoryId(storyId);
-//
-//            when(db.collection("gameSessions").document(gameCode)).thenReturn(documentReference);
-//            when(documentReference.get()).thenReturn(apiFuture);
-//            when(apiFuture.get()).thenReturn(documentSnapshot);
-//            when(documentSnapshot.exists()).thenReturn(true);
-//            when(documentSnapshot.get("stories", List.class)).thenReturn(List.of());
-//
-//            // Act & Assert
-//            Exception exception = assertThrows(ResourceException.class, () -> {
-//                storyDAO.updateStory(updatedStory);
-//            });
-//
-//            assertTrue(exception.getMessage().contains("There was an issue updating the story"));
-//            verify(documentReference, never()).update(eq("stories"), any());
         }
 }
