@@ -887,22 +887,14 @@ public class CollaborativeTextHelper {
 
             for (int i = 0; i < winningSubmissions.size(); i++) {
                 TextSubmission submission = winningSubmissions.get(i);
-                String encounterLabelId = submission.getOutcomeType();
 
-                if (encounterLabelId == null || encounterLabelId.isEmpty()) {
+                OutcomeType encounterOutcomeType = submission.getOutcomeTypeWithLabel();
+                if (encounterOutcomeType == null) {
+                    System.err.println("EncounterLabel not found for submission id: " + submission.getSubmissionId());
                     continue;
                 }
 
-                // Find the corresponding EncounterLabel from AdventureMap
-                EncounterLabel encounterLabel = adventureMap.getEncounterLabels().stream()
-                        .filter(label -> encounterLabelId.equals(label.getEncounterId()))
-                        .findFirst()
-                        .orElse(null);
-
-                if (encounterLabel == null) {
-                    System.err.println("EncounterLabel not found for id: " + encounterLabelId);
-                    continue;
-                }
+                EncounterLabel encounterLabel = new EncounterLabel(encounterOutcomeType.getId(), encounterOutcomeType.getLabel());
 
                 // Create a new story with the encounterLabel and submission text
                 Story story = new Story();

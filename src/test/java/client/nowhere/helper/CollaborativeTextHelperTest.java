@@ -913,33 +913,33 @@ public class CollaborativeTextHelperTest {
         //   Player 3 gets story at (3+2)%4 = 1
 
         return Stream.of(
-//                Arguments.of(
-//                        "WHAT_CAN_WE_TRY - 4 players, offset 1",
-//                        "WHAT_CAN_WE_TRY_START.json",
-//                        GameState.WHAT_CAN_WE_TRY,
-//                        // Stories: 0=c3fbfd4a (Andy), 1=efe64144 (Joe), 2=7adad1bc (Byron), 3=2646c831 (Kirsten)
-//                        // offset 1: Andy→story 1, Joe→story 2, Byron→story 3, Kirsten→story 0
-//                        Map.of(
-//                                "Andy",    List.of("efe64144-c636-4283-add7-974dc48a6039"),
-//                                "Joe",     List.of("7adad1bc-874b-4f6e-a70c-f8ba4aea658f"),
-//                                "Byron",   List.of("2646c831-3ab8-4445-ae4a-3696f25837ba"),
-//                                "Kirsten", List.of("c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a")
-//                        ),
-//                        Map.of()
-//                ),
-//                Arguments.of(
-//                        "WHAT_HAPPENS_HERE - Round 1, Players get all encounter labels from one other player",
-//                        "WHAT_HAPPENS_HERE_START.json",
-//                        GameState.WHAT_HAPPENS_HERE,
-//                        // Round 1: Players get all encounter labels from one other player
-//                        Map.of(
-//                                "Andy",    List.of("1d8a56a7-34b8-48a9-ad09-933f4190af86"), // encounter written by Byron
-//                                "Joe",     List.of("ac69cefe-d2f8-4203-a046-20b2a25d1250"), // encounter written by Kirsten
-//                                "Byron",   List.of("1b2c7a37-35a7-479e-bb23-b2d3c577cf36"), // encounter written by Andy
-//                                "Kirsten", List.of("8f4b1306-aac6-454a-be85-a769f91a4250")  // encounter written by Joe
-//                        ),
-//                        Map.of()
-//                ),
+                Arguments.of(
+                        "WHAT_CAN_WE_TRY - 4 players, offset 1",
+                        "WHAT_CAN_WE_TRY_START.json",
+                        GameState.WHAT_CAN_WE_TRY,
+                        // Stories: 0=c3fbfd4a (Andy), 1=efe64144 (Joe), 2=7adad1bc (Byron), 3=2646c831 (Kirsten)
+                        // offset 1: Andy→story 1, Joe→story 2, Byron→story 3, Kirsten→story 0
+                        Map.of(
+                                "Andy",    List.of("efe64144-c636-4283-add7-974dc48a6039"),
+                                "Joe",     List.of("7adad1bc-874b-4f6e-a70c-f8ba4aea658f"),
+                                "Byron",   List.of("2646c831-3ab8-4445-ae4a-3696f25837ba"),
+                                "Kirsten", List.of("c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a")
+                        ),
+                        Map.of()
+                ),
+                Arguments.of(
+                        "WHAT_HAPPENS_HERE - Round 1, Players get all encounter labels from one other player",
+                        "WHAT_HAPPENS_HERE_START.json",
+                        GameState.WHAT_HAPPENS_HERE,
+                        // Round 1: Players get all encounter labels from one other player
+                        Map.of(
+                                "Andy",    List.of("1d8a56a7-34b8-48a9-ad09-933f4190af86"), // encounter written by Byron
+                                "Joe",     List.of("ac69cefe-d2f8-4203-a046-20b2a25d1250"), // encounter written by Kirsten
+                                "Byron",   List.of("1b2c7a37-35a7-479e-bb23-b2d3c577cf36"), // encounter written by Andy
+                                "Kirsten", List.of("8f4b1306-aac6-454a-be85-a769f91a4250")  // encounter written by Joe
+                        ),
+                        Map.of()
+                ),
                 Arguments.of(
                         "WHAT_HAPPENS_HERE - Round 2, Players get distributed labels which are unused and which have no repercussions",
                         "WHAT_HAPPENS_HERE_ROUND2_REPERCUSSIONS.json",
