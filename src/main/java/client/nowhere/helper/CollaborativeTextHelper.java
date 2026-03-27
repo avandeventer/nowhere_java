@@ -8,6 +8,7 @@ import client.nowhere.dao.ActiveSessionDAO;
 import client.nowhere.exception.GameStateException;
 import client.nowhere.model.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -1026,9 +1027,31 @@ public class CollaborativeTextHelper {
                 List.of("A Festival!", "A Festival is in full motion, kites sail, children laugh, and fried goods can be acquired on every street corner."),
                 List.of("A Shady Tavern", "A hooded figure sits in the shadowed corner of the tavern, there is an air of skullduggery and magic about them. They give you a knowing look and beckon you over. You leave your stool at the bar and join them away from the hustle and bustle."),
                 List.of("Strange Ritual Grounds", "Masked cultists block your way saying you are trespassing on their sacred site, and you must pay tribute for their god's blessing or die for the disrespect."),
-                List.of("The Crown and Stag Pub", "You stop for a hard earned ale when your old flame, Sam Longbutt, sidles up to you. \"Been a while.\" they say and wink."),
+                List.of("An Ex-Lover", "You stop for a hard earned ale when your old flame, Sam Longbutt, sidles up to you. \"Been a while.\" they say and wink."),
                 List.of("A Pastoral Altar", "You see an old man here vandalizing the altar to the God of Harvest, Erysus! As he turns to you his eyes appear dark and black! What do you do!?")
         ));
+    }
+
+    public static @NonNull List<String> getPreCannedEncounterLabels() {
+        return new ArrayList<>(
+                List.of(
+                        "Altar to Erysus, Goddess of Harvest!",
+                        "Altar to Dorsyn, Goddess of Craftwerk",
+                        "A Small Unintelligible Bat",
+                        "Joust Ball, a Sport You've Never Heard of",
+                        "A Talking Horse",
+                        "Sam Wan the Kickin Man",
+                        "Beef Wellington, your old rival",
+                        "Sneaky Raccoons",
+                        "The Golden Sauce Ladle",
+                        "Someone Claiming to be The Chosen Hero",
+                        "A box that is too small but also too big",
+                        "Smart People, Ugh",
+                        "Your Parents!",
+                        "A Crystal of Pure Fear",
+                        "A Treasure Chest"
+                )
+        );
     }
 
     /**
@@ -1628,78 +1651,35 @@ public class CollaborativeTextHelper {
                 if (gameSession.getRoundNumber() == 1) {
                     List<EncounterLabel> encounterLabels = getEncounterLabels(gameCode);
                     int offsetValue = gameSession.getPlayers().size() > 4 ? 1 : 2;
-                    PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, playerId, offsetValue);
-
-                    List<EncounterLabel> assignedEncounterLabels = encounterLabels.stream()
-                            .filter(encounterLabel -> encounterLabel.getTextSubmission()
-                                    .getAuthorId().equals(playerSortResult.getAssignedAuthor().getAuthorId())).toList();
-
-                    return assignedEncounterLabels.stream()
-                            .map(label -> new OutcomeType(label.getEncounterId(), label.getEncounterLabel()))
-                            .toList();
+                    List<EncounterLabel> playerAssignedEncounterLabels = distributeEncounterLabels(playerId, gameSession, offsetValue, encounterLabels);
+                    return buildOutcomeTypesFromEncounters(playerAssignedEncounterLabels, null);
                 } else {
                     int offsetValue = gameSession.getPlayers().size() > 4 ? 1 : 2;
 
                     // Distribute stories to player
                     StoryDistributionContext ctx = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, true, offsetValue);
-                    List<OutcomeType> assignedStories = ctx.assignedStories();
 
-                    Story assignedStory = null;
-                    if (!assignedStories.isEmpty()) {
-                        String assignedStoryId = assignedStories.getFirst().getId();
-                        assignedStory = ctx.sortedStories().stream()
-                                .filter(story -> story.getStoryId().equals(assignedStoryId))
-                                .findFirst()
-                                .orElse(null);
-
-                        if (assignedStory != null
-                                && assignedStory.getSelectedOption().getSelectedOutcomeFork() != null) {
-                            List<Repercussion> nonSpreadOutcomes = assignedStory.getSelectedOption().getSelectedOutcomeFork()
-                                    .getRepercussions().stream().filter(repercussion ->
-                                            !repercussion.getRepercussionType().equals(RepercussionType.SPREAD.getName())
-                                    ).toList();
-                            if(!nonSpreadOutcomes.isEmpty()) {
-                                assignedStory = null;
-                            }
-                        }
-                    }
-
-                    
-                    final String assignedEncounterLabelId = (assignedStory != null && assignedStory.getEncounterLabel() != null)
-                            ? assignedStory.getEncounterLabel().getEncounterId()
-                            : null;
-                    
                     // Get all encounter labels
                     List<EncounterLabel> allEncounterLabels = getEncounterLabels(gameCode);
-                    
+                    List<EncounterLabel> assignedPlayerEncounterLabels = distributeEncounterLabels(playerId, gameSession, offsetValue, allEncounterLabels);
+
                     // Get encounter label IDs used in stories (except the assigned one)
                     Set<String> usedEncounterLabelIds = ctx.sortedStories().stream()
                             .filter(story -> story.getEncounterLabel() != null)
                             .map(story -> story.getEncounterLabel().getEncounterId())
-                            .filter(id -> !id.equals(assignedEncounterLabelId)) // Keep the assigned one
                             .collect(Collectors.toSet());
                     
                     // Filter encounters: remove used ones, but keep the assigned one
-                    List<EncounterLabel> availableEncounterLabels = allEncounterLabels.stream()
+                    List<EncounterLabel> availableEncounterLabels = assignedPlayerEncounterLabels.stream()
                             .filter(label -> {
                                 String labelId = label.getEncounterId();
                                 return !usedEncounterLabelIds.contains(labelId);
                             })
                             .toList();
-                    
+
+                    Story assignedStory = determineAssignedStoryBasedOnRepercussions(ctx);
                     // Build OutcomeType list from filtered encounters
-                    final Story finalAssignedStory = assignedStory;
-                    final String assignedStoryId = assignedStory == null ? null : assignedStory.getStoryId();
-                    return availableEncounterLabels.stream()
-                            .map(label -> {
-                                if (finalAssignedStory != null
-                                        && label.getEncounterId().equals(finalAssignedStory.getEncounterLabel().getEncounterId())) {
-                                    return new OutcomeType(label.getEncounterId(), label.getEncounterLabel(), assignedStoryId);
-                                } else {
-                                    return new OutcomeType(label.getEncounterId(), label.getEncounterLabel());
-                                }
-                            })
-                            .toList();
+                    return buildOutcomeTypesFromEncounters(availableEncounterLabels, assignedStory);
                 }
             } else if (phaseId == WHAT_CAN_WE_TRY) {
                 StoryDistributionContext nextPlayerStoryContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, false, 1);
@@ -1791,6 +1771,65 @@ public class CollaborativeTextHelper {
         }
     }
 
+    private static @Nullable Story determineAssignedStoryBasedOnRepercussions(StoryDistributionContext ctx) {
+        List<OutcomeType> assignedStories = ctx.assignedStories();
+
+        Story assignedStory = null;
+        if (!assignedStories.isEmpty()) {
+            String assignedStoryId = assignedStories.getFirst().getId();
+            assignedStory = ctx.sortedStories().stream()
+                    .filter(story -> story.getStoryId().equals(assignedStoryId))
+                    .findFirst()
+                    .orElse(null);
+
+            if (assignedStory != null) {
+                OutcomeFork selectedOutcomeFork = assignedStory.getSelectedOption().getSelectedOutcomeFork();
+                if(selectedOutcomeFork != null) {
+                    List<Repercussion> nonSpreadOutcomes = selectedOutcomeFork
+                            .getRepercussions().stream().filter(repercussion ->
+                                    !repercussion.getRepercussionType().equals(RepercussionType.SPREAD.getName())
+                            ).toList();
+                    if (!nonSpreadOutcomes.isEmpty()) {
+                        assignedStory = null;
+                    }
+                }
+            }
+        }
+        return assignedStory;
+    }
+
+    private static @NonNull List<OutcomeType> buildOutcomeTypesFromEncounters(List<EncounterLabel> availableEncounterLabels, Story assignedStory) {
+        List<OutcomeType> availableEncounterOutcomeTypes = new ArrayList<>(availableEncounterLabels.stream()
+                .map(label -> new OutcomeType(label.getEncounterId(), label.getEncounterLabel())).toList());
+        if (assignedStory != null) {
+            EncounterLabel assignedStoryEncounter = assignedStory.getEncounterLabel();
+            OutcomeType storyOutcomeType = new OutcomeType(assignedStoryEncounter.getEncounterId(),
+                    assignedStoryEncounter.getEncounterLabel(),
+                    assignedStory.getStoryId()
+            );
+            availableEncounterOutcomeTypes.add(storyOutcomeType);
+        }
+
+        if (availableEncounterLabels.size() < 2) {
+            List<String> preCannedEncounterLabels = getPreCannedEncounterLabels();
+            Collections.shuffle(preCannedEncounterLabels);
+            List<String> randomEncounterLabels = preCannedEncounterLabels.subList(0, Math.min(3, preCannedEncounterLabels.size()));
+            availableEncounterOutcomeTypes.addAll(
+                    randomEncounterLabels.stream().map(
+                    label -> new OutcomeType(UUID.randomUUID().toString(), label)).toList()
+            );
+        }
+        return availableEncounterOutcomeTypes;
+    }
+
+    private static @NonNull List<EncounterLabel> distributeEncounterLabels(String playerId, GameSession gameSession, int offsetValue, List<EncounterLabel> encounterLabels) {
+        PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, playerId, offsetValue);
+
+        return encounterLabels.stream()
+                .filter(encounterLabel -> encounterLabel.getTextSubmission()
+                        .getAuthorId().equals(playerSortResult.getAssignedAuthor().getAuthorId())).toList();
+    }
+
     private List<OutcomeType> buildTraitSubTypes(StoryDistributionContext storyContext, String assignedStoryId, GameSession gameSession) {
         Story assignedStory = storyContext.sortedStories().stream()
                 .filter(s -> s.getStoryId().equals(assignedStoryId))
@@ -1873,7 +1912,7 @@ public class CollaborativeTextHelper {
             "Become wet",
             "Consult with the stars",
             "Phone a friend",
-            "Use 'smooch'",
+            "Use your signature move: 'smooch'",
             "Run away",
             "Yell loudly!",
             "Attack",

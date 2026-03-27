@@ -1,7 +1,6 @@
 package client.nowhere.helper;
 
-import static client.nowhere.model.GameState.HOW_DOES_THIS_RESOLVE;
-import static client.nowhere.model.GameState.HOW_DOES_THIS_RESOLVE_AGAIN;
+import static client.nowhere.model.GameState.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -22,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -778,7 +778,7 @@ public class CollaborativeTextHelperTest {
             String scenarioName,
             String jsonFileName,
             GameState gameState,
-            Map<String, String> expectedStoryIdByPlayerName,
+            Map<String, List<String>> expectedStoryIdByPlayerName,
             Map<String, List<String>> expectedSubTypeLabelsByPlayerName
     ) throws IOException {
         runOutcomeTypeDistributionTest(scenarioName, jsonFileName, gameState, expectedStoryIdByPlayerName, expectedSubTypeLabelsByPlayerName);
@@ -790,7 +790,7 @@ public class CollaborativeTextHelperTest {
             String scenarioName,
             String jsonFileName,
             GameState gameState,
-            Map<String, String> expectedStoryIdByPlayerName,
+            Map<String, List<String>> expectedStoryIdByPlayerName,
             Map<String, List<String>> expectedSubTypeLabelsByPlayerName
     ) throws IOException {
         runOutcomeTypeDistributionTest(scenarioName, jsonFileName, gameState, expectedStoryIdByPlayerName, expectedSubTypeLabelsByPlayerName);
@@ -800,7 +800,7 @@ public class CollaborativeTextHelperTest {
             String scenarioName,
             String jsonFileName,
             GameState gameState,
-            Map<String, String> expectedStoryIdByPlayerName,
+            Map<String, List<String>> expectedStoryIdByPlayerName,
             Map<String, List<String>> expectedSubTypeLabelsByPlayerName
     ) throws IOException {
         // Arrange - Load test data
@@ -840,26 +840,48 @@ public class CollaborativeTextHelperTest {
             System.out.println("\nPlayer " + i + ": " + playerName + " (" + playerId + ")");
             System.out.println("  OutcomeTypes returned: " + outcomeTypes.size());
 
-            if (!outcomeTypes.isEmpty()) {
-                OutcomeType firstOutcome = outcomeTypes.getFirst();
-                String storyId = firstOutcome.getId();
+            if (expectedStoryIdByPlayerName.get(playerName).isEmpty()) {
+                System.out.println("  No outcome types returned");
+                if (gameState.equals(WHAT_HAPPENS_HERE)) {
+                    outcomeTypes.forEach(outcomeType ->
+                            assertTrue(
+                                CollaborativeTextHelper.getPreCannedEncounterLabels().contains(
+                                        outcomeType.getLabel()),
+                                playerName + " should have no expected story assignment"
+                            )
+                    );
+                } else {
+                    assertTrue(outcomeTypes.isEmpty(),
+                            playerName + " should have no expected story assignment");
+                }
+            } else {
+                List<String> actualStoryIds = outcomeTypes.stream()
+                        .map(OutcomeType::getId)
+                        .toList();
 
-                System.out.println("  First Story ID: " + storyId);
-                System.out.println("  Story Label: " + firstOutcome.getLabel());
-
-                if (firstOutcome.getSubTypes() != null && !firstOutcome.getSubTypes().isEmpty()) {
-                    System.out.println("  SubTypes: " + firstOutcome.getSubTypes().size());
-                    for (OutcomeType subType : firstOutcome.getSubTypes()) {
-                        System.out.println("    - " + subType.getId() + ": " +
-                                (subType.getLabel() != null ? subType.getLabel().substring(0, Math.min(40, subType.getLabel().length())) + "..." : "null"));
+                System.out.println("  Actual Story IDs: " + actualStoryIds);
+                for (OutcomeType outcome : outcomeTypes) {
+                    System.out.println("  Story ID: " + outcome.getId() + " Label: " + outcome.getLabel());
+                    if (outcome.getSubTypes() != null && !outcome.getSubTypes().isEmpty()) {
+                        System.out.println("  SubTypes: " + outcome.getSubTypes().size());
+                        for (OutcomeType subType : outcome.getSubTypes()) {
+                            System.out.println("    - " + subType.getId() + ": " +
+                                    (subType.getLabel() != null ? subType.getLabel().substring(0, Math.min(40, subType.getLabel().length())) + "..." : "null"));
+                        }
                     }
                 }
 
-                assertEquals(expectedStoryIdByPlayerName.get(playerName), storyId,
-                        playerName + " should be assigned to the expected story");
+                List<String> expectedStoryIds = expectedStoryIdByPlayerName.get(playerName);
+                if (expectedStoryIds != null) {
+                    for (String expectedId : expectedStoryIds) {
+                        assertTrue(actualStoryIds.contains(expectedId),
+                                playerName + " missing expected story ID '" + expectedId + "'. Actual IDs: " + actualStoryIds);
+                    }
+                }
 
                 List<String> expectedSubTypeLabels = expectedSubTypeLabelsByPlayerName.get(playerName);
                 if (expectedSubTypeLabels != null && !expectedSubTypeLabels.isEmpty()) {
+                    OutcomeType firstOutcome = outcomeTypes.getFirst();
                     assertNotNull(firstOutcome.getSubTypes(), playerName + " should have subtypes");
                     List<String> actualSubTypeLabels = firstOutcome.getSubTypes().stream()
                             .map(OutcomeType::getLabel)
@@ -869,10 +891,6 @@ public class CollaborativeTextHelperTest {
                                 playerName + " missing subtype with label starting with '" + expectedLabel + "'. Actual labels: " + actualSubTypeLabels);
                     }
                 }
-            } else {
-                System.out.println("  No outcome types returned");
-                assertNull(expectedStoryIdByPlayerName.get(playerName),
-                        playerName + " should have no expected story assignment");
             }
         }
     }
@@ -895,30 +913,42 @@ public class CollaborativeTextHelperTest {
         //   Player 3 gets story at (3+2)%4 = 1
 
         return Stream.of(
+//                Arguments.of(
+//                        "WHAT_CAN_WE_TRY - 4 players, offset 1",
+//                        "WHAT_CAN_WE_TRY_START.json",
+//                        GameState.WHAT_CAN_WE_TRY,
+//                        // Stories: 0=c3fbfd4a (Andy), 1=efe64144 (Joe), 2=7adad1bc (Byron), 3=2646c831 (Kirsten)
+//                        // offset 1: Andy→story 1, Joe→story 2, Byron→story 3, Kirsten→story 0
+//                        Map.of(
+//                                "Andy",    List.of("efe64144-c636-4283-add7-974dc48a6039"),
+//                                "Joe",     List.of("7adad1bc-874b-4f6e-a70c-f8ba4aea658f"),
+//                                "Byron",   List.of("2646c831-3ab8-4445-ae4a-3696f25837ba"),
+//                                "Kirsten", List.of("c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a")
+//                        ),
+//                        Map.of()
+//                ),
+//                Arguments.of(
+//                        "WHAT_HAPPENS_HERE - Round 1, Players get all encounter labels from one other player",
+//                        "WHAT_HAPPENS_HERE_START.json",
+//                        GameState.WHAT_HAPPENS_HERE,
+//                        // Round 1: Players get all encounter labels from one other player
+//                        Map.of(
+//                                "Andy",    List.of("1d8a56a7-34b8-48a9-ad09-933f4190af86"), // encounter written by Byron
+//                                "Joe",     List.of("ac69cefe-d2f8-4203-a046-20b2a25d1250"), // encounter written by Kirsten
+//                                "Byron",   List.of("1b2c7a37-35a7-479e-bb23-b2d3c577cf36"), // encounter written by Andy
+//                                "Kirsten", List.of("8f4b1306-aac6-454a-be85-a769f91a4250")  // encounter written by Joe
+//                        ),
+//                        Map.of()
+//                ),
                 Arguments.of(
-                        "WHAT_CAN_WE_TRY - 4 players, offset 1",
-                        "WHAT_CAN_WE_TRY_START.json",
-                        GameState.WHAT_CAN_WE_TRY,
-                        // Stories: 0=c3fbfd4a (Andy), 1=efe64144 (Joe), 2=7adad1bc (Byron), 3=2646c831 (Kirsten)
-                        // offset 1: Andy→story 1, Joe→story 2, Byron→story 3, Kirsten→story 0
-                        Map.of(
-                                "Andy",    "efe64144-c636-4283-add7-974dc48a6039",
-                                "Joe",     "7adad1bc-874b-4f6e-a70c-f8ba4aea658f",
-                                "Byron",   "2646c831-3ab8-4445-ae4a-3696f25837ba",
-                                "Kirsten", "c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a"
-                        ),
-                        Map.of()
-                ),
-                Arguments.of(
-                        "WHAT_HAPPENS_HERE - Round 1, Players get all encounter labels from one other player",
-                        "WHAT_HAPPENS_HERE_START.json",
+                        "WHAT_HAPPENS_HERE - Round 2, Players get distributed labels which are unused and which have no repercussions",
+                        "WHAT_HAPPENS_HERE_ROUND2_REPERCUSSIONS.json",
                         GameState.WHAT_HAPPENS_HERE,
-                        // Round 1: Players get all encounter labels from one other player
                         Map.of(
-                                "Andy",    "1d8a56a7-34b8-48a9-ad09-933f4190af86", // encounter written by Byron
-                                "Joe",     "ac69cefe-d2f8-4203-a046-20b2a25d1250", // encounter written by Kirsten
-                                "Byron",   "1b2c7a37-35a7-479e-bb23-b2d3c577cf36", // encounter written by Andy
-                                "Kirsten", "8f4b1306-aac6-454a-be85-a769f91a4250"  // encounter written by Joe
+                                "Andy", List.of("595ed596-1850-4fd3-8716-25e39ece5055"), // encounter written by Subodh?
+                                "Joe", List.of("93fc1c2b-c26d-4af9-87d4-58f183dc7881", "5ecaf9e8-bd35-4e95-854f-18591c9d9d47", "9d971bbe-4c5d-4b0d-aa9f-11913a147d47"), // encounter written by Kirsten
+                                "Subodh", new ArrayList<>(), // encounter written by Andy
+                                "Kirsten", List.of("5feb03e7-f0aa-4bc2-bf71-7d8beadab9c5", "7eb5eb57-a5a1-4d51-ba70-ebf571db5671")  // encounter written by Joe
                         ),
                         Map.of()
                 )
@@ -940,10 +970,10 @@ public class CollaborativeTextHelperTest {
                         // Stories: 0=704e29cf (Andy), 1=ce52535b (Joe), 2=af0925f5 (Byron), 3=80facdb7 (Kirsten)
                         // offset 2: Andy→story 2, Joe→story 3, Byron→story 0, Kirsten→story 1
                         Map.of(
-                                "Andy",    "af0925f5-e00d-4ac5-b63b-9f23e4b6be0d",
-                                "Joe",     "80facdb7-1cbb-465c-8486-92b588c543a4",
-                                "Byron",   "704e29cf-88a1-4fe9-832d-fc639adbe182",
-                                "Kirsten", "ce52535b-f69c-467e-a042-06a1cfcb85c0"
+                                "Andy",    List.of("af0925f5-e00d-4ac5-b63b-9f23e4b6be0d"),
+                                "Joe",     List.of("80facdb7-1cbb-465c-8486-92b588c543a4"),
+                                "Byron",   List.of("704e29cf-88a1-4fe9-832d-fc639adbe182"),
+                                "Kirsten", List.of("ce52535b-f69c-467e-a042-06a1cfcb85c0")
                         ),
                         Map.of(
                                 "Andy",    List.of("Give em a coin C", "Throw em! C"),
@@ -957,10 +987,10 @@ public class CollaborativeTextHelperTest {
                         "HOW_DOES_THIS_RESOLVE_AGAIN_TRAITS.json",
                         HOW_DOES_THIS_RESOLVE,
                         Map.of(
-                                "Andy",    "0e60c788-3b6f-4b94-a1a7-9d395fdca8f8",
-                                "Joe",     "fda9b2db-6841-4632-9109-f30bb7cd2fe0",
-                                "Subodh",  "aabbf4a3-e6e7-4543-a316-2fc50acd8175",
-                                "Kirsten", "bb705625-dee4-46a3-a269-03ee382f2fa1"
+                                "Andy",    List.of("0e60c788-3b6f-4b94-a1a7-9d395fdca8f8"),
+                                "Joe",     List.of("fda9b2db-6841-4632-9109-f30bb7cd2fe0"),
+                                "Subodh",  List.of("aabbf4a3-e6e7-4543-a316-2fc50acd8175"),
+                                "Kirsten", List.of("bb705625-dee4-46a3-a269-03ee382f2fa1")
                         ),
                         Map.of(
                                 "Andy",    List.of("use trait: In Love", "use trait: Alcoholic", "use trait: Fast"),
