@@ -325,6 +325,30 @@ public class CollaborativeTextHelperTest {
                                 "01f0280e-ed50-42b6-9c1a-190a430fbdfa", List.of("5e483450-db1d-4a2c-9f07-b297d2f70648"),
                                 "48a8e280-3c23-445a-9289-baf1aeeb6a25", List.of("01f0280e-ed50-42b6-9c1a-190a430fbdfa", "01f0280e-ed50-42b6-9c1a-190a430fbdfa")
                         )
+                ),
+                Arguments.of(
+                        "WHAT_HAPPENS_HERE Round 1 - Player has written a story using a default encounter label",
+                        "WHAT_HAPPENS_HERE_DEFAULT_ENCOUNTER.json",
+                        List.of(
+                                new ExpectedSubmission("19107af0-e0ca-437e-908a-ab3e98446c77",
+                                        "You pray at the altar to your old friend Erysus You decide what to place at the altar. What should you place?",
+                                        2),
+                                new ExpectedSubmission("2289109b-2940-4f8b-abe8-3dafad6fd003",
+                                        "You encounter your own butt",
+                                        1),
+                                new ExpectedSubmission("b062e6f4-4a1f-4e95-8a1e-c959e4f75206",
+                                        "There's so many dogs here!",
+                                        1),
+                                new ExpectedSubmission("7bc962ac-5c3f-43d2-ac2e-9e3a14b93988",
+                                        "There's a God of semi-precious metal here!",
+                                        1)
+                        ),
+                        Map.of(
+                                "05cf34a4-49e9-43fa-bbd1-7833094d39ae", List.of("b5ef9dcf-6a2a-49d1-9815-4401bb39c363"),
+                                "6b430a51-1d49-4d54-b30b-73a515cd366b", List.of("60fe6eeb-48b4-4477-abfd-77cc8714c56b"),
+                                "60fe6eeb-48b4-4477-abfd-77cc8714c56b", List.of("05cf34a4-49e9-43fa-bbd1-7833094d39ae"),
+                                "b5ef9dcf-6a2a-49d1-9815-4401bb39c363", List.of("6b430a51-1d49-4d54-b30b-73a515cd366b")
+                        )
                 )
         );
     }
@@ -949,6 +973,18 @@ public class CollaborativeTextHelperTest {
                                 "Joe", List.of("93fc1c2b-c26d-4af9-87d4-58f183dc7881", "5ecaf9e8-bd35-4e95-854f-18591c9d9d47", "9d971bbe-4c5d-4b0d-aa9f-11913a147d47"), // encounter written by Kirsten
                                 "Subodh", new ArrayList<>(), // encounter written by Andy
                                 "Kirsten", List.of("5feb03e7-f0aa-4bc2-bf71-7d8beadab9c5", "7eb5eb57-a5a1-4d51-ba70-ebf571db5671")  // encounter written by Joe
+                        ),
+                        Map.of()
+                ),
+                Arguments.of(
+                        "WHAT_HAPPENS_HERE - Round 1, Players submitted a default encounter",
+                        "WHAT_HAPPENS_HERE_DEFAULT_ENCOUNTER.json",
+                        GameState.WHAT_HAPPENS_HERE,
+                        Map.of(
+                                "Andy", List.of("f8b8aa18-9780-4849-b55d-182691907a47", "9ea77155-0142-4165-96e6-c638fc94a28b", "8b143162-8b97-4118-bd7d-9ae7aab5ff05", "b8e4f45c-07ed-4243-bb77-af48dbbc442e"), // encounter written by Goni?
+                                "Parker", List.of(), // Kirsten did not finish writing her encounters so Parker should get default ones
+                                "Goni", List.of("c11e1c27-763f-4337-8257-57a2cf6dfc11", "9fd3bedf-3941-4a5d-b3e7-ce06ea3cba55", "6643bc0e-8da3-481d-b234-c52bdedf73e1"), // encounter written by Andy
+                                "Kirsten", List.of("c0d7c65c-a8fd-4add-aa1b-76277cdbb95c", "aa51d73f-4d2a-48b3-8f1d-dd3ba83554de", "4b378acb-6083-4470-8c88-7d841347aeba")  // encounter written by Parker?
                         ),
                         Map.of()
                 )
