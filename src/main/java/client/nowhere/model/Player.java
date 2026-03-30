@@ -193,7 +193,7 @@ public class Player {
                 return userName + ", " + totalTitle;
             }
         }
-        return displayName;
+        return userName;
     }
 
     public void setDisplayName(String displayName) {
