@@ -737,9 +737,6 @@ public class CollaborativeTextHelper {
         for (Player player : players) {
             if (player.getTraits() == null) player.setTraits(new ArrayList<>());
             player.getTraits().add(trait);
-            if (trait.getTraitType() == TraitType.TITLE) {
-                player.setUserName(player.getUserName() + ", " + trait.getTraitLabel());
-            }
             updatedPlayerIds.add(player.getAuthorId());
         }
         return updatedPlayerIds;

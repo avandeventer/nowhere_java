@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Player {
 
     private String authorId;
     private String userName;
+    private String displayName;
     private int strength = 4;
     private int dexterity = 4;
     private int charisma = 4;
@@ -177,6 +179,25 @@ public class Player {
         this.setPlayerStats(player.getPlayerStats());
         this.setTraits(player.getTraits());
         this.setPlayerClass(player.getPlayerClass());
+    }
+
+    public String getDisplayName() {
+        if (!traits.isEmpty()) {
+            List<Trait> titleTraits = traits.stream().filter(trait ->
+                    trait.getTraitType() != null
+                    && trait.getTraitType().equals(TraitType.TITLE)).toList();
+            if (!titleTraits.isEmpty()) {
+                String totalTitle = titleTraits.stream()
+                        .map(Trait::getTraitLabel)
+                        .collect(Collectors.joining(", "));
+                return userName + ", " + totalTitle;
+            }
+        }
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
 
     public boolean getFirstPlayer() {
