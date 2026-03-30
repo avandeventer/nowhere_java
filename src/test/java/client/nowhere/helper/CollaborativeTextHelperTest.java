@@ -685,7 +685,8 @@ public class CollaborativeTextHelperTest {
             String selectedOptionId,
             String votedSubmissionId,
             Map<String, String> expectedTraitLabelByPlayerId,
-            List<String> expectedOutcomeDisplayMessages
+            List<String> expectedOutcomeDisplayMessages,
+            boolean shouldUpdateStoryRepercussions
     ) throws IOException {
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
         gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(3);
@@ -728,6 +729,12 @@ public class CollaborativeTextHelperTest {
                         scenarioName + " - expected outcomeDisplay to contain: " + expectedMsg + ". Actual: " + actualDisplay);
             }
         }
+        if (shouldUpdateStoryRepercussions) {
+            assertTrue(timeTravelersStory.getRepercussions().stream().anyMatch(repercussion -> repercussion.getRepercussionType().equalsIgnoreCase(RepercussionType.SPREAD.toString())),
+                    "If only the ALL PLAYER repercussion is present we should reflect that on the story");
+        } else {
+            assertNull(timeTravelersStory.getRepercussions(), "Story level repercussions should only be updated if ALL PLAYER effect is presented solo");
+        }
     }
 
     static Stream<Arguments> provideTimeTravelersOutcomeChoiceScenarios() {
@@ -738,21 +745,24 @@ public class CollaborativeTextHelperTest {
                         "11",
                         "08ad7197-ee03-4241-87e9-6dc416bdbeaf",
                         Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "Recovering Alcoholic"), // Andy
-                        List.of("You gained the trait \"Recovering Alcoholic\"!")
+                        List.of("You gained the trait \"Recovering Alcoholic\"!"),
+                        false
                 ),
                 Arguments.of(
                         "Time Travelers (3,0) - option 11 - Fork: Future Sober D title → Andy",
                         "11",
                         "e9f00d95-c2d5-4cc5-9b2f-48db47384497",
                         Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "Future Sober D"), // Andy
-                        List.of("You gained the title \"Future Sober D\"!")
+                        List.of("You gained the title \"Future Sober D\"!"),
+                        false
                 ),
                 Arguments.of(
                         "Time Travelers (3,0) - option 11 - Fork: Spread only → encounter message, no player updates",
                         "11",
                         "a80ef30c-e3fb-4a6c-99fc-bc9a39684b05",
                         Map.of(), // No player trait updates
-                        List.of("If we encounter \"Time Travelers B\" again, we must all rise to the challenge together.")
+                        List.of("If we encounter \"Time Travelers B\" again, we must all rise to the challenge together."),
+                        true
                 ),
                 // Option "8ff69655" (Travel forward A) forks
                 Arguments.of(
@@ -760,14 +770,16 @@ public class CollaborativeTextHelperTest {
                         "8ff69655-42c9-48a7-aaf1-ac26f08cb3a9",
                         "fcb534df-b504-4d56-8375-041eed493387",
                         Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "At Peace A"), // Andy
-                        List.of("You gained the trait \"At Peace A\"!")
+                        List.of("You gained the trait \"At Peace A\"!"),
+                        false
                 ),
                 Arguments.of(
                         "Time Travelers (3,0) - option Travel forward A - Fork: Last Human D title → Andy",
                         "8ff69655-42c9-48a7-aaf1-ac26f08cb3a9",
                         "11c21b3e-9122-4f82-b624-e2ebfe00a5ed",
                         Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "Last Human D"), // Andy
-                        List.of("You gained the title \"Last Human D\"!")
+                        List.of("You gained the title \"Last Human D\"!"),
+                        false
                 ),
                 Arguments.of(
                         "Time Travelers (3,0) - option Travel forward A - Fork: Last Human D title + Spread → all players",
@@ -782,7 +794,8 @@ public class CollaborativeTextHelperTest {
                         List.of(
                                 "You gained the title \"Last Human D\"!",
                                 "All players gained the title \"Last Human D\"!"
-                        )
+                        ),
+                        false
                 )
         );
     }

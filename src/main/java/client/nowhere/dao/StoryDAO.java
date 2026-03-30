@@ -67,12 +67,11 @@ public class StoryDAO {
                         storyToUpdate.setAuthorId(story.getAuthorId());
                     }
 
-                    if (storyToUpdate.getCreatedAt() != null) {
-                        storyToUpdate.setCreatedAt(storyToUpdate.getCreatedAt());
+                    if (story.getRepercussions() != null && !story.getRepercussions().isEmpty()) {
+                        storyToUpdate.setRepercussions(story.getRepercussions());
                     }
 
                     if (story.getLocation() != null
-                            && story.getLocation() != null
                             && !story.getLocation().getLabel().isEmpty()) {
                         storyToUpdate.setLocation(story.getLocation());
                     }

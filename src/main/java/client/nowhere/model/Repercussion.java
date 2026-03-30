@@ -7,6 +7,16 @@ public class Repercussion {
     String repercussionType;
     String repercussionSubmission;
 
+    public Repercussion() {
+        this.repercussionType = "";
+        this.repercussionSubmission = "";
+    }
+
+    public Repercussion(String repercussionType, String repercussionSubmission) {
+        this.repercussionType = repercussionType;
+        this.repercussionSubmission = repercussionSubmission;
+    }
+
     public String getRepercussionSubmission() {
         return repercussionSubmission;
     }

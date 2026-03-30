@@ -32,6 +32,9 @@ public class Story {
     private boolean playerSucceeded = false;
     private String prequelStoryPlayerId = "";
 
+    @Getter
+    @Setter
+    private List<Repercussion> repercussions;
     private List<Repercussion> successRepercussions;
     private List<Repercussion> failureRepercussions;
     private List<String> prequelOutcomeDisplay;

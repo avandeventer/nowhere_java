@@ -629,15 +629,15 @@ public class CollaborativeTextHelper {
         if (!repercussions.isEmpty()) {
             if (story != null) {
                 story.getSelectedOption().getSelectedOutcomeFork().setRepercussions(repercussions);
+                handleRepercussions(gameSession, story, repercussions);
                 storyDAO.updateStory(story);
             }
-            handleRepercussions(gameSession, story, repercussions);
         }
     }
 
     private void handleRepercussions(GameSession gameSession, Story story, List<Repercussion> repercussions) {
         // Resolve which players are at this story vs all players
-        List<String> storyPlayerIds = (story != null && story.getPlayerIds() != null)
+        List<String> storyPlayerIds = (story.getPlayerIds() != null)
                 ? story.getPlayerIds() : List.of();
         List<Player> allPlayers = gameSession.getPlayers();
         List<Player> storyPlayers = allPlayers.stream()
@@ -692,11 +692,16 @@ public class CollaborativeTextHelper {
     private Set<String> handleSpread(List<Trait> newTraits, Story story, List<String> outcomeDisplay, List<Player> allPlayers, List<String> storyPlayerIds) {
         Set<String> updatedPlayerIds = new HashSet<>();
         if (newTraits.isEmpty()) {
-            String encounterLabel = (story != null && story.getEncounterLabel() != null
+            String encounterLabel = (story.getEncounterLabel() != null
                     && story.getEncounterLabel().getEncounterLabel() != null)
                     ? story.getEncounterLabel().getEncounterLabel()
                     : "this encounter";
             outcomeDisplay.add("If we encounter \"" + encounterLabel + "\" again, we must all rise to the challenge together.");
+            if (story.getRepercussions() == null) {
+                story.setRepercussions(new ArrayList<>());
+            }
+            List<Repercussion> repercussions = story.getSelectedOption().getSelectedOutcomeFork().getRepercussions();
+            story.setRepercussions(repercussions);
         } else {
             List<Player> nonStoryPlayers = allPlayers.stream()
                     .filter(p -> !storyPlayerIds.contains(p.getAuthorId()))

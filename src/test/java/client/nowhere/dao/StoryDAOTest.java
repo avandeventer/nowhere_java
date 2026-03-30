@@ -118,6 +118,8 @@ public class StoryDAOTest {
 
         storyToUpdate.setLocation(townLocale);
         storyToUpdate.setVisited(true);
+        List<Repercussion> repercussions = List.of(new Repercussion("TRAIT", "Good at Coding"));
+        storyToUpdate.setRepercussions(repercussions);
         storyToUpdate.setSelectedOptionId("d274a490-52ff-48df-bf2a-4086c2b86e83");
         storyToUpdate.setPlayerId(playerId);
         Option optionOne = new Option();
@@ -140,6 +142,8 @@ public class StoryDAOTest {
             assertEquals(playerId, updatedStory.getPlayerId());
 
             assertEquals(townLocale, updatedStory.getLocation());
+            assertEquals(repercussions, updatedStory.getRepercussions());
+
             assertEquals("a80ef30c-e3fb-4a6c-99fc-bc9a39684b05", updatedStory.getSelectedOption().getSelectedOutcomeFork().getTextSubmission().getSubmissionId());
 
             File rawUpdatedStories = new File("src/test/resources/WRITE_OPTIONS_AGAIN_stories_updated.json");
