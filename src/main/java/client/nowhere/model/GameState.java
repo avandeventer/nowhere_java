@@ -319,7 +319,7 @@ public enum GameState {
                         case MAKE_CHOICE_VOTING, MAKE_CHOICE_WINNER -> MAKE_CHOICE_VOTING;
                         case MAKE_OUTCOME_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_WINNER ->  MAKE_OUTCOME_CHOICE_VOTING;
                         case NAVIGATE_VOTING, NAVIGATE_WINNER -> NAVIGATE_VOTING;
-                        case WRITE_EPILOGUES, WRITE_EPILOGUES_WINNER -> WRITE_EPILOGUES_WINNER;
+                        case WRITE_EPILOGUES, WRITE_EPILOGUES_WINNER -> WRITE_EPILOGUES;
                         case CAMPFIRE, CAMPFIRE_WINNERS -> CAMPFIRE;
                         default -> null;
                 };

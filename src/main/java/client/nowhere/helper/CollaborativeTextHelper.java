@@ -1745,16 +1745,18 @@ public class CollaborativeTextHelper {
             } else if (phaseId == GameState.WRITE_EPILOGUES){
                 // Calculate offset: 1 for 4 players, 2 for more than 4 players
                 int offsetValue = gameSession.getPlayers().size() > 4 ? -2 : -1;
+                PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, playerId, offsetValue);
 
-                StoryDistributionContext ctx = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, true, offsetValue);
-                List<OutcomeType> assignedStories = ctx.assignedStories();
-
-                int assignedPlayerIndex = OutcomeTypeHelper.getOffsetPlayerIndex(ctx.playerIndex(), offsetValue, gameSession.getPlayers().size());
+                Player assignedPlayer = playerSortResult.getAssignedAuthor();
+                List<Story> assignedStories = gameSession.getStories().stream().filter(story -> story.isVisited()
+                        && story.getPlayerIds().contains(assignedPlayer.getAuthorId())).toList();
+                List<OutcomeType> outcomeTypes = assignedStories.stream()
+                        .map(CollaborativeTextHelper::convertToOutcomeType).toList();
                 OutcomeType playerOutcome = new OutcomeType(
-                        gameSession.getPlayers().get(assignedPlayerIndex).getAuthorId(),
-                        gameSession.getPlayers().get(assignedPlayerIndex).getUserName()
+                        assignedPlayer.getAuthorId(),
+                        assignedPlayer.getDisplayName()
                 );
-                playerOutcome.setSubTypes(assignedStories);
+                playerOutcome.setSubTypes(outcomeTypes);
                 return List.of(playerOutcome);
             } else {
                 return new ArrayList<>();
@@ -1763,6 +1765,28 @@ public class CollaborativeTextHelper {
             System.err.println("Failed to get outcome types: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    private static OutcomeType convertToOutcomeType(Story story) {
+        EncounterLabel encounterLabel = story.getEncounterLabel();
+        Option selectedOption = story.getSelectedOption();
+        if (selectedOption == null) {
+            return null;
+        }
+
+        OutcomeFork selectedOutcomeFork = selectedOption.getSelectedOutcomeFork();
+        if (selectedOutcomeFork == null) {
+            return null;
+        }
+        OutcomeType encounterOutcomeType = new OutcomeType(encounterLabel.getEncounterId(), encounterLabel.getEncounterLabel());
+        OutcomeType storyOutcomeType =  new OutcomeType(story.getStoryId(), story.getPrompt());
+        OutcomeType optionOutcomeType = new OutcomeType(selectedOption.getOptionId(), selectedOption.getOptionText());
+        OutcomeType forkOutcomeType = new OutcomeType(selectedOutcomeFork.getTextSubmission().getSubmissionId(), selectedOutcomeFork.getTextSubmission().getCurrentText());
+
+        optionOutcomeType.setSubTypes(List.of(forkOutcomeType));
+        storyOutcomeType.setSubTypes(List.of(optionOutcomeType));
+        encounterOutcomeType.setSubTypes(List.of(storyOutcomeType));
+        return encounterOutcomeType;
     }
 
     private static @Nullable Story determineAssignedStoryBasedOnRepercussions(StoryDistributionContext ctx) {
