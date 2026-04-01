@@ -805,7 +805,7 @@ public class CollaborativeTextHelperTest {
             }
         }
         if (shouldUpdateStoryRepercussions) {
-            assertTrue(timeTravelersStory.getRepercussions().stream().anyMatch(repercussion -> repercussion.getRepercussionType().equalsIgnoreCase(RepercussionType.SPREAD.toString())),
+            assertTrue(timeTravelersStory.getRepercussions().stream().anyMatch(repercussion -> repercussion.getRepercussionType().equalsIgnoreCase(RepercussionType.ALL_PLAYERS.getName())),
                     "If only the ALL PLAYER repercussion is present we should reflect that on the story");
         } else {
             assertNull(timeTravelersStory.getRepercussions(), "Story level repercussions should only be updated if ALL PLAYER effect is presented solo");

@@ -3,19 +3,19 @@ package client.nowhere.model;
 import lombok.Getter;
 
 public enum RepercussionType {
-    SPREAD (
-            "Spread",
+    ALL_PLAYERS(
+            "All Players",
             "",
             "Spread outcome effects to all players",
             "Outcome effects will spread to all players",
-            "#7b1fa2"
+            "#f57c00"
     ),
     TITLE (
             "Title",
             "Add title",
             "Give a title to the player who chooses this",
             "Player will receive this title",
-            "#f57c00"
+            "#7b1fa2"
     ),
     TRAIT (
             "Trait",

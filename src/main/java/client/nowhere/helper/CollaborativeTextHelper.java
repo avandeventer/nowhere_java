@@ -689,7 +689,7 @@ public class CollaborativeTextHelper {
         }
 
         boolean hasSpread = repercussions.stream()
-                .anyMatch(a -> RepercussionType.SPREAD.getName().equals(a.getRepercussionType()));
+                .anyMatch(a -> RepercussionType.ALL_PLAYERS.getName().equals(a.getRepercussionType()));
 
         if (hasSpread) {
             updatedPlayerIds.addAll(
@@ -940,7 +940,7 @@ public class CollaborativeTextHelper {
                         if (outcomeFork != null) {
                             List<String> repercussionTypes = outcomeFork.getRepercussions()
                                     .stream().map(Repercussion::getRepercussionType).toList();
-                            if (repercussionTypes.stream().allMatch(t -> RepercussionType.SPREAD.getName().equals(t))) {
+                            if (repercussionTypes.stream().allMatch(t -> RepercussionType.ALL_PLAYERS.getName().equals(t))) {
                                 story.setPlayerIds(gameSession.getPlayers().stream().map(Player::getAuthorId).toList());
                             }
                         }
@@ -1830,7 +1830,7 @@ public class CollaborativeTextHelper {
                 if(selectedOutcomeFork != null) {
                     List<Repercussion> nonSpreadOutcomes = selectedOutcomeFork
                             .getRepercussions().stream().filter(repercussion ->
-                                    !repercussion.getRepercussionType().equals(RepercussionType.SPREAD.getName())
+                                    !repercussion.getRepercussionType().equals(RepercussionType.ALL_PLAYERS.getName())
                             ).toList();
                     if (!nonSpreadOutcomes.isEmpty()) {
                         assignedStory = null;

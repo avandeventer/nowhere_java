@@ -359,7 +359,7 @@
         "name": "Bard",
         "description": "Your skill with spreading a good tale allows you to spread story outcomes to all players, including yourself",
         "repercussionTypes": [
-          "SPREAD"
+          "ALL_PLAYERS"
         ]
       },
       "firstPlayer": false
@@ -1394,7 +1394,7 @@
                     "outcomeType": null,
                     "outcomeTypeWithLabel": null,
                     "repercussion": {
-                      "repercussionType": "Spread",
+                      "repercussionType": "All Players",
                       "repercussionSubmission": null,
                       "color": "#7b1fa2"
                     }
@@ -1420,7 +1420,7 @@
               },
               "repercussions": [
                 {
-                  "repercussionType": "Spread",
+                  "repercussionType": "All Players",
                   "repercussionSubmission": null,
                   "color": "#7b1fa2"
                 }
@@ -1628,7 +1628,7 @@
                     "outcomeType": null,
                     "outcomeTypeWithLabel": null,
                     "repercussion": {
-                      "repercussionType": "Spread",
+                      "repercussionType": "All Players",
                       "repercussionSubmission": null,
                       "color": "#7b1fa2"
                     }
@@ -3018,7 +3018,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }
@@ -3335,7 +3335,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }
@@ -3641,7 +3641,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }
@@ -3958,7 +3958,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }
@@ -4990,7 +4990,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }
@@ -5167,7 +5167,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }
@@ -5344,7 +5344,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }
@@ -5521,7 +5521,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }
@@ -6285,7 +6285,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }
@@ -6462,7 +6462,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }
@@ -6639,7 +6639,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }
@@ -6816,7 +6816,7 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Spread",
+                "repercussionType": "All Players",
                 "repercussionSubmission": null,
                 "color": "#7b1fa2"
               }

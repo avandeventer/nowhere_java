@@ -6,21 +6,16 @@ public enum PlayerClass {
     Bard(
             "Bard",
             "Your skill with spreading a good tale allows you to spread story outcomes to all players, including yourself",
-            List.of (RepercussionType.SPREAD)
+            List.of (RepercussionType.ALL_PLAYERS)
     ),
-    Noble(
-            "Noble",
+    Herald(
+            "Herald",
             "Your rank allows you to give new titles to other players",
             List.of(RepercussionType.TITLE)
     ),
-    Poet(
-            "Poet",
-            "You weave small tales into great epics allowing you to designate which Encounters should appear again in the future",
-            List.of(RepercussionType.SEQUEL)
-    ),
-    Historian(
-            "Historian",
-            "Your fondness for recording the histories of adventurers allows you to add Traits to other players",
+    Scribe(
+            "Scribe",
+            "Your fondness for recording the histories of other adventurers allows you to add Traits to other players",
             List.of(RepercussionType.TRAIT)
     );
 
