@@ -30,9 +30,10 @@ public class CollaborativeTextHelper {
     private final FeatureFlagHelper featureFlagHelper;
     private final OutcomeTypeHelper outcomeTypeHelper;
     private final ActiveSessionDAO activeSessionDAO;
+    private final EndingDAO endingDAO;
 
     @Autowired
-    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO, AdventureMapHelper adventureMapHelper, StoryDAO storyDAO, FeatureFlagHelper featureFlagHelper, OutcomeTypeHelper outcomeTypeHelper, ActiveSessionDAO activeSessionDAO) {
+    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO, AdventureMapHelper adventureMapHelper, StoryDAO storyDAO, FeatureFlagHelper featureFlagHelper, OutcomeTypeHelper outcomeTypeHelper, ActiveSessionDAO activeSessionDAO, EndingDAO endingDAO) {
         this.gameSessionDAO = gameSessionDAO;
         this.collaborativeTextDAO = collaborativeTextDAO;
         this.adventureMapDAO = adventureMapDAO;
@@ -41,6 +42,7 @@ public class CollaborativeTextHelper {
         this.featureFlagHelper = featureFlagHelper;
         this.outcomeTypeHelper = outcomeTypeHelper;
         this.activeSessionDAO = activeSessionDAO;
+        this.endingDAO = endingDAO;
     }
 
     // ===== PUBLIC API METHODS =====
@@ -596,6 +598,7 @@ public class CollaborativeTextHelper {
                 case GameState.MAKE_CHOICE_VOTING -> handleMakeChoice(gameSession, winningSubmissions);
                 case GameState.MAKE_OUTCOME_CHOICE_VOTING -> handleMakeOutcomeChoices(gameSession, winningSubmissions);
                 case GameState.NAVIGATE_VOTING -> handleNavigation(gameCode, winningSubmissions);
+                case GameState.WRITE_EPILOGUES -> handleEpilogues(gameSession, winningSubmissions);
             }
 
             // Update the GameSessionDisplay in the database
@@ -604,6 +607,28 @@ public class CollaborativeTextHelper {
             System.err.println("Failed to update GameSessionDisplay with winning submissions: " + e.getMessage());
             throw new GameStateException("Failed to update winning game content with winning submissions", e);
         }
+    }
+
+    private void handleEpilogues(GameSession gameSession, List<TextSubmission> winningSubmissions) {
+        String gameCode = gameSession.getGameCode();
+        List<String> existingEndingBodies = gameSession.getEndings() == null ? new ArrayList<>()
+                : gameSession.getEndings().stream().map(Ending::getEndingBody).toList();
+        winningSubmissions.forEach(sub -> {
+            OutcomeType outcomeTypeWithLabel = sub.getOutcomeTypeWithLabel();
+            OutcomeType storySubType = outcomeTypeWithLabel.getSubTypes().getFirst().getSubTypes().getFirst();
+            List<Story> associatedStories = storyDAO.getAuthorStoriesByStoryId(gameCode, storySubType.getId());
+
+            if (!existingEndingBodies.contains(sub.getCurrentText())) {
+                Ending ending = new Ending();
+                ending.setPlayerId(outcomeTypeWithLabel.getId());
+                ending.setPlayerUsername(outcomeTypeWithLabel.getLabel());
+                ending.setAuthorId(sub.getAuthorId());
+                ending.setEndingBody(sub.getCurrentText());
+                ending.setAssociatedStories(associatedStories);
+
+                endingDAO.createEnding(gameCode, ending);
+            }
+        });
     }
 
     private void handleMakeOutcomeChoices(GameSession gameSession, List<TextSubmission> winningSubmissions) {

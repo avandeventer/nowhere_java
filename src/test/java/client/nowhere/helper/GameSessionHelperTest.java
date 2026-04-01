@@ -87,7 +87,7 @@ public class GameSessionHelperTest {
         collaborativeTextHelper = new CollaborativeTextHelper(
                 gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
                 adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper,
-                activeSessionDAO
+                activeSessionDAO, endingDAO
         );
         // Construct GameSessionHelper with real CollaborativeTextHelper
         gameSessionHelper = new GameSessionHelper(

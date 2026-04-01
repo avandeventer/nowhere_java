@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -53,6 +54,9 @@ public class CollaborativeTextHelperTest {
     @Mock
     private ActiveSessionDAO activeSessionDAO;
 
+    @Mock
+    private EndingDAO endingDAO;
+
     // Use real OutcomeTypeHelper for distribution logic tests
     private final OutcomeTypeHelper outcomeTypeHelper = new OutcomeTypeHelper();
 
@@ -64,7 +68,8 @@ public class CollaborativeTextHelperTest {
         // Manually construct with real OutcomeTypeHelper
         collaborativeTextHelper = new CollaborativeTextHelper(
                 gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
-                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO
+                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO,
+                endingDAO
         );
     }
 
@@ -418,6 +423,13 @@ public class CollaborativeTextHelperTest {
                         "WHAT_CAN_WE_TRY",
                         "HOW_DOES_THIS_RESOLVE_START.json",
                         8
+                ),
+                Arguments.of(
+                        "WRITE_EPILOGUES - Epilogue standard calculation",
+                        WRITE_EPILOGUES,
+                        "WRITE_EPILOGUES",
+                        "WRITE_EPILOGUES_END.json",
+                        4
                 )
         );
     }
@@ -598,6 +610,69 @@ public class CollaborativeTextHelperTest {
                 }
             }
         }
+    }
+
+    // ===== WRITE_EPILOGUES TESTS =====
+
+    record ExpectedEnding(String playerId, String endingBody) {}
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideEpilogueScenarios")
+    void testHandleEpilogues_CreatesEndingsForPlayers(
+            String scenarioName,
+            String jsonFileName,
+            List<ExpectedEnding> expectedEndings
+    ) throws IOException {
+        // Arrange
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
+        gameSession.setGameState(GameState.WRITE_EPILOGUES);
+        String gameCode = gameSession.getGameCode();
+        String phaseId = GameState.WRITE_EPILOGUES.name();
+
+        CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
+
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
+        when(storyDAO.getAuthorStoriesByStoryId(anyString(), anyString())).thenReturn(List.of());
+
+        // Act
+        collaborativeTextHelper.calculateWinningSubmission(gameCode);
+
+        // Assert
+        ArgumentCaptor<Ending> endingCaptor = ArgumentCaptor.forClass(Ending.class);
+        verify(endingDAO, times(expectedEndings.size())).createEnding(eq(gameCode), endingCaptor.capture());
+
+        List<Ending> capturedEndings = endingCaptor.getAllValues();
+        Map<String, Ending> endingByPlayerId = capturedEndings.stream()
+                .collect(Collectors.toMap(Ending::getPlayerId, e -> e));
+
+        System.out.println("=== " + scenarioName + " ===");
+        for (ExpectedEnding expected : expectedEndings) {
+            Ending actual = endingByPlayerId.get(expected.playerId());
+            assertNotNull(actual, "No ending created for playerId: " + expected.playerId());
+            assertEquals(expected.endingBody(), actual.getEndingBody(),
+                    "endingBody mismatch for playerId: " + expected.playerId());
+            System.out.println("Player " + expected.playerId() + " -> " + actual.getEndingBody());
+        }
+    }
+
+    static Stream<Arguments> provideEpilogueScenarios() {
+        return Stream.of(
+                Arguments.of(
+                        "WRITE_EPILOGUES - Creates endings for all players",
+                        "WRITE_EPILOGUES_END.json",
+                        List.of(
+                                new ExpectedEnding("63ca67f3-d11d-4cc8-a667-6b68a1bb432b",
+                                        "You become Gorlax, leader of the time travellers! D"),
+                                new ExpectedEnding("e8852f24-cdc8-465c-b244-56ce08029584",
+                                        "Dang you search for better boxes for a long time, but you never find a better one. C"),
+                                new ExpectedEnding("ddfc6892-16dd-4e38-9252-27a3688ae038",
+                                        "Snail badge activate! You become a Snail Leader! A"),
+                                new ExpectedEnding("80569dbf-52d4-4169-b51f-d2977d2e94b0",
+                                        "You travel to meet your former self and they're sooooo cool")
+                        )
+                )
+        );
     }
 
     // ===== MAKE_CHOICE_VOTING REPERCUSSION TESTS =====
