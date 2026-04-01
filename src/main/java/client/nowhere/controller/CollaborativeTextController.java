@@ -40,8 +40,12 @@ public class CollaborativeTextController {
 
     @GetMapping("/collaborativeText/available")
     @ResponseBody
-    public List<TextSubmission> getAvailableSubmissions(@RequestParam String gameCode, @RequestParam String playerId, @RequestParam(defaultValue = "2") int requestedCount, @RequestParam (required = false) String outcomeTypeId) {
-        return this.collaborativeTextHelper.getAvailableSubmissionsForPlayer(gameCode, playerId, requestedCount, outcomeTypeId);
+    public List<TextSubmission> getAvailableSubmissions(@RequestParam String gameCode,
+                                                        @RequestParam String playerId,
+                                                        @RequestParam(defaultValue = "2") int requestedCount,
+                                                        @RequestParam (required = false) String outcomeTypeId,
+                                                        @RequestParam(defaultValue = "false") boolean showNewSubmissions) {
+        return this.collaborativeTextHelper.getAvailableSubmissionsForPlayer(gameCode, playerId, requestedCount, outcomeTypeId, showNewSubmissions);
     }
 
     @GetMapping("/collaborativeText/outcomeType")

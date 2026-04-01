@@ -238,7 +238,7 @@ public class CollaborativeTextDAO {
      * @param outcomeTypeId Optional outcome type ID to filter by (for WHAT_WILL_BECOME_OF_US phase)
      * @return List of available submissions
      */
-    public List<TextSubmission> getAvailableSubmissionsForPlayerAtomically(String gameCode, String phaseId, String playerId, int requestedCount, String outcomeTypeId) {
+    public List<TextSubmission> getAvailableSubmissionsForPlayerAtomically(String gameCode, String phaseId, String playerId, int requestedCount, String outcomeTypeId, boolean showNewSubmissions) {
         try {
             return db.runTransaction((Transaction.Function<List<TextSubmission>>) transaction -> {
                 // Get the current phase
@@ -248,7 +248,9 @@ public class CollaborativeTextDAO {
                 }
                 
                 // Clear all existing views for this player before recording new ones
-                phase.clearViewsForPlayer(playerId);
+                if (!showNewSubmissions) {
+                    phase.clearViewsForPlayer(playerId);
+                }
  
                 // Get available submissions
                 List<TextSubmission> availableSubmissions = phase.getAvailableSubmissionsForPlayer(playerId, outcomeTypeId);

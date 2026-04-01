@@ -145,7 +145,7 @@ public class CollaborativeTextHelper {
         }
     }
 
-    public List<TextSubmission> getAvailableSubmissionsForPlayer(String gameCode, String playerId, int requestedCount, String outcomeTypeId) {
+    public List<TextSubmission> getAvailableSubmissionsForPlayer(String gameCode, String playerId, int requestedCount, String outcomeTypeId, boolean showNewSubmissions) {
         GameSession gameSession = getGameSession(gameCode);
         GameState phaseIdState = gameSession.getGameState().getPhaseId();
         if (phaseIdState == null) {
@@ -163,7 +163,7 @@ public class CollaborativeTextHelper {
             }
         }
 
-        return collaborativeTextDAO.getAvailableSubmissionsForPlayerAtomically(gameCode, phaseId, playerId, requestedCount, outcomeTypeId);
+        return collaborativeTextDAO.getAvailableSubmissionsForPlayerAtomically(gameCode, phaseId, playerId, requestedCount, outcomeTypeId, showNewSubmissions);
     }
 
 
