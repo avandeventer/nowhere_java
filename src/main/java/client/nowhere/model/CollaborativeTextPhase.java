@@ -134,7 +134,7 @@ public class CollaborativeTextPhase {
                     List<String> viewers = submissionViews.getOrDefault(submissionId, new ArrayList<>());
                     
                     // If a player is currently viewing this submission, it's unavailable
-                    return viewers.size() < 2;
+                    return viewers.size() < 1;
                 })
                 .toList();
     }
