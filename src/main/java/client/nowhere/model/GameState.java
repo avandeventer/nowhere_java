@@ -153,6 +153,9 @@ public enum GameState {
                 return WRITE_EPILOGUES_WINNER;
             }
             case WRITE_EPILOGUES_WINNER -> {
+                return ENDING;
+            }
+            case ENDING -> {
                 return FINALE;
             }
             default -> {
