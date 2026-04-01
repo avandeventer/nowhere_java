@@ -182,7 +182,7 @@ public class Player {
     }
 
     public String getDisplayName() {
-        if (!traits.isEmpty()) {
+        if (traits != null && !traits.isEmpty()) {
             List<Trait> titleTraits = traits.stream().filter(trait ->
                     trait.getTraitType() != null
                     && trait.getTraitType().equals(TraitType.TITLE)).toList();
