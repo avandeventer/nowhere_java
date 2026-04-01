@@ -115,13 +115,33 @@ public class CollaborativeTextPhase {
      * @return List of submissions available to the player
      */
     public List<TextSubmission> getAvailableSubmissionsForPlayer(String playerId, String outcomeTypeId) {
+        // Build set of submission IDs the player was last to contribute to.
+        // A submission X is in this set if another submission exists whose last addition
+        // was by this player and references X as its parent.
+        Set<String> lastContributedTo = submissions.stream()
+                .filter(s -> {
+                    List<TextAddition> additions = s.getAdditions();
+                    if (additions == null || additions.isEmpty()) return false;
+                    TextAddition last = additions.getLast();
+                    return playerId.equals(last.getAuthorId())
+                            && last.getSubmissionId() != null
+                            && !last.getSubmissionId().isEmpty();
+                })
+                .map(s -> s.getAdditions().getLast().getSubmissionId())
+                .collect(java.util.stream.Collectors.toSet());
+
         return submissions.stream()
                 .filter(submission -> {
                     // Don't show player's own submissions
                     if (submission.getAuthorId().equals(playerId)) {
                         return false;
                     }
-                    
+
+                    // Don't show submissions the player was the last to contribute to
+                    if (lastContributedTo.contains(submission.getSubmissionId())) {
+                        return false;
+                    }
+
                     // Filter by outcome type if provided (for WHAT_WILL_BECOME_OF_US phase)
                     if (outcomeTypeId != null && !outcomeTypeId.isEmpty()) {
                         String submissionOutcomeType = submission.getOutcomeType();
@@ -129,12 +149,12 @@ public class CollaborativeTextPhase {
                             return false;
                         }
                     }
-                    
+
                     String submissionId = submission.getSubmissionId();
                     List<String> viewers = submissionViews.getOrDefault(submissionId, new ArrayList<>());
-                    
+
                     // If a player is currently viewing this submission, it's unavailable
-                    return viewers.size() < 1;
+                    return viewers.size() < 2;
                 })
                 .toList();
     }
