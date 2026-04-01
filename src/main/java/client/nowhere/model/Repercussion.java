@@ -35,10 +35,11 @@ public class Repercussion {
 
     public String getColor() {
         if (repercussionType == null) return null;
-        try {
-            return RepercussionType.valueOf(repercussionType.toUpperCase()).getColor();
-        } catch (IllegalArgumentException e) {
-            return null;
+        for (RepercussionType type : RepercussionType.values()) {
+            if (type.getName().equals(repercussionType)) {
+                return type.getColor();
+            }
         }
+        return null;
     }
 }
