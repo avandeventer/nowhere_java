@@ -134,7 +134,7 @@ public class CollaborativeTextHelper {
     private List<TextSubmission> getWinningSubmissions(GameState phaseId, CollaborativeTextPhase phase, GameSession gameSession) {
         switch (phaseId) {
             case GameState.MAKE_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_VOTING -> {
-                return calculateWinnersFromVotes(phase, gameSession.getGameState());
+                return calculateWinnersFromVotes(phase, gameSession.getGameState(), gameSession);
             }
             case GameState.HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> {
                 return phase.getSubmissionsWithoutParentSubmissions();
@@ -456,8 +456,13 @@ public class CollaborativeTextHelper {
         }
     }
 
-    private List<TextSubmission> calculateWinnersFromVotes(CollaborativeTextPhase phase, GameState gameState) {
-        for (TextSubmission submission : phase.getSubmissions()) {
+    private List<TextSubmission> calculateWinnersFromVotes(CollaborativeTextPhase phase, GameState gameState, GameSession gameSession) {
+        List<TextSubmission> submissions = phase.getSubmissions();
+        if (gameState.getPhaseId() == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
+            Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
+            submissions = story.getSelectedOption().getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
+        }
+        for (TextSubmission submission : submissions) {
             List<PlayerVote> votesForSubmission = phase.getPlayerVotes().values().stream()
                 .flatMap(List::stream)
                 .filter(vote -> vote.getSubmissionId().equals(submission.getSubmissionId()))
@@ -653,8 +658,11 @@ public class CollaborativeTextHelper {
 
         if (!repercussions.isEmpty()) {
             if (story != null) {
-                story.getSelectedOption().getSelectedOutcomeFork().setRepercussions(repercussions);
-                handleRepercussions(gameSession, story, repercussions);
+                OutcomeFork outcomeFork = story.getSelectedOption().getSelectedOutcomeFork();
+                if (outcomeFork != null) {
+                    story.getSelectedOption().getSelectedOutcomeFork().setRepercussions(repercussions);
+                    handleRepercussions(gameSession, story, repercussions);
+                }
                 storyDAO.updateStory(story);
             }
         }
