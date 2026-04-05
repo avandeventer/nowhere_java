@@ -1850,16 +1850,16 @@ public class CollaborativeTextHelper {
     }
 
     private static @NonNull List<OutcomeType> buildOutcomeTypesFromEncounters(List<EncounterLabel> availableEncounterLabels, Story assignedStory) {
-        List<OutcomeType> availableEncounterOutcomeTypes = new ArrayList<>(availableEncounterLabels.stream()
-                .map(label -> new OutcomeType(label.getEncounterId(), label.getEncounterLabel())).toList());
+        List<OutcomeType> availableEncounterOutcomeTypes = new ArrayList<>();
         if (assignedStory != null) {
             EncounterLabel assignedStoryEncounter = assignedStory.getEncounterLabel();
-            OutcomeType storyOutcomeType = new OutcomeType(assignedStoryEncounter.getEncounterId(),
+            availableEncounterOutcomeTypes.add(new OutcomeType(assignedStoryEncounter.getEncounterId(),
                     assignedStoryEncounter.getEncounterLabel(),
                     assignedStory.getStoryId()
-            );
-            availableEncounterOutcomeTypes.add(storyOutcomeType);
+            ));
         }
+        availableEncounterOutcomeTypes.addAll(availableEncounterLabels.stream()
+                .map(label -> new OutcomeType(label.getEncounterId(), label.getEncounterLabel())).toList());
 
         if (availableEncounterOutcomeTypes.size() < 2) {
             List<String> preCannedEncounterLabels = getPreCannedEncounterLabels();
