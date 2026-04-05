@@ -3,6 +3,7 @@ package client.nowhere.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class OutcomeFork {
@@ -12,7 +13,7 @@ public class OutcomeFork {
 
     @Getter
     @Setter
-    List<Repercussion> repercussions;
+    List<Repercussion> repercussions = new ArrayList<>();
 
     public OutcomeFork() { }
 

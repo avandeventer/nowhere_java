@@ -945,7 +945,7 @@ public class CollaborativeTextHelper {
                     if (prequelStory != null) {
                         OutcomeFork outcomeFork = prequelStory.getSelectedOption().getSelectedOutcomeFork();
 
-                        if (outcomeFork != null) {
+                        if (outcomeFork != null && outcomeFork.getRepercussions() != null) {
                             List<String> repercussionTypes = outcomeFork.getRepercussions()
                                     .stream().map(Repercussion::getRepercussionType).toList();
                             if (repercussionTypes.stream().allMatch(t -> RepercussionType.ALL_PLAYERS.getName().equals(t))) {
