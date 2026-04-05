@@ -1063,7 +1063,7 @@ public class CollaborativeTextHelper {
         return new ArrayList<>(
                 List.of(
                         "Altar to Erysus, Goddess of Harvest!",
-                        "Altar to Dorsyn, Goddess of Craftwerk",
+                        "Altar to Dorsyn, Goddess of Craftwork",
                         "A Small Unintelligible Bat",
                         "Joust Ball, a Sport You've Never Heard of",
                         "A Talking Horse",
@@ -1835,7 +1835,7 @@ public class CollaborativeTextHelper {
 
             if (assignedStory != null) {
                 OutcomeFork selectedOutcomeFork = assignedStory.getSelectedOption().getSelectedOutcomeFork();
-                if(selectedOutcomeFork != null) {
+                if(selectedOutcomeFork != null && selectedOutcomeFork.getRepercussions() != null) {
                     List<Repercussion> nonSpreadOutcomes = selectedOutcomeFork
                             .getRepercussions().stream().filter(repercussion ->
                                     !repercussion.getRepercussionType().equals(RepercussionType.ALL_PLAYERS.getName())
@@ -1861,7 +1861,7 @@ public class CollaborativeTextHelper {
             availableEncounterOutcomeTypes.add(storyOutcomeType);
         }
 
-        if (availableEncounterLabels.size() < 2) {
+        if (availableEncounterOutcomeTypes.size() < 2) {
             List<String> preCannedEncounterLabels = getPreCannedEncounterLabels();
             Collections.shuffle(preCannedEncounterLabels);
             List<String> randomEncounterLabels = preCannedEncounterLabels.subList(0, Math.min(3, preCannedEncounterLabels.size()));
