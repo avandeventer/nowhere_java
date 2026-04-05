@@ -486,7 +486,7 @@ public class CollaborativeTextHelper {
             submission.setAverageRanking(totalPoints);
         }
 
-        List<TextSubmission> submissionsWithVotes = phase.getSubmissions().stream()
+        List<TextSubmission> submissionsWithVotes = submissions.stream()
             .filter(submission -> submission.getTotalVotes() > 0)
             .toList();
 
