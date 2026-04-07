@@ -569,6 +569,23 @@ public class CollaborativeTextHelperTest {
                                         "You go back in time to correct your alcoholism B", 2)
                         ),
                         HOW_DOES_THIS_RESOLVE
+                ),
+                Arguments.of(
+                        "HOW_DOES_THIS_RESOLVE - Round 2 avoid conflicting submissions with more than 4 players",
+                        "HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json",
+                        List.of(
+                                new ExpectedSubmission("7640f787-c23e-4506-9fc6-3f67b728d16d",
+                                        "You do what you should have done from the beginning. You smooch those manmeats. D ", 2),
+                                new ExpectedSubmission("a198ee38-0ab7-4e2d-9d2c-d43292da312f",
+                                        "You immediately feel silly. You could never compare to Alabama's coolness! E", 2),
+                                new ExpectedSubmission("d10c13a1-bd61-4e0e-a1cf-da26eba04dd4",
+                                        "You duel BEEF and finally vanguish him! He's... dead. Oh. You're not sure how you feel about this. C ", 3),
+                                new ExpectedSubmission("926e620a-c9d8-4465-b5f8-26ea6a5552b5",
+                                        "You learn to breed these guys and you love them. But you also eat them. A ", 1),
+                                new ExpectedSubmission("10",
+                                        "You BECOME A GOAT for REAL! You're a goat! Damn! B But it's an illness! It spreads like a disease! Everyone becomes goats!!", 2)
+                        ),
+                        HOW_DOES_THIS_RESOLVE
                 )
         );
     }
@@ -754,18 +771,19 @@ public class CollaborativeTextHelperTest {
     }
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("provideTimeTravelersOutcomeChoiceScenarios")
-    void testHandleMakeOutcomeChoiceVoting_TimeTravelers_AppliesRepercussionsToPlayers(
+    @MethodSource("provideOutcomeChoiceScenarios")
+    void testHandleMakeOutcomeChoiceVoting_AppliesRepercussionsToPlayers(
             String scenarioName,
             String selectedOptionId,
             String votedSubmissionId,
-            Map<String, String> expectedTraitLabelByPlayerId,
+            Map<String, List<String>> expectedTraitLabelByPlayerId,
             List<String> expectedOutcomeDisplayMessages,
-            boolean shouldUpdateStoryRepercussions
+            boolean shouldUpdateStoryRepercussions,
+            String fileName,
+            PlayerCoordinates playerCoordinates
     ) throws IOException {
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
-        gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(3);
-        gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(0);
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(fileName);
+        gameSession.getGameBoard().setPlayerCoordinates(playerCoordinates);
         gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_VOTING);
         String gameCode = gameSession.getGameCode();
 
@@ -786,14 +804,16 @@ public class CollaborativeTextHelperTest {
 
         collaborativeTextHelper.calculateWinningSubmission(gameCode);
 
-        for (Map.Entry<String, String> entry : expectedTraitLabelByPlayerId.entrySet()) {
+        for (Map.Entry<String, List<String>> entry : expectedTraitLabelByPlayerId.entrySet()) {
             String playerId = entry.getKey();
-            String expectedLabel = entry.getValue();
-            verify(gameSessionDAO).updatePlayer(argThat(p ->
-                    playerId.equals(p.getAuthorId()) &&
-                    p.getTraits() != null &&
-                    p.getTraits().stream().anyMatch(t -> expectedLabel.equals(t.getTraitLabel()))
-            ));
+
+            for (String label : entry.getValue()) {
+                verify(gameSessionDAO).updatePlayer(argThat(p ->
+                        playerId.equals(p.getAuthorId()) &&
+                                p.getTraits() != null &&
+                                p.getTraits().stream().anyMatch(t -> label.equals(t.getTraitLabel()))
+                ));
+            }
         }
         if (!expectedOutcomeDisplayMessages.isEmpty()) {
             ArgumentCaptor<ActivePlayerSession> captor = ArgumentCaptor.forClass(ActivePlayerSession.class);
@@ -812,24 +832,28 @@ public class CollaborativeTextHelperTest {
         }
     }
 
-    static Stream<Arguments> provideTimeTravelersOutcomeChoiceScenarios() {
+    static Stream<Arguments> provideOutcomeChoiceScenarios() {
         return Stream.of(
                 // Option "11" (use trait: Alcoholic) forks
                 Arguments.of(
                         "Time Travelers (3,0) - option 11 - Fork: Recovering Alcoholic trait → Andy",
                         "11",
                         "08ad7197-ee03-4241-87e9-6dc416bdbeaf",
-                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "Recovering Alcoholic"), // Andy
+                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", List.of("Recovering Alcoholic")), // Andy
                         List.of("You gained the trait \"Recovering Alcoholic\"!"),
-                        false
+                        false,
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
+                        new PlayerCoordinates(3, 0)
                 ),
                 Arguments.of(
                         "Time Travelers (3,0) - option 11 - Fork: Future Sober D title → Andy",
                         "11",
                         "e9f00d95-c2d5-4cc5-9b2f-48db47384497",
-                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "Future Sober D"), // Andy
+                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", List.of("Future Sober D")), // Andy
                         List.of("You gained the title \"Future Sober D\"!"),
-                        false
+                        false,
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
+                        new PlayerCoordinates(3, 0)
                 ),
                 Arguments.of(
                         "Time Travelers (3,0) - option 11 - Fork: Spread only → encounter message, no player updates",
@@ -837,40 +861,63 @@ public class CollaborativeTextHelperTest {
                         "a80ef30c-e3fb-4a6c-99fc-bc9a39684b05",
                         Map.of(), // No player trait updates
                         List.of("If we encounter \"Time Travelers B\" again, we must all rise to the challenge together."),
-                        true
+                        true,
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
+                        new PlayerCoordinates(3, 0)
                 ),
                 // Option "8ff69655" (Travel forward A) forks
                 Arguments.of(
                         "Time Travelers (3,0) - option Travel forward A - Fork: At Peace A trait → Andy",
                         "8ff69655-42c9-48a7-aaf1-ac26f08cb3a9",
                         "fcb534df-b504-4d56-8375-041eed493387",
-                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "At Peace A"), // Andy
+                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", List.of("At Peace A")), // Andy
                         List.of("You gained the trait \"At Peace A\"!"),
-                        false
+                        false,
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
+                        new PlayerCoordinates(3, 0)
                 ),
                 Arguments.of(
                         "Time Travelers (3,0) - option Travel forward A - Fork: Last Human D title → Andy",
                         "8ff69655-42c9-48a7-aaf1-ac26f08cb3a9",
                         "11c21b3e-9122-4f82-b624-e2ebfe00a5ed",
-                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", "Last Human D"), // Andy
+                        Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", List.of("Last Human D")), // Andy
                         List.of("You gained the title \"Last Human D\"!"),
-                        false
+                        false,
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
+                        new PlayerCoordinates(3, 0)
                 ),
                 Arguments.of(
                         "Time Travelers (3,0) - option Travel forward A - Fork: Last Human D title + Spread → all players",
                         "8ff69655-42c9-48a7-aaf1-ac26f08cb3a9",
                         "d69bd9df-9e33-4c1c-855a-49428b70448b",
                         Map.of(
-                                "80569dbf-52d4-4169-b51f-d2977d2e94b0", "Last Human D", // Andy (story player)
-                                "e8852f24-cdc8-465c-b244-56ce08029584", "Last Human D", // Joe (spread)
-                                "63ca67f3-d11d-4cc8-a667-6b68a1bb432b", "Last Human D", // Subodh (spread)
-                                "ddfc6892-16dd-4e38-9252-27a3688ae038", "Last Human D"  // Kirsten (spread)
+                                "80569dbf-52d4-4169-b51f-d2977d2e94b0", List.of("Last Human D"), // Andy (story player)
+                                "e8852f24-cdc8-465c-b244-56ce08029584", List.of("Last Human D"), // Joe (spread)
+                                "63ca67f3-d11d-4cc8-a667-6b68a1bb432b", List.of("Last Human D"), // Subodh (spread)
+                                "ddfc6892-16dd-4e38-9252-27a3688ae038", List.of("Last Human D")  // Kirsten (spread)
                         ),
                         List.of(
                                 "You gained the title \"Last Human D\"!",
                                 "All players gained the title \"Last Human D\"!"
                         ),
-                        false
+                        false,
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
+                        new PlayerCoordinates(3, 0)
+                ),
+                Arguments.of(
+                        "Polyamory (6,0) - option Form a Harem - Fork: Last Human D title + Spread → all players",
+                        "76792952-31c5-443e-805a-c69279ae3b1b",
+                        "b59673da-137f-4b81-8dc6-f816d2a9bf47",
+                        Map.of(
+                               "3f8e49dc-37d2-4bdf-b278-17fe6a472e8e", List.of("Man Fruit Lover", "Fruit basket")
+                        ),
+                        List.of(
+                                "You gained the trait \"Fruit basket\"!",
+                                "You gained the title \"Man Fruit Lover\"!"
+                        ),
+                        false,
+                        "ACTUAL_GAME_WRITE_EPILOGUES.json",
+                        new PlayerCoordinates(6, 0)
                 )
         );
     }

@@ -639,6 +639,7 @@ public class GameSessionHelperTest {
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
         gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
         gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
+        gameSession.setGameState(GameState.MAKE_CHOICE_VOTING);
         String gameCode = gameSession.getGameCode();
 
         // Get the story at current player coordinates and set the selected option
@@ -713,6 +714,7 @@ public class GameSessionHelperTest {
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
         gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
         gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
+        gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_VOTING);
         String gameCode = gameSession.getGameCode();
 
         // Get the story at current player coordinates and set the selected option
@@ -727,7 +729,6 @@ public class GameSessionHelperTest {
         when(gameSessionDAO.updateGameSession(any(GameSession.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         when(featureFlagHelper.getFlagValue("includeTraits")).thenReturn(true);
-
 
         // Debug: Print the setup
         System.out.println("=== " + scenarioName + " ===");
@@ -781,6 +782,16 @@ public class GameSessionHelperTest {
                         0,
                         "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
                         List.of("e8852f24-cdc8-465c-b244-56ce08029584") // Joe
+                ),
+                Arguments.of(
+                        "Rooting out prod bug in round 2",
+                        "76792952-31c5-443e-805a-c69279ae3b1b",
+                        2,
+                        GameState.MAKE_OUTCOME_CHOICE_VOTING,
+                        6,
+                        0,
+                        "ACTUAL_GAME_WRITE_EPILOGUES.json",
+                        List.of()
                 )
         );
     }
