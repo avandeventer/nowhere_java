@@ -701,7 +701,7 @@ public class CollaborativeTextHelper {
 
         if (hasSpread) {
             updatedPlayerIds.addAll(
-                    handleSpread(newTraits, story, outcomeDisplay, allPlayers, storyPlayerIds)
+                    handleSpread(newTraits, story, outcomeDisplay, allPlayers, storyPlayerIds, gameSession.getRoundNumber())
             );
         }
 
@@ -722,14 +722,19 @@ public class CollaborativeTextHelper {
         }
     }
 
-    private Set<String> handleSpread(List<Trait> newTraits, Story story, List<String> outcomeDisplay, List<Player> allPlayers, List<String> storyPlayerIds) {
+    private Set<String> handleSpread(List<Trait> newTraits, Story story, List<String> outcomeDisplay, List<Player> allPlayers, List<String> storyPlayerIds, int roundNumber) {
         Set<String> updatedPlayerIds = new HashSet<>();
         if (newTraits.isEmpty()) {
             String encounterLabel = (story.getEncounterLabel() != null
                     && story.getEncounterLabel().getEncounterLabel() != null)
                     ? story.getEncounterLabel().getEncounterLabel()
                     : "this encounter";
-            outcomeDisplay.add("If we encounter \"" + encounterLabel + "\" again, we must all rise to the challenge together.");
+
+            if (roundNumber > 1) {
+                outcomeDisplay.add("All of us feel the impact of this");
+            } else {
+                outcomeDisplay.add("If we encounter \"" + encounterLabel + "\" again, we must all rise to the challenge together.");
+            }
             if (story.getRepercussions() == null) {
                 story.setRepercussions(new ArrayList<>());
             }
