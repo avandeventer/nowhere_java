@@ -51,15 +51,20 @@ public class VotingHelper {
 
         if (phaseIdState == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
             Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
-            if (currentStory != null && currentStory.getPlayerIds().contains(playerId)) {
-                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
-                return new ArrayList<>();
+            if (currentStory != null) {
+                boolean allPlayersInStory = gameSession.getPlayers().stream()
+                        .allMatch(p -> currentStory.getPlayerIds().contains(p.getAuthorId()));
+                boolean excludePlayerFromVote = allPlayersInStory
+                        ? !currentStory.getPlayerId().equals(playerId)
+                        : currentStory.getPlayerIds().contains(playerId);
+                if (excludePlayerFromVote) {
+                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    return new ArrayList<>();
+                }
             }
 
             if (currentStory != null && !currentStory.getSelectedOptionId().isEmpty()) {
-                String selectedOptionId = currentStory.getSelectedOptionId();
-                Option selectedOption = currentStory.getOptions().stream().filter(option -> option.getOptionId().equals(selectedOptionId))
-                        .findFirst().orElse(null);
+                Option selectedOption = currentStory.getSelectedOption();
                 if (selectedOption == null || selectedOption.getOutcomeForks() == null) {
                     return null;
                 }

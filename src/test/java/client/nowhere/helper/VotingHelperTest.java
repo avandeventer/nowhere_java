@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -71,10 +72,13 @@ public class VotingHelperTest {
             String gameSessionFileName,
             int xCoordinate,
             int yCoordinate,
-            List<String> expectedActivePlayerIds
+            List<String> expectedActivePlayerIds,
+            GameState gameState,
+            String selectedOptionId
     ) throws IOException {
         // Arrange - Load test data
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(gameSessionFileName);
+        gameSession.setGameState(gameState);
         String gameCode = gameSession.getGameCode();
 
         // Set player coordinates to test different stories
@@ -85,6 +89,9 @@ public class VotingHelperTest {
 
         // Get the story at current player coordinates (computed by GameSession)
         Story storyAtCoords = gameSession.getStoryAtCurrentPlayerCoordinates();
+        if(!selectedOptionId.isEmpty()) {
+            storyAtCoords.setSelectedOptionId(selectedOptionId);
+        }
         Encounter encounterAtCoords = gameSession.getGameBoard().getEncounterAtPlayerCoordinates();
 
         // Mock the game session DAO
@@ -122,29 +129,37 @@ public class VotingHelperTest {
         for(Player player : gameSession.getPlayers()) {
             if (!expectedActivePlayerIds.contains(player.getAuthorId())) {
                 verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(gameSession.getGameState()), eq(player.getAuthorId()), eq(true));
+            } else {
+                verify(activeSessionHelper, never()).update(eq(gameCode), eq(gameSession.getGameState()), eq(player.getAuthorId()), eq(true));
             }
         }
     }
 
     static Stream<Arguments> provideCoordinates() {
         return Stream.of(
-                Arguments.of("MAKE_CHOICE_VOTING_START.json", 0, 0, List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1")),
-                Arguments.of("MAKE_CHOICE_VOTING_START.json", 1, 0, List.of("91732a20-794c-424a-8d69-8b4dedac4f85")),
-                Arguments.of("MAKE_CHOICE_VOTING_START.json", 2, 0, List.of("884bcc3e-cd30-4714-91c2-b47827466f29")),
-                Arguments.of("MAKE_CHOICE_VOTING_START.json", 3, 0, List.of("abddf3d8-c59d-43d2-b91c-dc7ebc83da27")),
-                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 0, 0, List.of()), // The story at this encounter has already been visited
-                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 1, 0, List.of("f1805f47-b2c5-49a8-9cf1-c8a61845ad7b")),
-                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 2, 0, List.of("eaa157ee-9d88-4d49-a728-4c8abca37119")),
-                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 3, 0, List.of("c0e0de02-3aae-4e32-ab15-0cac32557778")),
-                Arguments.of("MAKE_OUTCOME_CHOICE_VOTING_START.json", 2, 0, List.of("c0e0de02-3aae-4e32-ab15-0cac32557778", "7c7228ca-b43a-4b45-b94c-8593d6404a0e", "f1805f47-b2c5-49a8-9cf1-c8a61845ad7b")),
-                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 4, 0, List.of("eb0c6d8d-9c29-4fad-ad84-71e1b7c80c80")),
-                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 5, 0, List.of("eb0c6d8d-9c29-4fad-ad84-71e1b7c80c80")),
+                Arguments.of("MAKE_CHOICE_VOTING_START.json", 0, 0, List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1"), GameState.MAKE_CHOICE_VOTING, ""),
+                Arguments.of("MAKE_CHOICE_VOTING_START.json", 1, 0, List.of("91732a20-794c-424a-8d69-8b4dedac4f85"), GameState.MAKE_CHOICE_VOTING, ""),
+                Arguments.of("MAKE_CHOICE_VOTING_START.json", 2, 0, List.of("884bcc3e-cd30-4714-91c2-b47827466f29"), GameState.MAKE_CHOICE_VOTING, ""),
+                Arguments.of("MAKE_CHOICE_VOTING_START.json", 3, 0, List.of("abddf3d8-c59d-43d2-b91c-dc7ebc83da27"), GameState.MAKE_CHOICE_VOTING, ""),
+                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 0, 0, List.of(), GameState.MAKE_CHOICE_VOTING, ""), // The story at this encounter has already been visited
+                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 1, 0, List.of("f1805f47-b2c5-49a8-9cf1-c8a61845ad7b"), GameState.MAKE_CHOICE_VOTING, ""),
+                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 2, 0, List.of("eaa157ee-9d88-4d49-a728-4c8abca37119"), GameState.MAKE_CHOICE_VOTING, ""),
+                Arguments.of("MAKE_CHOICE_VOTING_STORY2.json", 3, 0, List.of("c0e0de02-3aae-4e32-ab15-0cac32557778"), GameState.MAKE_CHOICE_VOTING, ""),
+                Arguments.of("MAKE_OUTCOME_CHOICE_VOTING_START.json", 2, 0, List.of("c0e0de02-3aae-4e32-ab15-0cac32557778", "7c7228ca-b43a-4b45-b94c-8593d6404a0e", "f1805f47-b2c5-49a8-9cf1-c8a61845ad7b"), GameState.MAKE_OUTCOME_CHOICE_VOTING, ""),
+                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 4, 0, List.of("eb0c6d8d-9c29-4fad-ad84-71e1b7c80c80"), GameState.MAKE_CHOICE_VOTING, ""),
+                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 5, 0, List.of("eb0c6d8d-9c29-4fad-ad84-71e1b7c80c80"), GameState.MAKE_CHOICE_VOTING, ""),
                 // The gameboard is borked and includes two stories written by the same author so that player is distributed to the same other player.
                 // This should not happen, but this is what should happen in the event that it does
-                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 6, 0, List.of("8512bfbf-88b8-4f19-9fc9-92dfea497fa8")),
-                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 7, 0, List.of())
+                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 6, 0, List.of("8512bfbf-88b8-4f19-9fc9-92dfea497fa8"), GameState.MAKE_CHOICE_VOTING, ""),
                 //Player c1abb5c9-ab39-4ed9-9cfa-9c34d3f7e84e gets assigned to the story at the (7,0) encounter, but the story doesn't have any options to choose
                 //Correctly sets no player to active
+                Arguments.of("MAKE_CHOICE_VOTING_ROUND2_START.json", 7, 0, List.of(), GameState.MAKE_CHOICE_VOTING, ""),
+                Arguments.of("HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json", 8, 0, List.of("b1b5419b-2e73-445d-aa13-207ee65a11d8",
+                        "d4d652c8-c16f-4d3e-9f22-b7a0a2993117",
+                        "f801eca9-2dd2-4b92-af5b-b66c2732ec24",
+                        "56465e18-0af7-4a17-91ff-4c9040eef1ee",
+                        "e463c2e0-97ce-4901-a053-46d0bd5cab83"), GameState.MAKE_CHOICE_VOTING, ""),
+                Arguments.of("HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json", 8, 0, List.of("e463c2e0-97ce-4901-a053-46d0bd5cab83"), GameState.MAKE_OUTCOME_CHOICE_VOTING, "926e620a-c9d8-4465-b5f8-26ea6a5552b5")
         );
     }
 
@@ -230,7 +245,8 @@ public class VotingHelperTest {
         }
     }
 
-    @Test
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideMakeChoiceVotingScenarios")
     void testNonActivePlayersSetToDone() throws IOException {
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
         String gameCode = gameSession.getGameCode();
@@ -251,7 +267,15 @@ public class VotingHelperTest {
         }
     }
 
-    @Test
+    static Stream<Arguments> provideMakeChoiceVotingScenarios() {
+        return Stream.of(
+                Arguments.of(
+
+                )
+        );
+    }
+
+        @Test
     void testPlayerIdsSetOnMakeOutcomeChoiceVote() throws IOException {
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_OUTCOME_CHOICE_VOTING_START.json");
         String gameCode = gameSession.getGameCode();
