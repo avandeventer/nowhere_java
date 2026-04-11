@@ -792,6 +792,65 @@ public class GameSessionHelperTest {
                         0,
                         "ACTUAL_GAME_WRITE_EPILOGUES.json",
                         List.of()
+                ),
+                Arguments.of(
+                        "Transition to MAKE_OUTCOME_CHOICE_WINNER with no fork",
+                        "01ff46f6-3629-4d49-ac3f-0fb7a8736a66",
+                        1,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        9,
+                        0,
+                        "HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json",
+                        List.of()
+                )
+        );
+    }
+
+    // ===== MAKE_OUTCOME_CHOICE_WINNER PHASE TRANSITION TESTS =====
+
+    /**
+     * Tests that when MAKE_OUTCOME_CHOICE_WINNER is the current state, updateToNextGameState:
+     * - Transitions to NAVIGATE_WINNER internally
+     * - Then routes to WRITE_EPILOGUES (round >= 2) or WHAT_HAPPENS_HERE (round < 2) based on
+     *   whether there is an encounter at the next board position.
+     */
+    @ParameterizedTest
+    @MethodSource("provideMakeOutcomeChoiceWinnerScenarios")
+    void testUpdateGameSession_MAKE_OUTCOME_CHOICE_WINNER_TransitionLogic(
+            String scenarioName,
+            String testFileName,
+            GameState expectedFinalState
+    ) throws Exception {
+        // Arrange
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
+        gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_WINNER);
+        String gameCode = gameSession.getGameCode();
+
+        when(gameSessionDAO.getGame(gameCode))
+                .thenReturn(gameSession)
+                .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson(testFileName));
+        when(gameSessionDAO.updateGameSession(any(GameSession.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(featureFlagHelper.getFlagValue("includeTraits")).thenReturn(true);
+
+        System.out.println("=== " + scenarioName + " ===");
+
+        // Act
+        GameSession updated = gameSessionHelper.updateToNextGameState(gameCode);
+
+        System.out.println("Updated game state: " + updated.getGameState());
+
+        // Assert
+        assertEquals(expectedFinalState, updated.getGameState(),
+                "Game should transition to " + expectedFinalState + " via NAVIGATE_WINNER from MAKE_OUTCOME_CHOICE_WINNER");
+    }
+
+    static Stream<Arguments> provideMakeOutcomeChoiceWinnerScenarios() {
+        return Stream.of(
+                Arguments.of(
+                        "Transitions to WRITE_EPILOGUES when no encounter at next position (round 2)",
+                        "HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json",
+                        GameState.WRITE_EPILOGUES
                 )
         );
     }

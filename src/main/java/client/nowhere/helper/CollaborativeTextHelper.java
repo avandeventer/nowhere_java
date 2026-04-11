@@ -953,7 +953,8 @@ public class CollaborativeTextHelper {
                         if (outcomeFork != null && outcomeFork.getRepercussions() != null) {
                             List<String> repercussionTypes = outcomeFork.getRepercussions()
                                     .stream().map(Repercussion::getRepercussionType).toList();
-                            if (repercussionTypes.stream().allMatch(t -> RepercussionType.ALL_PLAYERS.getName().equals(t))) {
+                            if (!repercussionTypes.isEmpty() 
+                                    && repercussionTypes.stream().allMatch(t -> RepercussionType.ALL_PLAYERS.getName().equals(t))) {
                                 story.setPlayerIds(gameSession.getPlayers().stream().map(Player::getAuthorId).toList());
                             }
                         }
@@ -1688,29 +1689,30 @@ public class CollaborativeTextHelper {
                 } else {
                     int offsetValue = gameSession.getPlayers().size() > 4 ? 1 : 2;
 
-                    // Distribute stories to player
-                    StoryDistributionContext ctx = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, true, offsetValue);
-
-                    // Get all encounter labels
+                    // Get encounter labels distributed to this player
                     List<EncounterLabel> allEncounterLabels = getEncounterLabels(gameCode);
                     List<EncounterLabel> assignedPlayerEncounterLabels = distributeEncounterLabels(playerId, gameSession, offsetValue, allEncounterLabels);
 
-                    // Get encounter label IDs used in stories (except the assigned one)
-                    Set<String> usedEncounterLabelIds = ctx.sortedStories().stream()
-                            .filter(story -> story.getEncounterLabel() != null)
+                    // Find visited (round-1) stories whose encounter label matches one assigned to this player
+                    Set<String> assignedLabelIds = assignedPlayerEncounterLabels.stream()
+                            .map(EncounterLabel::getEncounterId)
+                            .collect(Collectors.toSet());
+
+                    Story assignedStory = findAssignedPrequelStory(gameSession, assignedLabelIds);
+
+                    // Exclude encounter labels of visited stories that don't qualify as the assigned prequel
+                    Set<String> usedEncounterLabelIds = gameSession.getStories().stream()
+                            .filter(story -> story.isVisited()
+                                    && story.getEncounterLabel() != null
+                                    && assignedLabelIds.contains(story.getEncounterLabel().getEncounterId())
+                                    && (assignedStory == null || !story.getStoryId().equals(assignedStory.getStoryId())))
                             .map(story -> story.getEncounterLabel().getEncounterId())
                             .collect(Collectors.toSet());
-                    
-                    // Filter encounters: remove used ones, but keep the assigned one
+
                     List<EncounterLabel> availableEncounterLabels = assignedPlayerEncounterLabels.stream()
-                            .filter(label -> {
-                                String labelId = label.getEncounterId();
-                                return !usedEncounterLabelIds.contains(labelId);
-                            })
+                            .filter(label -> !usedEncounterLabelIds.contains(label.getEncounterId()))
                             .toList();
 
-                    Story assignedStory = determineAssignedStoryBasedOnRepercussions(ctx);
-                    // Build OutcomeType list from filtered encounters
                     return buildOutcomeTypesFromEncounters(availableEncounterLabels, assignedStory);
                 }
             } else if (phaseId == WHAT_CAN_WE_TRY) {
@@ -1827,31 +1829,28 @@ public class CollaborativeTextHelper {
         return encounterOutcomeType;
     }
 
-    private static @Nullable Story determineAssignedStoryBasedOnRepercussions(StoryDistributionContext ctx) {
-        List<OutcomeType> assignedStories = ctx.assignedStories();
+    private static @Nullable Story findAssignedPrequelStory(GameSession gameSession, Set<String> assignedLabelIds) {
+        List<Story> visitedStoriesAtPlayerEncounters = gameSession.getStories().stream()
+                .filter(story -> story.isVisited()
+                        && story.getEncounterLabel() != null
+                        && assignedLabelIds.contains(story.getEncounterLabel().getEncounterId()))
+                .toList();
 
-        Story assignedStory = null;
-        if (!assignedStories.isEmpty()) {
-            String assignedStoryId = assignedStories.getFirst().getId();
-            assignedStory = ctx.sortedStories().stream()
-                    .filter(story -> story.getStoryId().equals(assignedStoryId))
-                    .findFirst()
-                    .orElse(null);
+        return visitedStoriesAtPlayerEncounters.stream()
+                .filter(story -> !hasNonSpreadRepercussions(story))
+                .findFirst()
+                .orElse(null);
+    }
 
-            if (assignedStory != null) {
-                OutcomeFork selectedOutcomeFork = assignedStory.getSelectedOption().getSelectedOutcomeFork();
-                if(selectedOutcomeFork != null && selectedOutcomeFork.getRepercussions() != null) {
-                    List<Repercussion> nonSpreadOutcomes = selectedOutcomeFork
-                            .getRepercussions().stream().filter(repercussion ->
-                                    !repercussion.getRepercussionType().equals(RepercussionType.ALL_PLAYERS.getName())
-                            ).toList();
-                    if (!nonSpreadOutcomes.isEmpty()) {
-                        assignedStory = null;
-                    }
-                }
-            }
+    private static boolean hasNonSpreadRepercussions(Story story) {
+        OutcomeFork fork = story.getSelectedOption() != null
+                ? story.getSelectedOption().getSelectedOutcomeFork() : null;
+
+        if (fork == null || fork.getRepercussions() == null) {
+            return false;
         }
-        return assignedStory;
+        return fork.getRepercussions().stream()
+                .anyMatch(r -> !r.getRepercussionType().equals(RepercussionType.ALL_PLAYERS.getName()));
     }
 
     private static @NonNull List<OutcomeType> buildOutcomeTypesFromEncounters(List<EncounterLabel> availableEncounterLabels, Story assignedStory) {

@@ -1002,13 +1002,7 @@ public class CollaborativeTextHelperTest {
             if (expectedStoryIdByPlayerName.get(playerName).isEmpty()) {
                 System.out.println("  No outcome types returned");
                 if (gameState.equals(WHAT_HAPPENS_HERE)) {
-                    outcomeTypes.forEach(outcomeType ->
-                            assertTrue(
-                                CollaborativeTextHelper.getPreCannedEncounterLabels().contains(
-                                        outcomeType.getLabel()),
-                                playerName + " should have no expected story assignment"
-                            )
-                    );
+                    assertAllOutcomeTypesArePreCanned(outcomeTypes, playerName);
                 } else {
                     assertTrue(outcomeTypes.isEmpty(),
                             playerName + " should have no expected story assignment");
@@ -1036,6 +1030,13 @@ public class CollaborativeTextHelperTest {
                         assertTrue(actualStoryIds.contains(expectedId),
                                 playerName + " missing expected story ID '" + expectedId + "'. Actual IDs: " + actualStoryIds);
                     }
+
+                    if (expectedStoryIds.size() < 2 && gameState.equals(WHAT_HAPPENS_HERE)) {
+                        List<OutcomeType> unexpectedOutcomes = outcomeTypes.stream()
+                                .filter(o -> !expectedStoryIds.contains(o.getId()))
+                                .toList();
+                        assertAllOutcomeTypesArePreCanned(unexpectedOutcomes, playerName);
+                    }
                 }
 
                 List<String> expectedSubTypeLabels = expectedSubTypeLabelsByPlayerName.get(playerName);
@@ -1052,6 +1053,13 @@ public class CollaborativeTextHelperTest {
                 }
             }
         }
+    }
+
+    private void assertAllOutcomeTypesArePreCanned(List<OutcomeType> outcomeTypes, String playerName) {
+        List<String> preCannedLabels = CollaborativeTextHelper.getPreCannedEncounterLabels();
+        outcomeTypes.forEach(outcomeType ->
+                assertTrue(preCannedLabels.contains(outcomeType.getLabel()),
+                        playerName + " has unexpected non-pre-canned story (label: '" + outcomeType.getLabel() + "')"));
     }
 
     static Stream<Arguments> provideOutcomeTypeDistributionScenarios() {
@@ -1092,10 +1100,10 @@ public class CollaborativeTextHelperTest {
                         GameState.WHAT_HAPPENS_HERE,
                         // Round 1: Players get all encounter labels from one other player
                         Map.of(
-                                "Andy",    List.of("1d8a56a7-34b8-48a9-ad09-933f4190af86"), // encounter written by Byron
-                                "Joe",     List.of("ac69cefe-d2f8-4203-a046-20b2a25d1250"), // encounter written by Kirsten
+                                "Andy",    List.of("1d8a56a7-34b8-48a9-ad09-933f4190af86", "4172f20f-6f18-449b-aa36-7c6e91ed129c"), // encounters written by Byron
+                                "Joe",     List.of("ac69cefe-d2f8-4203-a046-20b2a25d1250", "24a38dde-3c6f-456a-8e12-4a8a4b12cf80"), // encounter written by Kirsten
                                 "Byron",   List.of("1b2c7a37-35a7-479e-bb23-b2d3c577cf36"), // encounter written by Andy
-                                "Kirsten", List.of("8f4b1306-aac6-454a-be85-a769f91a4250")  // encounter written by Joe
+                                "Kirsten", List.of("8f4b1306-aac6-454a-be85-a769f91a4250", "1536d22a-f0e5-4ec8-9985-3c5091449c62")  // encounter written by Joe
                         ),
                         Map.of()
                 ),
@@ -1105,9 +1113,9 @@ public class CollaborativeTextHelperTest {
                         GameState.WHAT_HAPPENS_HERE,
                         Map.of(
                                 "Andy", List.of("595ed596-1850-4fd3-8716-25e39ece5055"), // encounter written by Subodh?
-                                "Joe", List.of("93fc1c2b-c26d-4af9-87d4-58f183dc7881", "5ecaf9e8-bd35-4e95-854f-18591c9d9d47", "9d971bbe-4c5d-4b0d-aa9f-11913a147d47"), // encounter written by Kirsten
-                                "Subodh", new ArrayList<>(), // encounter written by Andy
-                                "Kirsten", List.of("5feb03e7-f0aa-4bc2-bf71-7d8beadab9c5", "7eb5eb57-a5a1-4d51-ba70-ebf571db5671")  // encounter written by Joe
+                                "Joe", List.of("93fc1c2b-c26d-4af9-87d4-58f183dc7881", "5ecaf9e8-bd35-4e95-854f-18591c9d9d47"), // encounter written by Kirsten
+                                "Subodh", List.of(), // encounter (not) written by Andy
+                                "Kirsten", List.of("5feb03e7-f0aa-4bc2-bf71-7d8beadab9c5", "9d971bbe-4c5d-4b0d-aa9f-11913a147d47")  // encounter written by Joe
                         ),
                         Map.of()
                 ),
@@ -1120,6 +1128,19 @@ public class CollaborativeTextHelperTest {
                                 "Parker", List.of(), // Kirsten did not finish writing her encounters so Parker should get default ones
                                 "Goni", List.of("c11e1c27-763f-4337-8257-57a2cf6dfc11", "9fd3bedf-3941-4a5d-b3e7-ce06ea3cba55", "6643bc0e-8da3-481d-b234-c52bdedf73e1"), // encounter written by Andy
                                 "Kirsten", List.of("c0d7c65c-a8fd-4add-aa1b-76277cdbb95c", "aa51d73f-4d2a-48b3-8f1d-dd3ba83554de", "4b378acb-6083-4470-8c88-7d841347aeba")  // encounter written by Parker?
+                        ),
+                        Map.of()
+                ),
+                Arguments.of(
+                        "WHAT_HAPPENS_HERE - Round 2, Sequel story should be distributed to original author and player",
+                        "HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json",
+                        WHAT_HAPPENS_HERE,
+                        Map.of(
+                                "Andy", List.of("8b3f0422-4b38-417f-88a5-56fb2e375d02", "8aa481ba-6a31-4b0b-943e-c76149b02606"), // encounter written by Goni?
+                                "Joe", List.of("5006a27c-0709-4a09-b13d-aa75bbbf5e4d"), // Kirsten did not finish writing her encounters so Parker should get default ones
+                                "Byron", List.of("76ac45b2-98e9-4918-ae69-9247abe74fca", "3111e23b-aaea-4ce2-965e-f31c6a02497e"), // encounter written by Andy
+                                "Kirsten", List.of(),  // encounter written by Parker?
+                                "Subodh", List.of("5430f947-10e8-4c21-b551-4ba823cfdcca", "4a6cc022-58e0-4276-9302-9ce909a08d5e")  // encounter written by Parker?
                         ),
                         Map.of()
                 )
