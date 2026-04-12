@@ -773,8 +773,12 @@ public class CollaborativeTextHelper {
     private Set<String> applyTraitToPlayers(Trait trait, List<Player> players) {
         Set<String> updatedPlayerIds = new HashSet<>();
         for (Player player : players) {
-            if (player.getTraits() == null) player.setTraits(new ArrayList<>());
-            player.getTraits().add(trait);
+            if (trait.getTraitType() == TraitType.TITLE) {
+                player.addTitle(trait.getTraitLabel());
+            } else {
+                if (player.getTraits() == null) player.setTraits(new ArrayList<>());
+                player.getTraits().add(trait);
+            }
             updatedPlayerIds.add(player.getAuthorId());
         }
         return updatedPlayerIds;
@@ -953,7 +957,7 @@ public class CollaborativeTextHelper {
                         if (outcomeFork != null && outcomeFork.getRepercussions() != null) {
                             List<String> repercussionTypes = outcomeFork.getRepercussions()
                                     .stream().map(Repercussion::getRepercussionType).toList();
-                            if (!repercussionTypes.isEmpty() 
+                            if (!repercussionTypes.isEmpty()
                                     && repercussionTypes.stream().allMatch(t -> RepercussionType.ALL_PLAYERS.getName().equals(t))) {
                                 story.setPlayerIds(gameSession.getPlayers().stream().map(Player::getAuthorId).toList());
                             }

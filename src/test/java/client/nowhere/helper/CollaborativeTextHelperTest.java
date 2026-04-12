@@ -701,6 +701,7 @@ public class CollaborativeTextHelperTest {
             int xCoordinate,
             String votedOptionId,
             Map<String, String> expectedTraitLabelByPlayerId,
+            Map<String, String> expectedTitleLabelByPlayerId,
             List<String> expectedOutcomeDisplayMessages
     ) throws IOException {
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
@@ -726,6 +727,20 @@ public class CollaborativeTextHelperTest {
                     p.getTraits().stream().anyMatch(t -> expectedLabel.equals(t.getTraitLabel()))
             ));
         }
+        for (Map.Entry<String, String> entry : expectedTitleLabelByPlayerId.entrySet()) {
+            String playerId = entry.getKey();
+            String expectedLabel = entry.getValue();
+            verify(gameSessionDAO).updatePlayer(argThat(p ->
+                    playerId.equals(p.getAuthorId()) &&
+                    p.getTitles() != null &&
+                    p.getTitles().contains(expectedLabel)
+            ));
+            Player updatedPlayer = gameSession.getPlayers().stream()
+                    .filter(p -> playerId.equals(p.getAuthorId()))
+                    .findFirst().orElseThrow();
+            assertTrue(updatedPlayer.getDisplayName().contains(expectedLabel),
+                    playerId + " displayName should contain title \"" + expectedLabel + "\". Actual: " + updatedPlayer.getDisplayName());
+        }
         if (!expectedOutcomeDisplayMessages.isEmpty()) {
             ArgumentCaptor<ActivePlayerSession> captor = ArgumentCaptor.forClass(ActivePlayerSession.class);
             verify(activeSessionDAO).update(captor.capture());
@@ -744,6 +759,7 @@ public class CollaborativeTextHelperTest {
                         0,
                         "7b7d3fee-e839-408d-836e-211dfbb1c34b",
                         Map.of("e8852f24-cdc8-465c-b244-56ce08029584", "Bear scritcher A"), // Joe
+                        Map.of(),
                         List.of("You gained the trait \"Bear scritcher A\"!")
                 ),
                 Arguments.of(
@@ -751,12 +767,14 @@ public class CollaborativeTextHelperTest {
                         1,
                         "8",
                         Map.of("63ca67f3-d11d-4cc8-a667-6b68a1bb432b", "Greedy A"), // Subodh
+                        Map.of(),
                         List.of("You gained the trait \"Greedy A\"!")
                 ),
                 Arguments.of(
                         "Snailz (2,0) - Race them - Kirsten gets title Snail Champion",
                         2,
                         "0e9339d9-3c0a-478a-93e0-a631e1ddede4",
+                        Map.of(),
                         Map.of("ddfc6892-16dd-4e38-9252-27a3688ae038", "Snail Champion"), // Kirsten
                         List.of("You gained the title \"Snail Champion\"!")
                 ),
@@ -764,8 +782,9 @@ public class CollaborativeTextHelperTest {
                         "Time Travelers (3,0) - use trait Alcoholic - 3 forks, no auto-resolve",
                         3,
                         "11",
-                        Map.of(), // No player updates at MAKE_CHOICE_VOTING stage
-                        List.of()  // No outcomeDisplay at this stage
+                        Map.of(),
+                        Map.of(),
+                        List.of()
                 )
         );
     }
@@ -777,6 +796,7 @@ public class CollaborativeTextHelperTest {
             String selectedOptionId,
             String votedSubmissionId,
             Map<String, List<String>> expectedTraitLabelByPlayerId,
+            Map<String, List<String>> expectedTitleLabelByPlayerId,
             List<String> expectedOutcomeDisplayMessages,
             boolean shouldUpdateStoryRepercussions,
             String fileName,
@@ -806,13 +826,27 @@ public class CollaborativeTextHelperTest {
 
         for (Map.Entry<String, List<String>> entry : expectedTraitLabelByPlayerId.entrySet()) {
             String playerId = entry.getKey();
-
             for (String label : entry.getValue()) {
                 verify(gameSessionDAO).updatePlayer(argThat(p ->
                         playerId.equals(p.getAuthorId()) &&
-                                p.getTraits() != null &&
-                                p.getTraits().stream().anyMatch(t -> label.equals(t.getTraitLabel()))
+                        p.getTraits() != null &&
+                        p.getTraits().stream().anyMatch(t -> label.equals(t.getTraitLabel()))
                 ));
+            }
+        }
+        for (Map.Entry<String, List<String>> entry : expectedTitleLabelByPlayerId.entrySet()) {
+            String playerId = entry.getKey();
+            for (String label : entry.getValue()) {
+                verify(gameSessionDAO).updatePlayer(argThat(p ->
+                        playerId.equals(p.getAuthorId()) &&
+                        p.getTitles() != null &&
+                        p.getTitles().contains(label)
+                ));
+                Player updatedPlayer = gameSession.getPlayers().stream()
+                        .filter(p -> playerId.equals(p.getAuthorId()))
+                        .findFirst().orElseThrow();
+                assertTrue(updatedPlayer.getDisplayName().contains(label),
+                        playerId + " displayName should contain title \"" + label + "\". Actual: " + updatedPlayer.getDisplayName());
             }
         }
         if (!expectedOutcomeDisplayMessages.isEmpty()) {
@@ -840,6 +874,7 @@ public class CollaborativeTextHelperTest {
                         "11",
                         "08ad7197-ee03-4241-87e9-6dc416bdbeaf",
                         Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", List.of("Recovering Alcoholic")), // Andy
+                        Map.of(),
                         List.of("You gained the trait \"Recovering Alcoholic\"!"),
                         false,
                         "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
@@ -849,6 +884,7 @@ public class CollaborativeTextHelperTest {
                         "Time Travelers (3,0) - option 11 - Fork: Future Sober D title → Andy",
                         "11",
                         "e9f00d95-c2d5-4cc5-9b2f-48db47384497",
+                        Map.of(),
                         Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", List.of("Future Sober D")), // Andy
                         List.of("You gained the title \"Future Sober D\"!"),
                         false,
@@ -859,7 +895,8 @@ public class CollaborativeTextHelperTest {
                         "Time Travelers (3,0) - option 11 - Fork: Spread only → encounter message, no player updates",
                         "11",
                         "a80ef30c-e3fb-4a6c-99fc-bc9a39684b05",
-                        Map.of(), // No player trait updates
+                        Map.of(),
+                        Map.of(),
                         List.of("If we encounter \"Time Travelers B\" again, we must all rise to the challenge together."),
                         true,
                         "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
@@ -871,6 +908,7 @@ public class CollaborativeTextHelperTest {
                         "8ff69655-42c9-48a7-aaf1-ac26f08cb3a9",
                         "fcb534df-b504-4d56-8375-041eed493387",
                         Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", List.of("At Peace A")), // Andy
+                        Map.of(),
                         List.of("You gained the trait \"At Peace A\"!"),
                         false,
                         "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
@@ -880,6 +918,7 @@ public class CollaborativeTextHelperTest {
                         "Time Travelers (3,0) - option Travel forward A - Fork: Last Human D title → Andy",
                         "8ff69655-42c9-48a7-aaf1-ac26f08cb3a9",
                         "11c21b3e-9122-4f82-b624-e2ebfe00a5ed",
+                        Map.of(),
                         Map.of("80569dbf-52d4-4169-b51f-d2977d2e94b0", List.of("Last Human D")), // Andy
                         List.of("You gained the title \"Last Human D\"!"),
                         false,
@@ -890,6 +929,7 @@ public class CollaborativeTextHelperTest {
                         "Time Travelers (3,0) - option Travel forward A - Fork: Last Human D title + Spread → all players",
                         "8ff69655-42c9-48a7-aaf1-ac26f08cb3a9",
                         "d69bd9df-9e33-4c1c-855a-49428b70448b",
+                        Map.of(),
                         Map.of(
                                 "80569dbf-52d4-4169-b51f-d2977d2e94b0", List.of("Last Human D"), // Andy (story player)
                                 "e8852f24-cdc8-465c-b244-56ce08029584", List.of("Last Human D"), // Joe (spread)
@@ -905,12 +945,11 @@ public class CollaborativeTextHelperTest {
                         new PlayerCoordinates(3, 0)
                 ),
                 Arguments.of(
-                        "Polyamory (6,0) - option Form a Harem - Fork: Last Human D title + Spread → all players",
+                        "Polyamory (6,0) - option Form a Harem - Fork: Man Fruit Lover title + Fruit basket trait",
                         "76792952-31c5-443e-805a-c69279ae3b1b",
                         "b59673da-137f-4b81-8dc6-f816d2a9bf47",
-                        Map.of(
-                               "3f8e49dc-37d2-4bdf-b278-17fe6a472e8e", List.of("Man Fruit Lover", "Fruit basket")
-                        ),
+                        Map.of("3f8e49dc-37d2-4bdf-b278-17fe6a472e8e", List.of("Fruit basket")),
+                        Map.of("3f8e49dc-37d2-4bdf-b278-17fe6a472e8e", List.of("Man Fruit Lover")),
                         List.of(
                                 "You gained the trait \"Fruit basket\"!",
                                 "You gained the title \"Man Fruit Lover\"!"

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class Player {
 
@@ -20,6 +19,7 @@ public class Player {
     private int favor = 4;
     private List<PlayerStat> playerStats;
     private List<Trait> traits;
+    private List<String> titles;
     private String gameCode;
     private boolean isFirstPlayer = false;
     private Date joinedAt;
@@ -165,6 +165,19 @@ public class Player {
         this.traits = traits;
     }
 
+    public List<String> getTitles() {
+        return titles;
+    }
+
+    public void setTitles(List<String> titles) {
+        this.titles = titles;
+    }
+
+    public void addTitle(String title) {
+        if (this.titles == null) this.titles = new ArrayList<>();
+        this.titles.add(title);
+    }
+
     public void updatePlayer(Player player) {
         if (player.getUserName() != null && !player.getUserName().isEmpty()) {
             this.setUserName(player.getUserName());
@@ -178,20 +191,13 @@ public class Player {
         this.setFavor(player.getFavor());
         this.setPlayerStats(player.getPlayerStats());
         this.setTraits(player.getTraits());
+        this.setTitles(player.getTitles());
         this.setPlayerClass(player.getPlayerClass());
     }
 
     public String getDisplayName() {
-        if (traits != null && !traits.isEmpty()) {
-            List<Trait> titleTraits = traits.stream().filter(trait ->
-                    trait.getTraitType() != null
-                    && trait.getTraitType().equals(TraitType.TITLE)).toList();
-            if (!titleTraits.isEmpty()) {
-                String totalTitle = titleTraits.stream()
-                        .map(Trait::getTraitLabel)
-                        .collect(Collectors.joining(", "));
-                return userName + ", " + totalTitle;
-            }
+        if (titles != null && !titles.isEmpty()) {
+            return userName + ", " + String.join(", ", titles);
         }
         return userName;
     }
