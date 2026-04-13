@@ -30,6 +30,13 @@ public enum RepercussionType {
             "Trigger sequel",
             "This outcome sets up a sequel",
             "#388e3c"
+    ),
+    COMPANION(
+            "Encounter Becomes Your Companion",
+            "",
+            "Encountered entity joins you",
+            "Player will receive this Encounter as a Trait",
+            "#24bf86"
     );
 
     @Getter

@@ -9,6 +9,9 @@ public enum TraitType {
     ),
     TITLE (
             "Title"
+    ),
+    COMPANION (
+            "Companion"
     );
 
     @Getter

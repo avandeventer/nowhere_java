@@ -24,6 +24,8 @@ public class Trait {
         this.traitLabel = repercussion.getRepercussionSubmission();
         if (repercussion.getRepercussionType().equals(RepercussionType.TITLE.getName())) {
             this.traitType = TraitType.TITLE;
+        } else if (repercussion.getRepercussionType().equals(RepercussionType.COMPANION.getName())) {
+            this.traitType = TraitType.COMPANION;
         } else {
             this.traitType = TraitType.STANDARD;
         }

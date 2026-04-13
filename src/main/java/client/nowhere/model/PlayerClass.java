@@ -17,6 +17,11 @@ public enum PlayerClass {
             "Scribe",
             "Your fondness for recording the histories of other adventurers allows you to add Traits to other players",
             List.of(RepercussionType.TRAIT)
+    ),
+    Fabulist(
+            "Fabulist",
+            "Your penchant for writing fables allows you to convert Encounters players may have into Traits that stay with them",
+            List.of(RepercussionType.COMPANION)
     );
 
     public final String name;

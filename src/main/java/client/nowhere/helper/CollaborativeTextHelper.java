@@ -680,13 +680,19 @@ public class CollaborativeTextHelper {
         AdventureMap adventureMap = gameSession.getAdventureMap();
         List<String> outcomeDisplay = new ArrayList<>();
 
-        List<Trait> newTraits = repercussions.stream()
+        List<Trait> newTraits = new ArrayList<>(repercussions.stream()
                 .filter(a -> (
                         RepercussionType.TRAIT.getName().equals(a.getRepercussionType())
                         || RepercussionType.TITLE.getName().equals(a.getRepercussionType())
                 ))
                 .map(Trait::new)
-                .toList();
+                .toList());
+
+        if (!repercussions.isEmpty()
+            && repercussions.stream().anyMatch(
+                    a -> RepercussionType.COMPANION.getName().equals(a.getRepercussionType()))) {
+            newTraits.add(new Trait(story.getEncounterLabel().getEncounterLabel(), TraitType.COMPANION));
+        }
 
         Set<String> updatedPlayerIds = new HashSet<>();
 

@@ -1013,6 +1013,19 @@
                       "repercussionSubmission": "Snail Champion",
                       "color": "#f57c00"
                     }
+                  },
+                  {
+                    "additionId": "",
+                    "authorId": "80569dbf-52d4-4169-b51f-d2977d2e94b0",
+                    "addedText": "The snail joins your team! C",
+                    "submissionId": "b10eef3d-30ed-4bf5-bd03-d7a59b9c59f1",
+                    "outcomeType": null,
+                    "outcomeTypeWithLabel": null,
+                    "repercussion": {
+                      "repercussionType": "Encounter Becomes Your Companion",
+                      "repercussionSubmission": "",
+                      "color": "#24bf86"
+                    }
                   }
                 ],
                 "totalVotes": 0,
@@ -3967,6 +3980,19 @@
                 "repercussionType": "Title",
                 "repercussionSubmission": "Snail Champion",
                 "color": "#f57c00"
+              }
+            },
+            {
+              "additionId": "",
+              "authorId": "80569dbf-52d4-4169-b51f-d2977d2e94b0",
+              "addedText": "The snail joins your team! C",
+              "submissionId": "b10eef3d-30ed-4bf5-bd03-d7a59b9c59f1",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null,
+              "repercussion": {
+                "repercussionType": "Encounter Becomes Your Companion",
+                "repercussionSubmission": "",
+                "color": "#24bf86"
               }
             }
           ],
