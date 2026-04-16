@@ -77,10 +77,6 @@ public class CollaborativeTextHelper {
             newSubmission = createBranchedSubmission(gameSession, textAddition, phaseId);
         } else {
             newSubmission = createNewSubmission(textAddition, gameSession);
-            
-//            if (phaseId.equals(GameState.HOW_DOES_THIS_RESOLVE.name())) {
-//                createOptionFromOutcomeType(gameCode, textAddition);
-//            }
         }
 
         return collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, newSubmission);
@@ -138,6 +134,10 @@ public class CollaborativeTextHelper {
             }
             case GameState.HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> {
                 return phase.getSubmissionsWithoutParentSubmissions();
+            }
+            case GameState.LOCATION_VOTING -> {
+                // Each player's vote is their own winner — return all submissions
+                return new ArrayList<>(phase.getSubmissions());
             }
             default -> {
                 return calculateWinnersFromAdditions(phase, gameSession.getGameState(), gameSession.getRoundNumber());
@@ -597,7 +597,7 @@ public class CollaborativeTextHelper {
                     }
                 }
                 case GameState.SET_ENCOUNTERS -> addAllSubmissionsToAdventureMap(gameCode, winningSubmissions);
-                case GameState.SET_TRAITS -> addAllTraitsToAdventureMap(gameCode, winningSubmissions);
+                case GameState.LOCATION_VOTING -> handleLocationVoting(gameSession);
                 case GameState.WHAT_HAPPENS_HERE -> handleWhatHappensHereStreamlined(gameSession, winningSubmissions);
                 case GameState.HOW_DOES_THIS_RESOLVE, GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> handleHowDoesThisResolve(gameSession, winningSubmissions);
                 case GameState.MAKE_CHOICE_VOTING -> handleMakeChoice(gameSession, winningSubmissions);
@@ -811,12 +811,19 @@ public class CollaborativeTextHelper {
             }
 
             // Create EncounterLabels for all submissions
+            boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
             List<EncounterLabel> encounterLabels = new ArrayList<>();
             for (TextSubmission submission : winningSubmissions) {
                 EncounterLabel label = new EncounterLabel(
                     submission.getCurrentText(),
                     submission
                 );
+                if (locationVoting
+                        && submission.getOutcomeTypeWithLabel() != null
+                        && submission.getOutcomeTypeWithLabel().getId() != null
+                        && !submission.getOutcomeTypeWithLabel().getId().isEmpty()) {
+                    label.setLocationId(submission.getOutcomeTypeWithLabel().getId());
+                }
                 encounterLabels.add(label);
             }
             adventureMap.getEncounterLabels().addAll(encounterLabels);
@@ -832,67 +839,77 @@ public class CollaborativeTextHelper {
     }
 
     /**
-     * Adds all submissions to AdventureMap as Traits (for SET_TRAITS phase)
+     * Pre-populates the LOCATION_VOTING phase with one TextSubmission per top-3 location by encounter count.
+     * Should be called when entering LOCATION_VOTING game state.
      */
-    private void addAllTraitsToAdventureMap(String gameCode, List<TextSubmission> winningSubmissions) {
+    public void initializeLocationVoting(String gameCode) {
         try {
-            if (winningSubmissions.isEmpty()) {
+            GameSession gameSession = getGameSession(gameCode);
+            AdventureMap adventureMap = gameSession.getAdventureMap();
+            if (adventureMap == null || adventureMap.getLocations() == null || adventureMap.getLocations().isEmpty()) {
                 return;
             }
 
-            GameSession gameSession = getGameSession(gameCode);
-            AdventureMap adventureMap = gameSession.getAdventureMap();
-            if (adventureMap == null) {
-                adventureMap = new AdventureMap();
-                gameSession.setAdventureMap(adventureMap);
-            }
+            List<EncounterLabel> encounterLabels = adventureMap.getEncounterLabels() != null
+                    ? adventureMap.getEncounterLabels() : new ArrayList<>();
 
-            if (adventureMap.getTraits() == null) {
-                adventureMap.setTraits(new ArrayList<>());
-            }
+            Map<String, Long> countByLocation = encounterLabels.stream()
+                    .filter(el -> el.getLocationId() != null && !el.getLocationId().isEmpty())
+                    .collect(Collectors.groupingBy(EncounterLabel::getLocationId, Collectors.counting()));
 
-            // Create Traits for all submissions
-            List<Trait> traits = new ArrayList<>();
-            for (TextSubmission submission : winningSubmissions) {
-                Trait trait = new Trait(
-                    submission.getCurrentText(),
-                    submission
-                );
-                traits.add(trait);
-            }
-            adventureMap.getTraits().addAll(traits);
+            List<Location> topLocations = adventureMap.getLocations().stream()
+                    .filter(loc -> countByLocation.getOrDefault(loc.getId(), 0L) > 0)
+                    .sorted(Comparator.comparingLong((Location loc) -> countByLocation.getOrDefault(loc.getId(), 0L)).reversed())
+                    .limit(3)
+                    .toList();
 
-            // Update AdventureMap in Firestore
-            gameSession.setAdventureMap(adventureMap);
-            adventureMapDAO.updateGameSessionAdventureMap(gameSession.getGameCode(), adventureMap);
+            String phaseId = GameState.LOCATION_VOTING.name();
+            for (Location location : topLocations) {
+                TextSubmission submission = new TextSubmission();
+                submission.setSubmissionId(location.getId());
+                submission.setCurrentText(location.getLabel());
+                submission.setOutcomeType(location.getIconDirectory());
+                submission.setCreatedAt(Timestamp.now());
+                submission.setLastModified(Timestamp.now());
+                collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+            }
         } catch (Exception e) {
-            System.err.println("Failed to add traits to AdventureMap: " + e.getMessage());
+            System.err.println("Failed to initialize LOCATION_VOTING phase: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     /**
-     * Initializes the NAVIGATE_VOTING phase with four directional submissions (NORTH, SOUTH, EAST, WEST)
+     * Sets each player's selectedLocationId from their individual vote in the LOCATION_VOTING phase.
+     * The vote's submissionId = the locationId the player chose.
      */
-    private void initializeNavigateVotingPhase(String gameCode) {
+    private void handleLocationVoting(GameSession gameSession) {
         try {
-            String phaseId = GameState.NAVIGATE_VOTING.name();
-            String[] directions = {"NORTH", "SOUTH", "EAST", "WEST"};
+            String gameCode = gameSession.getGameCode();
+            CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(
+                    gameCode, GameState.LOCATION_VOTING.name());
+            if (phase == null || phase.getPlayerVotes() == null) return;
 
-            for (String direction : directions) {
-                TextSubmission submission = new TextSubmission();
-                submission.setSubmissionId(direction);
-                submission.setOriginalText("");
-                submission.setCurrentText(direction);
-                submission.setCreatedAt(Timestamp.now());
-                submission.setLastModified(Timestamp.now());
-                submission.setOutcomeType(direction);
+            for (Map.Entry<String, List<PlayerVote>> entry : phase.getPlayerVotes().entrySet()) {
+                String playerId = entry.getKey();
+                List<PlayerVote> votes = entry.getValue();
+                if (votes == null || votes.isEmpty()) continue;
 
-                // Add the submission to the phase atomically
-                collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+                // Each player casts exactly one vote; its submissionId = locationId
+                String locationId = votes.getFirst().getSubmissionId();
+                if (locationId == null || locationId.isEmpty()) continue;
+
+                gameSession.getPlayers().stream()
+                        .filter(p -> p.getAuthorId().equals(playerId))
+                        .findFirst()
+                        .ifPresent(player -> {
+                            player.setSelectedLocationId(locationId);
+                            player.setGameCode(gameCode);
+                            gameSessionDAO.updatePlayer(player);
+                        });
             }
         } catch (Exception e) {
-            System.err.println("Failed to initialize NAVIGATE_VOTING phase: " + e.getMessage());
+            System.err.println("Failed to handle LOCATION_VOTING: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -928,6 +945,21 @@ public class CollaborativeTextHelper {
 
             int currentX = playerCoords.getxCoordinate();
             int y = playerCoords.getyCoordinate();
+
+            // When locationVoting is on, group same-location encounters adjacent to each other
+            boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
+            if (locationVoting && adventureMap.getEncounterLabels() != null) {
+                Map<String, String> encounterIdToLocationId = adventureMap.getEncounterLabels().stream()
+                        .filter(el -> el.getLocationId() != null && !el.getLocationId().isEmpty())
+                        .collect(Collectors.toMap(EncounterLabel::getEncounterId, EncounterLabel::getLocationId, (a, b) -> a));
+                winningSubmissions = winningSubmissions.stream()
+                        .sorted(Comparator.comparing(sub -> {
+                            String encounterId = sub.getOutcomeTypeWithLabel() != null
+                                    ? sub.getOutcomeTypeWithLabel().getId() : "";
+                            return encounterIdToLocationId.getOrDefault(encounterId, "");
+                        }))
+                        .collect(Collectors.toList());
+            }
 
             Map<String, PlayerSortResult> playersAssignedForDistribution = new HashMap<>();
             for (Player player: gameSession.getPlayers()) {
@@ -1690,9 +1722,26 @@ public class CollaborativeTextHelper {
             GameSession gameSession = getGameSession(gameCode);
             GameState phaseId = gameSession.getGameState().getPhaseId();
 
-            if (phaseId == GameState.WHAT_HAPPENS_HERE) {
+            if (phaseId == GameState.SET_ENCOUNTERS) {
+                boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
+                if (!locationVoting) return new ArrayList<>();
+                AdventureMap adventureMap = gameSession.getAdventureMap();
+                if (adventureMap == null || adventureMap.getLocations() == null || adventureMap.getLocations().isEmpty()) {
+                    return new ArrayList<>();
+                }
+                List<Location> locations = new ArrayList<>(adventureMap.getLocations());
+                Collections.shuffle(locations);
+                return locations.subList(0, Math.min(2, locations.size())).stream()
+                        .map(loc -> new OutcomeType(loc.getId(), loc.getLabel()))
+                        .collect(Collectors.toList());
+            } else if (phaseId == GameState.WHAT_HAPPENS_HERE) {
                 if (gameSession.getRoundNumber() == 1) {
                     List<EncounterLabel> encounterLabels = getEncounterLabels(gameCode);
+                    boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
+                    if (locationVoting) {
+                        return buildOutcomeTypesFromEncounters(
+                                distributeEncounterLabelsByLocation(playerId, gameSession, encounterLabels), null);
+                    }
                     int offsetValue = gameSession.getPlayers().size() > 4 ? 1 : 2;
                     List<EncounterLabel> playerAssignedEncounterLabels = distributeEncounterLabels(playerId, gameSession, offsetValue, encounterLabels);
                     return buildOutcomeTypesFromEncounters(playerAssignedEncounterLabels, null);
@@ -1701,7 +1750,35 @@ public class CollaborativeTextHelper {
 
                     // Get encounter labels distributed to this player
                     List<EncounterLabel> allEncounterLabels = getEncounterLabels(gameCode);
-                    List<EncounterLabel> assignedPlayerEncounterLabels = distributeEncounterLabels(playerId, gameSession, offsetValue, allEncounterLabels);
+                    boolean locationVotingRound2 = featureFlagHelper.getFlagValue("locationVoting");
+                    List<EncounterLabel> assignedPlayerEncounterLabels = locationVotingRound2
+                            ? distributeEncounterLabelsByLocation(playerId, gameSession, allEncounterLabels)
+                            : distributeEncounterLabels(playerId, gameSession, offsetValue, allEncounterLabels);
+
+                    if (locationVotingRound2) {
+                        // Find visited stories authored by this player that are eligible for a sequel,
+                        // regardless of which location they belong to
+                        Story prequelStory = gameSession.getStories().stream()
+                                .filter(story -> story.isVisited()
+                                        && story.getEncounterLabel() != null
+                                        && playerId.equals(story.getAuthorId())
+                                        && !hasNonSpreadRepercussions(story))
+                                .findFirst()
+                                .orElse(null);
+
+                        // Merge: location-assigned labels + the prequel's encounterLabel (if not already included)
+                        List<EncounterLabel> mergedLabels = new ArrayList<>(assignedPlayerEncounterLabels);
+                        if (prequelStory != null) {
+                            EncounterLabel prequelLabel = prequelStory.getEncounterLabel();
+                            boolean alreadyIncluded = mergedLabels.stream()
+                                    .anyMatch(el -> el.getEncounterId().equals(prequelLabel.getEncounterId()));
+                            if (!alreadyIncluded) {
+                                mergedLabels.add(prequelLabel);
+                            }
+                        }
+
+                        return buildOutcomeTypesFromEncounters(mergedLabels, prequelStory);
+                    }
 
                     // Find visited (round-1) stories whose encounter label matches one assigned to this player
                     Set<String> assignedLabelIds = assignedPlayerEncounterLabels.stream()
@@ -1893,6 +1970,55 @@ public class CollaborativeTextHelper {
         return encounterLabels.stream()
                 .filter(encounterLabel -> encounterLabel.getTextSubmission()
                         .getAuthorId().equals(playerSortResult.getAssignedAuthor().getAuthorId())).toList();
+    }
+
+    /**
+     * Distributes encounter labels to a player based on the location chosen by their offset-assigned player.
+     * Uses getPlayerAssignment to identify which player this author is writing for, then filters labels
+     * to that player's selectedLocationId. Among all players assigned to write about the same location,
+     * distributes by rank (sorted by joinedAt) modulo the number of labels at that location.
+     */
+    private static @NonNull List<EncounterLabel> distributeEncounterLabelsByLocation(
+            String playerId, GameSession gameSession, List<EncounterLabel> allEncounterLabels) {
+
+        int offsetValue = gameSession.getPlayers().size() > 4 ? 1 : 2;
+        PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, playerId, offsetValue);
+        Player assignedPlayer = playerSortResult.getAssignedAuthor();
+
+        if (assignedPlayer.getSelectedLocationId() == null || assignedPlayer.getSelectedLocationId().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        String locationId = assignedPlayer.getSelectedLocationId();
+
+        // Encounter labels at the assigned player's location, sorted by encounterId for consistent ordering
+        List<EncounterLabel> locationLabels = allEncounterLabels.stream()
+                .filter(el -> locationId.equals(el.getLocationId()))
+                .sorted(Comparator.comparing(EncounterLabel::getEncounterId))
+                .toList();
+
+        if (locationLabels.isEmpty()) return new ArrayList<>();
+
+        // Players writing about this location = those whose offset-assigned player chose locationId
+        List<Player> sortedPlayers = playerSortResult.getSortedPlayers();
+        List<Player> playersWritingAboutLocation = sortedPlayers.stream()
+                .filter(p -> {
+                    PlayerSortResult pResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, p.getAuthorId(), offsetValue);
+                    return locationId.equals(pResult.getAssignedAuthor().getSelectedLocationId());
+                })
+                .toList();
+
+        int playerRank = -1;
+        for (int i = 0; i < playersWritingAboutLocation.size(); i++) {
+            if (playersWritingAboutLocation.get(i).getAuthorId().equals(playerId)) {
+                playerRank = i;
+                break;
+            }
+        }
+        if (playerRank == -1) return new ArrayList<>();
+
+        int labelIndex = playerRank % locationLabels.size();
+        return List.of(locationLabels.get(labelIndex));
     }
 
     private List<OutcomeType> buildTraitSubTypes(StoryDistributionContext storyContext, String assignedStoryId, GameSession gameSession) {

@@ -25,9 +25,13 @@ public class Player {
     private Date joinedAt;
 
     private PlayerClassOption playerClass;
+    private String selectedLocationId;
 
     public PlayerClassOption getPlayerClass() { return playerClass; }
     public void setPlayerClass(PlayerClassOption playerClass) { this.playerClass = playerClass; }
+
+    public String getSelectedLocationId() { return selectedLocationId; }
+    public void setSelectedLocationId(String selectedLocationId) { this.selectedLocationId = selectedLocationId; }
 
     public Player() { }
 
@@ -193,6 +197,9 @@ public class Player {
         this.setTraits(player.getTraits());
         this.setTitles(player.getTitles());
         this.setPlayerClass(player.getPlayerClass());
+        if (player.getSelectedLocationId() != null) {
+            this.setSelectedLocationId(player.getSelectedLocationId());
+        }
     }
 
     public String getDisplayName() {

@@ -6,6 +6,7 @@ public class EncounterLabel {
     public String encounterId;
     public String encounterLabel;
     public TextSubmission textSubmission;
+    public String locationId;
 
     public EncounterLabel() {
         this.encounterId = UUID.randomUUID().toString();
@@ -39,5 +40,13 @@ public class EncounterLabel {
 
     public TextSubmission getTextSubmission() {
         return textSubmission;
+    }
+
+    public String getLocationId() {
+        return locationId;
+    }
+
+    public void setLocationId(String locationId) {
+        this.locationId = locationId;
     }
 }

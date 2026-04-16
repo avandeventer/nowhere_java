@@ -80,8 +80,8 @@ public class GameSession {
         this.gameState = gameState;
     }
 
-    public void setGameStateToNext(boolean includeTraits) {
-        this.gameState = this.gameState.getNextGameState(this.gameMode, includeTraits);
+    public void setGameStateToNext(boolean locationVoting) {
+        this.gameState = this.gameState.getNextGameState(this.gameMode, locationVoting);
     }
 
     public void setGameStateToNext() {

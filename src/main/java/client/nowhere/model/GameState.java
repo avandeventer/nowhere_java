@@ -50,9 +50,6 @@ public enum GameState {
         SET_ENCOUNTERS,
         SET_ENCOUNTERS_VOTING,
         SET_ENCOUNTERS_WINNERS,
-        SET_TRAITS,
-        SET_TRAITS_WINNERS,
-        WHO_ARE_YOU,
         WHAT_HAPPENS_HERE,
         WHAT_HAPPENS_HERE_VOTING,
         WHAT_HAPPENS_HERE_WINNER,
@@ -77,17 +74,19 @@ public enum GameState {
         CAMPFIRE,
         CAMPFIRE_WINNERS,
         EPILOGUE_PREAMBLE,
-        LOCATION_SELECT_COLLABORATIVE;
+        LOCATION_SELECT_COLLABORATIVE,
+        LOCATION_VOTING,
+        LOCATION_WINNING;
 
-        public GameState getNextGameState(GameMode gameMode, boolean includeTraits) {
+        public GameState getNextGameState(GameMode gameMode, boolean locationVoting) {
             if (gameMode == GameMode.TOWN_MODE) {
                 return getNextGameStateTownMode();
             } else {
-                return getNextGameStateDungeonMode(includeTraits);
+                return getNextGameStateDungeonMode(locationVoting);
             }
         }
 
-    private GameState getNextGameStateDungeonMode(boolean includeTraits) {
+    private GameState getNextGameStateDungeonMode(boolean locationVoting) {
         switch (this) {
             case INIT -> {
                 return GameState.PREAMBLE;
@@ -99,17 +98,15 @@ public enum GameState {
                 return GameState.SET_ENCOUNTERS_WINNERS;
             }
             case SET_ENCOUNTERS_WINNERS -> {
-//                if (includeTraits) {
-//                    return SET_TRAITS;
-//                }
+                return locationVoting ? GameState.LOCATION_VOTING : GameState.WHAT_HAPPENS_HERE;
+            }
+            case LOCATION_VOTING -> {
+                return GameState.LOCATION_WINNING;
+            }
+            case LOCATION_WINNING -> {
                 return GameState.WHAT_HAPPENS_HERE;
-            } case SET_TRAITS -> {
-                return SET_TRAITS_WINNERS;
-            } case SET_TRAITS_WINNERS -> {
-                return WHO_ARE_YOU;
-            } case WHO_ARE_YOU -> {
-                return WHAT_HAPPENS_HERE;
-            } case GameState.WHAT_HAPPENS_HERE ->  {
+            }
+            case GameState.WHAT_HAPPENS_HERE ->  {
                 return GameState.WHAT_HAPPENS_HERE_WINNER;
             } case GameState.WHAT_HAPPENS_HERE_WINNER -> {
                 return GameState.WHAT_CAN_WE_TRY;
@@ -124,14 +121,7 @@ public enum GameState {
             } case GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> {
                 return GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN;
             } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> {
-//                if (includeTraits) {
-//                    return GameState.WHAT_DOES_IT_MEAN;
-//                }
                 return GameState.MAKE_CHOICE_VOTING;
-            } case GameState.WHAT_DOES_IT_MEAN -> {
-                return WHAT_DOES_IT_MEAN_WINNERS;
-            } case GameState.WHAT_DOES_IT_MEAN_WINNERS -> {
-                return MAKE_CHOICE_VOTING;
             }
             case MAKE_CHOICE_VOTING -> {
                 return GameState.MAKE_CHOICE_WINNER;
@@ -312,17 +302,15 @@ public enum GameState {
                         case WHAT_ARE_WE_CAPABLE_OF, WHAT_ARE_WE_CAPABLE_OF_VOTE, WHAT_ARE_WE_CAPABLE_OF_VOTE_WINNERS -> WHAT_ARE_WE_CAPABLE_OF;
                         case WHAT_WILL_BECOME_OF_US, WHAT_WILL_BECOME_OF_US_VOTE, WHAT_WILL_BECOME_OF_US_VOTE_WINNER -> WHAT_WILL_BECOME_OF_US;
                         case SET_ENCOUNTERS, SET_ENCOUNTERS_VOTING, SET_ENCOUNTERS_WINNERS -> SET_ENCOUNTERS;
-                        case SET_TRAITS, SET_TRAITS_WINNERS -> SET_TRAITS;
-                        case WHO_ARE_YOU -> WHO_ARE_YOU;
                         case WHAT_HAPPENS_HERE, WHAT_HAPPENS_HERE_VOTING, WHAT_HAPPENS_HERE_WINNER -> WHAT_HAPPENS_HERE;
                         case WHAT_CAN_WE_TRY, WHAT_CAN_WE_TRY_VOTING, WHAT_CAN_WE_TRY_WINNERS -> WHAT_CAN_WE_TRY;
                         case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNERS -> HOW_DOES_THIS_RESOLVE;
                         case HOW_DOES_THIS_RESOLVE_AGAIN, HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> HOW_DOES_THIS_RESOLVE_AGAIN;
-                        case WHAT_DOES_IT_MEAN, WHAT_DOES_IT_MEAN_WINNERS -> WHAT_DOES_IT_MEAN;
                         case MAKE_CHOICE_VOTING, MAKE_CHOICE_WINNER -> MAKE_CHOICE_VOTING;
                         case MAKE_OUTCOME_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_WINNER ->  MAKE_OUTCOME_CHOICE_VOTING;
                         case NAVIGATE_VOTING, NAVIGATE_WINNER -> NAVIGATE_VOTING;
                         case WRITE_EPILOGUES, WRITE_EPILOGUES_WINNER -> WRITE_EPILOGUES;
+                        case LOCATION_VOTING, LOCATION_WINNING -> LOCATION_VOTING;
                         case CAMPFIRE, CAMPFIRE_WINNERS -> CAMPFIRE;
                         default -> null;
                 };
@@ -425,28 +413,6 @@ public enum GameState {
                                 false
                         );
                 }
-                if (phaseId == SET_TRAITS) {
-                    return new PhaseBaseInfo(
-                            "What can we become here?",
-                            "Name some traits that we might gain on our adventure through this place",
-                            CollaborativeMode.RAPID_FIRE,
-                            SET_TRAITS,
-                            null,
-                            SET_TRAITS_WINNERS,
-                            false
-                    );
-                }
-                if (phaseId == WHO_ARE_YOU) {
-                    return new PhaseBaseInfo(
-                            "Who are we?",
-                            "Decide who you are! Choose a class and some traits that represent your character",
-                            CollaborativeMode.PLAYER_CONTENT,
-                            WHO_ARE_YOU,
-                            null,
-                            null,
-                            false
-                    );
-                }
                 if (phaseId == WHAT_HAPPENS_HERE) {
                         return new PhaseBaseInfo(
                                 "What happens here?",
@@ -536,6 +502,17 @@ public enum GameState {
                             null,
                             MAKE_OUTCOME_CHOICE_VOTING,
                             MAKE_OUTCOME_CHOICE_WINNER,
+                            false
+                    );
+                }
+                if (phaseId == LOCATION_VOTING) {
+                    return new PhaseBaseInfo(
+                            "Where will our adventure take us?",
+                            "Choose a location to explore!",
+                            CollaborativeMode.SHARE_TEXT,
+                            null,
+                            LOCATION_VOTING,
+                            LOCATION_WINNING,
                             false
                     );
                 }

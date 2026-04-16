@@ -65,19 +65,20 @@ public class GameSessionHelper {
 
     public GameSession updateToNextGameState(String gameCode) {
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
-        boolean includeTraits = featureFlagHelper.getFlagValue("includeTraits");
-        if (includeTraits && gameSession.getGameState().equals(INIT)) {
+        if (gameSession.getGameState().equals(INIT)) {
             if (!gameSession.areAllPlayersDone()) {
                 throw new GameStateException("Some players are still working on their character!");
             }
         }
-        gameSession.setGameStateToNext(includeTraits);
+
+        boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
+        gameSession.setGameStateToNext(locationVoting);
         return updateGameSession(gameSession, false);
     }
 
     public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
         GameSession existingSession = gameSessionDAO.getGame(gameSession.getGameCode());
-        boolean includeTraits = featureFlagHelper.getFlagValue("includeTraits");
+        boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
 
         if(existingSession.getGameState().equals(gameSession.getGameState())) {
             return existingSession;
@@ -106,7 +107,7 @@ public class GameSessionHelper {
             if (gameSession.getGameState().equals(phaseBaseInfo.winningState()) && !gameSession.getGameState().equals(NAVIGATE_WINNER)) {
                 collaborativeTextHelper.calculateWinningSubmission(gameSession);
                 if (!gameSession.getGameState().equals(MAKE_OUTCOME_CHOICE_WINNER)) {
-                    gameSession.setGameStateToNext(includeTraits);
+                    gameSession.setGameStateToNext(locationVoting);
                 }
             }
 
@@ -232,8 +233,11 @@ public class GameSessionHelper {
                     break;
                 case MAKE_OUTCOME_CHOICE_VOTING:
                     if(collaborativeTextHelper.getMakeChoiceVotingOutcomeForks(gameSession).size() < 2) {
-                        gameSession.setGameStateToNext(includeTraits);
+                        gameSession.setGameStateToNext(locationVoting);
                     }
+                    break;
+                case LOCATION_VOTING:
+                    collaborativeTextHelper.initializeLocationVoting(gameSession.getGameCode());
                     break;
                 case NAVIGATE_WINNER:
                     boolean encounterAtNext = collaborativeTextHelper.handleNavigationStreamlined(gameSession.getGameCode());

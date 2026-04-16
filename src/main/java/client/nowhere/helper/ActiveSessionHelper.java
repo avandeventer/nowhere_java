@@ -33,7 +33,7 @@ public class ActiveSessionHelper {
     public void update(String gameCode, GameState gamePhase, String authorId, boolean isDone) {
         boolean gameProgressionNeeded = this.activeSessionDAO.update(gameCode, gamePhase, authorId, isDone);
         
-        if (gameProgressionNeeded && !(featureFlagHelper.getFlagValue("includeTraits") && gamePhase.equals(GameState.INIT))) {
+        if (gameProgressionNeeded && !gamePhase.equals(GameState.INIT)) {
             System.out.println("All players are done, progressing game state via GameSessionHelper");
             this.gameSessionHelper.updateToNextGameState(gameCode);
         }

@@ -49,6 +49,14 @@ public class VotingHelper {
         }
         String phaseId = phaseIdState.name();
 
+        if (phaseIdState == GameState.LOCATION_VOTING) {
+            CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseIdState.name());
+            if (phase == null) {
+                throw new ValidationException("LOCATION_VOTING phase not found for game: " + gameCode);
+            }
+            return phase.getSubmissions();
+        }
+
         if (phaseIdState == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
             Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
             if (currentStory != null) {
@@ -191,6 +199,13 @@ public class VotingHelper {
         // Submit each vote atomically
         for (PlayerVote vote : playerVotes) {
             collaborativeTextDAO.addVoteAtomically(gameCode, phaseId, vote);
+        }
+
+        if (phaseIdState == GameState.LOCATION_VOTING) {
+            String votingPlayerId = playerVotes.getFirst().getPlayerId();
+            if (votingPlayerId != null && !votingPlayerId.isEmpty()) {
+                activeSessionHelper.update(gameCode, gameSession.getGameState(), votingPlayerId, true);
+            }
         }
 
         if (phaseIdState == GameState.MAKE_CHOICE_VOTING) {
