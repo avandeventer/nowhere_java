@@ -949,15 +949,10 @@ public class CollaborativeTextHelper {
             // When locationVoting is on, group same-location encounters adjacent to each other
             boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
             if (locationVoting && adventureMap.getEncounterLabels() != null) {
-                Map<String, String> encounterIdToLocationId = adventureMap.getEncounterLabels().stream()
-                        .filter(el -> el.getLocationId() != null && !el.getLocationId().isEmpty())
-                        .collect(Collectors.toMap(EncounterLabel::getEncounterId, EncounterLabel::getLocationId, (a, b) -> a));
+                // outcomeTypeWithLabel.getId() is the locationId when locationVoting is on
                 winningSubmissions = winningSubmissions.stream()
-                        .sorted(Comparator.comparing(sub -> {
-                            String encounterId = sub.getOutcomeTypeWithLabel() != null
-                                    ? sub.getOutcomeTypeWithLabel().getId() : "";
-                            return encounterIdToLocationId.getOrDefault(encounterId, "");
-                        }))
+                        .sorted(Comparator.comparing(sub ->
+                            sub.getOutcomeTypeWithLabel() != null ? sub.getOutcomeTypeWithLabel().getId() : ""))
                         .collect(Collectors.toList());
             }
 
@@ -976,7 +971,21 @@ public class CollaborativeTextHelper {
                     continue;
                 }
 
-                EncounterLabel encounterLabel = new EncounterLabel(encounterOutcomeType.getId(), encounterOutcomeType.getLabel());
+                // When locationVoting is on, outcomeTypeWithLabel is the location parent;
+                // unwrap the actual encounter from the first subType
+                OutcomeType actualEncounterType = encounterOutcomeType;
+                Location storyLocation = null;
+                if (locationVoting && encounterOutcomeType.getSubTypes() != null && !encounterOutcomeType.getSubTypes().isEmpty()) {
+                    actualEncounterType = encounterOutcomeType.getSubTypes().getFirst();
+                    String locationId = encounterOutcomeType.getId();
+                    if (adventureMap.getLocations() != null) {
+                        storyLocation = adventureMap.getLocations().stream()
+                                .filter(l -> l.getId().equals(locationId))
+                                .findFirst().orElse(null);
+                    }
+                }
+
+                EncounterLabel encounterLabel = new EncounterLabel(actualEncounterType.getId(), actualEncounterType.getLabel());
 
                 // Create a new story with the encounterLabel and submission text
                 Story story = new Story();
@@ -985,6 +994,9 @@ public class CollaborativeTextHelper {
                 story.setGameCode(gameCode);
                 story.setEncounterLabel(encounterLabel);
                 story.setCreatedAt(Timestamp.now());
+                if (storyLocation != null) {
+                    story.setLocation(storyLocation);
+                }
                 String clarifier = submission.getOutcomeTypeWithLabel().getClarifier();
                 if (clarifier != null && !clarifier.isEmpty()) {
                     story.setPrequelStoryId(clarifier);
@@ -1755,8 +1767,9 @@ public class CollaborativeTextHelper {
                     List<EncounterLabel> encounterLabels = getEncounterLabels(gameCode);
                     boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
                     if (locationVoting) {
-                        return buildOutcomeTypesFromEncounters(
-                                distributeEncounterLabelsByLocation(playerId, gameSession, encounterLabels), null);
+                        return buildLocationWrappedOutcomeTypes(
+                                playerId, distributeEncounterLabelsByLocation(playerId, gameSession, encounterLabels),
+                                gameSession.getAdventureMap(), gameSession.getPlayers(), null);
                     }
                     int offsetValue = gameSession.getPlayers().size() > 4 ? 1 : 2;
                     List<EncounterLabel> playerAssignedEncounterLabels = distributeEncounterLabels(playerId, gameSession, offsetValue, encounterLabels);
@@ -1772,6 +1785,9 @@ public class CollaborativeTextHelper {
                             : distributeEncounterLabels(playerId, gameSession, offsetValue, allEncounterLabels);
 
                     if (locationVotingRound2) {
+                        // Filter out encounter labels already consumed by visited stories
+                        List<EncounterLabel> availableLabels = getUnusedAssignedEncounterLabels(assignedPlayerEncounterLabels, gameSession.getStories());
+
                         // Find visited stories authored by this player that are eligible for a sequel,
                         // regardless of which location they belong to
                         Story prequelStory = gameSession.getStories().stream()
@@ -1782,28 +1798,26 @@ public class CollaborativeTextHelper {
                                 .findFirst()
                                 .orElse(null);
 
-                        // Merge: location-assigned labels + the prequel's encounterLabel (if not already included)
-                        List<EncounterLabel> mergedLabels = new ArrayList<>(assignedPlayerEncounterLabels);
+                        // Merge in the prequel's encounterLabel after filtering (so it is never excluded)
                         if (prequelStory != null) {
                             EncounterLabel prequelLabel = prequelStory.getEncounterLabel();
-                            boolean alreadyIncluded = mergedLabels.stream()
+                            boolean alreadyIncluded = availableLabels.stream()
                                     .anyMatch(el -> el.getEncounterId().equals(prequelLabel.getEncounterId()));
                             if (!alreadyIncluded) {
-                                mergedLabels.add(prequelLabel);
+                                availableLabels.add(prequelLabel);
                             }
                         }
 
-                        return buildOutcomeTypesFromEncounters(mergedLabels, prequelStory);
+                        return buildLocationWrappedOutcomeTypes(playerId, availableLabels, gameSession.getAdventureMap(), gameSession.getPlayers(), prequelStory);
                     }
 
-                    // Find visited (round-1) stories whose encounter label matches one assigned to this player
+                    // Non-locationVoting round 2: filter out used encounter labels and find prequel
                     Set<String> assignedLabelIds = assignedPlayerEncounterLabels.stream()
                             .map(EncounterLabel::getEncounterId)
                             .collect(Collectors.toSet());
 
                     Story assignedStory = findAssignedPrequelStory(gameSession, assignedLabelIds);
 
-                    // Exclude encounter labels of visited stories that don't qualify as the assigned prequel
                     Set<String> usedEncounterLabelIds = gameSession.getStories().stream()
                             .filter(story -> story.isVisited()
                                     && story.getEncounterLabel() != null
@@ -1910,6 +1924,23 @@ public class CollaborativeTextHelper {
         }
     }
 
+    private static @NonNull List<EncounterLabel> getUnusedAssignedEncounterLabels(List<EncounterLabel> assignedPlayerEncounterLabels, List<Story> existingStories) {
+        Set<String> assignedLabelIds = assignedPlayerEncounterLabels.stream()
+                .map(EncounterLabel::getEncounterId)
+                .collect(Collectors.toSet());
+
+        Set<String> usedEncounterLabelIds = existingStories.stream()
+                .filter(story -> story.isVisited()
+                        && story.getEncounterLabel() != null
+                        && assignedLabelIds.contains(story.getEncounterLabel().getEncounterId()))
+                .map(story -> story.getEncounterLabel().getEncounterId())
+                .collect(Collectors.toSet());
+
+        return assignedPlayerEncounterLabels.stream()
+                .filter(label -> !usedEncounterLabelIds.contains(label.getEncounterId()))
+                .collect(Collectors.toList());
+    }
+
     private static OutcomeType convertToOutcomeType(Story story) {
         EncounterLabel encounterLabel = story.getEncounterLabel();
         Option selectedOption = story.getSelectedOption();
@@ -1954,6 +1985,52 @@ public class CollaborativeTextHelper {
         }
         return fork.getRepercussions().stream()
                 .anyMatch(r -> !r.getRepercussionType().equals(RepercussionType.ALL_PLAYERS.getName()));
+    }
+
+    /**
+     * Builds OutcomeTypes where each encounter label is nested as a subType under the player's
+     * selected location as the parent OutcomeType. The prequel story (if any) is placed first
+     * with its storyId as the location parent's clarifier so the submission flow can carry the
+     * prequelStoryId through the parent's clarifier field.
+     */
+    private @NonNull List<OutcomeType> buildLocationWrappedOutcomeTypes(
+            String playerId, List<EncounterLabel> encounterLabels, AdventureMap adventureMap, List<Player> players, Story prequelStory) {
+        Player player = players.stream()
+                .filter(p -> p.getAuthorId().equals(playerId))
+                .findFirst().orElse(null);
+
+        String locationId = player != null ? player.getSelectedLocationId() : null;
+        Location selectedLocation = (locationId != null && adventureMap != null && adventureMap.getLocations() != null)
+                ? adventureMap.getLocations().stream().filter(l -> l.getId().equals(locationId)).findFirst().orElse(null)
+                : null;
+        String locationLabel = selectedLocation != null ? selectedLocation.getLabel() : "";
+        String effectiveLocationId = locationId != null && !locationId.isEmpty() ? locationId : UUID.randomUUID().toString();
+
+        List<OutcomeType> result = new ArrayList<>();
+
+        if (prequelStory != null) {
+            EncounterLabel prequelLabel = prequelStory.getEncounterLabel();
+            OutcomeType encounterSubType = new OutcomeType(prequelLabel.getEncounterId(), prequelLabel.getEncounterLabel());
+            OutcomeType locationParent = new OutcomeType(effectiveLocationId, locationLabel, prequelStory.getStoryId());
+            locationParent.getSubTypes().add(encounterSubType);
+            result.add(locationParent);
+        }
+
+        for (EncounterLabel label : encounterLabels) {
+            OutcomeType encounterSubType = new OutcomeType(label.getEncounterId(), label.getEncounterLabel());
+            OutcomeType locationParent = new OutcomeType(effectiveLocationId, locationLabel);
+            locationParent.getSubTypes().add(encounterSubType);
+            result.add(locationParent);
+        }
+
+        if (result.isEmpty()) {
+            List<String> preCannedEncounterLabels = getPreCannedEncounterLabels();
+            Collections.shuffle(preCannedEncounterLabels);
+            preCannedEncounterLabels.subList(0, Math.min(3, preCannedEncounterLabels.size()))
+                    .forEach(l -> result.add(new OutcomeType(UUID.randomUUID().toString(), l)));
+        }
+
+        return result;
     }
 
     private static @NonNull List<OutcomeType> buildOutcomeTypesFromEncounters(List<EncounterLabel> availableEncounterLabels, Story assignedStory) {
