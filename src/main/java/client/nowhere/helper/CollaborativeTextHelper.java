@@ -1651,7 +1651,7 @@ public class CollaborativeTextHelper {
             case SUBMISSION -> baseInfo.baseInstructions();
             case VOTING -> {
                 if (gameState == GameState.LOCATION_VOTING) {
-                    yield "Choose which path you will take";
+                    yield "Each of us must choose our own path. Choose which path you will take and maybe you will meet your friends along the way!";
                 } else {
                     yield "Set fate in motion. Rank the descriptions on your device starting with your favorite first.";
                 }
