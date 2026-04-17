@@ -1649,7 +1649,13 @@ public class CollaborativeTextHelper {
     private String getPhaseInstructionsForMode(GameState gameState, PhaseType phaseType, PhaseBaseInfo baseInfo) {
         return switch (phaseType) {
             case SUBMISSION -> baseInfo.baseInstructions();
-            case VOTING -> "The time has come to solidify our fate. Rank the descriptions on your device starting with your favorite first.";
+            case VOTING -> {
+                if (gameState == GameState.LOCATION_VOTING) {
+                    yield "Choose which path you will take";
+                } else {
+                    yield "Set fate in motion. Rank the descriptions on your device starting with your favorite first.";
+                }
+            }
             case WINNING -> {
                 if (gameState == GameState.WHAT_WILL_BECOME_OF_US_VOTE_WINNER) {
                     yield "The threads before us have now been sealed. Only our choices ahead can reveal them to us. Now we must build this place.";
