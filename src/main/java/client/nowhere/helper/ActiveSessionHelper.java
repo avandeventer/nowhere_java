@@ -14,13 +14,11 @@ public class ActiveSessionHelper {
 
     private final ActiveSessionDAO activeSessionDAO;
     private final GameSessionHelper gameSessionHelper;
-    private final FeatureFlagHelper featureFlagHelper;
 
     @Autowired
-    public ActiveSessionHelper(ActiveSessionDAO activeSessionDAO, GameSessionHelper gameSessionHelper, FeatureFlagHelper featureFlagHelper) {
+    public ActiveSessionHelper(ActiveSessionDAO activeSessionDAO, GameSessionHelper gameSessionHelper) {
         this.activeSessionDAO = activeSessionDAO;
         this.gameSessionHelper = gameSessionHelper;
-        this.featureFlagHelper = featureFlagHelper;
     }
 
     public ActivePlayerSession update(ActivePlayerSession activeSession) {

@@ -1,5 +1,7 @@
 package client.nowhere.model;
 
+import java.util.List;
+
 public record CollaborativeTextPhaseInfo(
     GameState phaseId,
     String phaseQuestion,
@@ -8,6 +10,7 @@ public record CollaborativeTextPhaseInfo(
     String collaborativeModeInstructions,
     Story storyToIterateOn,
     PhaseType phaseType,
-    Boolean showGameBoard
+    Boolean showGameBoard,
+    List<TextSubmission> locationVotingSubmissions
 ) {}
 

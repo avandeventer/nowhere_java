@@ -1606,6 +1606,15 @@ public class CollaborativeTextHelper {
 
         Story storyToIterateOn = gameSession.getStoryAtCurrentPlayerCoordinates();
 
+        List<TextSubmission> locationVotingSubmissions = null;
+        if (gameState == GameState.LOCATION_VOTING || gameState == GameState.LOCATION_WINNING) {
+            CollaborativeTextPhase locationPhase = collaborativeTextDAO.getCollaborativeTextPhase(
+                    gameCode, GameState.LOCATION_VOTING.name());
+            if (locationPhase != null) {
+                locationVotingSubmissions = locationPhase.getSubmissions();
+            }
+        }
+
         return new CollaborativeTextPhaseInfo(
             gameState.getPhaseId(),
             baseInfo.phaseQuestion(),
@@ -1614,7 +1623,8 @@ public class CollaborativeTextHelper {
             collaborativeModeInstructions,
             storyToIterateOn,
             phaseType,
-            baseInfo.showGameBoard()
+            baseInfo.showGameBoard(),
+            locationVotingSubmissions
         );
     }
 

@@ -507,8 +507,8 @@ public enum GameState {
                 }
                 if (phaseId == LOCATION_VOTING) {
                     return new PhaseBaseInfo(
-                            "Where will our adventure take us?",
-                            "Choose a location to explore!",
+                            "What path will you take?",
+                            "Select how you will pass through the Lost Lands",
                             CollaborativeMode.SHARE_TEXT,
                             null,
                             LOCATION_VOTING,
