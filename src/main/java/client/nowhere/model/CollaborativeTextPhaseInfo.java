@@ -11,6 +11,8 @@ public record CollaborativeTextPhaseInfo(
     Story storyToIterateOn,
     PhaseType phaseType,
     Boolean showGameBoard,
-    List<TextSubmission> locationVotingSubmissions
+    List<TextSubmission> locationVotingSubmissions,
+    List<Player> activePlayers,
+    List<Player> playersAtLocation
 ) {}
 

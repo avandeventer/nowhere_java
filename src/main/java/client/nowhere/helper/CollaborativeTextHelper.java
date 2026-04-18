@@ -1649,6 +1649,23 @@ public class CollaborativeTextHelper {
             }
         }
 
+        List<Player> activePlayers = null;
+        List<Player> playersAtLocation = null;
+        if (storyToIterateOn != null && storyToIterateOn.getLocation() != null
+                && storyToIterateOn.getLocation().getId() != null
+                && !storyToIterateOn.getLocation().getId().isEmpty()) {
+            String locationId = storyToIterateOn.getLocation().getId();
+            List<String> storyPlayerIds = storyToIterateOn.getPlayerIds();
+            List<Player> allPlayers = gameSession.getPlayers();
+            activePlayers = allPlayers.stream()
+                    .filter(p -> storyPlayerIds.contains(p.getAuthorId()))
+                    .collect(Collectors.toList());
+            playersAtLocation = allPlayers.stream()
+                    .filter(p -> locationId.equals(p.getSelectedLocationId())
+                            && !storyPlayerIds.contains(p.getAuthorId()))
+                    .collect(Collectors.toList());
+        }
+
         return new CollaborativeTextPhaseInfo(
             gameState.getPhaseId(),
             baseInfo.phaseQuestion(),
@@ -1658,7 +1675,9 @@ public class CollaborativeTextHelper {
             storyToIterateOn,
             phaseType,
             baseInfo.showGameBoard(),
-            locationVotingSubmissions
+            locationVotingSubmissions,
+            activePlayers,
+            playersAtLocation
         );
     }
 
@@ -1686,6 +1705,8 @@ public class CollaborativeTextHelper {
             case VOTING -> {
                 if (gameState == GameState.LOCATION_VOTING) {
                     yield "Each of us must choose our own path. Choose which path you will take and maybe you will meet your friends along the way!";
+                } else if (gameState == GameState.MAKE_CHOICE_VOTING) {
+                    yield "Your time has come. Choose the action you wish to take from your device.";
                 } else {
                     yield "Set fate in motion. Rank the descriptions on your device starting with your favorite first.";
                 }

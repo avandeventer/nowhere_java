@@ -438,7 +438,7 @@ public enum GameState {
                 if (phaseId == HOW_DOES_THIS_RESOLVE) {
                         return new PhaseBaseInfo(
                                 "How does this resolve?",
-                                "Look at the action you've been assigned and describe what happens if we choose it!",
+                                "Choose one of the actions you've been assigned and describe what happens if we choose it!",
                                 CollaborativeMode.SHARE_TEXT,
                                 HOW_DOES_THIS_RESOLVE,
                                 HOW_DOES_THIS_RESOLVE_VOTING,
@@ -449,7 +449,7 @@ public enum GameState {
                 if (phaseId == HOW_DOES_THIS_RESOLVE_AGAIN) {
                     return new PhaseBaseInfo(
                             "How does this resolve (one more time)?",
-                            "Look at the action you've been assigned and describe what happens if we choose it!",
+                            "Choose one of the actions you've been assigned and describe what happens if we choose it!",
                             CollaborativeMode.SHARE_TEXT,
                             HOW_DOES_THIS_RESOLVE_AGAIN,
                             null,
