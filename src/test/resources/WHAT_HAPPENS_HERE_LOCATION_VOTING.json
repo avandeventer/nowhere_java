@@ -1,0 +1,3214 @@
+{
+  "gameCode": "D27PZB",
+  "players": [
+    {
+      "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+      "userName": "Andy",
+      "displayName": "Andy",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+            "label": "Favor",
+            "description": "",
+            "favorEntity": "",
+            "favorType": true
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "0",
+          "traitLabel": "Charming",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "6",
+          "traitLabel": "Undead",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "11",
+          "traitLabel": "Alcoholic",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        }
+      ],
+      "titles": null,
+      "gameCode": "D27PZB",
+      "joinedAt": 1776384148589,
+      "playerClass": {
+        "name": "Bard",
+        "description": "Your skill with spreading a good tale allows you to spread story outcomes to all players, including yourself",
+        "repercussionTypes": [
+          "ALL_PLAYERS"
+        ]
+      },
+      "selectedLocationId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+      "firstPlayer": true
+    },
+    {
+      "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+      "userName": "Joe",
+      "displayName": "Joe",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+            "label": "Favor",
+            "description": "",
+            "favorEntity": "",
+            "favorType": true
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "6",
+          "traitLabel": "Undead",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "7",
+          "traitLabel": "In Love",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "8",
+          "traitLabel": "Shifty",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        }
+      ],
+      "titles": null,
+      "gameCode": "D27PZB",
+      "joinedAt": 1776384152329,
+      "playerClass": {
+        "name": "Herald",
+        "description": "Your rank allows you to give new titles to other players",
+        "repercussionTypes": [
+          "TITLE"
+        ]
+      },
+      "selectedLocationId": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+      "firstPlayer": false
+    },
+    {
+      "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+      "userName": "Byron",
+      "displayName": "Byron",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+            "label": "Favor",
+            "description": "",
+            "favorEntity": "",
+            "favorType": true
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "0",
+          "traitLabel": "Charming",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "4",
+          "traitLabel": "Wealthy",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "5",
+          "traitLabel": "Saucy",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        }
+      ],
+      "titles": null,
+      "gameCode": "D27PZB",
+      "joinedAt": 1776384156593,
+      "playerClass": {
+        "name": "Scribe",
+        "description": "Your fondness for recording the histories of other adventurers allows you to add Traits to other players",
+        "repercussionTypes": [
+          "TRAIT"
+        ]
+      },
+      "selectedLocationId": "2a033cf6-af28-4d45-b925-edfc86c79866",
+      "firstPlayer": false
+    },
+    {
+      "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+      "userName": "Kirsten",
+      "displayName": "Kirsten",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+            "label": "Favor",
+            "description": "",
+            "favorEntity": "",
+            "favorType": true
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "6",
+          "traitLabel": "Undead",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "7",
+          "traitLabel": "In Love",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "11",
+          "traitLabel": "Alcoholic",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        }
+      ],
+      "titles": null,
+      "gameCode": "D27PZB",
+      "joinedAt": 1776384160664,
+      "playerClass": {
+        "name": "Fabulist",
+        "description": "Your penchant for writing fables allows you to convert Encounters players may have into Traits that stay with them",
+        "repercussionTypes": [
+          "COMPANION"
+        ]
+      },
+      "selectedLocationId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+      "firstPlayer": false
+    },
+    {
+      "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+      "userName": "Parker",
+      "displayName": "Parker",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+            "label": "Favor",
+            "description": "",
+            "favorEntity": "",
+            "favorType": true
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "6",
+          "traitLabel": "Undead",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "7",
+          "traitLabel": "In Love",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "8",
+          "traitLabel": "Shifty",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        }
+      ],
+      "titles": null,
+      "gameCode": "D27PZB",
+      "joinedAt": 1776384226970,
+      "playerClass": {
+        "name": "Fabulist",
+        "description": "Your penchant for writing fables allows you to convert Encounters players may have into Traits that stay with them",
+        "repercussionTypes": [
+          "COMPANION"
+        ]
+      },
+      "selectedLocationId": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+      "firstPlayer": false
+    }
+  ],
+  "gameState": "WHAT_HAPPENS_HERE",
+  "activePlayerSession": {
+    "gameCode": "",
+    "playerId": "",
+    "playerChoiceOptionId": "",
+    "selectedLocationOptionId": "",
+    "story": {
+      "storyId": "",
+      "prompt": "",
+      "authorId": "",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "",
+      "playerIds": [],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "repercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": null,
+      "encounterLabel": null,
+      "location": null
+    },
+    "location": null,
+    "outcomeDisplay": [],
+    "locationOutcomeDisplay": [],
+    "ritualStory": null,
+    "setNextPlayerTurn": false,
+    "isPlayerDoneWithTurn": {
+      "e11ae27d-04e9-4b47-8dfd-d15810a3646b": false,
+      "ea8fa8d0-077d-4adc-871c-b93127a04ade": false,
+      "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a": false,
+      "673f9497-29e2-4439-9b28-1f071ddbfa5c": false,
+      "82755543-b53c-4a11-beb7-57afdb0a61ec": false
+    },
+    "repercussions": {
+      "ending": null,
+      "locationDestroyed": null
+    },
+    "startTimer": false,
+    "writeTimerDone": false
+  },
+  "activeGameStateSession": {
+    "gameCode": "D27PZB",
+    "isPlayerDone": {
+      "e11ae27d-04e9-4b47-8dfd-d15810a3646b": false,
+      "ea8fa8d0-077d-4adc-871c-b93127a04ade": false,
+      "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a": false,
+      "673f9497-29e2-4439-9b28-1f071ddbfa5c": false,
+      "82755543-b53c-4a11-beb7-57afdb0a61ec": false
+    }
+  },
+  "stories": null,
+  "adventureMap": {
+    "name": "The Lost Lands",
+    "adventureId": "b371256a-015a-4a72-8cc2-8f5ad6b40cd4",
+    "statTypes": [
+      {
+        "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+        "label": "Favor",
+        "description": "",
+        "favorEntity": "",
+        "favorType": true
+      }
+    ],
+    "gameSessionDisplay": {
+      "mapDescription": "Every year it comes. The Dream Walk. The adults all gather at the edge of the wood and usher the youngsters into the darkness of the Lost Lands. The texts left behind by the Gods tell us that the young people who travel into the wood will encounter the characters, creatures, and spirits who will guide them into adulthood. If they manage to make it through the Lost Lands alive they do so as adults. This year, finally, is our year. We hug our parents, clasp our hands together, and we embark.",
+      "goalDescription": "",
+      "playerTitle": "",
+      "playerDescription": "",
+      "endingDescription": "",
+      "successText": "",
+      "neutralText": "",
+      "failureText": "",
+      "entity": "",
+      "whereAreWeSubmission": null,
+      "whoAreWeSubmission": null,
+      "whatIsOurGoalSubmission": null
+    },
+    "locations": [
+      {
+        "locationId": 0,
+        "description": "",
+        "locationIndex": 0,
+        "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+        "label": "A Bustling Tavern in the Woods",
+        "options": [
+          {
+            "optionId": "a5949813-ed0e-4fc0-930e-b9ee63157ae1",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "7c93503b-84d4-4087-aa2f-417db2cc5151",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": "",
+        "locationIndex": 0,
+        "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+        "label": "A Twisting Wizard's Tower",
+        "options": [
+          {
+            "optionId": "f512ae83-22ad-4625-9f0a-649f91a50ed0",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "c495dd03-af87-4cb9-81d8-6249d2fcb2e0",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": "",
+        "locationIndex": 0,
+        "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+        "label": "A Grand Night Market",
+        "options": [
+          {
+            "optionId": "70c25331-6e8d-48dc-bcba-23a65de4cb5b",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "0e1aae26-ab3c-449a-b853-6bb695709a0b",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/TownSquare.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": "",
+        "locationIndex": 0,
+        "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+        "label": "The Forbidden Wilds",
+        "options": [
+          {
+            "optionId": "e616d8de-586d-410e-a139-fb630c836609",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "30868a82-06cd-4f4e-9000-4fe3b90a22b0",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Wilds.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": "",
+        "locationIndex": 0,
+        "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+        "label": "A Strange Fungal Forest",
+        "options": [
+          {
+            "optionId": "df358387-43c9-4e0a-8dee-cb616329cb5d",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "3b52755c-a0a4-427f-82f3-33aebf5829c6",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Mushroom.png",
+        "authorId": null
+      }
+    ],
+    "unusedLocations": [
+      {
+        "locationId": 0,
+        "description": "",
+        "locationIndex": 0,
+        "id": "b9a884ae-33ca-4076-8725-9836b501551e",
+        "label": "An Old Farmhouse",
+        "options": [
+          {
+            "optionId": "2ecbefed-c2ec-4553-9168-29cf1d8d8f47",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "87fbe8f3-1cb2-464a-bf12-ef157df50536",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Farmlands.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": "",
+        "locationIndex": 0,
+        "id": "f734d40d-5373-448c-9b11-2391f1ed2d51",
+        "label": "An Altar to an Old God",
+        "options": [
+          {
+            "optionId": "61065b6e-ff7f-4686-9119-f3573028c236",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "17c19262-01dd-4a87-8e8e-ab04a1c4094b",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/RitualGrounds.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": "",
+        "locationIndex": 0,
+        "id": "9b3658b3-55ff-4e75-8d6f-893895bbb436",
+        "label": "A Towering Sacred Temple",
+        "options": [
+          {
+            "optionId": "d4f67dd3-81b8-469c-be80-9a603d583acf",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "4b119153-286d-4d94-a844-7b05b872ecd0",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+                    "label": "Favor",
+                    "description": null,
+                    "favorEntity": "",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/DiscussionParlor.png",
+        "authorId": null
+      }
+    ],
+    "ritual": {
+      "storyId": "",
+      "prompt": "",
+      "authorId": "",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "",
+      "playerIds": [],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "repercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": null,
+      "encounterLabel": null,
+      "location": null
+    },
+    "encounterLabels": [
+      {
+        "encounterId": "904e6a3d-6201-4f7e-9399-46a5f41e8de4",
+        "encounterLabel": "Pearls for sale C",
+        "textSubmission": {
+          "submissionId": "e356129c-94e4-44aa-b519-d2ee5c566933",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "Pearls for sale C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "Pearls for sale C",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7"
+      },
+      {
+        "encounterId": "1c120d84-5b60-4e9d-8935-d9ad27afc094",
+        "encounterLabel": "My Mom C",
+        "textSubmission": {
+          "submissionId": "58624490-e03a-4591-8a71-2b8ac097874d",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "My Mom C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "My Mom C",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7"
+      },
+      {
+        "encounterId": "d295174c-4def-49dc-bfaf-563f0989c7d1",
+        "encounterLabel": "Smoll Mon D",
+        "textSubmission": {
+          "submissionId": "78745354-2f56-4664-a6bd-c2953423c7f8",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Smoll Mon D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Smoll Mon D",
+              "submissionId": null,
+              "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+              "outcomeTypeWithLabel": {
+                "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+                "label": "A Twisting Wizard's Tower",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+          "outcomeTypeWithLabel": {
+            "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+            "label": "A Twisting Wizard's Tower",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "2a033cf6-af28-4d45-b925-edfc86c79866"
+      },
+      {
+        "encounterId": "78fdf0e1-3392-47fe-a56c-b5d732f20bbc",
+        "encounterLabel": "Oo ghosts D",
+        "textSubmission": {
+          "submissionId": "ce833cfa-1001-4e70-b444-41a9c3a54394",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Oo ghosts D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Oo ghosts D",
+              "submissionId": null,
+              "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+              "outcomeTypeWithLabel": {
+                "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+                "label": "The Forbidden Wilds",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+          "outcomeTypeWithLabel": {
+            "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+            "label": "The Forbidden Wilds",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "e1063a35-983a-4abf-80d2-237c5328208d"
+      },
+      {
+        "encounterId": "fef4c764-acdf-44a7-b0ff-2078dc34616f",
+        "encounterLabel": "Steely Dan A",
+        "textSubmission": {
+          "submissionId": "5a9a8b02-3ed5-4914-b46e-4f078f001656",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "Steely Dan A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "Steely Dan A",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7"
+      },
+      {
+        "encounterId": "d124d2c4-9724-4171-9656-1fbf09e702b1",
+        "encounterLabel": "The Spooky Twins A",
+        "textSubmission": {
+          "submissionId": "19e2ce64-6725-4b17-9e1e-e5287f189ae1",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "The Spooky Twins A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "The Spooky Twins A",
+              "submissionId": null,
+              "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+              "outcomeTypeWithLabel": {
+                "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+                "label": "A Bustling Tavern in the Woods",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+          "outcomeTypeWithLabel": {
+            "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+            "label": "A Bustling Tavern in the Woods",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f"
+      },
+      {
+        "encounterId": "f23dcbdf-6504-491d-945b-d3bc8270b597",
+        "encounterLabel": "Goats E",
+        "textSubmission": {
+          "submissionId": "65141f51-53d0-40ca-9f93-237efae2187b",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Goats E",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Goats E",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"
+      },
+      {
+        "encounterId": "aa7134a9-3285-4dad-ae35-c201a7440aee",
+        "encounterLabel": "An Impenetrable Door B",
+        "textSubmission": {
+          "submissionId": "515485e9-bbbe-4753-81ca-e9ef72f954b4",
+          "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+          "originalText": "",
+          "currentText": "An Impenetrable Door B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+              "addedText": "An Impenetrable Door B",
+              "submissionId": null,
+              "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+              "outcomeTypeWithLabel": {
+                "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+                "label": "The Forbidden Wilds",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+          "outcomeTypeWithLabel": {
+            "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+            "label": "The Forbidden Wilds",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "e1063a35-983a-4abf-80d2-237c5328208d"
+      },
+      {
+        "encounterId": "0ab70cde-9cae-43b2-b759-6203df22796d",
+        "encounterLabel": "Rimplestillstkon C",
+        "textSubmission": {
+          "submissionId": "db6cf8f2-90be-47b3-84c1-219f7395a7b7",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "Rimplestillstkon C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "Rimplestillstkon C",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"
+      },
+      {
+        "encounterId": "6be82afc-c84d-43be-bb62-1fd8dba20500",
+        "encounterLabel": "Small Fry McMann E",
+        "textSubmission": {
+          "submissionId": "a9e5308e-1162-4964-ac2d-c72b66e84146",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Small Fry McMann E",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Small Fry McMann E",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"
+      },
+      {
+        "encounterId": "8d8d0ff8-d85c-4f15-a414-20c34715f251",
+        "encounterLabel": "Holy Water in a Stein D",
+        "textSubmission": {
+          "submissionId": "a2b62efb-30d9-45dd-abe1-c8f7a8703f03",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Holy Water in a Stein D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Holy Water in a Stein D",
+              "submissionId": null,
+              "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+              "outcomeTypeWithLabel": {
+                "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+                "label": "A Twisting Wizard's Tower",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+          "outcomeTypeWithLabel": {
+            "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+            "label": "A Twisting Wizard's Tower",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "2a033cf6-af28-4d45-b925-edfc86c79866"
+      },
+      {
+        "encounterId": "b4271dea-b6e7-4085-98c3-25798207c8a2",
+        "encounterLabel": "Schmo, Your Old Bestie B",
+        "textSubmission": {
+          "submissionId": "76dcc2b7-bea2-4a9d-bf25-a246b1b7a17e",
+          "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+          "originalText": "",
+          "currentText": "Schmo, Your Old Bestie B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+              "addedText": "Schmo, Your Old Bestie B",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7"
+      },
+      {
+        "encounterId": "22de8dd2-ee22-4b11-bda4-50642fc6e4d1",
+        "encounterLabel": "Grompkin a Magic Guy D",
+        "textSubmission": {
+          "submissionId": "9db5dfb9-fce6-4a02-99ee-b194db12215f",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Grompkin a Magic Guy D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Grompkin a Magic Guy D",
+              "submissionId": null,
+              "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+              "outcomeTypeWithLabel": {
+                "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+                "label": "A Twisting Wizard's Tower",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+          "outcomeTypeWithLabel": {
+            "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+            "label": "A Twisting Wizard's Tower",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "2a033cf6-af28-4d45-b925-edfc86c79866"
+      },
+      {
+        "encounterId": "ba9767aa-e63e-4166-a8a8-db50f6f3c79c",
+        "encounterLabel": "Keys, lots of keys E",
+        "textSubmission": {
+          "submissionId": "0f81b2e3-e72c-4fc4-b984-961f647612b6",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Keys, lots of keys E",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Keys, lots of keys E",
+              "submissionId": null,
+              "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+              "outcomeTypeWithLabel": {
+                "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+                "label": "A Bustling Tavern in the Woods",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+          "outcomeTypeWithLabel": {
+            "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+            "label": "A Bustling Tavern in the Woods",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f"
+      },
+      {
+        "encounterId": "5318c538-79a7-46b6-affd-7e0b3ebfe11f",
+        "encounterLabel": "Something Forbidden B",
+        "textSubmission": {
+          "submissionId": "6c7c8657-36c0-4c5e-95dc-7d964f7fffca",
+          "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+          "originalText": "",
+          "currentText": "Something Forbidden B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+              "addedText": "Something Forbidden B",
+              "submissionId": null,
+              "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+              "outcomeTypeWithLabel": {
+                "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+                "label": "The Forbidden Wilds",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+          "outcomeTypeWithLabel": {
+            "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+            "label": "The Forbidden Wilds",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "e1063a35-983a-4abf-80d2-237c5328208d"
+      },
+      {
+        "encounterId": "96709c78-12e0-4ae9-b5f2-1a456256c0dd",
+        "encounterLabel": "Pigs for sale C",
+        "textSubmission": {
+          "submissionId": "a733db4b-4c8e-41fe-b239-ad150a438ee5",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "Pigs for sale C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "Pigs for sale C",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7"
+      },
+      {
+        "encounterId": "496c2f81-d8dc-41cd-9a8c-b50d8f6a9e01",
+        "encounterLabel": "Polyps R",
+        "textSubmission": {
+          "submissionId": "dd4e228c-4545-4fa5-a397-2ef753edf361",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Polyps R",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Polyps R",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"
+      },
+      {
+        "encounterId": "5c801e00-4734-44a6-a53d-d2ae5a5f02a6",
+        "encounterLabel": "Danny Steve A",
+        "textSubmission": {
+          "submissionId": "9df176ae-7546-4322-a43e-2bb820479bb9",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "Danny Steve A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "Danny Steve A",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7"
+      },
+      {
+        "encounterId": "caeec5b7-a820-48f9-a19e-ddb0ab2b3976",
+        "encounterLabel": "Sauce Boss A",
+        "textSubmission": {
+          "submissionId": "1ce0967f-599f-4d2b-9264-a3cedb96b60e",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "Sauce Boss A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "Sauce Boss A",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 1.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        "locationId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7"
+      }
+    ],
+    "traits": []
+  },
+  "didWeSucceed": false,
+  "totalPointsTowardsVictory": 0,
+  "endings": null,
+  "rituals": [],
+  "userProfileId": "c8d068ae-e180-44c9-940c-011ba632cba4",
+  "saveGameId": "4f302cc0-658c-4ede-ba75-5f0fbcfbad92",
+  "storiesToWritePerRound": 1,
+  "storiesToPlayPerRound": 1,
+  "roundNumber": 1,
+  "gameMode": "DUNGEON_MODE",
+  "gameBoard": {
+    "playerCoordinates": null,
+    "dungeonGrid": {},
+    "encounterAtPlayerCoordinates": null
+  },
+  "collaborativeTextPhases": {
+    "LOCATION_VOTING": {
+      "phaseId": "LOCATION_VOTING",
+      "question": null,
+      "phaseType": null,
+      "submissions": [
+        {
+          "submissionId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "A Grand Night Market",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/TownSquare.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "A Strange Fungal Forest",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Mushroom.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "2a033cf6-af28-4d45-b925-edfc86c79866",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "A Twisting Wizard's Tower",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      ],
+      "playerVotes": {
+        "e11ae27d-04e9-4b47-8dfd-d15810a3646b": [
+          {
+            "voteId": "",
+            "playerId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+            "submissionId": "2a033cf6-af28-4d45-b925-edfc86c79866",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1776447912,
+              "nanos": 255000000
+            }
+          }
+        ],
+        "ea8fa8d0-077d-4adc-871c-b93127a04ade": [
+          {
+            "voteId": "",
+            "playerId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+            "submissionId": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1776447921,
+              "nanos": 154000000
+            }
+          }
+        ],
+        "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a": [
+          {
+            "voteId": "",
+            "playerId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+            "submissionId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1776447896,
+              "nanos": 50000000
+            }
+          }
+        ],
+        "673f9497-29e2-4439-9b28-1f071ddbfa5c": [
+          {
+            "voteId": "",
+            "playerId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+            "submissionId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1776447917,
+              "nanos": 437000000
+            }
+          }
+        ],
+        "82755543-b53c-4a11-beb7-57afdb0a61ec": [
+          {
+            "voteId": "",
+            "playerId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+            "submissionId": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1776447906,
+              "nanos": 865000000
+            }
+          }
+        ]
+      },
+      "playersWhoSubmitted": [
+        null
+      ],
+      "playersWhoVoted": [
+        "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+        "82755543-b53c-4a11-beb7-57afdb0a61ec",
+        "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+        "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+        "ea8fa8d0-077d-4adc-871c-b93127a04ade"
+      ],
+      "finalResult": null,
+      "submissionViews": {},
+      "submissionsWithoutParentSubmissions": [
+        {
+          "submissionId": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "A Grand Night Market",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/TownSquare.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "A Strange Fungal Forest",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Mushroom.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "2a033cf6-af28-4d45-b925-edfc86c79866",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "A Twisting Wizard's Tower",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      ],
+      "complete": false
+    },
+    "SET_ENCOUNTERS": {
+      "phaseId": "SET_ENCOUNTERS",
+      "question": null,
+      "phaseType": null,
+      "submissions": [
+        {
+          "submissionId": "5a9a8b02-3ed5-4914-b46e-4f078f001656",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "Steely Dan A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "Steely Dan A",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "9df176ae-7546-4322-a43e-2bb820479bb9",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "Danny Steve A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "Danny Steve A",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "1ce0967f-599f-4d2b-9264-a3cedb96b60e",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "Sauce Boss A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "Sauce Boss A",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "19e2ce64-6725-4b17-9e1e-e5287f189ae1",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "The Spooky Twins A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "The Spooky Twins A",
+              "submissionId": null,
+              "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+              "outcomeTypeWithLabel": {
+                "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+                "label": "A Bustling Tavern in the Woods",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+          "outcomeTypeWithLabel": {
+            "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+            "label": "A Bustling Tavern in the Woods",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "515485e9-bbbe-4753-81ca-e9ef72f954b4",
+          "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+          "originalText": "",
+          "currentText": "An Impenetrable Door B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+              "addedText": "An Impenetrable Door B",
+              "submissionId": null,
+              "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+              "outcomeTypeWithLabel": {
+                "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+                "label": "The Forbidden Wilds",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+          "outcomeTypeWithLabel": {
+            "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+            "label": "The Forbidden Wilds",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "76dcc2b7-bea2-4a9d-bf25-a246b1b7a17e",
+          "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+          "originalText": "",
+          "currentText": "Schmo, Your Old Bestie B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+              "addedText": "Schmo, Your Old Bestie B",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "6c7c8657-36c0-4c5e-95dc-7d964f7fffca",
+          "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+          "originalText": "",
+          "currentText": "Something Forbidden B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+              "addedText": "Something Forbidden B",
+              "submissionId": null,
+              "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+              "outcomeTypeWithLabel": {
+                "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+                "label": "The Forbidden Wilds",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+          "outcomeTypeWithLabel": {
+            "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+            "label": "The Forbidden Wilds",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "db6cf8f2-90be-47b3-84c1-219f7395a7b7",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "Rimplestillstkon C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "Rimplestillstkon C",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "a733db4b-4c8e-41fe-b239-ad150a438ee5",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "Pigs for sale C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "Pigs for sale C",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "e356129c-94e4-44aa-b519-d2ee5c566933",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "Pearls for sale C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "Pearls for sale C",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "58624490-e03a-4591-8a71-2b8ac097874d",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "My Mom C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "My Mom C",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "9db5dfb9-fce6-4a02-99ee-b194db12215f",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Grompkin a Magic Guy D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Grompkin a Magic Guy D",
+              "submissionId": null,
+              "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+              "outcomeTypeWithLabel": {
+                "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+                "label": "A Twisting Wizard's Tower",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+          "outcomeTypeWithLabel": {
+            "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+            "label": "A Twisting Wizard's Tower",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "78745354-2f56-4664-a6bd-c2953423c7f8",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Smoll Mon D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Smoll Mon D",
+              "submissionId": null,
+              "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+              "outcomeTypeWithLabel": {
+                "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+                "label": "A Twisting Wizard's Tower",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+          "outcomeTypeWithLabel": {
+            "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+            "label": "A Twisting Wizard's Tower",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "ce833cfa-1001-4e70-b444-41a9c3a54394",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Oo ghosts D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Oo ghosts D",
+              "submissionId": null,
+              "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+              "outcomeTypeWithLabel": {
+                "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+                "label": "The Forbidden Wilds",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+          "outcomeTypeWithLabel": {
+            "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+            "label": "The Forbidden Wilds",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "0f81b2e3-e72c-4fc4-b984-961f647612b6",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Keys, lots of keys E",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Keys, lots of keys E",
+              "submissionId": null,
+              "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+              "outcomeTypeWithLabel": {
+                "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+                "label": "A Bustling Tavern in the Woods",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+          "outcomeTypeWithLabel": {
+            "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+            "label": "A Bustling Tavern in the Woods",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "dd4e228c-4545-4fa5-a397-2ef753edf361",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Polyps R",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Polyps R",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "65141f51-53d0-40ca-9f93-237efae2187b",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Goats E",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Goats E",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "a9e5308e-1162-4964-ac2d-c72b66e84146",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Small Fry McMann E",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Small Fry McMann E",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "a2b62efb-30d9-45dd-abe1-c8f7a8703f03",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Holy Water in a Stein D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Holy Water in a Stein D",
+              "submissionId": null,
+              "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+              "outcomeTypeWithLabel": {
+                "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+                "label": "A Twisting Wizard's Tower",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+          "outcomeTypeWithLabel": {
+            "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+            "label": "A Twisting Wizard's Tower",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      ],
+      "playerVotes": {},
+      "playersWhoSubmitted": [
+        "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+        "82755543-b53c-4a11-beb7-57afdb0a61ec",
+        "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+        "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+        "ea8fa8d0-077d-4adc-871c-b93127a04ade"
+      ],
+      "playersWhoVoted": [],
+      "finalResult": null,
+      "submissionViews": {
+        "a733db4b-4c8e-41fe-b239-ad150a438ee5": [],
+        "76dcc2b7-bea2-4a9d-bf25-a246b1b7a17e": [
+          "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a"
+        ],
+        "78745354-2f56-4664-a6bd-c2953423c7f8": [
+          "ea8fa8d0-077d-4adc-871c-b93127a04ade"
+        ],
+        "9df176ae-7546-4322-a43e-2bb820479bb9": [],
+        "5a9a8b02-3ed5-4914-b46e-4f078f001656": [],
+        "e356129c-94e4-44aa-b519-d2ee5c566933": [],
+        "515485e9-bbbe-4753-81ca-e9ef72f954b4": [
+          "e11ae27d-04e9-4b47-8dfd-d15810a3646b"
+        ],
+        "9db5dfb9-fce6-4a02-99ee-b194db12215f": [],
+        "65141f51-53d0-40ca-9f93-237efae2187b": [
+          "673f9497-29e2-4439-9b28-1f071ddbfa5c"
+        ],
+        "1ce0967f-599f-4d2b-9264-a3cedb96b60e": [
+          "82755543-b53c-4a11-beb7-57afdb0a61ec"
+        ],
+        "ce833cfa-1001-4e70-b444-41a9c3a54394": [
+          "ea8fa8d0-077d-4adc-871c-b93127a04ade"
+        ],
+        "58624490-e03a-4591-8a71-2b8ac097874d": [],
+        "19e2ce64-6725-4b17-9e1e-e5287f189ae1": [
+          "82755543-b53c-4a11-beb7-57afdb0a61ec"
+        ],
+        "a9e5308e-1162-4964-ac2d-c72b66e84146": [
+          "673f9497-29e2-4439-9b28-1f071ddbfa5c"
+        ],
+        "db6cf8f2-90be-47b3-84c1-219f7395a7b7": [],
+        "6c7c8657-36c0-4c5e-95dc-7d964f7fffca": [
+          "e11ae27d-04e9-4b47-8dfd-d15810a3646b"
+        ]
+      },
+      "submissionsWithoutParentSubmissions": [
+        {
+          "submissionId": "5a9a8b02-3ed5-4914-b46e-4f078f001656",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "Steely Dan A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "Steely Dan A",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "9df176ae-7546-4322-a43e-2bb820479bb9",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "Danny Steve A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "Danny Steve A",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "1ce0967f-599f-4d2b-9264-a3cedb96b60e",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "Sauce Boss A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "Sauce Boss A",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "19e2ce64-6725-4b17-9e1e-e5287f189ae1",
+          "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+          "originalText": "",
+          "currentText": "The Spooky Twins A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "de24d9ce-a9e0-47f3-969d-95cd18c9fc8a",
+              "addedText": "The Spooky Twins A",
+              "submissionId": null,
+              "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+              "outcomeTypeWithLabel": {
+                "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+                "label": "A Bustling Tavern in the Woods",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+          "outcomeTypeWithLabel": {
+            "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+            "label": "A Bustling Tavern in the Woods",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "515485e9-bbbe-4753-81ca-e9ef72f954b4",
+          "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+          "originalText": "",
+          "currentText": "An Impenetrable Door B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+              "addedText": "An Impenetrable Door B",
+              "submissionId": null,
+              "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+              "outcomeTypeWithLabel": {
+                "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+                "label": "The Forbidden Wilds",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+          "outcomeTypeWithLabel": {
+            "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+            "label": "The Forbidden Wilds",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "76dcc2b7-bea2-4a9d-bf25-a246b1b7a17e",
+          "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+          "originalText": "",
+          "currentText": "Schmo, Your Old Bestie B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+              "addedText": "Schmo, Your Old Bestie B",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "6c7c8657-36c0-4c5e-95dc-7d964f7fffca",
+          "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+          "originalText": "",
+          "currentText": "Something Forbidden B",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "82755543-b53c-4a11-beb7-57afdb0a61ec",
+              "addedText": "Something Forbidden B",
+              "submissionId": null,
+              "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+              "outcomeTypeWithLabel": {
+                "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+                "label": "The Forbidden Wilds",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+          "outcomeTypeWithLabel": {
+            "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+            "label": "The Forbidden Wilds",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "db6cf8f2-90be-47b3-84c1-219f7395a7b7",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "Rimplestillstkon C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "Rimplestillstkon C",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "a733db4b-4c8e-41fe-b239-ad150a438ee5",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "Pigs for sale C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "Pigs for sale C",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "e356129c-94e4-44aa-b519-d2ee5c566933",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "Pearls for sale C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "Pearls for sale C",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "58624490-e03a-4591-8a71-2b8ac097874d",
+          "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+          "originalText": "",
+          "currentText": "My Mom C",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "e11ae27d-04e9-4b47-8dfd-d15810a3646b",
+              "addedText": "My Mom C",
+              "submissionId": null,
+              "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+              "outcomeTypeWithLabel": {
+                "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+                "label": "A Grand Night Market",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+          "outcomeTypeWithLabel": {
+            "id": "247bf271-2656-4e1d-bf8d-7b59dc69cff7",
+            "label": "A Grand Night Market",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "9db5dfb9-fce6-4a02-99ee-b194db12215f",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Grompkin a Magic Guy D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Grompkin a Magic Guy D",
+              "submissionId": null,
+              "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+              "outcomeTypeWithLabel": {
+                "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+                "label": "A Twisting Wizard's Tower",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+          "outcomeTypeWithLabel": {
+            "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+            "label": "A Twisting Wizard's Tower",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "78745354-2f56-4664-a6bd-c2953423c7f8",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Smoll Mon D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Smoll Mon D",
+              "submissionId": null,
+              "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+              "outcomeTypeWithLabel": {
+                "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+                "label": "A Twisting Wizard's Tower",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+          "outcomeTypeWithLabel": {
+            "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+            "label": "A Twisting Wizard's Tower",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "ce833cfa-1001-4e70-b444-41a9c3a54394",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Oo ghosts D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Oo ghosts D",
+              "submissionId": null,
+              "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+              "outcomeTypeWithLabel": {
+                "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+                "label": "The Forbidden Wilds",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "e1063a35-983a-4abf-80d2-237c5328208d",
+          "outcomeTypeWithLabel": {
+            "id": "e1063a35-983a-4abf-80d2-237c5328208d",
+            "label": "The Forbidden Wilds",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "0f81b2e3-e72c-4fc4-b984-961f647612b6",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Keys, lots of keys E",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Keys, lots of keys E",
+              "submissionId": null,
+              "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+              "outcomeTypeWithLabel": {
+                "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+                "label": "A Bustling Tavern in the Woods",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+          "outcomeTypeWithLabel": {
+            "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+            "label": "A Bustling Tavern in the Woods",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "dd4e228c-4545-4fa5-a397-2ef753edf361",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Polyps R",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Polyps R",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "65141f51-53d0-40ca-9f93-237efae2187b",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Goats E",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Goats E",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "a9e5308e-1162-4964-ac2d-c72b66e84146",
+          "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+          "originalText": "",
+          "currentText": "Small Fry McMann E",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "ea8fa8d0-077d-4adc-871c-b93127a04ade",
+              "addedText": "Small Fry McMann E",
+              "submissionId": null,
+              "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+              "outcomeTypeWithLabel": {
+                "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+                "label": "A Strange Fungal Forest",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+          "outcomeTypeWithLabel": {
+            "id": "d33cf081-da9d-4c84-ac04-9cf15f8f4e4e",
+            "label": "A Strange Fungal Forest",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "a2b62efb-30d9-45dd-abe1-c8f7a8703f03",
+          "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+          "originalText": "",
+          "currentText": "Holy Water in a Stein D",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "673f9497-29e2-4439-9b28-1f071ddbfa5c",
+              "addedText": "Holy Water in a Stein D",
+              "submissionId": null,
+              "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+              "outcomeTypeWithLabel": {
+                "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+                "label": "A Twisting Wizard's Tower",
+                "clarifier": "",
+                "subTypes": []
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "2a033cf6-af28-4d45-b925-edfc86c79866",
+          "outcomeTypeWithLabel": {
+            "id": "2a033cf6-af28-4d45-b925-edfc86c79866",
+            "label": "A Twisting Wizard's Tower",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      ],
+      "complete": false
+    }
+  },
+  "storyAtCurrentPlayerCoordinates": null
+}

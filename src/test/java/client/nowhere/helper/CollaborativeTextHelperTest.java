@@ -977,29 +977,8 @@ public class CollaborativeTextHelperTest {
             String jsonFileName,
             GameState gameState,
             Map<String, List<String>> expectedStoryIdByPlayerName,
-            Map<String, List<String>> expectedSubTypeLabelsByPlayerName
-    ) throws IOException {
-        runOutcomeTypeDistributionTest(scenarioName, jsonFileName, gameState, expectedStoryIdByPlayerName, expectedSubTypeLabelsByPlayerName);
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideHowDoesThisResolveSubTypeScenarios")
-    void testGetOutcomeTypes_HowDoesThisResolve_SubTypesCorrect(
-            String scenarioName,
-            String jsonFileName,
-            GameState gameState,
-            Map<String, List<String>> expectedStoryIdByPlayerName,
-            Map<String, List<String>> expectedSubTypeLabelsByPlayerName
-    ) throws IOException {
-        runOutcomeTypeDistributionTest(scenarioName, jsonFileName, gameState, expectedStoryIdByPlayerName, expectedSubTypeLabelsByPlayerName);
-    }
-
-    private void runOutcomeTypeDistributionTest(
-            String scenarioName,
-            String jsonFileName,
-            GameState gameState,
-            Map<String, List<String>> expectedStoryIdByPlayerName,
-            Map<String, List<String>> expectedSubTypeLabelsByPlayerName
+            Map<String, List<String>> expectedSubTypeLabelsByPlayerName,
+            boolean locationVoting
     ) throws IOException {
         // Arrange - Load test data
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
@@ -1008,6 +987,7 @@ public class CollaborativeTextHelperTest {
 
         // Mock dependencies
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(locationVoting);
 
         // For HOW_DOES_THIS_RESOLVE, we need to mock the WHAT_CAN_WE_TRY phase
         if (gameState == HOW_DOES_THIS_RESOLVE || gameState == HOW_DOES_THIS_RESOLVE_AGAIN) {
@@ -1131,7 +1111,8 @@ public class CollaborativeTextHelperTest {
                                 "Byron",   List.of("2646c831-3ab8-4445-ae4a-3696f25837ba"),
                                 "Kirsten", List.of("c3fbfd4a-0b7c-43f9-9435-5c2bae5ce51a")
                         ),
-                        Map.of()
+                        Map.of(),
+                        false
                 ),
                 Arguments.of(
                         "WHAT_HAPPENS_HERE - Round 1, Players get all encounter labels from one other player",
@@ -1144,7 +1125,8 @@ public class CollaborativeTextHelperTest {
                                 "Byron",   List.of("1b2c7a37-35a7-479e-bb23-b2d3c577cf36"), // encounter written by Andy
                                 "Kirsten", List.of("8f4b1306-aac6-454a-be85-a769f91a4250", "1536d22a-f0e5-4ec8-9985-3c5091449c62")  // encounter written by Joe
                         ),
-                        Map.of()
+                        Map.of(),
+                        false
                 ),
                 Arguments.of(
                         "WHAT_HAPPENS_HERE - Round 2, Players get distributed labels which are unused and which have no repercussions",
@@ -1156,7 +1138,8 @@ public class CollaborativeTextHelperTest {
                                 "Subodh", List.of(), // encounter (not) written by Andy
                                 "Kirsten", List.of("5feb03e7-f0aa-4bc2-bf71-7d8beadab9c5", "9d971bbe-4c5d-4b0d-aa9f-11913a147d47")  // encounter written by Joe
                         ),
-                        Map.of()
+                        Map.of(),
+                        false
                 ),
                 Arguments.of(
                         "WHAT_HAPPENS_HERE - Round 1, Players submitted a default encounter",
@@ -1168,7 +1151,8 @@ public class CollaborativeTextHelperTest {
                                 "Goni", List.of("c11e1c27-763f-4337-8257-57a2cf6dfc11", "9fd3bedf-3941-4a5d-b3e7-ce06ea3cba55", "6643bc0e-8da3-481d-b234-c52bdedf73e1"), // encounter written by Andy
                                 "Kirsten", List.of("c0d7c65c-a8fd-4add-aa1b-76277cdbb95c", "aa51d73f-4d2a-48b3-8f1d-dd3ba83554de", "4b378acb-6083-4470-8c88-7d841347aeba")  // encounter written by Parker?
                         ),
-                        Map.of()
+                        Map.of(),
+                        false
                 ),
                 Arguments.of(
                         "WHAT_HAPPENS_HERE - Round 2, Sequel story should be distributed to original author and player",
@@ -1181,19 +1165,29 @@ public class CollaborativeTextHelperTest {
                                 "Kirsten", List.of(),  // encounter written by Parker?
                                 "Subodh", List.of("5430f947-10e8-4c21-b551-4ba823cfdcca", "4a6cc022-58e0-4276-9302-9ce909a08d5e")  // encounter written by Parker?
                         ),
-                        Map.of()
-                )
-        );
-    }
-
-    static Stream<Arguments> provideHowDoesThisResolveSubTypeScenarios() {
-        // HOW_DOES_THIS_RESOLVE offset is 2 (for 4 players):
-        //   Player 0 gets story at (0+2)%4 = 2
-        //   Player 1 gets story at (1+2)%4 = 3
-        //   Player 2 gets story at (2+2)%4 = 0
-        //   Player 3 gets story at (3+2)%4 = 1
-
-        return Stream.of(
+                        Map.of(),
+                        false
+                ),
+                Arguments.of(
+                        "WHAT_HAPPENS_HERE - Round 1, Players have chosen locations which has created ",
+                        "WHAT_HAPPENS_HERE_LOCATION_VOTING.json",
+                        WHAT_HAPPENS_HERE,
+                        Map.of(
+                                "Andy", List.of("d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"), // location selected by Joe
+                                "Joe", List.of("2a033cf6-af28-4d45-b925-edfc86c79866"),  // location selected by Byron
+                                "Byron", List.of("247bf271-2656-4e1d-bf8d-7b59dc69cff7"), // location selected by Kirsten
+                                "Kirsten", List.of("d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"), // location selected by Parker
+                                "Parker", List.of("247bf271-2656-4e1d-bf8d-7b59dc69cff7") // location selected by Andy
+                        ),
+                        Map.of(
+                                "Andy", List.of("Rimplestillstkon C", "Small Fry McMann E"),
+                                "Joe", List.of("Grompkin a Magic Guy D", "Holy Water in a Stein D", "Smoll Mon D"),
+                                "Byron", List.of("My Mom C", "Pearls for sale C", "Schmo, Your Old Bestie B", "Steely Dan A"),
+                                "Kirsten", List.of("Goats E", "Polyps R"),
+                                "Parker", List.of("Danny Steve A", "Pigs for sale C", "Sauce Boss A")
+                        ),
+                        true
+                ),
                 Arguments.of(
                         "HOW_DOES_THIS_RESOLVE - 4 players, offset 2",
                         "HOW_DOES_THIS_RESOLVE_START.json",
@@ -1211,7 +1205,8 @@ public class CollaborativeTextHelperTest {
                                 "Joe",     List.of("Get the scalpel D"),
                                 "Byron",   List.of("Oh yeah I get it ;) A", "heheheheh D"),
                                 "Kirsten", List.of("Trip em! A", "Race em! A", "PSHEW! Fight em! B")
-                        )
+                        ),
+                        false
                 ),
                 Arguments.of(
                         "HOW_DOES_THIS_RESOLVE - 4 players, offset 2, remove already used traits",
@@ -1228,7 +1223,8 @@ public class CollaborativeTextHelperTest {
                                 "Joe",     List.of("Travel to the past C", "Travel forward A", "Travel back D", "use trait: Strong", "use trait: In Love"), //Already wrote for trait "Alcoholic"
                                 "Subodh",  List.of("Pet them hard A", "use trait: Charming", "use trait: Saucy", "use trait: Strong"),
                                 "Kirsten", List.of("Dance! A", "Jump Around A", "Dance with em! A", "Tell em to quiet down A", "Make cakes B", "use trait: Gluttonous", "use trait: Shifty") //Already wrote for trait "Undead"
-                        )
+                        ),
+                        false
                 )
         );
     }
