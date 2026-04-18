@@ -140,7 +140,7 @@ public class CollaborativeTextHelper {
                 return new ArrayList<>(phase.getSubmissions());
             }
             default -> {
-                return calculateWinnersFromAdditions(phase, gameSession.getGameState(), gameSession.getRoundNumber());
+                return calculateWinnersFromAdditions(phase, gameSession.getGameState(), featureFlagHelper.getFlagValue("locationVoting"));
             }
         }
     }
@@ -411,7 +411,7 @@ public class CollaborativeTextHelper {
      * Calculates winners based on number of additions (streamlined mode).
      * For phases with outcomeTypes, ranks by most submissions per outcomeType.
      */
-    private List<TextSubmission> calculateWinnersFromAdditions(CollaborativeTextPhase phase, GameState gameState, int roundNumber) {
+    private List<TextSubmission> calculateWinnersFromAdditions(CollaborativeTextPhase phase, GameState gameState, boolean locationVoting) {
         for (TextSubmission submission : phase.getSubmissions()) {
             int additionCount = submission.getAdditions() != null ? submission.getAdditions().size() : 0;
             submission.setAverageRanking(additionCount);
@@ -424,18 +424,40 @@ public class CollaborativeTextHelper {
 
         if (gameState.getPhaseId() == WHAT_HAPPENS_HERE) {
             // Rank by most submissions PER outcomeType
-            List<String> uniqueOutcomeTypes = phase.getSubmissions().stream()
-                    .map(textSubmission -> textSubmission.getOutcomeTypeWithLabel().getId())
-                    .filter(outcomeType -> outcomeType != null && !outcomeType.isEmpty())
-                    .distinct()
-                    .toList();
+
+            List<String> uniqueOutcomeTypes = new ArrayList<>();
+            if (locationVoting) {
+                uniqueOutcomeTypes = phase.getSubmissions().stream()
+                        .filter(textSubmission -> textSubmission.getOutcomeTypeWithLabel() != null
+                                && textSubmission.getOutcomeTypeWithLabel().getSubTypes() != null
+                                && !textSubmission.getOutcomeTypeWithLabel().getSubTypes().isEmpty())
+                        .map(textSubmission -> textSubmission.getOutcomeTypeWithLabel().getSubTypes().get(0).getId())
+                        .filter(id -> id != null && !id.isEmpty())
+                        .distinct()
+                        .toList();
+            } else {
+                uniqueOutcomeTypes = phase.getSubmissions().stream()
+                        .map(textSubmission -> textSubmission.getOutcomeTypeWithLabel().getId())
+                        .filter(outcomeType -> outcomeType != null && !outcomeType.isEmpty())
+                        .distinct()
+                        .toList();
+            }
 
             // For each outcomeType, find the submission with most additions
             // .max() with ascending comparator returns the highest value
             List<TextSubmission> winners = new ArrayList<>();
             for (String outcomeType : uniqueOutcomeTypes) {
                 TextSubmission winner = phase.getSubmissions().stream()
-                        .filter(submission -> outcomeType.equals(submission.getOutcomeType()))
+                        .filter(submission -> {
+                            if (locationVoting) {
+                                OutcomeType parent = submission.getOutcomeTypeWithLabel();
+                                return parent != null
+                                        && parent.getSubTypes() != null
+                                        && !parent.getSubTypes().isEmpty()
+                                        && outcomeType.equals(parent.getSubTypes().getFirst().getId());
+                            }
+                            return outcomeType.equals(submission.getOutcomeType());
+                        })
                         .max(rankingComparator)
                         .orElse(null);
                 if (winner != null) {
