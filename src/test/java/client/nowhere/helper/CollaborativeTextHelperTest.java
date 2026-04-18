@@ -776,7 +776,7 @@ public class CollaborativeTextHelperTest {
                         "0e9339d9-3c0a-478a-93e0-a631e1ddede4",
                         Map.of("ddfc6892-16dd-4e38-9252-27a3688ae038", "Snailz A"),
                         Map.of("ddfc6892-16dd-4e38-9252-27a3688ae038", "Snail Champion"), // Kirsten
-                        List.of("You gained the title \"Snail Champion\"!", "You gained the trait \"Snailz A\"!")
+                        List.of("You gained the title \"Snail Champion\"!", "You gained the companion \"Snailz A\"!")
                 ),
                 Arguments.of(
                         "Time Travelers (3,0) - use trait Alcoholic - 3 forks, no auto-resolve",
