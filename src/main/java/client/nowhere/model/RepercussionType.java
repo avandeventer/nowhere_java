@@ -36,7 +36,7 @@ public enum RepercussionType {
             "",
             "Encountered entity joins you",
             "Player will receive this Encounter as a Trait",
-            "#24bf86"
+            "#E60000"
     );
 
     @Getter
