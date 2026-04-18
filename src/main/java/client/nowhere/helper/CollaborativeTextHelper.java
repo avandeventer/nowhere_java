@@ -774,7 +774,7 @@ public class CollaborativeTextHelper {
                     .toList();
             for (Trait trait : newTraits) {
                 updatedPlayerIds.addAll(applyTraitToPlayers(trait, nonStoryPlayers));
-                String typeWord = trait.getTraitType() == TraitType.TITLE ? "title" : "trait";
+                String typeWord = getTypeWord(trait);
                 outcomeDisplay.add("All players gained the " + typeWord + " \"" + trait.getTraitLabel() + "\"!");
             }
         }
@@ -786,7 +786,7 @@ public class CollaborativeTextHelper {
         Set<String> updatedPlayerIds = new HashSet<>();
         for (Trait trait : newTraits) {
             updatedPlayerIds.addAll(applyTraitToPlayers(trait, storyPlayers));
-            String typeWord = trait.getTraitType() == TraitType.TITLE ? "title" : "trait";
+            String typeWord = getTypeWord(trait);
             outcomeDisplay.add("You gained the " + typeWord + " \"" + trait.getTraitLabel() + "\"!");
         }
 
@@ -796,6 +796,16 @@ public class CollaborativeTextHelper {
             adventureMapDAO.updateGameSessionAdventureMap(gameCode, adventureMap);
         }
         return updatedPlayerIds;
+    }
+
+    private static @NonNull String getTypeWord(Trait trait) {
+        if (trait.getTraitType() == TraitType.TITLE) {
+            return "title";
+        }
+        if (trait.getTraitType() == TraitType.COMPANION) {
+            return "companion";
+        }
+        return "trait";
     }
 
     private Set<String> applyTraitToPlayers(Trait trait, List<Player> players) {
