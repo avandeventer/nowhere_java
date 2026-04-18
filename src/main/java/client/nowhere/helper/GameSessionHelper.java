@@ -243,7 +243,12 @@ public class GameSessionHelper {
                     boolean encounterAtNext = collaborativeTextHelper.handleNavigationStreamlined(gameSession.getGameCode());
                     if (!encounterAtNext) {
                         if (gameSession.getRoundNumber() < 2) {
-                            gameSession.setGameState(WHAT_HAPPENS_HERE);
+                            if (locationVoting) {
+                                collaborativeTextHelper.initializeLocationVoting(gameSession.getGameCode());
+                                gameSession.setGameState(LOCATION_VOTING);
+                            } else {
+                                gameSession.setGameState(WHAT_HAPPENS_HERE);
+                            }
                             gameSession.setRoundNumber(gameSession.getRoundNumber() + 1);
                         } else {
                             gameSession.setGameState(WRITE_EPILOGUES);

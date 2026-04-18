@@ -885,12 +885,25 @@ public class CollaborativeTextHelper {
             List<EncounterLabel> encounterLabels = adventureMap.getEncounterLabels() != null
                     ? adventureMap.getEncounterLabels() : new ArrayList<>();
 
+            List<Story> stories = gameSession.getStories();
+            Set<String> visitedLocationIds = new HashSet<>();
+            if (stories != null && !stories.isEmpty()) {
+                stories.stream()
+                        .filter(Story::isVisited)
+                        .map(Story::getLocation)
+                        .filter(Objects::nonNull)
+                        .map(Location::getId)
+                        .filter(Objects::nonNull)
+                        .forEach(visitedLocationIds::add);
+            }
+
             Map<String, Long> countByLocation = encounterLabels.stream()
                     .filter(el -> el.getLocationId() != null && !el.getLocationId().isEmpty())
                     .collect(Collectors.groupingBy(EncounterLabel::getLocationId, Collectors.counting()));
 
             List<Location> topLocations = adventureMap.getLocations().stream()
                     .filter(loc -> countByLocation.getOrDefault(loc.getId(), 0L) > 0)
+                    .filter(loc -> !visitedLocationIds.contains(loc.getId()))
                     .sorted(Comparator.comparingLong((Location loc) -> countByLocation.getOrDefault(loc.getId(), 0L)).reversed())
                     .limit(3)
                     .toList();
@@ -1457,6 +1470,7 @@ public class CollaborativeTextHelper {
             collaborativeTextDAO.clearPhase(gameCode, GameState.WHAT_HAPPENS_HERE.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, WHAT_CAN_WE_TRY.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name(), true);
+            collaborativeTextDAO.clearPhase(gameCode, GameState.LOCATION_VOTING.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE_AGAIN.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.MAKE_CHOICE_VOTING.name(), false);
             collaborativeTextDAO.clearPhase(gameCode, GameState.NAVIGATE_VOTING.name(), false);
@@ -2038,7 +2052,7 @@ public class CollaborativeTextHelper {
 
         if (prequelStory != null) {
             EncounterLabel prequelLabel = prequelStory.getEncounterLabel();
-            OutcomeType encounterSubType = new OutcomeType(prequelLabel.getEncounterId(), prequelLabel.getEncounterLabel());
+            OutcomeType encounterSubType = new OutcomeType(prequelLabel.getEncounterId(), prequelLabel.getEncounterLabel(), prequelStory.getStoryId());
             locationParent.getSubTypes().add(encounterSubType);
         }
 
@@ -2144,14 +2158,6 @@ public class CollaborativeTextHelper {
         List<EncounterLabel> availableLabels = gameSession.getStories() == null
                 || gameSession.getStories().isEmpty() ? assignedLabels :
                 getUnusedAssignedEncounterLabels(assignedLabels, gameSession.getStories());
-        if (prequelStory != null) {
-            EncounterLabel prequelLabel = prequelStory.getEncounterLabel();
-            boolean alreadyIncluded = availableLabels.stream()
-                    .anyMatch(el -> el.getEncounterId().equals(prequelLabel.getEncounterId()));
-            if (!alreadyIncluded) {
-                availableLabels.add(prequelLabel);
-            }
-        }
 
         return buildLocationWrappedOutcomeTypes(assignedPlayer, availableLabels, gameSession.getAdventureMap(), prequelStory);
     }
@@ -2268,7 +2274,7 @@ public class CollaborativeTextHelper {
 
     public List<TextSubmission> getMakeChoiceVotingOutcomeForks(GameSession gameSession) {
         Story currentEncounterStory = gameSession.getStoryAtCurrentPlayerCoordinates();
-        if (currentEncounterStory.getSelectedOptionId().isEmpty()) {
+        if (currentEncounterStory == null || currentEncounterStory.getSelectedOptionId().isEmpty()) {
             return new ArrayList<>();
         }
 
