@@ -1022,8 +1022,8 @@
                     "outcomeType": null,
                     "outcomeTypeWithLabel": null,
                     "repercussion": {
-                      "repercussionType": "Encounter Becomes Your Companion",
-                      "repercussionSubmission": "",
+                      "repercussionType": "Companion",
+                      "repercussionSubmission": "Snailz A",
                       "color": "#24bf86"
                     }
                   }
@@ -3990,8 +3990,8 @@
               "outcomeType": null,
               "outcomeTypeWithLabel": null,
               "repercussion": {
-                "repercussionType": "Encounter Becomes Your Companion",
-                "repercussionSubmission": "",
+                "repercussionType": "Companion",
+                "repercussionSubmission": "Snailz A",
                 "color": "#24bf86"
               }
             }
