@@ -678,11 +678,11 @@ public class CollaborativeTextHelper {
                         addition.getRepercussion() != null && !addition.getRepercussion().getRepercussionType().isEmpty())
                 .map(TextAddition::getRepercussion).toList();
 
-        if (!repercussions.isEmpty()) {
-            if (story != null) {
-                OutcomeFork outcomeFork = story.getSelectedOption().getSelectedOutcomeFork();
-                if (outcomeFork != null) {
-                    story.getSelectedOption().getSelectedOutcomeFork().setRepercussions(repercussions);
+        if (story != null) {
+            OutcomeFork outcomeFork = story.getSelectedOption().getSelectedOutcomeFork();
+            if (outcomeFork != null) {
+                story.getSelectedOption().getSelectedOutcomeFork().setRepercussions(repercussions);
+                if (!repercussions.isEmpty()) {
                     handleRepercussions(gameSession, story, repercussions);
                 }
                 storyDAO.updateStory(story);
@@ -1955,7 +1955,8 @@ public class CollaborativeTextHelper {
                 List<Story> assignedStories = gameSession.getStories().stream().filter(story -> story.isVisited()
                         && story.getPlayerIds().contains(assignedPlayer.getAuthorId())).toList();
                 List<OutcomeType> outcomeTypes = assignedStories.stream()
-                        .map(CollaborativeTextHelper::convertToOutcomeType).toList();
+                        .map(CollaborativeTextHelper::convertToOutcomeType)
+                        .filter(Objects::nonNull).toList();
                 OutcomeType playerOutcome = new OutcomeType(
                         assignedPlayer.getAuthorId(),
                         assignedPlayer.getDisplayName()
@@ -1995,19 +1996,25 @@ public class CollaborativeTextHelper {
             return null;
         }
 
-        OutcomeFork selectedOutcomeFork = selectedOption.getSelectedOutcomeFork();
-        if (selectedOutcomeFork == null) {
-            return null;
-        }
         OutcomeType encounterOutcomeType = new OutcomeType(encounterLabel.getEncounterId(), encounterLabel.getEncounterLabel());
         OutcomeType storyOutcomeType =  new OutcomeType(story.getStoryId(), story.getPrompt());
-        OutcomeType optionOutcomeType = new OutcomeType(selectedOption.getOptionId(), selectedOption.getOptionText());
-        OutcomeType forkOutcomeType = new OutcomeType(selectedOutcomeFork.getTextSubmission().getSubmissionId(), selectedOutcomeFork.getTextSubmission().getCurrentText());
-
-        optionOutcomeType.setSubTypes(List.of(forkOutcomeType));
+        OutcomeType optionOutcomeType = getOptionOutcomeType(selectedOption);
         storyOutcomeType.setSubTypes(List.of(optionOutcomeType));
         encounterOutcomeType.setSubTypes(List.of(storyOutcomeType));
         return encounterOutcomeType;
+    }
+
+    private static @NonNull OutcomeType getOptionOutcomeType(Option selectedOption) {
+        OutcomeType optionOutcomeType = new OutcomeType(selectedOption.getOptionId(), selectedOption.getOptionText());
+        OutcomeType forkOutcomeType = new OutcomeType(selectedOption.getSelectedForkId(), selectedOption.getSuccessText());
+
+        OutcomeFork selectedOutcomeFork = selectedOption.getSelectedOutcomeFork();
+        if (selectedOutcomeFork != null) {
+            forkOutcomeType = new OutcomeType(selectedOutcomeFork.getTextSubmission().getSubmissionId(), selectedOutcomeFork.getTextSubmission().getCurrentText());
+        }
+
+        optionOutcomeType.setSubTypes(List.of(forkOutcomeType));
+        return optionOutcomeType;
     }
 
     private static @Nullable Story findAssignedPrequelStory(GameSession gameSession, Set<String> assignedLabelIds) {
@@ -2112,7 +2119,7 @@ public class CollaborativeTextHelper {
     private @NonNull List<OutcomeType> distributeEncounterLabelsByLocation(
             String playerId, GameSession gameSession, List<EncounterLabel> allEncounterLabels, Story prequelStory) {
 
-        int offsetValue = gameSession.getPlayers().size() > 4 ? 1 : 2;
+        int offsetValue = gameSession.getPlayers().size() > 4 ? 2 : 1;
         PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, playerId, offsetValue);
         Player assignedPlayer = playerSortResult.getAssignedAuthor();
 

@@ -807,16 +807,19 @@ public class CollaborativeTextHelperTest {
         gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_VOTING);
         String gameCode = gameSession.getGameCode();
 
-        Story timeTravelersStory = gameSession.getStoryAtCurrentPlayerCoordinates();
-        timeTravelersStory.setSelectedOptionId(selectedOptionId);
+        Story storyVotedOn = gameSession.getStoryAtCurrentPlayerCoordinates();
+        storyVotedOn.setSelectedOptionId(selectedOptionId);
 
-        Option selectedOption = timeTravelersStory.getSelectedOption();
+        Option selectedOption = storyVotedOn.getSelectedOption();
         CollaborativeTextPhase makeOutcomePhase = gameSession.getCollaborativeTextPhases()
                 .computeIfAbsent(GameState.MAKE_OUTCOME_CHOICE_VOTING.name(), k -> new CollaborativeTextPhase());
         for (OutcomeFork fork : selectedOption.getOutcomeForks()) {
             makeOutcomePhase.addSubmission(fork.getTextSubmission());
         }
-        makeOutcomePhase.addPlayerVote(new PlayerVote("", "", votedSubmissionId, 1));
+
+        if (!votedSubmissionId.isEmpty()) {
+            makeOutcomePhase.addPlayerVote(new PlayerVote("", "", votedSubmissionId, 1));
+        }
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
 
@@ -859,11 +862,15 @@ public class CollaborativeTextHelperTest {
             }
         }
         if (shouldUpdateStoryRepercussions) {
-            assertTrue(timeTravelersStory.getRepercussions().stream().anyMatch(repercussion -> repercussion.getRepercussionType().equalsIgnoreCase(RepercussionType.ALL_PLAYERS.getName())),
+            assertTrue(storyVotedOn.getRepercussions().stream().anyMatch(repercussion -> repercussion.getRepercussionType().equalsIgnoreCase(RepercussionType.ALL_PLAYERS.getName())),
                     "If only the ALL PLAYER repercussion is present we should reflect that on the story");
         } else {
-            assertNull(timeTravelersStory.getRepercussions(), "Story level repercussions should only be updated if ALL PLAYER effect is presented solo");
+            assertNull(storyVotedOn.getRepercussions(), "Story level repercussions should only be updated if ALL PLAYER effect is presented solo");
         }
+
+        verify(storyDAO).updateStory(argThat(story ->
+                story.getSelectedOption().getSelectedForkId().equals(votedSubmissionId)
+        ));
     }
 
     static Stream<Arguments> provideOutcomeChoiceScenarios() {
@@ -947,7 +954,7 @@ public class CollaborativeTextHelperTest {
                 Arguments.of(
                         "Polyamory (6,0) - option Form a Harem - Fork: Man Fruit Lover title + Fruit basket trait",
                         "76792952-31c5-443e-805a-c69279ae3b1b",
-                        "b59673da-137f-4b81-8dc6-f816d2a9bf47",
+                        "e56c004d-bde7-4fad-81ab-a8e506b28ee4",
                         Map.of("3f8e49dc-37d2-4bdf-b278-17fe6a472e8e", List.of("Fruit basket")),
                         Map.of("3f8e49dc-37d2-4bdf-b278-17fe6a472e8e", List.of("Man Fruit Lover")),
                         List.of(
@@ -956,6 +963,35 @@ public class CollaborativeTextHelperTest {
                         ),
                         false,
                         "ACTUAL_GAME_WRITE_EPILOGUES.json",
+                        new PlayerCoordinates(6, 0)
+                ),
+                Arguments.of(
+                        "Your Old Self (6,0) - All players play one player votes on forks - option Open ur butt - Fork: Sexy mama trait",
+                        "c59d1373-5d65-47d9-b7fd-e6a725de5a1b",
+                        "195a594d-7e0e-4e9b-92af-8f5c7f7ff43a",
+                        Map.of(
+                                "44c3ed0a-38d7-4089-a364-a00c15df6f20", List.of("Sexy mama"),
+                                "46a07fda-c3c9-46f8-985a-099d60368809", List.of("Sexy mama"),
+                                "39f83760-aa80-46a7-88b5-cd051c299aa9", List.of("Sexy mama"),
+                                "befcb139-daa1-4c94-89da-ccb786deaac8", List.of("Sexy mama")
+                        ),
+                        Map.of(),
+                        List.of(
+                                "You gained the trait \"Sexy mama\"!"
+                        ),
+                        false,
+                        "WRITE_EPILOGUES_TEDWOOD.json",
+                        new PlayerCoordinates(6, 0)
+                ),
+                Arguments.of(
+                        "Your Old Self (6,0) - All players play one player votes on forks - option Open ur butt - Fork: Sexy mama trait",
+                        "c59d1373-5d65-47d9-b7fd-e6a725de5a1b",
+                        "ec5c3128-c629-49c8-98aa-c2467333bd7e",
+                        Map.of(),
+                        Map.of(),
+                        List.of(),
+                        false,
+                        "WRITE_EPILOGUES_TEDWOOD.json",
                         new PlayerCoordinates(6, 0)
                 )
         );
@@ -1173,18 +1209,18 @@ public class CollaborativeTextHelperTest {
                         "WHAT_HAPPENS_HERE_LOCATION_VOTING.json",
                         WHAT_HAPPENS_HERE,
                         Map.of(
-                                "Andy", List.of("d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"), // location selected by Joe
-                                "Joe", List.of("2a033cf6-af28-4d45-b925-edfc86c79866"),  // location selected by Byron
-                                "Byron", List.of("247bf271-2656-4e1d-bf8d-7b59dc69cff7"), // location selected by Kirsten
-                                "Kirsten", List.of("d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"), // location selected by Parker
-                                "Parker", List.of("247bf271-2656-4e1d-bf8d-7b59dc69cff7") // location selected by Andy
+                                "Andy", List.of("2a033cf6-af28-4d45-b925-edfc86c79866"), // location selected by Joe
+                                "Joe", List.of("247bf271-2656-4e1d-bf8d-7b59dc69cff7"),  // location selected by Byron
+                                "Byron", List.of("d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"), // location selected by Kirsten
+                                "Kirsten", List.of("247bf271-2656-4e1d-bf8d-7b59dc69cff7"), // location selected by Parker
+                                "Parker", List.of("d33cf081-da9d-4c84-ac04-9cf15f8f4e4e") // location selected by Andy
                         ),
                         Map.of(
-                                "Andy", List.of("Rimplestillstkon C", "Small Fry McMann E"),
-                                "Joe", List.of("Grompkin a Magic Guy D", "Holy Water in a Stein D", "Smoll Mon D"),
-                                "Byron", List.of("My Mom C", "Pearls for sale C", "Schmo, Your Old Bestie B", "Steely Dan A"),
-                                "Kirsten", List.of("Goats E", "Polyps R"),
-                                "Parker", List.of("Danny Steve A", "Pigs for sale C", "Sauce Boss A")
+                                "Andy", List.of("Grompkin a Magic Guy D", "Holy Water in a Stein D", "Smoll Mon D"),
+                                "Joe", List.of("My Mom C", "Pearls for sale C", "Schmo, Your Old Bestie B", "Steely Dan A"),
+                                "Byron", List.of("Rimplestillstkon C", "Small Fry McMann E"),
+                                "Kirsten", List.of("Danny Steve A", "Pigs for sale C", "Sauce Boss A"),
+                                "Parker", List.of("Goats E", "Polyps R")
                         ),
                         true
                 ),
@@ -1223,6 +1259,24 @@ public class CollaborativeTextHelperTest {
                                 "Joe",     List.of("Travel to the past C", "Travel forward A", "Travel back D", "use trait: Strong", "use trait: In Love"), //Already wrote for trait "Alcoholic"
                                 "Subodh",  List.of("Pet them hard A", "use trait: Charming", "use trait: Saucy", "use trait: Strong"),
                                 "Kirsten", List.of("Dance! A", "Jump Around A", "Dance with em! A", "Tell em to quiet down A", "Make cakes B", "use trait: Gluttonous", "use trait: Shifty") //Already wrote for trait "Undead"
+                        ),
+                        false
+                ),
+                Arguments.of(
+                        "WRITE_EPILOGUES - 4 players, players are distributed to each other",
+                        "WRITE_EPILOGUES_TEDWOOD.json",
+                        WRITE_EPILOGUES,
+                        Map.of(
+                                "Jen",    List.of("befcb139-daa1-4c94-89da-ccb786deaac8"), // Goni is assigned to Jen
+                                "Tedwood",     List.of("44c3ed0a-38d7-4089-a364-a00c15df6f20"), // Jen is assigned to Tedwood
+                                "Booty",  List.of("46a07fda-c3c9-46f8-985a-099d60368809"), // Tewdood is assigned to Booty
+                                "Goni", List.of("39f83760-aa80-46a7-88b5-cd051c299aa9") // Booty is assigned to Goni
+                        ),
+                        Map.of(
+                                "Jen",    List.of("A bunch of quarters", "Your Old Self", "Sneaky Raccoons"), //Two unique encounters, and an all player story
+                                "Tedwood",     List.of("Your Old Self", "Your Old Self"), //Assigned a story and its sequel
+                                "Booty",  List.of("Flying Beasts", "Flying Beasts", "Your Old Self"), //A story, its sequel, and an all player story
+                                "Goni", List.of("The big-breasted beauty", "A box that is too small but also too big", "Your Old Self") //Two unique encounters, and an all player story
                         ),
                         false
                 )
