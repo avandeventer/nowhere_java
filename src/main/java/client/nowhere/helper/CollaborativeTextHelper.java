@@ -882,8 +882,9 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            List<EncounterLabel> encounterLabels = adventureMap.getEncounterLabels() != null
-                    ? adventureMap.getEncounterLabels() : new ArrayList<>();
+            List<Player> players = gameSession.getPlayers();
+            int playerCount = players != null ? players.size() : 0;
+            if (playerCount == 0) return;
 
             List<Story> stories = gameSession.getStories();
             Set<String> visitedLocationIds = new HashSet<>();
@@ -897,19 +898,13 @@ public class CollaborativeTextHelper {
                         .forEach(visitedLocationIds::add);
             }
 
-            Map<String, Long> countByLocation = encounterLabels.stream()
-                    .filter(el -> el.getLocationId() != null && !el.getLocationId().isEmpty())
-                    .collect(Collectors.groupingBy(EncounterLabel::getLocationId, Collectors.counting()));
-
-            List<Location> topLocations = adventureMap.getLocations().stream()
-                    .filter(loc -> countByLocation.getOrDefault(loc.getId(), 0L) > 0)
-                    .filter(loc -> !visitedLocationIds.contains(loc.getId()))
-                    .sorted(Comparator.comparingLong((Location loc) -> countByLocation.getOrDefault(loc.getId(), 0L)).reversed())
-                    .limit(3)
-                    .toList();
+            List<Location> candidateLocations = new ArrayList<>(adventureMap.getLocations());
+            candidateLocations.removeIf(loc -> visitedLocationIds.contains(loc.getId()));
+            Collections.shuffle(candidateLocations);
+            List<Location> selectedLocations = candidateLocations.subList(0, Math.min(playerCount, candidateLocations.size()));
 
             String phaseId = GameState.LOCATION_VOTING.name();
-            for (Location location : topLocations) {
+            for (Location location : selectedLocations) {
                 TextSubmission submission = new TextSubmission();
                 submission.setSubmissionId(location.getId());
                 submission.setCurrentText(location.getLabel());
@@ -1470,7 +1465,7 @@ public class CollaborativeTextHelper {
             collaborativeTextDAO.clearPhase(gameCode, GameState.WHAT_HAPPENS_HERE.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, WHAT_CAN_WE_TRY.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name(), true);
-            collaborativeTextDAO.clearPhase(gameCode, GameState.LOCATION_VOTING.name(), true);
+            collaborativeTextDAO.clearPhase(gameCode, GameState.LOCATION_VOTING.name(), false);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE_AGAIN.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.MAKE_CHOICE_VOTING.name(), false);
             collaborativeTextDAO.clearPhase(gameCode, GameState.NAVIGATE_VOTING.name(), false);
@@ -1820,15 +1815,24 @@ public class CollaborativeTextHelper {
             if (phaseId == GameState.SET_ENCOUNTERS) {
                 boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
                 if (!locationVoting) return new ArrayList<>();
-                AdventureMap adventureMap = gameSession.getAdventureMap();
-                if (adventureMap == null || adventureMap.getLocations() == null || adventureMap.getLocations().isEmpty()) {
+                CollaborativeTextPhase locationVotingPhase = collaborativeTextDAO.getCollaborativeTextPhase(
+                        gameCode, GameState.LOCATION_VOTING.name());
+                if (locationVotingPhase == null || locationVotingPhase.getSubmissions() == null
+                        || locationVotingPhase.getSubmissions().isEmpty()) {
                     return new ArrayList<>();
                 }
-                List<Location> locations = new ArrayList<>(adventureMap.getLocations());
-                Collections.shuffle(locations);
-                return locations.subList(0, Math.min(2, locations.size())).stream()
-                        .map(loc -> new OutcomeType(loc.getId(), loc.getLabel()))
-                        .collect(Collectors.toList());
+                List<Player> players = gameSession.getPlayers();
+                int playerIndex = -1;
+                for (int i = 0; i < players.size(); i++) {
+                    if (players.get(i).getAuthorId().equals(playerId)) {
+                        playerIndex = i;
+                        break;
+                    }
+                }
+                if (playerIndex == -1) return new ArrayList<>();
+                List<TextSubmission> submissions = locationVotingPhase.getSubmissions();
+                TextSubmission assigned = submissions.get((playerIndex + 1) % submissions.size());
+                return Collections.singletonList(new OutcomeType(assigned.getSubmissionId(), assigned.getCurrentText()));
             } else if (phaseId == GameState.WHAT_HAPPENS_HERE) {
                 if (gameSession.getRoundNumber() == 1) {
                     List<EncounterLabel> encounterLabels = getEncounterLabels(gameCode);

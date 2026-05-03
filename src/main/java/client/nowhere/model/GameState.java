@@ -92,18 +92,18 @@ public enum GameState {
                 return GameState.PREAMBLE;
             }
             case PREAMBLE -> {
+                return locationVoting ? GameState.LOCATION_VOTING : GameState.SET_ENCOUNTERS;
+            }
+            case LOCATION_VOTING -> {
+                return GameState.LOCATION_WINNING;
+            }
+            case LOCATION_WINNING -> {
                 return GameState.SET_ENCOUNTERS;
             }
             case SET_ENCOUNTERS -> {
                 return GameState.SET_ENCOUNTERS_WINNERS;
             }
             case SET_ENCOUNTERS_WINNERS -> {
-                return locationVoting ? GameState.LOCATION_VOTING : GameState.WHAT_HAPPENS_HERE;
-            }
-            case LOCATION_VOTING -> {
-                return GameState.LOCATION_WINNING;
-            }
-            case LOCATION_WINNING -> {
                 return GameState.WHAT_HAPPENS_HERE;
             }
             case GameState.WHAT_HAPPENS_HERE ->  {
