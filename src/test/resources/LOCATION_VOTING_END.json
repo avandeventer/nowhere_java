@@ -1,0 +1,3148 @@
+{
+  "gameCode": "3EK28Z",
+  "players": [
+    {
+      "authorId": "d0d63d8f-5f82-43ab-ac42-c7592c3a717a",
+      "userName": "Andy",
+      "displayName": "Andy",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+            "label": "dexterity",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "eb687e49-488a-445b-860d-cd924e504a51",
+            "label": "magic",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "cd872364-a893-4b87-9f42-3e30de40a93e",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "Erysus",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+            "label": "intellect",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+            "label": "charisma",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "6041168f-6835-46ca-be01-0e69956c4393",
+            "label": "strength",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+            "label": "wealth",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "0",
+          "traitLabel": "Charming",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "5",
+          "traitLabel": "Saucy",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "10",
+          "traitLabel": "Magical",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        }
+      ],
+      "titles": null,
+      "gameCode": "3EK28Z",
+      "joinedAt": 1778468664846,
+      "playerClass": {
+        "name": "Bard",
+        "description": "Your skill with spreading a good tale allows you to spread story outcomes to all players, including yourself",
+        "repercussionTypes": [
+          "ALL_PLAYERS"
+        ]
+      },
+      "selectedLocationId": null,
+      "firstPlayer": true
+    },
+    {
+      "authorId": "e6e4b325-d91a-430f-a122-dfcde7747b49",
+      "userName": "Joe",
+      "displayName": "Joe",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+            "label": "dexterity",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "eb687e49-488a-445b-860d-cd924e504a51",
+            "label": "magic",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "cd872364-a893-4b87-9f42-3e30de40a93e",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "Erysus",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+            "label": "intellect",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+            "label": "charisma",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "6041168f-6835-46ca-be01-0e69956c4393",
+            "label": "strength",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+            "label": "wealth",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "1",
+          "traitLabel": "Smart",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "6",
+          "traitLabel": "Undead",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "7",
+          "traitLabel": "In Love",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        }
+      ],
+      "titles": null,
+      "gameCode": "3EK28Z",
+      "joinedAt": 1778468668707,
+      "playerClass": {
+        "name": "Herald",
+        "description": "Your rank allows you to give new titles to other players",
+        "repercussionTypes": [
+          "TITLE"
+        ]
+      },
+      "selectedLocationId": null,
+      "firstPlayer": false
+    },
+    {
+      "authorId": "cf271094-3ace-4c41-9475-0cd665ed3d4d",
+      "userName": "Byron",
+      "displayName": "Byron",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+            "label": "dexterity",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "eb687e49-488a-445b-860d-cd924e504a51",
+            "label": "magic",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "cd872364-a893-4b87-9f42-3e30de40a93e",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "Erysus",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+            "label": "intellect",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+            "label": "charisma",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "6041168f-6835-46ca-be01-0e69956c4393",
+            "label": "strength",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+            "label": "wealth",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "3",
+          "traitLabel": "Fast",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "4",
+          "traitLabel": "Wealthy",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "10",
+          "traitLabel": "Magical",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        }
+      ],
+      "titles": null,
+      "gameCode": "3EK28Z",
+      "joinedAt": 1778468677417,
+      "playerClass": {
+        "name": "Scribe",
+        "description": "Your fondness for recording the histories of other adventurers allows you to add Traits to other players",
+        "repercussionTypes": [
+          "TRAIT"
+        ]
+      },
+      "selectedLocationId": null,
+      "firstPlayer": false
+    },
+    {
+      "authorId": "b1d4f188-61c0-4f0c-be74-d701bbf054ed",
+      "userName": "Kirsten",
+      "displayName": "Kirsten",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+            "label": "dexterity",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "eb687e49-488a-445b-860d-cd924e504a51",
+            "label": "magic",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "cd872364-a893-4b87-9f42-3e30de40a93e",
+            "label": "favor",
+            "description": null,
+            "favorEntity": "Erysus",
+            "favorType": true
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+            "label": "intellect",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+            "label": "charisma",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "6041168f-6835-46ca-be01-0e69956c4393",
+            "label": "strength",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        },
+        {
+          "statType": {
+            "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+            "label": "wealth",
+            "description": null,
+            "favorEntity": null,
+            "favorType": false
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "1",
+          "traitLabel": "Smart",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "5",
+          "traitLabel": "Saucy",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "9",
+          "traitLabel": "Gluttonous",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        }
+      ],
+      "titles": null,
+      "gameCode": "3EK28Z",
+      "joinedAt": 1778468684343,
+      "playerClass": {
+        "name": "Fabulist",
+        "description": "Your penchant for writing fables allows you to convert Encounters players may have into Traits that stay with them",
+        "repercussionTypes": [
+          "COMPANION"
+        ]
+      },
+      "selectedLocationId": null,
+      "firstPlayer": false
+    }
+  ],
+  "gameState": "LOCATION_VOTING",
+  "activePlayerSession": {
+    "gameCode": "",
+    "playerId": "",
+    "playerChoiceOptionId": "",
+    "selectedLocationOptionId": "",
+    "story": {
+      "storyId": "",
+      "prompt": "",
+      "authorId": "",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "",
+      "playerIds": [],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "repercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": null,
+      "encounterLabel": null,
+      "location": null
+    },
+    "location": null,
+    "outcomeDisplay": [],
+    "locationOutcomeDisplay": [],
+    "ritualStory": null,
+    "setNextPlayerTurn": false,
+    "isPlayerDoneWithTurn": {
+      "b1d4f188-61c0-4f0c-be74-d701bbf054ed": false,
+      "e6e4b325-d91a-430f-a122-dfcde7747b49": false,
+      "d0d63d8f-5f82-43ab-ac42-c7592c3a717a": false,
+      "cf271094-3ace-4c41-9475-0cd665ed3d4d": false
+    },
+    "repercussions": {
+      "ending": null,
+      "locationDestroyed": null
+    },
+    "startTimer": false,
+    "writeTimerDone": false
+  },
+  "activeGameStateSession": {
+    "gameCode": "3EK28Z",
+    "isPlayerDone": {
+      "b1d4f188-61c0-4f0c-be74-d701bbf054ed": false,
+      "e6e4b325-d91a-430f-a122-dfcde7747b49": true,
+      "d0d63d8f-5f82-43ab-ac42-c7592c3a717a": true,
+      "cf271094-3ace-4c41-9475-0cd665ed3d4d": true
+    }
+  },
+  "stories": null,
+  "adventureMap": {
+    "name": "Nowhere",
+    "adventureId": "a6a6e1ab-de29-4ffb-9028-7c4f90f9d008",
+    "statTypes": [
+      {
+        "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+        "label": "dexterity",
+        "description": null,
+        "favorEntity": null,
+        "favorType": false
+      },
+      {
+        "id": "eb687e49-488a-445b-860d-cd924e504a51",
+        "label": "magic",
+        "description": null,
+        "favorEntity": null,
+        "favorType": false
+      },
+      {
+        "id": "cd872364-a893-4b87-9f42-3e30de40a93e",
+        "label": "favor",
+        "description": null,
+        "favorEntity": "Erysus",
+        "favorType": true
+      },
+      {
+        "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+        "label": "intellect",
+        "description": null,
+        "favorEntity": null,
+        "favorType": false
+      },
+      {
+        "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+        "label": "charisma",
+        "description": null,
+        "favorEntity": null,
+        "favorType": false
+      },
+      {
+        "id": "6041168f-6835-46ca-be01-0e69956c4393",
+        "label": "strength",
+        "description": null,
+        "favorEntity": null,
+        "favorType": false
+      },
+      {
+        "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+        "label": "wealth",
+        "description": null,
+        "favorEntity": null,
+        "favorType": false
+      }
+    ],
+    "gameSessionDisplay": {
+      "mapDescription": "The season of harvest has arrived and we all must spend the coming weeks preparing for the ritual to our patron God of Harvest, Erysus. Our very survival is dependent on her whims.",
+      "goalDescription": "The ritual at the end of the season will determine whether we will live or die this year. Those who are invested in the well-being of our little hamlet will make choices that please Erysus, but there will still be those among us who choose frivolity.",
+      "playerTitle": "",
+      "playerDescription": "",
+      "endingDescription": "Erysus arrives. Her great blue eye drifts behind the clouds that make up the harvest sky, expectantly. We must all do our part to make sure our ritual to her pleases her. How will we each proceed?",
+      "successText": "And so the ritual lasted long into the night just as it always does. All of the citizens of our little hamlet in the middle of Nowhere did their best to impress Erysus lest she deliver a season where they could provide for their families. After a night of colors and feasting and prayer, we awaken to fields abundant with new sprouts. The winter has ended and Erysus has looked kindly upon us. We hug and we cry and we begin to work again once more in the fields and those among us who believe set upon their task of preparing to pray again next year before the god who sees our faith and shows us mercy. The almighty Erysus!",
+      "neutralText": "And so the ritual lasted long into the night just as it always does. All of the citizens of our little hamlet in the middle of Nowhere did their best to impress Erysus lest she deliver a season where they could provide for their families. It was a long night and some things went better than others and as the sun rises it is unclear how we did. The wind is hollow and the dirt does not seem to bare fruit. Just as the townspeople are preparing to pack up their things and scramble to the local trading post in anticipation of a bare season, someone notices a small patch of crop peaking up from behind the pyre. We may not have excelled, but the glimmer of Erysus' eye shines down upon us. Perhaps we will not starve after all.",
+      "failureText": "And so the ritual lasted long into the night just as it always does. All of the citizens of our little hamlet in the middle of Nowhere did their best to impress Erysus lest she deliver a season where they could provide for their families. However. The night is filled with folly and, despite the best efforts of the faithful, Erysus seems to have abandoned us come morning. The fields do not sprout, the air remains cold, and children go hungry. The season of winter has ended, but we do not see any change. Those who are faithful begin their task of convincing the community that our ritual next year should be grander, but many in the community lose faith altogether. It will be a year of despair.",
+      "entity": "Erysus",
+      "whereAreWeSubmission": null,
+      "whoAreWeSubmission": null,
+      "whatIsOurGoalSubmission": null
+    },
+    "locations": [
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "12b207a8-34e6-4fb4-bfca-934f6b9e4f26",
+        "label": "Discussion Parlor",
+        "options": [
+          {
+            "optionId": "fc1a3ecd-8363-4ab8-9fbb-e926a97ce235",
+            "optionText": "Hold a Debate",
+            "attemptText": "You spend the week contributing to the town's systems of governance. The rigorous discussion improves your ability to make your voice heard.",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                    "label": "intellect",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                    "label": "charisma",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "4fe72c3c-c95a-42ce-bc40-32532824dcbd",
+            "optionText": "Research",
+            "attemptText": "You spend the week learning about the town's history. You feel better prepared for the road ahead.",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                    "label": "magic",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                    "label": "intellect",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/DiscussionParlor.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "23659697-ce5a-46a7-ba6d-4887e1221b0a",
+        "label": "The Wilds",
+        "options": [
+          {
+            "optionId": "b2addfc3-e360-424e-b39b-101571e6cc1d",
+            "optionText": "Adventure",
+            "attemptText": "You spend the week wandering in the wilds and avoiding danger. Your footing improves and you even find some treasure.",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                    "label": "dexterity",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                    "label": "wealth",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "be0b7c9c-be6d-4f65-a706-332c61e3cadc",
+            "optionText": "Forage",
+            "attemptText": "You spend the week looking for resources for the town. You learn a lot about the forest surrounding your town!",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                    "label": "intellect",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                    "label": "dexterity",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Wilds.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "8645ee4c-611e-47ee-85d8-0edc73985613",
+        "label": "Tavern",
+        "options": [
+          {
+            "optionId": "16b4b627-6eea-480e-851e-51379adae565",
+            "optionText": "Drink",
+            "attemptText": "You spend the week drinking. You gain some friends and build a tolerance.",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                    "label": "strength",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                    "label": "charisma",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "eb2029f8-a963-4770-862a-e0c394a64ad8",
+            "optionText": "Bartend",
+            "attemptText": "You spend the week serving mead. You are charming and are tipped well!",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                    "label": "charisma",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                    "label": "wealth",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "8a67c4c0-27cb-4b15-bdb6-fe27bbedd6eb",
+        "label": "Farmlands",
+        "options": [
+          {
+            "optionId": "f1c97c8d-52cc-4859-8dcc-ee0d7389ea12",
+            "optionText": "Till the Earth",
+            "attemptText": "You spend the week planting and caring for the plant life. Your standing with nature improves.",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "cd872364-a893-4b87-9f42-3e30de40a93e",
+                    "label": "favor",
+                    "description": null,
+                    "favorEntity": "Erysus",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                    "label": "strength",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "27c94da4-2879-43e3-addc-fb1bdb00dd41",
+            "optionText": "Tame the Beasts",
+            "attemptText": "You spend the tending to the beasts and retrieving their pelts and milks. Your body hardens and you get to pet lots of cute critters.",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                    "label": "strength",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                    "label": "dexterity",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Farmlands.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "0ee969b9-c70f-40c4-a082-8f2205097c62",
+        "label": "Apothecary",
+        "options": [
+          {
+            "optionId": "491efbab-3287-4289-bd65-63e639115678",
+            "optionText": "Apprentice",
+            "attemptText": "You spend the week training under the masters of the old magics. You learn a lot and feel your connection to the world increase.",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                    "label": "magic",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                    "label": "intellect",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "8ec6cb0b-89ab-4069-9059-8d5584d0579f",
+            "optionText": "Experiment",
+            "attemptText": "You spend the week trying out spells you haven't tried before. You grow your familiarity with magic and see some unexpected results.",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                    "label": "magic",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "cd872364-a893-4b87-9f42-3e30de40a93e",
+                    "label": "favor",
+                    "description": null,
+                    "favorEntity": "Erysus",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+        "authorId": null
+      }
+    ],
+    "unusedLocations": [
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "9eea0b56-424d-4564-8e12-597785e16372",
+        "label": "Town Square",
+        "options": [
+          {
+            "optionId": "85f5974a-c392-42f4-8516-9dba2311280f",
+            "optionText": "Perform",
+            "attemptText": "You dance in the center of the town square for coin. People enjoy your energy and some even drop some coin!",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                    "label": "charisma",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                    "label": "wealth",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "f1a1504d-0e2a-420b-93f0-d0c59beded73",
+            "optionText": "Barter",
+            "attemptText": "You spend the week serving mead to the locals. You make some coin and put in some hard work.",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                    "label": "dexterity",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                    "label": "wealth",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/TownSquare.png",
+        "authorId": null
+      },
+      {
+        "locationId": 0,
+        "description": null,
+        "locationIndex": 0,
+        "id": "70c47491-c808-46f7-982b-542694a1eea6",
+        "label": "Ritual Grounds",
+        "options": [
+          {
+            "optionId": "9a270f33-5952-4ff0-bab8-908a728634bf",
+            "optionText": "Pray",
+            "attemptText": "You spend the week in pious reverie. You feel the glow and self-satisfaction of knowing you are in good standing with your god.",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "cd872364-a893-4b87-9f42-3e30de40a93e",
+                    "label": "favor",
+                    "description": null,
+                    "favorEntity": "Erysus",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                    "label": "magic",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "f68a2b0a-4c57-4c21-9dba-2c329726560e",
+            "optionText": "Help Prepare for the Ritual",
+            "attemptText": "You spend the week helping to erect the display for the harvest ritual. Your body is hardened by the good work and your soul is enriched.",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                    "label": "strength",
+                    "description": null,
+                    "favorEntity": null,
+                    "favorType": false
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              },
+              {
+                "playerStat": {
+                  "statType": {
+                    "id": "cd872364-a893-4b87-9f42-3e30de40a93e",
+                    "label": "favor",
+                    "description": null,
+                    "favorEntity": "Erysus",
+                    "favorType": true
+                  },
+                  "value": 1
+                },
+                "impactedStat": null,
+                "statChange": 0
+              }
+            ],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": null,
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/RitualGrounds.png",
+        "authorId": null
+      }
+    ],
+    "ritual": {
+      "storyId": "2f723ec5-9394-479e-ac4c-22ca7dcef7a5",
+      "prompt": "",
+      "authorId": "",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "",
+      "playerIds": [],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "repercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": [
+        {
+          "optionId": "bfa0bdba-5d20-49d8-8cea-97f322523c82",
+          "optionText": "Lead Dancer",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "d33366e3-2f68-4361-bd3b-a6ebe47c1891",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "b36d430d-8e93-42bc-8d12-f2cfe8abfe9b",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "7c033b4f-da30-4ae6-a5be-47d4e2186ba8",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "8b1c6763-7ddf-408b-8c20-2bc364459130",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "Your sense of flow and natural athletic artistry spurs the town into a magnificent choreographed display!",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The other dancers appreciate your efforts, but there is only so many times you can step on other people's toes before they move on to other tasks.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "d39a730c-bb21-4984-b17b-bf5469d26715",
+          "optionText": "Feast Lord",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "91cffb1d-5b47-4780-9cab-a249f0754c9e",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "f1de20f9-1a01-4a52-b0e1-6fc4bc685d20",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "95232492-38e9-4ee2-81e9-b820f7ed5b10",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "cafb1c43-0c7c-473a-8497-37eeddca25ac",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "The feast is perfectly balanced, nourishing both body and spirit.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The offerings feel lacking, diminishing the ritual’s blessing.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "751f1099-a742-4117-979a-052188238803",
+          "optionText": "King of Fools",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "75160b22-0a77-439e-9865-7d56e0dcdea5",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "2c4d4434-ca60-4b85-ba33-1d9376e33fa9",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "6dcada21-0bd7-45fd-a2db-09f6aa42bfd9",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "c88cef1b-1ced-4d17-a3cf-4373b6b378f5",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "Your antics bring unexpected wisdom through humor!",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your jokes fall flat, and confusion ensues.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "bca0c052-ba13-438d-9d5c-773c71eafd2e",
+          "optionText": "Rune Carver",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "0c75a4f2-b713-4ccb-b8bc-17c8d4b0e15e",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "059bfbe7-b962-4727-9663-901cdd13fadd",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "3c509ffa-4b65-4900-97b3-72b8eafb3d51",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "423a8d40-01f4-49b9-89fa-1cd059031bdc",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "The runes glow with power, enhancing the ritual’s intent.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The symbols lack clarity, and their power falters.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "61d9e213-71c3-4a9b-84de-14d703ed2856",
+          "optionText": "Erysus Evoker",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "81e9f0c1-68c7-45c8-a8a1-812866a020e6",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "c81c1e7e-0dea-4751-b8a5-d95f8fe73ce1",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "86eaf4d5-723c-46f7-a210-90308c576178",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "50acdb18-de50-4951-96cf-78f59e4f857a",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "The god's presence fills the space, empowering all present.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your voice falters, and the connection feels weak.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "dd4c8c95-1eff-45fd-86b5-b3b2e6944b90",
+          "optionText": "Lord of Misrule",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "45f3f71f-a3f7-44b9-9ebb-10aa1c161e30",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "644c049f-8ef1-45b1-8a91-9a3dc8f6f0a2",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "7753a5d5-ab6e-4adf-9816-70e341037a38",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "de8de988-0849-4430-9e90-8a3a7fb77dd5",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "Your cunning and agility keep the ceremony lively!",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your antics cause more chaos than intended.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "7a7600cc-8338-4109-8e5b-ad0b7795f5c2",
+          "optionText": "Ceremony Herald",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "299ef769-8363-44aa-9c80-ac124e013d1f",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "9b0c69ba-865d-4bfb-86bb-0d7d31237b00",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "dff987fa-1396-415b-97c9-b4a8c7a1eedb",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "2203dca5-d669-4c24-b7e1-77a7dc86c929",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "Your eloquence ensures the ritual runs smoothly and inspires awe!",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your words falter, and the crowd grows restless.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "9f4c0a8c-f16c-4ee3-b022-e946a09a5e80",
+          "optionText": "Stone Circle Builder",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "5d304d87-2d89-4531-8b42-25e97071de85",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "3ac04904-1b1d-4b99-b214-a111f8dc9573",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "8431afe6-c235-4350-a4d7-927deea4170b",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "9d498424-ee9a-4c19-9420-dadacffb1dc0",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "The stones resonate with energy, forming a potent circle.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The placements feel unbalanced, weakening the ritual.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "10",
+          "optionText": "Rune Carver",
+          "attemptText": "You inscribe sacred runes to channel energy.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                "label": "strength",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                "label": "strength",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                "label": "magic",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                "label": "magic",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "The runes glow with power, enhancing the ritual’s intent.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The symbols lack clarity, and their power falters.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "11",
+          "optionText": "Feast Lord",
+          "attemptText": "You oversee the sacred meal, ensuring offerings are honored.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                "label": "intellect",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                "label": "intellect",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                "label": "wealth",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                "label": "wealth",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "The feast is perfectly balanced, nourishing both body and spirit.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The offerings feel lacking, diminishing the ritual’s blessing.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "12",
+          "optionText": "Erysus Evoker",
+          "attemptText": "You call upon the presence of the god Erysus.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                "label": "intellect",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                "label": "intellect",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                "label": "magic",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                "label": "magic",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "The god's presence fills the space, empowering all present.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your voice falters, and the connection feels weak.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "598eb53d-97f7-47d2-a6cc-ff574563a3b2",
+          "optionText": "Spirit Walker",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "dcc84aed-179f-4930-a4ec-e7460005b4ef",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "8bfaeacb-d28e-40f0-b506-7222a8d2ed57",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "c93261a1-c706-4bb9-8a58-30d68afb32b0",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "6c2a92e5-03fc-4fb1-8164-680cdcfc565f",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "You dance the border of worlds, bridging the realms.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The spirits remain distant, their whispers unheard.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "7e9e0db3-3035-4231-b6e1-4ffe8e4ebc39",
+          "optionText": "Seer",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "6f76b9a9-08a5-47ab-ba79-5538becc127a",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "c0fc132e-e725-4b54-b989-2b97be862bd2",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "0c56fd25-6a02-43ea-8780-d54979eab83e",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "4bd9bc8c-0687-4cf0-b70d-a673ce034e07",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "A clear vision emerges, guiding the town's future.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your vision is clouded, leaving uncertainty.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "62174540-cfcf-4190-be1a-a678dc7c9c08",
+          "optionText": "Fire Keeper",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "14a1628f-bb5b-4c7a-aa7e-f0d64bb6dfc0",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "f62559f0-2eb3-478d-b11c-582b3fd12a00",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "f25f4b48-70e9-478b-b9cc-28245cf7e1e6",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "cea34b41-b4e6-4dc3-bbf4-f0f5c01517af",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "The flames blaze high, illuminating the ritual with power.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The fire sputters, casting uncertain shadows.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "0",
+          "optionText": "Holder of the Chant",
+          "attemptText": "You lead the rhythmic chants, setting the ritual's tone.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                "label": "charisma",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                "label": "charisma",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                "label": "strength",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                "label": "strength",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "Your powerful voice resonates, guiding the ritual to new heights!",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your voice wavers, and the chant loses its rhythm.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "1",
+          "optionText": "Lead Dancer",
+          "attemptText": "You work to gather the other dancers around the pyre.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                "label": "charisma",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                "label": "charisma",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                "label": "dexterity",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                "label": "dexterity",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "Your sense of flow and natural athletic artistry spurs the town into a magnificent choreographed display!",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The other dancers appreciate your efforts, but there is only so many times you can step on other people's toes before they move on to other tasks.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "2",
+          "optionText": "Ceremony Herald",
+          "attemptText": "You announce the phases of the ceremony with confidence.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                "label": "charisma",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                "label": "charisma",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                "label": "intellect",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                "label": "intellect",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "Your eloquence ensures the ritual runs smoothly and inspires awe!",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your words falter, and the crowd grows restless.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "2614b826-9500-4665-827a-fe1a7fdcc367",
+          "optionText": "Head of Ritual Consecration",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "f984dd78-5ba5-4ce2-aa0c-a26ea0674a76",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "8b9f96e0-12a4-4cb6-8fc9-faefe4b69a17",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "3cc118bb-8c96-41d7-aad1-bb7135f8db36",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "1231ae64-2785-422d-a164-bccadd71dbea",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "The ritual ground radiates energy, amplifying the spellwork.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The space remains mundane, the energy unshaped.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "3",
+          "optionText": "King of Fools",
+          "attemptText": "You embrace chaos, playing the trickster within the ritual.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                "label": "charisma",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                "label": "charisma",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                "label": "wealth",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                "label": "wealth",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "Your antics bring unexpected wisdom through humor!",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your jokes fall flat, and confusion ensues.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "4",
+          "optionText": "Seer",
+          "attemptText": "You peer into the flames, divining the ritual's deeper meaning.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                "label": "charisma",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "8d4d43e1-4d75-4efa-a084-ce42e6936cb1",
+                "label": "charisma",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                "label": "magic",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                "label": "magic",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "A clear vision emerges, guiding the town's future.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your vision is clouded, leaving uncertainty.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "5",
+          "optionText": "Lord of Misrule",
+          "attemptText": "You orchestrate playful disruption to challenge expectations.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                "label": "dexterity",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                "label": "dexterity",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                "label": "intellect",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                "label": "intellect",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "Your cunning and agility keep the ceremony lively!",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your antics cause more chaos than intended.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "6",
+          "optionText": "Head of Ritual Consecration",
+          "attemptText": "You ensure the sacred space is properly prepared.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                "label": "dexterity",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                "label": "dexterity",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                "label": "wealth",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                "label": "wealth",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "The ritual ground radiates energy, amplifying the spellwork.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The space remains mundane, the energy unshaped.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "7",
+          "optionText": "Spirit Walker",
+          "attemptText": "You move between the seen and unseen, guiding the spirits.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                "label": "dexterity",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "fcc8d013-6cf2-44ef-939a-71ac753c0b41",
+                "label": "dexterity",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                "label": "magic",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "eb687e49-488a-445b-860d-cd924e504a51",
+                "label": "magic",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "You dance the border of worlds, bridging the realms.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The spirits remain distant, their whispers unheard.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "8",
+          "optionText": "Fire Keeper",
+          "attemptText": "You tend the sacred fire, ensuring its steady glow.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                "label": "strength",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                "label": "strength",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                "label": "intellect",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "53b5d8ae-6aa9-4cab-868d-b9a6e279988c",
+                "label": "intellect",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "The flames blaze high, illuminating the ritual with power.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The fire sputters, casting uncertain shadows.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "9",
+          "optionText": "Stone Circle Builder",
+          "attemptText": "You work to place and empower the sacred stones.",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                "label": "strength",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "6041168f-6835-46ca-be01-0e69956c4393",
+                "label": "strength",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            },
+            {
+              "statType": {
+                "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                "label": "wealth",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 9
+            },
+            {
+              "statType": {
+                "id": "45ffe04a-9050-4c96-a541-cc1f55697bcf",
+                "label": "wealth",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 6
+            }
+          ],
+          "successText": "The stones resonate with energy, forming a potent circle.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "The placements feel unbalanced, weakening the ritual.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "9bd4d400-7195-439d-a903-ea7ec215d753",
+          "optionText": "Holder of the Chant",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [
+            {
+              "statType": {
+                "id": "ecd8e33d-d79a-47cc-96af-f1451255979b",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "8738e490-6b4c-45d8-bef6-a662344c270b",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "2ebe856f-0f63-4efe-8526-67f064794f47",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            },
+            {
+              "statType": {
+                "id": "25362de1-a7f1-49fe-b05e-926de55b68c8",
+                "label": "",
+                "description": null,
+                "favorEntity": null,
+                "favorType": false
+              },
+              "value": 0
+            }
+          ],
+          "successText": "Your powerful voice resonates, guiding the ritual to new heights!",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "Your voice wavers, and the chant loses its rhythm.",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": null,
+          "outcomeForks": null,
+          "selectedForkId": ""
+        }
+      ],
+      "encounterLabel": null,
+      "location": null
+    },
+    "encounterLabels": [],
+    "traits": []
+  },
+  "didWeSucceed": false,
+  "totalPointsTowardsVictory": 0,
+  "endings": null,
+  "rituals": [],
+  "userProfileId": "c8d068ae-e180-44c9-940c-011ba632cba4",
+  "saveGameId": "44f757a6-c6e9-40c7-b082-cbbe2ce30aa0",
+  "storiesToWritePerRound": 1,
+  "storiesToPlayPerRound": 1,
+  "roundNumber": 1,
+  "gameMode": "DUNGEON_MODE",
+  "gameBoard": {
+    "playerCoordinates": null,
+    "dungeonGrid": {},
+    "encounterAtPlayerCoordinates": null
+  },
+  "collaborativeTextPhases": {
+    "LOCATION_VOTING": {
+      "phaseId": "LOCATION_VOTING",
+      "question": null,
+      "phaseType": null,
+      "submissions": [
+        {
+          "submissionId": "8a67c4c0-27cb-4b15-bdb6-fe27bbedd6eb",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "Farmlands",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Farmlands.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "8645ee4c-611e-47ee-85d8-0edc73985613",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "Tavern",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "0ee969b9-c70f-40c4-a082-8f2205097c62",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "Apothecary",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "12b207a8-34e6-4fb4-bfca-934f6b9e4f26",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "Discussion Parlor",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/DiscussionParlor.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      ],
+      "playerVotes": {
+        "e6e4b325-d91a-430f-a122-dfcde7747b49": [
+          {
+            "voteId": "",
+            "playerId": "e6e4b325-d91a-430f-a122-dfcde7747b49",
+            "submissionId": "8a67c4c0-27cb-4b15-bdb6-fe27bbedd6eb",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1778468890,
+              "nanos": 143000000
+            }
+          }
+        ],
+        "cf271094-3ace-4c41-9475-0cd665ed3d4d": [
+          {
+            "voteId": "",
+            "playerId": "cf271094-3ace-4c41-9475-0cd665ed3d4d",
+            "submissionId": "8645ee4c-611e-47ee-85d8-0edc73985613",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1778469044,
+              "nanos": 152000000
+            }
+          }
+        ],
+        "d0d63d8f-5f82-43ab-ac42-c7592c3a717a": [
+          {
+            "voteId": "",
+            "playerId": "d0d63d8f-5f82-43ab-ac42-c7592c3a717a",
+            "submissionId": "8a67c4c0-27cb-4b15-bdb6-fe27bbedd6eb",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1778468822,
+              "nanos": 978000000
+            }
+          }
+        ]
+      },
+      "playersWhoSubmitted": [
+        null
+      ],
+      "playersWhoVoted": [
+        "d0d63d8f-5f82-43ab-ac42-c7592c3a717a",
+        "e6e4b325-d91a-430f-a122-dfcde7747b49",
+        "cf271094-3ace-4c41-9475-0cd665ed3d4d"
+      ],
+      "finalResult": null,
+      "submissionViews": {},
+      "submissionsWithoutParentSubmissions": [
+        {
+          "submissionId": "8a67c4c0-27cb-4b15-bdb6-fe27bbedd6eb",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "Farmlands",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Farmlands.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "8645ee4c-611e-47ee-85d8-0edc73985613",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "Tavern",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "0ee969b9-c70f-40c4-a082-8f2205097c62",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "Apothecary",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "12b207a8-34e6-4fb4-bfca-934f6b9e4f26",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "Discussion Parlor",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/DiscussionParlor.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": []
+          },
+          "finalized": false
+        }
+      ],
+      "complete": false
+    }
+  },
+  "storyAtCurrentPlayerCoordinates": null
+}

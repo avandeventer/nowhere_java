@@ -76,9 +76,11 @@ public enum GameState {
         EPILOGUE_PREAMBLE,
         LOCATION_SELECT_COLLABORATIVE,
         LOCATION_VOTING,
-        LOCATION_WINNING;
+        LOCATION_WINNING,
+        LOCATION_OPTION_MAKE_CHOICE_VOTING,
+        LOCATION_OPTION_MAKE_CHOICE_WINNER;
 
-        public GameState getNextGameState(GameMode gameMode, boolean locationVoting) {
+    public GameState getNextGameState(GameMode gameMode, boolean locationVoting) {
             if (gameMode == GameMode.TOWN_MODE) {
                 return getNextGameStateTownMode();
             } else {
@@ -121,7 +123,7 @@ public enum GameState {
             } case GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> {
                 return GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN;
             } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> {
-                return GameState.MAKE_CHOICE_VOTING;
+                return locationVoting ? NAVIGATE_VOTING : GameState.MAKE_CHOICE_VOTING;
             }
             case MAKE_CHOICE_VOTING -> {
                 return GameState.MAKE_CHOICE_WINNER;

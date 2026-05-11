@@ -16,8 +16,7 @@ import com.google.cloud.Timestamp;
 
 import client.nowhere.exception.ValidationException;
 
-import static client.nowhere.model.GameState.WHAT_CAN_WE_TRY;
-import static client.nowhere.model.GameState.WHAT_HAPPENS_HERE;
+import static client.nowhere.model.GameState.*;
 
 @Component
 public class CollaborativeTextHelper {
@@ -926,8 +925,7 @@ public class CollaborativeTextHelper {
     private void handleLocationVoting(GameSession gameSession) {
         try {
             String gameCode = gameSession.getGameCode();
-            CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(
-                    gameCode, GameState.LOCATION_VOTING.name());
+            CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhase(LOCATION_VOTING.name());
             if (phase == null || phase.getPlayerVotes() == null) return;
 
             for (Map.Entry<String, List<PlayerVote>> entry : phase.getPlayerVotes().entrySet()) {
@@ -1364,20 +1362,20 @@ public class CollaborativeTextHelper {
     /**
      * Handles NAVIGATE_VOTING phase in streamlined mode: Moves player to next encounter (x++)
      */
-    public boolean handleNavigationStreamlined(String gameCode) {
+    public boolean navigateToNextCoordinate(String gameCode) {
         try {
             // Get current game session and player coordinates
             GameSession gameSession = getGameSession(gameCode);
             GameBoard gameBoard = gameSession.getGameBoard();
             if (gameBoard == null) {
                 System.err.println("Game board not found for game: " + gameCode);
-                return false;
+                throw new GameStateException("Game board not found for game in handleNavigationStreamlined: " + gameCode);
             }
 
             PlayerCoordinates currentCoords = gameBoard.getPlayerCoordinates();
             if (currentCoords == null) {
                 System.err.println("Player coordinates not found for game: " + gameCode);
-                return false;
+                throw new GameStateException("Player coordinates not found for game in handleNavigationStreamlined: " + gameCode);
             }
 
             // Increment x coordinate to move to next encounter
@@ -1390,12 +1388,10 @@ public class CollaborativeTextHelper {
             gameSessionDAO.updatePlayerCoordinates(gameCode, newCoordinates);
             clearStoryWritingPhases(gameCode);
 
-            Encounter encounter = gameBoard.getEncounter(newX, newY);
-            return encounter != null;
+            return gameBoard.getEncounter(newX, newY) != null;
         } catch (Exception e) {
             System.err.println("Failed to handle NAVIGATE_VOTING (streamlined): " + e.getMessage());
-            e.printStackTrace();
-            return false;
+            throw e;
         }
     }
 

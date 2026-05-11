@@ -245,7 +245,8 @@ public class GameSessionHelper {
                     }
                     break;
                 case NAVIGATE_WINNER:
-                    boolean encounterAtNext = collaborativeTextHelper.handleNavigationStreamlined(gameSession.getGameCode());
+                    Story lastEncounterStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+                    boolean encounterAtNext = collaborativeTextHelper.navigateToNextCoordinate(gameSession.getGameCode());
                     if (!encounterAtNext) {
                         if (gameSession.getRoundNumber() < 2) {
                             if (locationVoting) {
@@ -256,6 +257,12 @@ public class GameSessionHelper {
                             gameSession.setRoundNumber(gameSession.getRoundNumber() + 1);
                         } else {
                             gameSession.setGameState(WRITE_EPILOGUES);
+                        }
+                    } else {
+                        Story encounterStoryAtNext = gameSession.getStoryAtCurrentPlayerCoordinates();
+                        String lastLocationId = lastEncounterStory.getLocation().getId();
+                        if (encounterStoryAtNext.getLocation().getId().equals(lastLocationId)) {
+                            gameSession.setGameStateToNext();
                         }
                     }
                     break;

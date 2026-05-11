@@ -358,6 +358,62 @@ public class CollaborativeTextHelperTest {
         );
     }
 
+    // ===== LOCATION_VOTING TESTS =====
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideLocationVotingScenarios")
+    void testCalculateWinningSubmission_LOCATION_VOTING_SetsSelectedLocationIdOnPlayers(
+            String scenarioName,
+            String jsonFileName,
+            Map<String, String> expectedPlayerLocationIds
+    ) throws IOException {
+        // Arrange
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
+        gameSession.setGameState(GameState.LOCATION_WINNING);
+
+        String gameCode = gameSession.getGameCode();
+        String phaseId = GameState.LOCATION_VOTING.name();
+
+        CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
+        assertNotNull(phase, "LOCATION_VOTING phase should exist in test data");
+
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
+
+        // Act
+        collaborativeTextHelper.calculateWinningSubmission(gameCode);
+
+        // Assert - verify updatePlayer was called once per voting player with the correct selectedLocationId
+        ArgumentCaptor<Player> playerCaptor = ArgumentCaptor.forClass(Player.class);
+        verify(gameSessionDAO, times(expectedPlayerLocationIds.size())).updatePlayer(playerCaptor.capture());
+
+        List<Player> updatedPlayers = playerCaptor.getAllValues();
+        Map<String, String> actualPlayerLocationIds = updatedPlayers.stream()
+                .collect(Collectors.toMap(Player::getAuthorId, Player::getSelectedLocationId));
+
+        System.out.println("=== " + scenarioName + " ===");
+        for (Map.Entry<String, String> expected : expectedPlayerLocationIds.entrySet()) {
+            String actualLocationId = actualPlayerLocationIds.get(expected.getKey());
+            System.out.println("Player " + expected.getKey() + " -> " + actualLocationId);
+            assertEquals(expected.getValue(), actualLocationId,
+                    "selectedLocationId mismatch for player " + expected.getKey());
+        }
+    }
+
+    static Stream<Arguments> provideLocationVotingScenarios() {
+        return Stream.of(
+                Arguments.of(
+                        "LOCATION_VOTING - Sets selectedLocationId from each player's vote",
+                        "LOCATION_VOTING_END.json",
+                        Map.of(
+                                "d0d63d8f-5f82-43ab-ac42-c7592c3a717a", "8a67c4c0-27cb-4b15-bdb6-fe27bbedd6eb", // Andy -> Farmlands
+                                "e6e4b325-d91a-430f-a122-dfcde7747b49", "8a67c4c0-27cb-4b15-bdb6-fe27bbedd6eb", // Joe -> Farmlands
+                                "cf271094-3ace-4c41-9475-0cd665ed3d4d", "8645ee4c-611e-47ee-85d8-0edc73985613"  // Byron -> Tavern
+                        )
+                )
+        );
+    }
+
     // ===== PARAMETERIZED TESTS FOR MULTIPLE GAME STATES =====
 
     @ParameterizedTest
