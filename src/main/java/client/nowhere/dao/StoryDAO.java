@@ -66,7 +66,7 @@ public class StoryDAO {
                     if (story.getPartnerIds() != null && !story.getPartnerIds().isEmpty()) {
                         storyToUpdate.setPartnerIds(story.getPartnerIds());
                     }
-                    
+
                     if (!story.getAuthorId().isEmpty()) {
                         storyToUpdate.setAuthorId(story.getAuthorId());
                     }

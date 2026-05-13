@@ -107,7 +107,9 @@ public class GameSessionHelper {
             if (gameSession.getGameState().equals(phaseBaseInfo.winningState()) && !gameSession.getGameState().equals(NAVIGATE_WINNER)) {
                 collaborativeTextHelper.calculateWinningSubmission(gameSession);
                 if (!gameSession.getGameState().equals(MAKE_OUTCOME_CHOICE_WINNER)
-                        && !gameSession.getGameState().equals(LOCATION_OPTION_MAKE_CHOICE_WINNER)) {
+                        && !gameSession.getGameState().equals(LOCATION_OPTION_MAKE_CHOICE_WINNER)
+                        && !gameSession.getGameState().equals(MAKE_PARTNER_CHOICE_WINNER)
+                ) {
                     gameSession.setGameStateToNext(locationVoting);
                 }
             }
