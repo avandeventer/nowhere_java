@@ -57,6 +57,60 @@ public class VotingHelper {
             return phase.getSubmissions();
         }
 
+        if (phaseIdState == GameState.MAKE_PARTNER_CHOICE_VOTING) {
+            Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+            if (currentStory == null || !playerId.equals(currentStory.getPlayerId())) {
+                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                return new ArrayList<>();
+            }
+            Player storyPlayer = gameSession.getPlayers().stream()
+                    .filter(p -> p.getAuthorId().equals(playerId))
+                    .findFirst().orElse(null);
+            if (storyPlayer == null || storyPlayer.getSelectedLocationId() == null) {
+                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                return new ArrayList<>();
+            }
+            String myLocationId = storyPlayer.getSelectedLocationId();
+            List<String> existingPlayerIds = currentStory.getPlayerIds();
+            List<String> sharedLocationPlayerIds = gameSession.getPlayers().stream()
+                    .filter(p -> !p.getAuthorId().equals(playerId)
+                            && !existingPlayerIds.contains(p.getAuthorId())
+                            && myLocationId.equals(p.getSelectedLocationId()))
+                    .map(Player::getAuthorId)
+                    .toList();
+            if (sharedLocationPlayerIds.isEmpty()) {
+                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                return new ArrayList<>();
+            }
+            CollaborativeTextPhase partnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+            if (partnerPhase == null || partnerPhase.getSubmissions() == null) return new ArrayList<>();
+            return partnerPhase.getSubmissions().stream()
+                    .filter(s -> sharedLocationPlayerIds.contains(s.getSubmissionId()))
+                    .toList();
+        }
+
+        if (phaseIdState == GameState.ACCEPT_PARTNER_CHOICE_VOTING) {
+            CollaborativeTextPhase makePartnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(
+                    gameCode, GameState.MAKE_PARTNER_CHOICE_VOTING.name());
+            if (makePartnerPhase == null || makePartnerPhase.getPlayerVotes() == null) {
+                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                return new ArrayList<>();
+            }
+            boolean wasVotedFor = makePartnerPhase.getPlayerVotes().values().stream()
+                    .flatMap(List::stream)
+                    .anyMatch(v -> playerId.equals(v.getSubmissionId()));
+            if (!wasVotedFor) {
+                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                return new ArrayList<>();
+            }
+            CollaborativeTextPhase partnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(
+                    gameCode, GameState.MAKE_PARTNER_CHOICE_VOTING.name());
+            if (partnerPhase == null || partnerPhase.getSubmissions() == null) return new ArrayList<>();
+            return partnerPhase.getSubmissions().stream()
+                    .filter(s -> playerId.equals(s.getSubmissionId()))
+                    .toList();
+        }
+
         if (phaseIdState == GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING) {
             Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
             if (currentStory == null || !playerId.equals(currentStory.getPlayerId())) {
@@ -77,11 +131,12 @@ public class VotingHelper {
         if (phaseIdState == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
             Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
             if (currentStory != null) {
+                boolean isPartner = currentStory.getPartnerIds().contains(playerId);
                 boolean allPlayersInStory = gameSession.getPlayers().stream()
                         .allMatch(p -> currentStory.getPlayerIds().contains(p.getAuthorId()));
-                boolean excludePlayerFromVote = allPlayersInStory
+                boolean excludePlayerFromVote = !isPartner && (allPlayersInStory
                         ? !currentStory.getPlayerId().equals(playerId)
-                        : currentStory.getPlayerIds().contains(playerId);
+                        : currentStory.getPlayerIds().contains(playerId));
                 if (excludePlayerFromVote) {
                     activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
                     return new ArrayList<>();
@@ -270,7 +325,7 @@ public class VotingHelper {
 
         Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
 
-        if (story.getPlayerIds().contains(playerId)) {
+        if (story.getPlayerIds().contains(playerId) || story.getPartnerIds().contains(playerId)) {
             return outcomeTypeHelper.distributeStoriesToPlayer(List.of(story), story.getAuthorId());
         } else {
             return new ArrayList<>();

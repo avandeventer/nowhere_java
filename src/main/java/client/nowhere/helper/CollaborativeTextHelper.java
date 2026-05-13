@@ -128,8 +128,19 @@ public class CollaborativeTextHelper {
 
     private List<TextSubmission> getWinningSubmissions(GameState phaseId, CollaborativeTextPhase phase, GameSession gameSession) {
         switch (phaseId) {
-            case GameState.MAKE_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_VOTING, GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING -> {
+            case GameState.MAKE_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_VOTING, GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING, GameState.MAKE_PARTNER_CHOICE_VOTING -> {
                 return calculateWinnersFromVotes(phase, gameSession.getGameState(), gameSession);
+            }
+            case GameState.ACCEPT_PARTNER_CHOICE_VOTING -> {
+                // Only produce a winner if a submission received more than one vote
+                List<TextSubmission> candidates = calculateWinnersFromVotes(phase, gameSession.getGameState(), gameSession);
+                if (candidates.isEmpty()) return candidates;
+                String winnerId = candidates.getFirst().getSubmissionId();
+                long voteCount = phase.getPlayerVotes().values().stream()
+                        .flatMap(List::stream)
+                        .filter(v -> winnerId.equals(v.getSubmissionId()))
+                        .count();
+                return voteCount > 1 ? candidates : new ArrayList<>();
             }
             case GameState.HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> {
                 return phase.getSubmissionsWithoutParentSubmissions();
@@ -622,6 +633,8 @@ public class CollaborativeTextHelper {
                 case GameState.WHAT_HAPPENS_HERE -> handleWhatHappensHereStreamlined(gameSession, winningSubmissions);
                 case GameState.HOW_DOES_THIS_RESOLVE, GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> handleHowDoesThisResolve(gameSession, winningSubmissions);
                 case GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING -> handleLocationOptionMakeChoiceVoting(gameSession, winningSubmissions);
+                case GameState.MAKE_PARTNER_CHOICE_VOTING -> {} // winner recorded by vote; no state mutation needed here
+                case GameState.ACCEPT_PARTNER_CHOICE_VOTING -> handleAcceptPartnerChoiceVoting(gameSession, winningSubmissions);
                 case GameState.MAKE_CHOICE_VOTING -> handleMakeChoice(gameSession, winningSubmissions);
                 case GameState.MAKE_OUTCOME_CHOICE_VOTING -> handleMakeOutcomeChoices(gameSession, winningSubmissions);
                 case GameState.NAVIGATE_VOTING -> handleNavigation(gameCode, winningSubmissions);
@@ -1541,6 +1554,7 @@ public class CollaborativeTextHelper {
             collaborativeTextDAO.clearPhase(gameCode, WHAT_CAN_WE_TRY.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.LOCATION_VOTING.name(), false);
+            collaborativeTextDAO.clearPhase(gameCode, MAKE_PARTNER_CHOICE_VOTING.name(), false);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE_AGAIN.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.MAKE_CHOICE_VOTING.name(), false);
             collaborativeTextDAO.clearPhase(gameCode, GameState.NAVIGATE_VOTING.name(), false);
@@ -1610,6 +1624,69 @@ public class CollaborativeTextHelper {
             }
         } catch (Exception e) {
             System.err.println("Failed to initialize MAKE_CHOICE_VOTING phase: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void initializeMakePartnerChoiceVoting(String gameCode) {
+        try {
+            GameSession gameSession = getGameSession(gameCode);
+            List<Player> players = gameSession.getPlayers();
+            if (players == null || players.isEmpty()) return;
+
+            String phaseId = GameState.MAKE_PARTNER_CHOICE_VOTING.name();
+            for (Player player : players) {
+                TextSubmission submission = new TextSubmission();
+                submission.setSubmissionId(player.getAuthorId());
+                submission.setCurrentText(player.getDisplayName());
+                submission.setAuthorId(player.getAuthorId());
+                submission.setCreatedAt(Timestamp.now());
+                submission.setLastModified(Timestamp.now());
+                collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to initialize MAKE_PARTNER_CHOICE_VOTING phase: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void handleAcceptPartnerChoiceVoting(GameSession gameSession, List<TextSubmission> winningSubmissions) {
+        try {
+            if (winningSubmissions.isEmpty()) return;
+
+            String winnerPlayerId = winningSubmissions.getFirst().getSubmissionId();
+            Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
+            if (story == null) return;
+
+            List<String> partnerIds = story.getPartnerIds();
+            if (!partnerIds.contains(winnerPlayerId)) {
+                partnerIds.add(winnerPlayerId);
+                story.setPartnerIds(partnerIds);
+                storyDAO.updateStory(story);
+            }
+
+            // Also add story.playerId as a partner on the winner's story at the same location
+            String storyPlayerId = story.getPlayerId();
+            String locationId = story.getLocation() != null ? story.getLocation().getId() : null;
+            if (locationId != null) {
+                Optional<Story> storyOptional = gameSession.getStories().stream()
+                        .filter(s -> winnerPlayerId.equals(s.getPlayerId())
+                                && s.getLocation() != null
+                                && locationId.equals(s.getLocation().getId()))
+                        .findFirst();
+
+                storyOptional
+                        .ifPresent(partnerStory -> {
+                            List<String> partnerStoryPartnerIds = partnerStory.getPartnerIds();
+                            if (!partnerStoryPartnerIds.contains(storyPlayerId)) {
+                                partnerStoryPartnerIds.add(storyPlayerId);
+                                partnerStory.setPartnerIds(partnerStoryPartnerIds);
+                                storyDAO.updateStory(partnerStory);
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to handle ACCEPT_PARTNER_CHOICE_VOTING: " + e.getMessage());
             e.printStackTrace();
         }
     }

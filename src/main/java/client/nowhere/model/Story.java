@@ -28,6 +28,7 @@ public class Story {
     private boolean visited = false;
     private String playerId = "";
     private List<String> playerIds = new ArrayList<>();
+    private List<String> partnerIds = new ArrayList<>();
     private String selectedOptionId = "";
     private boolean playerSucceeded = false;
     private String prequelStoryPlayerId = "";
@@ -322,6 +323,15 @@ public class Story {
 
     public void setPlayerIds(List<String> playerIds) {
         this.playerIds = playerIds;
+    }
+
+    public List<String> getPartnerIds() {
+        if (partnerIds == null) partnerIds = new ArrayList<>();
+        return partnerIds;
+    }
+
+    public void setPartnerIds(List<String> partnerIds) {
+        this.partnerIds = partnerIds;
     }
 
     public void setCreatedAt(Timestamp createdAt) {

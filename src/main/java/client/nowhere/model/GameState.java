@@ -78,7 +78,11 @@ public enum GameState {
         LOCATION_VOTING,
         LOCATION_WINNING,
         LOCATION_OPTION_MAKE_CHOICE_VOTING,
-        LOCATION_OPTION_MAKE_CHOICE_WINNER;
+        LOCATION_OPTION_MAKE_CHOICE_WINNER,
+        MAKE_PARTNER_CHOICE_VOTING,
+        MAKE_PARTNER_CHOICE_WINNER,
+        ACCEPT_PARTNER_CHOICE_VOTING,
+        ACCEPT_PARTNER_CHOICE_WINNER;
 
     public GameState getNextGameState(GameMode gameMode, boolean locationVoting) {
             if (gameMode == GameMode.TOWN_MODE) {
@@ -133,6 +137,18 @@ public enum GameState {
                 return LOCATION_OPTION_MAKE_CHOICE_WINNER;
             }
             case LOCATION_OPTION_MAKE_CHOICE_WINNER -> {
+                return MAKE_PARTNER_CHOICE_VOTING;
+            }
+            case MAKE_PARTNER_CHOICE_VOTING -> {
+                return MAKE_PARTNER_CHOICE_WINNER;
+            }
+            case MAKE_PARTNER_CHOICE_WINNER -> {
+                return ACCEPT_PARTNER_CHOICE_VOTING;
+            }
+            case ACCEPT_PARTNER_CHOICE_VOTING -> {
+                return ACCEPT_PARTNER_CHOICE_WINNER;
+            }
+            case ACCEPT_PARTNER_CHOICE_WINNER -> {
                 return MAKE_CHOICE_VOTING;
             }
             case MAKE_CHOICE_VOTING -> {
@@ -316,6 +332,8 @@ public enum GameState {
                         case HOW_DOES_THIS_RESOLVE_AGAIN, HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> HOW_DOES_THIS_RESOLVE_AGAIN;
                         case MAKE_CHOICE_VOTING, MAKE_CHOICE_WINNER -> MAKE_CHOICE_VOTING;
                         case LOCATION_OPTION_MAKE_CHOICE_VOTING, LOCATION_OPTION_MAKE_CHOICE_WINNER -> LOCATION_OPTION_MAKE_CHOICE_VOTING;
+                        case MAKE_PARTNER_CHOICE_VOTING, MAKE_PARTNER_CHOICE_WINNER -> MAKE_PARTNER_CHOICE_VOTING;
+                        case ACCEPT_PARTNER_CHOICE_VOTING, ACCEPT_PARTNER_CHOICE_WINNER -> ACCEPT_PARTNER_CHOICE_VOTING;
                         case MAKE_OUTCOME_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_WINNER ->  MAKE_OUTCOME_CHOICE_VOTING;
                         case NAVIGATE_VOTING, NAVIGATE_WINNER -> NAVIGATE_VOTING;
                         case WRITE_EPILOGUES, WRITE_EPILOGUES_WINNER -> WRITE_EPILOGUES;
@@ -544,6 +562,28 @@ public enum GameState {
                             WRITE_EPILOGUES,
                             null,
                             WRITE_EPILOGUES_WINNER,
+                            false
+                    );
+                }
+                if (phaseId == MAKE_PARTNER_CHOICE_VOTING) {
+                    return new PhaseBaseInfo(
+                            "Who will journey with you?",
+                            "Choose a fellow adventurer who shares your path to journey alongside you!",
+                            CollaborativeMode.SHARE_TEXT,
+                            null,
+                            MAKE_PARTNER_CHOICE_VOTING,
+                            MAKE_PARTNER_CHOICE_WINNER,
+                            false
+                    );
+                }
+                if (phaseId == ACCEPT_PARTNER_CHOICE_VOTING) {
+                    return new PhaseBaseInfo(
+                            "Will you accept this companion?",
+                            "Someone wants to journey with you. Will you accept their offer?",
+                            CollaborativeMode.SHARE_TEXT,
+                            null,
+                            ACCEPT_PARTNER_CHOICE_VOTING,
+                            ACCEPT_PARTNER_CHOICE_WINNER,
                             false
                     );
                 }

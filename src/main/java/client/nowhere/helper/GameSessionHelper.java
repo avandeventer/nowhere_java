@@ -236,6 +236,19 @@ public class GameSessionHelper {
                         gameSession.setGameStateToNext(locationVoting);
                     }
                     break;
+                case MAKE_PARTNER_CHOICE_VOTING:
+                    if (shouldSkipPartnerChoicePhases(gameSession)) {
+                        gameSession.setGameState(MAKE_CHOICE_VOTING);
+                    } else {
+                        collaborativeTextHelper.initializeMakePartnerChoiceVoting(gameSession.getGameCode());
+                    }
+                    break;
+                case MAKE_PARTNER_CHOICE_WINNER:
+                    CollaborativeTextPhase makePartnerPhase = gameSession.getCollaborativeTextPhase(MAKE_PARTNER_CHOICE_VOTING.name());
+                    if (makePartnerPhase == null || makePartnerPhase.getPlayerVotes() == null || makePartnerPhase.getPlayerVotes().isEmpty()) {
+                        gameSession.setGameState(MAKE_CHOICE_VOTING);
+                    }
+                    break;
                 case LOCATION_VOTING:
                     collaborativeTextHelper.initializeLocationVoting(gameSession.getGameCode());
                     break;
@@ -605,5 +618,29 @@ public class GameSessionHelper {
 
     public Player getPlayer(String gameCode, String authorId) {
         return this.gameSessionDAO.getPlayer(gameCode, authorId);
+    }
+
+    private boolean shouldSkipPartnerChoicePhases(GameSession gameSession) {
+        Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+        if (currentStory == null) return true;
+
+        // Skip if this story already has a partner set (handled by handleAcceptPartnerChoiceVoting on the other story)
+        if (!currentStory.getPartnerIds().isEmpty()) return true;
+
+        String storyPlayerId = currentStory.getPlayerId();
+        Player storyPlayer = gameSession.getPlayers().stream()
+                .filter(p -> p.getAuthorId().equals(storyPlayerId))
+                .findFirst().orElse(null);
+        if (storyPlayer == null || storyPlayer.getSelectedLocationId() == null) return true;
+
+        String myLocationId = storyPlayer.getSelectedLocationId();
+
+        List<String> existingPlayerIds = currentStory.getPlayerIds();
+
+        // Skip if no other players share the same selectedLocationId (excluding players already on the story)
+        return gameSession.getPlayers().stream()
+                .noneMatch(p -> !p.getAuthorId().equals(storyPlayerId)
+                        && !existingPlayerIds.contains(p.getAuthorId())
+                        && myLocationId.equals(p.getSelectedLocationId()));
     }
 }
