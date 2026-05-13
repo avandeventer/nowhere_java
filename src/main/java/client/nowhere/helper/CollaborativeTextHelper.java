@@ -1832,8 +1832,7 @@ public class CollaborativeTextHelper {
                     .filter(p -> storyPlayerIds.contains(p.getAuthorId()))
                     .collect(Collectors.toList());
             playersAtLocation = allPlayers.stream()
-                    .filter(p -> locationId.equals(p.getSelectedLocationId())
-                            && !storyPlayerIds.contains(p.getAuthorId()))
+                    .filter(p -> locationId.equals(p.getSelectedLocationId()))
                     .collect(Collectors.toList());
         }
 
