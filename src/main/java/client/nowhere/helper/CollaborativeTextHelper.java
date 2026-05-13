@@ -128,7 +128,7 @@ public class CollaborativeTextHelper {
 
     private List<TextSubmission> getWinningSubmissions(GameState phaseId, CollaborativeTextPhase phase, GameSession gameSession) {
         switch (phaseId) {
-            case GameState.MAKE_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_VOTING -> {
+            case GameState.MAKE_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_VOTING, GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING -> {
                 return calculateWinnersFromVotes(phase, gameSession.getGameState(), gameSession);
             }
             case GameState.HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> {
@@ -621,6 +621,7 @@ public class CollaborativeTextHelper {
                 case GameState.LOCATION_VOTING -> handleLocationVoting(gameSession);
                 case GameState.WHAT_HAPPENS_HERE -> handleWhatHappensHereStreamlined(gameSession, winningSubmissions);
                 case GameState.HOW_DOES_THIS_RESOLVE, GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> handleHowDoesThisResolve(gameSession, winningSubmissions);
+                case GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING -> handleLocationOptionMakeChoiceVoting(gameSession, winningSubmissions);
                 case GameState.MAKE_CHOICE_VOTING -> handleMakeChoice(gameSession, winningSubmissions);
                 case GameState.MAKE_OUTCOME_CHOICE_VOTING -> handleMakeOutcomeChoices(gameSession, winningSubmissions);
                 case GameState.NAVIGATE_VOTING -> handleNavigation(gameCode, winningSubmissions);
@@ -911,6 +912,20 @@ public class CollaborativeTextHelper {
                 submission.setCreatedAt(Timestamp.now());
                 submission.setLastModified(Timestamp.now());
                 collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+            }
+
+            String locationOptionPhaseId = GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING.name();
+            for (Location location : selectedLocations) {
+                if (location.getOptions() == null) continue;
+                for (Option option : location.getOptions()) {
+                    TextSubmission submission = new TextSubmission();
+                    submission.setSubmissionId(option.getOptionId());
+                    submission.setCurrentText(option.getOptionText());
+                    submission.setOutcomeType(location.getId());
+                    submission.setCreatedAt(Timestamp.now());
+                    submission.setLastModified(Timestamp.now());
+                    collaborativeTextDAO.addSubmissionAtomically(gameCode, locationOptionPhaseId, submission);
+                }
             }
         } catch (Exception e) {
             System.err.println("Failed to initialize LOCATION_VOTING phase: " + e.getMessage());
@@ -1319,6 +1334,70 @@ public class CollaborativeTextHelper {
                 gameBoard.setDungeonGrid(shiftedGameBoard.getDungeonGrid());
                 gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
             }
+        }
+    }
+
+    private void handleLocationOptionMakeChoiceVoting(GameSession gameSession, List<TextSubmission> winningSubmissions) {
+        try {
+            if (winningSubmissions.isEmpty()) {
+                return;
+            }
+
+            Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
+            if (story == null) {
+                return;
+            }
+
+            Location location = story.getLocation();
+            if (location == null) {
+                return;
+            }
+
+            String selectedOptionId = winningSubmissions.getFirst().getSubmissionId();
+            location.setSelectedOptionId(selectedOptionId);
+
+            Option selectedOption = location.getOptions() == null ? null : location.getOptions().stream()
+                    .filter(o -> o.getOptionId().equals(selectedOptionId))
+                    .findFirst().orElse(null);
+
+            List<String> outcomeDisplay = new ArrayList<>();
+
+            if (selectedOption != null && selectedOption.getSuccessResults() != null) {
+                List<Trait> newTraits = selectedOption.getSuccessResults().stream()
+                        .filter(r -> r.getPlayerStat() != null && r.getPlayerStat().getStatType() != null)
+                        .map(r -> new Trait(r.getPlayerStat().getStatType().getLabel(), TraitType.STANDARD))
+                        .collect(Collectors.toList());
+
+                String storyPlayerId = story.getPlayerId();
+                List<Player> storyPlayer = gameSession.getPlayers().stream()
+                        .filter(p -> p.getAuthorId().equals(storyPlayerId))
+                        .toList();
+                Set<String> updatedPlayerIds = new HashSet<>();
+
+                for (Trait trait : newTraits) {
+                    updatedPlayerIds.addAll(applyTraitToPlayers(trait, storyPlayer));
+                    outcomeDisplay.add("Visiting " + location.getLabel() + " granted the trait \"" + trait.getTraitLabel() + "\"!");
+                }
+
+                for (Player player : storyPlayer) {
+                    if (updatedPlayerIds.contains(player.getAuthorId())) {
+                        player.setGameCode(gameSession.getGameCode());
+                        gameSessionDAO.updatePlayer(player);
+                    }
+                }
+            }
+
+            storyDAO.updateStory(story);
+
+            if (!outcomeDisplay.isEmpty()) {
+                ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
+                activePlayerSession.setGameCode(gameSession.getGameCode());
+                activePlayerSession.setOutcomeDisplay(outcomeDisplay);
+                activeSessionDAO.update(activePlayerSession);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to handle LOCATION_OPTION_MAKE_CHOICE_VOTING: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

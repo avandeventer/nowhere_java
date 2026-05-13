@@ -123,7 +123,17 @@ public enum GameState {
             } case GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> {
                 return GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN;
             } case GameState.HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> {
-                return locationVoting ? NAVIGATE_VOTING : GameState.MAKE_CHOICE_VOTING;
+                return locationVoting ? NAVIGATE_WINNER : GameState.MAKE_CHOICE_VOTING;
+            }
+            case NAVIGATE_WINNER -> {
+                //Loops back to make choice. This loop is broken in NAVIGATE_WINNER case in GameSessionHelper.updateGameSession
+                return locationVoting ? LOCATION_OPTION_MAKE_CHOICE_VOTING : MAKE_CHOICE_VOTING;
+            }
+            case LOCATION_OPTION_MAKE_CHOICE_VOTING -> {
+                return LOCATION_OPTION_MAKE_CHOICE_WINNER;
+            }
+            case LOCATION_OPTION_MAKE_CHOICE_WINNER -> {
+                return MAKE_CHOICE_VOTING;
             }
             case MAKE_CHOICE_VOTING -> {
                 return GameState.MAKE_CHOICE_WINNER;
@@ -136,10 +146,6 @@ public enum GameState {
             }
             case MAKE_OUTCOME_CHOICE_WINNER -> {
                 return GameState.NAVIGATE_WINNER;
-            }
-            case NAVIGATE_WINNER -> {
-                //Loops back to make choice. This loop is broken in NAVIGATE_WINNER case in GameSessionHelper.updateGameSession
-                return MAKE_CHOICE_VOTING;
             }
             case WRITE_EPILOGUES -> {
                 return WRITE_EPILOGUES_WINNER;
@@ -309,6 +315,7 @@ public enum GameState {
                         case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_VOTING, HOW_DOES_THIS_RESOLVE_WINNERS -> HOW_DOES_THIS_RESOLVE;
                         case HOW_DOES_THIS_RESOLVE_AGAIN, HOW_DOES_THIS_RESOLVE_WINNERS_AGAIN -> HOW_DOES_THIS_RESOLVE_AGAIN;
                         case MAKE_CHOICE_VOTING, MAKE_CHOICE_WINNER -> MAKE_CHOICE_VOTING;
+                        case LOCATION_OPTION_MAKE_CHOICE_VOTING, LOCATION_OPTION_MAKE_CHOICE_WINNER -> LOCATION_OPTION_MAKE_CHOICE_VOTING;
                         case MAKE_OUTCOME_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_WINNER ->  MAKE_OUTCOME_CHOICE_VOTING;
                         case NAVIGATE_VOTING, NAVIGATE_WINNER -> NAVIGATE_VOTING;
                         case WRITE_EPILOGUES, WRITE_EPILOGUES_WINNER -> WRITE_EPILOGUES;
@@ -468,6 +475,17 @@ public enum GameState {
                             null,
                             WHAT_DOES_IT_MEAN_WINNERS,
                             false
+                    );
+                }
+                if (phaseId == LOCATION_OPTION_MAKE_CHOICE_VOTING) {
+                    return new PhaseBaseInfo(
+                        "How will you approach this location?",
+                        "Choose how your party will engage with this place!",
+                        CollaborativeMode.SHARE_TEXT,
+                        null,
+                        LOCATION_OPTION_MAKE_CHOICE_VOTING,
+                        LOCATION_OPTION_MAKE_CHOICE_WINNER,
+                        false
                     );
                 }
                 if (phaseId == MAKE_CHOICE_VOTING) {

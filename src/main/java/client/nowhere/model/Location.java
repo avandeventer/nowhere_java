@@ -19,6 +19,7 @@ public class Location {
     private List<Option> options;
     private String iconDirectory;
     private String authorId;
+    private String selectedOptionId;
 
     public Location () {
         this.id = UUID.randomUUID().toString();
@@ -122,6 +123,14 @@ public class Location {
 
     public void setAuthorId(String authorId) {
         this.authorId = authorId;
+    }
+
+    public String getSelectedOptionId() {
+        return selectedOptionId;
+    }
+
+    public void setSelectedOptionId(String selectedOptionId) {
+        this.selectedOptionId = selectedOptionId;
     }
 
     @JsonIgnore

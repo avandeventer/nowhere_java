@@ -57,6 +57,23 @@ public class VotingHelper {
             return phase.getSubmissions();
         }
 
+        if (phaseIdState == GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING) {
+            Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+            if (currentStory == null || !playerId.equals(currentStory.getPlayerId())) {
+                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                return new ArrayList<>();
+            }
+            CollaborativeTextPhase locationOptionPhase = collaborativeTextDAO.getCollaborativeTextPhase(
+                    gameCode, phaseIdState.name());
+            if (locationOptionPhase == null || locationOptionPhase.getSubmissions() == null) {
+                return new ArrayList<>();
+            }
+            String locationId = currentStory.getLocation() != null ? currentStory.getLocation().getId() : null;
+            return locationOptionPhase.getSubmissions().stream()
+                    .filter(s -> locationId != null && locationId.equals(s.getOutcomeType()))
+                    .toList();
+        }
+
         if (phaseIdState == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
             Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
             if (currentStory != null) {

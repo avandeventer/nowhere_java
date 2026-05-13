@@ -372,6 +372,9 @@ public class Story {
             setPrequelStoryPlayerId(AuthorConstants.GLOBAL_PLAYER_SEQUEL);
             setLocation(new Location());
         }
+        if (this.getLocation() != null) {
+            this.getLocation().setSelectedOptionId("");
+        }
     }
 
     public void makeSequel(String storyId, boolean playerSucceeded, String selectedOptionId) {
