@@ -137,18 +137,18 @@ public enum GameState {
                 return LOCATION_OPTION_MAKE_CHOICE_WINNER;
             }
             case LOCATION_OPTION_MAKE_CHOICE_WINNER -> {
-                return MAKE_PARTNER_CHOICE_VOTING;
-            }
-            case MAKE_PARTNER_CHOICE_VOTING -> {
-                return MAKE_PARTNER_CHOICE_WINNER;
-            }
-            case MAKE_PARTNER_CHOICE_WINNER -> {
-                return ACCEPT_PARTNER_CHOICE_VOTING;
-            }
-            case ACCEPT_PARTNER_CHOICE_VOTING -> {
-                return ACCEPT_PARTNER_CHOICE_WINNER;
-            }
-            case ACCEPT_PARTNER_CHOICE_WINNER -> {
+//                return MAKE_PARTNER_CHOICE_VOTING;
+//            }
+//            case MAKE_PARTNER_CHOICE_VOTING -> {
+//                return MAKE_PARTNER_CHOICE_WINNER;
+//            }
+//            case MAKE_PARTNER_CHOICE_WINNER -> {
+//                return ACCEPT_PARTNER_CHOICE_VOTING;
+//            }
+//            case ACCEPT_PARTNER_CHOICE_VOTING -> {
+//                return ACCEPT_PARTNER_CHOICE_WINNER;
+//            }
+//            case ACCEPT_PARTNER_CHOICE_WINNER -> {
                 return MAKE_CHOICE_VOTING;
             }
             case MAKE_CHOICE_VOTING -> {
