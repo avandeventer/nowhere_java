@@ -106,7 +106,8 @@ public class GameSessionHelper {
 
             if (gameSession.getGameState().equals(phaseBaseInfo.winningState()) && !gameSession.getGameState().equals(NAVIGATE_WINNER)) {
                 collaborativeTextHelper.calculateWinningSubmission(gameSession);
-                if (!gameSession.getGameState().equals(MAKE_OUTCOME_CHOICE_WINNER)) {
+                if (!gameSession.getGameState().equals(MAKE_OUTCOME_CHOICE_WINNER)
+                        && !gameSession.getGameState().equals(LOCATION_OPTION_MAKE_CHOICE_WINNER)) {
                     gameSession.setGameStateToNext(locationVoting);
                 }
             }
@@ -140,7 +141,9 @@ public class GameSessionHelper {
                         }
                     }
 
-                    if (gameSession.getAdventureMap().getLocations().size() > 5) {
+                    if (gameSession.getAdventureMap() != null
+                            && gameSession.getAdventureMap().getLocations() != null
+                            && gameSession.getAdventureMap().getLocations().size() > 5) {
                         List<Location> allLocations = new ArrayList<>(gameSession.getAdventureMap().getLocations());
                         
                         Collections.shuffle(allLocations, new Random());

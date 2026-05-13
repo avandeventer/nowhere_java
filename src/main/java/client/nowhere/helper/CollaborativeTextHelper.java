@@ -895,54 +895,60 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            List<Player> players = gameSession.getPlayers();
-            int playerCount = players != null ? players.size() : 0;
-            if (playerCount == 0) return;
-
-            List<Story> stories = gameSession.getStories();
-            Set<String> visitedLocationIds = new HashSet<>();
-            if (stories != null && !stories.isEmpty()) {
-                stories.stream()
-                        .filter(Story::isVisited)
-                        .map(Story::getLocation)
-                        .filter(Objects::nonNull)
-                        .map(Location::getId)
-                        .filter(Objects::nonNull)
-                        .forEach(visitedLocationIds::add);
-            }
-
-            List<Location> candidateLocations = new ArrayList<>(adventureMap.getLocations());
-            candidateLocations.removeIf(loc -> visitedLocationIds.contains(loc.getId()));
-            Collections.shuffle(candidateLocations);
-            List<Location> selectedLocations = candidateLocations.subList(0, Math.min(playerCount, candidateLocations.size()));
-
             String phaseId = GameState.LOCATION_VOTING.name();
-            for (Location location : selectedLocations) {
-                TextSubmission submission = new TextSubmission();
-                submission.setSubmissionId(location.getId());
-                submission.setCurrentText(location.getLabel());
-                submission.setOutcomeType(location.getIconDirectory());
-                submission.setCreatedAt(Timestamp.now());
-                submission.setLastModified(Timestamp.now());
-                collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
-            }
+            CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhases().get(phaseId);
+            List<Location> selectedLocations = new ArrayList<>();
+            if (phase != null && phase.getSubmissions().isEmpty()) {
+                List<Player> players = gameSession.getPlayers();
+                int playerCount = players != null ? players.size() : 0;
+                if (playerCount == 0) return;
+                List<Location> candidateLocations = new ArrayList<>(adventureMap.getLocations());
+                Collections.shuffle(candidateLocations);
+                selectedLocations = candidateLocations.subList(0, Math.min(playerCount, candidateLocations.size()));
 
-            String locationOptionPhaseId = GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING.name();
-            for (Location location : selectedLocations) {
-                if (location.getOptions() == null) continue;
-                for (Option option : location.getOptions()) {
+                for (Location location : selectedLocations) {
                     TextSubmission submission = new TextSubmission();
-                    submission.setSubmissionId(option.getOptionId());
-                    submission.setCurrentText(option.getOptionText());
-                    submission.setOutcomeType(location.getId());
+                    submission.setSubmissionId(location.getId());
+                    submission.setCurrentText(location.getLabel());
+                    submission.setOutcomeType(location.getIconDirectory());
                     submission.setCreatedAt(Timestamp.now());
                     submission.setLastModified(Timestamp.now());
-                    collaborativeTextDAO.addSubmissionAtomically(gameCode, locationOptionPhaseId, submission);
+                    collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
                 }
+            } else {
+                Set<String> existingIds = phase.getSubmissions().stream()
+                        .map(TextSubmission::getSubmissionId)
+                        .collect(Collectors.toSet());
+                selectedLocations = adventureMap.getLocations().stream()
+                        .filter(l -> existingIds.contains(l.getId()))
+                        .collect(Collectors.toList());
             }
+
+            initializeLocationOptionMakeChoiceVoting(gameCode, gameSession, selectedLocations);
         } catch (Exception e) {
             System.err.println("Failed to initialize LOCATION_VOTING phase: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private void initializeLocationOptionMakeChoiceVoting(String gameCode, GameSession gameSession, List<Location> selectedLocations) {
+        String locationOptionPhaseId = GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING.name();
+        CollaborativeTextPhase optionPhase = gameSession.getCollaborativeTextPhase(locationOptionPhaseId);
+        Set<String> existingOptionIds = (optionPhase != null && optionPhase.getSubmissions() != null)
+                ? optionPhase.getSubmissions().stream().map(TextSubmission::getSubmissionId).collect(Collectors.toSet())
+                : Collections.emptySet();
+        for (Location location : selectedLocations) {
+            if (location.getOptions() == null) continue;
+            for (Option option : location.getOptions()) {
+                if (existingOptionIds.contains(option.getOptionId())) continue;
+                TextSubmission submission = new TextSubmission();
+                submission.setSubmissionId(option.getOptionId());
+                submission.setCurrentText(option.getOptionText());
+                submission.setOutcomeType(location.getId());
+                submission.setCreatedAt(Timestamp.now());
+                submission.setLastModified(Timestamp.now());
+                collaborativeTextDAO.addSubmissionAtomically(gameCode, locationOptionPhaseId, submission);
+            }
         }
     }
 
@@ -1875,8 +1881,12 @@ public class CollaborativeTextHelper {
             case VOTING -> {
                 if (gameState == GameState.LOCATION_VOTING) {
                     yield "Each of us must choose our own path. Choose which path you will take and maybe you will meet your friends along the way!";
-                } else if (gameState == GameState.MAKE_CHOICE_VOTING) {
+                } else if (gameState == GameState.MAKE_CHOICE_VOTING || gameState == LOCATION_OPTION_MAKE_CHOICE_VOTING) {
                     yield "Your time has come. Choose the action you wish to take from your device.";
+                } else if (gameState == MAKE_PARTNER_CHOICE_VOTING) {
+                    yield "There are other players here! Decide if you trust them enough to partner with them.";
+                } else if (gameState == ACCEPT_PARTNER_CHOICE_VOTING) {
+                    yield "Someone is being asked if they want to partner up. Look to your device and decide whether you accept.";
                 } else {
                     yield "Set fate in motion. Rank the descriptions on your device starting with your favorite first.";
                 }
@@ -1895,7 +1905,7 @@ public class CollaborativeTextHelper {
                 } else if (gameState == GameState.CAMPFIRE_WINNERS) {
                     yield "We talk long into the night...";
                 } else if (gameState == GameState.NAVIGATE_WINNER) {
-                    yield "Each of you here will learn something new about yourself";
+                    yield "You've decided to visit";
                 } else {
                     yield "The player whose turn it is should read their story out loud!";
                 }
