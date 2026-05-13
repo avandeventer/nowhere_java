@@ -270,6 +270,9 @@ public class VotingHelper {
 
         // Submit each vote atomically
         for (PlayerVote vote : playerVotes) {
+            if (phaseId.equals(GameState.ACCEPT_PARTNER_CHOICE_VOTING.name())) {
+                phaseId = GameState.MAKE_PARTNER_CHOICE_VOTING.name();
+            }
             collaborativeTextDAO.addVoteAtomically(gameCode, phaseId, vote);
         }
 
