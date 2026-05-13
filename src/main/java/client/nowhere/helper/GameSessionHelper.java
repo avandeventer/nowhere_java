@@ -259,23 +259,26 @@ public class GameSessionHelper {
                     break;
                 case NAVIGATE_WINNER:
                     Story lastEncounterStory = gameSession.getStoryAtCurrentPlayerCoordinates();
-                    boolean encounterAtNext = collaborativeTextHelper.navigateToNextCoordinate(gameSession.getGameCode());
-                    if (!encounterAtNext) {
-                        if (gameSession.getRoundNumber() < 2) {
-                            if (locationVoting) {
-                                gameSession.setGameState(LOCATION_VOTING);
+                    Option selectedOption = lastEncounterStory.getSelectedOption();
+                    if (selectedOption != null) {
+                        boolean encounterAtNext = collaborativeTextHelper.navigateToNextCoordinate(gameSession.getGameCode());
+                        if (!encounterAtNext) {
+                            if (gameSession.getRoundNumber() < 2) {
+                                if (locationVoting) {
+                                    gameSession.setGameState(LOCATION_VOTING);
+                                } else {
+                                    gameSession.setGameState(WHAT_HAPPENS_HERE);
+                                }
+                                gameSession.setRoundNumber(gameSession.getRoundNumber() + 1);
                             } else {
-                                gameSession.setGameState(WHAT_HAPPENS_HERE);
+                                gameSession.setGameState(WRITE_EPILOGUES);
                             }
-                            gameSession.setRoundNumber(gameSession.getRoundNumber() + 1);
                         } else {
-                            gameSession.setGameState(WRITE_EPILOGUES);
-                        }
-                    } else {
-                        Story encounterStoryAtNext = gameSession.getStoryAtCurrentPlayerCoordinates();
-                        String lastLocationId = lastEncounterStory.getLocation().getId();
-                        if (encounterStoryAtNext.getLocation().getId().equals(lastLocationId)) {
-                            gameSession.setGameStateToNext();
+                            Story encounterStoryAtNext = gameSession.getStoryAtCurrentPlayerCoordinates();
+                            String lastLocationId = lastEncounterStory.getLocation().getId();
+                            if (encounterStoryAtNext.getLocation().getId().equals(lastLocationId)) {
+                                gameSession.setGameStateToNext();
+                            }
                         }
                     }
                     break;

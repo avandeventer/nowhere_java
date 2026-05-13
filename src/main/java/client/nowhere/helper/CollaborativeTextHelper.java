@@ -1896,7 +1896,7 @@ public class CollaborativeTextHelper {
                 } else if (gameState == GameState.CAMPFIRE_WINNERS) {
                     yield "We talk long into the night...";
                 } else if (gameState == GameState.NAVIGATE_WINNER) {
-                    yield "We see the encounters ahead";
+                    yield "Each of you here will learn something new about yourself";
                 } else {
                     yield "The player whose turn it is should read their story out loud!";
                 }

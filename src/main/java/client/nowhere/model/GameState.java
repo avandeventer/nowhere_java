@@ -519,7 +519,7 @@ public enum GameState {
                 }
                 if (phaseId == NAVIGATE_VOTING) {
                     return new PhaseBaseInfo(
-                        "Our journey continues...",
+                        "You seek answers",
                         "Seek " + entityName + " or just go in the most interesting direction!",
                         CollaborativeMode.SHARE_TEXT,
                         null,
