@@ -898,7 +898,7 @@ public class CollaborativeTextHelper {
             String phaseId = GameState.LOCATION_VOTING.name();
             CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhases().get(phaseId);
             List<Location> selectedLocations = new ArrayList<>();
-            if (phase != null && phase.getSubmissions().isEmpty()) {
+            if (phase == null || phase.getSubmissions().isEmpty()) {
                 List<Player> players = gameSession.getPlayers();
                 int playerCount = players != null ? players.size() : 0;
                 if (playerCount == 0) return;
