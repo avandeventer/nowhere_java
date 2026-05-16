@@ -264,8 +264,7 @@ public class GameSessionHelper {
                     break;
                 case NAVIGATE_WINNER:
                     Story lastEncounterStory = gameSession.getStoryAtCurrentPlayerCoordinates();
-                    Option selectedOption = lastEncounterStory.getSelectedOption();
-                    if (selectedOption != null) {
+                    if (lastEncounterStory != null && lastEncounterStory.getSelectedOption() != null) {
                         boolean encounterAtNext = collaborativeTextHelper.navigateToNextCoordinate(gameSession.getGameCode());
                         if (!encounterAtNext) {
                             if (gameSession.getRoundNumber() < 2) {
