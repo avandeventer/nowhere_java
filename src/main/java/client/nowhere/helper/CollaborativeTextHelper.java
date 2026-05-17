@@ -128,19 +128,8 @@ public class CollaborativeTextHelper {
 
     private List<TextSubmission> getWinningSubmissions(GameState phaseId, CollaborativeTextPhase phase, GameSession gameSession) {
         switch (phaseId) {
-            case GameState.MAKE_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_VOTING, GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING, GameState.MAKE_PARTNER_CHOICE_VOTING -> {
+            case GameState.MAKE_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_VOTING, GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING, GameState.MAKE_PARTNER_CHOICE_VOTING, ACCEPT_PARTNER_CHOICE_WINNER -> {
                 return calculateWinnersFromVotes(phase, gameSession.getGameState(), gameSession);
-            }
-            case GameState.ACCEPT_PARTNER_CHOICE_VOTING -> {
-                // Only produce a winner if a submission received more than one vote
-                List<TextSubmission> candidates = calculateWinnersFromVotes(phase, gameSession.getGameState(), gameSession);
-                if (candidates.isEmpty()) return candidates;
-                String winnerId = candidates.getFirst().getSubmissionId();
-                long voteCount = phase.getPlayerVotes().values().stream()
-                        .flatMap(List::stream)
-                        .filter(v -> winnerId.equals(v.getSubmissionId()))
-                        .count();
-                return voteCount > 1 ? candidates : new ArrayList<>();
             }
             case GameState.HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> {
                 return phase.getSubmissionsWithoutParentSubmissions();
@@ -1561,6 +1550,7 @@ public class CollaborativeTextHelper {
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.LOCATION_VOTING.name(), false);
             collaborativeTextDAO.clearPhase(gameCode, MAKE_PARTNER_CHOICE_VOTING.name(), false);
+            collaborativeTextDAO.clearPhase(gameCode, ACCEPT_PARTNER_CHOICE_VOTING.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE_AGAIN.name(), true);
             collaborativeTextDAO.clearPhase(gameCode, GameState.MAKE_CHOICE_VOTING.name(), false);
             collaborativeTextDAO.clearPhase(gameCode, GameState.NAVIGATE_VOTING.name(), false);
@@ -1652,6 +1642,30 @@ public class CollaborativeTextHelper {
             }
         } catch (Exception e) {
             System.err.println("Failed to initialize MAKE_PARTNER_CHOICE_VOTING phase: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void initializeAcceptPartnerChoiceVoting(String gameCode) {
+        try {
+            CollaborativeTextPhase makePartnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(
+                    gameCode, GameState.MAKE_PARTNER_CHOICE_VOTING.name());
+            if (makePartnerPhase == null || makePartnerPhase.getPlayerVotes() == null
+                    || makePartnerPhase.getSubmissions() == null) return;
+
+            Set<String> votedForIds = makePartnerPhase.getPlayerVotes().values().stream()
+                    .flatMap(List::stream)
+                    .map(PlayerVote::getSubmissionId)
+                    .collect(Collectors.toSet());
+
+            String phaseId = GameState.ACCEPT_PARTNER_CHOICE_VOTING.name();
+            for (TextSubmission submission : makePartnerPhase.getSubmissions()) {
+                if (votedForIds.contains(submission.getSubmissionId())) {
+                    collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to initialize ACCEPT_PARTNER_CHOICE_VOTING phase: " + e.getMessage());
             e.printStackTrace();
         }
     }

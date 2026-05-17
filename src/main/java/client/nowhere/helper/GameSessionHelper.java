@@ -252,6 +252,9 @@ public class GameSessionHelper {
                     CollaborativeTextPhase makePartnerPhase = gameSession.getCollaborativeTextPhase(MAKE_PARTNER_CHOICE_VOTING.name());
                     if (makePartnerPhase == null || makePartnerPhase.getPlayerVotes() == null || makePartnerPhase.getPlayerVotes().isEmpty()) {
                         gameSession.setGameState(MAKE_CHOICE_VOTING);
+                    } else {
+                        collaborativeTextHelper.initializeAcceptPartnerChoiceVoting(gameSession.getGameCode());
+                        gameSession.setGameState(ACCEPT_PARTNER_CHOICE_VOTING);
                     }
                     break;
                 case LOCATION_VOTING:

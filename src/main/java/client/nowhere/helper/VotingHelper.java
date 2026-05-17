@@ -89,6 +89,23 @@ public class VotingHelper {
                     .toList();
         }
 
+        if (phaseIdState == GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING) {
+            Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+            if (currentStory == null || !playerId.equals(currentStory.getPlayerId())) {
+                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                return new ArrayList<>();
+            }
+            CollaborativeTextPhase locationOptionPhase = collaborativeTextDAO.getCollaborativeTextPhase(
+                    gameCode, phaseIdState.name());
+            if (locationOptionPhase == null || locationOptionPhase.getSubmissions() == null) {
+                return new ArrayList<>();
+            }
+            String locationId = currentStory.getLocation() != null ? currentStory.getLocation().getId() : null;
+            return locationOptionPhase.getSubmissions().stream()
+                    .filter(s -> locationId != null && locationId.equals(s.getOutcomeType()))
+                    .toList();
+        }
+
         if (phaseIdState == GameState.ACCEPT_PARTNER_CHOICE_VOTING) {
             CollaborativeTextPhase makePartnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(
                     gameCode, GameState.MAKE_PARTNER_CHOICE_VOTING.name());
@@ -108,23 +125,6 @@ public class VotingHelper {
             if (partnerPhase == null || partnerPhase.getSubmissions() == null) return new ArrayList<>();
             return partnerPhase.getSubmissions().stream()
                     .filter(s -> playerId.equals(s.getSubmissionId()))
-                    .toList();
-        }
-
-        if (phaseIdState == GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING) {
-            Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
-            if (currentStory == null || !playerId.equals(currentStory.getPlayerId())) {
-                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
-                return new ArrayList<>();
-            }
-            CollaborativeTextPhase locationOptionPhase = collaborativeTextDAO.getCollaborativeTextPhase(
-                    gameCode, phaseIdState.name());
-            if (locationOptionPhase == null || locationOptionPhase.getSubmissions() == null) {
-                return new ArrayList<>();
-            }
-            String locationId = currentStory.getLocation() != null ? currentStory.getLocation().getId() : null;
-            return locationOptionPhase.getSubmissions().stream()
-                    .filter(s -> locationId != null && locationId.equals(s.getOutcomeType()))
                     .toList();
         }
 
@@ -267,14 +267,6 @@ public class VotingHelper {
             throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
         }
         String phaseId = phaseIdState.name();
-
-        // Submit each vote atomically
-        for (PlayerVote vote : playerVotes) {
-            if (phaseId.equals(GameState.ACCEPT_PARTNER_CHOICE_VOTING.name())) {
-                phaseId = GameState.MAKE_PARTNER_CHOICE_VOTING.name();
-            }
-            collaborativeTextDAO.addVoteAtomically(gameCode, phaseId, vote);
-        }
 
         if (phaseIdState == GameState.LOCATION_VOTING) {
             String votingPlayerId = playerVotes.getFirst().getPlayerId();

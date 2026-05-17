@@ -63,6 +63,7 @@ public class ActiveSessionDAO {
                     // Player already done or game phase has changed, return false (no progression needed)
                     if (currentDoneStatus != null && currentDoneStatus) {
                         System.out.println("Player " + authorId + " already marked as done, skipping duplicate update");
+                        return game.areAllPlayersDone();
                     } else {
                         System.out.println("Player " + authorId + " update skipped - game phase mismatch. Expected: " + gamePhase + ", Current: " + game.getGameState());
                     }
@@ -85,7 +86,6 @@ public class ActiveSessionDAO {
                 // Update only the active game state session
                 transaction.update(gameSessionRef, "activeGameStateSession", activeSessionToUpdate);
                 return game.areAllPlayersDone(); // Return true if progression needed, false otherwise
-                
             }).get();
             
         } catch (InterruptedException | ExecutionException e) {
