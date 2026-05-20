@@ -629,6 +629,7 @@ public class GameSessionHelperTest {
             String scenarioName,
             String selectedOptionId,
             int expectedForkCount,
+            GameState startingGameState,
             GameState expectedFinalState,
             int xCoordinate,
             int yCoordinate,
@@ -639,17 +640,20 @@ public class GameSessionHelperTest {
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
         gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
         gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
-        gameSession.setGameState(GameState.MAKE_CHOICE_VOTING);
+        gameSession.setGameState(startingGameState);
         String gameCode = gameSession.getGameCode();
 
         // Get the story at current player coordinates and set the selected option
         Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
         assertNotNull(currentStory, "Story at current coordinates should exist");
-        gameSession.getCollaborativeTextPhase(
-                String.valueOf(GameState.MAKE_CHOICE_VOTING)).addPlayerVote(
+
+        if(!selectedOptionId.isEmpty()) {
+            gameSession.getCollaborativeTextPhase(
+                    String.valueOf(startingGameState.getPhaseId())).addPlayerVote(
                     new PlayerVote("", "", selectedOptionId, 1
-                )
-        );
+                    )
+            );
+        }
 
         // Mock the dependencies
         when(gameSessionDAO.getGame(gameCode))
@@ -657,7 +661,7 @@ public class GameSessionHelperTest {
                 .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson(testFileName));
         when(gameSessionDAO.updateGameSession(any(GameSession.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
-        when(featureFlagHelper.getFlagValue("includeTraits")).thenReturn(true);
+        when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(true);
 
         // Debug: Print the setup
         System.out.println("=== " + scenarioName + " ===");
@@ -668,7 +672,7 @@ public class GameSessionHelperTest {
         GameSession updated = gameSessionHelper.updateToNextGameState(gameCode);
 
         // Assert - Verify the correct transition occurred
-        System.out.println("Initial game state: " + gameSession.getGameState());
+        System.out.println("Initial game state: " + startingGameState);
         System.out.println("Updated game state: " + updated.getGameState());
         assertEquals(expectedFinalState, updated.getGameState(),
                 "Game should transition to " + expectedFinalState + " when fork count is " + expectedForkCount);
@@ -705,6 +709,7 @@ public class GameSessionHelperTest {
             String scenarioName,
             String selectedOptionId,
             int expectedForkCount,
+            GameState startingGameState,
             GameState expectedFinalState,
             int xCoordinate,
             int yCoordinate,
@@ -714,7 +719,7 @@ public class GameSessionHelperTest {
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
         gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
         gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
-        gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_VOTING);
+        gameSession.setGameState(startingGameState);
         String gameCode = gameSession.getGameCode();
 
         // Get the story at current player coordinates and set the selected option
@@ -752,11 +757,23 @@ public class GameSessionHelperTest {
         // Story at (0,0) has options with different numbers of outcome forks
         // Option edefbad5-4e7f-4769-9637-c7aa3c246c7f has 1 fork
         // Option d9c1d9e2-c577-40ca-bdad-e4d2797ecd9d has 2 forks
+        //
+        // Input values
+        //        String scenarioName,
+        //        String selectedOptionId,
+        //        int expectedForkCount,
+        //        GameState expectedFinalState,
+        //        int xCoordinate,
+        //        int yCoordinate,
+        //        String testFileName,
+        //        List<String> expectedUpdatedPlayerIds
+
         return Stream.of(
                 Arguments.of(
                         "Single fork - transitions to MAKE_OUTCOME_CHOICE_WINNER",
                         "edefbad5-4e7f-4769-9637-c7aa3c246c7f", // Option with 1 outcome fork
                         1,
+                        GameState.MAKE_CHOICE_VOTING,
                         GameState.MAKE_OUTCOME_CHOICE_WINNER,
                         0,
                         0,
@@ -767,6 +784,7 @@ public class GameSessionHelperTest {
                         "Multiple forks - stays in MAKE_OUTCOME_CHOICE_VOTING",
                         "775136bb-2379-4f2b-9801-ce7fdd218d1f", // Option with 2+ outcome forks
                         2,
+                        GameState.MAKE_CHOICE_VOTING,
                         GameState.MAKE_OUTCOME_CHOICE_VOTING,
                         2,
                         0,
@@ -777,6 +795,7 @@ public class GameSessionHelperTest {
                         "Single fork - transitions to MAKE_OUTCOME_CHOICE_WINNER with Repercussions",
                         "7b7d3fee-e839-408d-836e-211dfbb1c34b", // Option with 1 outcome fork and Repercussions to process
                         1,
+                        GameState.MAKE_CHOICE_VOTING,
                         GameState.MAKE_OUTCOME_CHOICE_WINNER,
                         0,
                         0,
@@ -787,6 +806,7 @@ public class GameSessionHelperTest {
                         "Rooting out prod bug in round 2",
                         "76792952-31c5-443e-805a-c69279ae3b1b",
                         2,
+                        GameState.MAKE_CHOICE_VOTING,
                         GameState.MAKE_OUTCOME_CHOICE_VOTING,
                         6,
                         0,
@@ -797,10 +817,55 @@ public class GameSessionHelperTest {
                         "Transition to MAKE_OUTCOME_CHOICE_WINNER with no fork",
                         "01ff46f6-3629-4d49-ac3f-0fb7a8736a66",
                         1,
+                        GameState.MAKE_CHOICE_VOTING,
                         GameState.MAKE_OUTCOME_CHOICE_WINNER,
                         9,
                         0,
                         "HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json",
+                        List.of()
+                ),
+                Arguments.of(
+                        "Transition to ACCEPT_PARTNER_CHOICE_VOTING when there has been a player vote",
+                        "b1d4f188-61c0-4f0c-be74-d701bbf054ed",
+                        0,
+                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        GameState.ACCEPT_PARTNER_CHOICE_VOTING,
+                        0,
+                        0,
+                        "MAKE_PARTNER_CHOICE_VOTING.json",
+                        List.of()
+                ),
+                Arguments.of(
+                        "Transition to MAKE_CHOICE_VOTING when there has NOT been a player vote",
+                        "",
+                        0,
+                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        GameState.MAKE_CHOICE_VOTING,
+                        0,
+                        0,
+                        "MAKE_PARTNER_CHOICE_VOTING.json",
+                        List.of()
+                ),
+                Arguments.of(
+                        "Transition to ACCEPT_PARTNER_CHOICE_VOTING when there has been a player vote",
+                        "b1d4f188-61c0-4f0c-be74-d701bbf054ed",
+                        0,
+                        GameState.LOCATION_OPTION_MAKE_CHOICE_WINNER,
+                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        0,
+                        0,
+                        "MAKE_PARTNER_CHOICE_VOTING.json",
+                        List.of()
+                ),
+                Arguments.of(
+                        "Transition to ACCEPT_PARTNER_CHOICE_VOTING when there has been a player vote",
+                        "",
+                        0,
+                        GameState.LOCATION_OPTION_MAKE_CHOICE_WINNER,
+                        GameState.MAKE_CHOICE_VOTING,
+                        3,
+                        0,
+                        "MAKE_PARTNER_CHOICE_VOTING.json",
                         List.of()
                 )
         );

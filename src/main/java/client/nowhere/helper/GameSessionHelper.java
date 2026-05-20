@@ -647,10 +647,12 @@ public class GameSessionHelper {
 
         List<String> existingPlayerIds = currentStory.getPlayerIds();
 
+        List<Player> otherPlayers = gameSession.getPlayers().stream()
+                .filter(p -> !p.getAuthorId().equals(storyPlayerId)
+                        && !existingPlayerIds.contains(p.getAuthorId())).toList();
+
         // Skip if no other players share the same selectedLocationId (excluding players already on the story)
-        return gameSession.getPlayers().stream()
-                .noneMatch(p -> !p.getAuthorId().equals(storyPlayerId)
-                        && !existingPlayerIds.contains(p.getAuthorId())
-                        && myLocationId.equals(p.getSelectedLocationId()));
+        return otherPlayers.stream()
+                .noneMatch(p -> myLocationId.equals(p.getSelectedLocationId()));
     }
 }

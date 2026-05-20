@@ -2465,7 +2465,7 @@ public class CollaborativeTextHelper {
         }
 
         Option selectedOption = currentEncounterStory.getSelectedOption();
-        if (selectedOption.getOutcomeForks() == null) {
+        if (selectedOption == null || selectedOption.getOutcomeForks() == null) {
             return new ArrayList<>();
         }
         return selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
