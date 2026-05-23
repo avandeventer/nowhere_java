@@ -813,12 +813,8 @@ public class CollaborativeTextHelper {
     private Set<String> applyTraitToPlayers(Trait trait, List<Player> players) {
         Set<String> updatedPlayerIds = new HashSet<>();
         for (Player player : players) {
-            if (trait.getTraitType() == TraitType.TITLE) {
-                player.addTitle(trait.getTraitLabel());
-            } else {
-                if (player.getTraits() == null) player.setTraits(new ArrayList<>());
-                player.getTraits().add(trait);
-            }
+            if (player.getTraits() == null) player.setTraits(new ArrayList<>());
+            player.getTraits().add(trait);
             updatedPlayerIds.add(player.getAuthorId());
         }
         return updatedPlayerIds;
@@ -956,7 +952,6 @@ public class CollaborativeTextHelper {
                 List<PlayerVote> votes = entry.getValue();
                 if (votes == null || votes.isEmpty()) continue;
 
-                // Each player casts exactly one vote; its submissionId = locationId
                 String locationId = votes.getFirst().getSubmissionId();
                 if (locationId == null || locationId.isEmpty()) continue;
 
@@ -969,9 +964,55 @@ public class CollaborativeTextHelper {
                             gameSessionDAO.updatePlayer(player);
                         });
             }
+
+            handleLocationTraits(gameSession);
         } catch (Exception e) {
             System.err.println("Failed to handle LOCATION_VOTING: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private void handleLocationTraits(GameSession gameSession) {
+        String gameCode = gameSession.getGameCode();
+        List<Location> locations = gameSession.getAdventureMap() != null
+                ? gameSession.getAdventureMap().getLocations()
+                : adventureMapDAO.getLocations(gameCode);
+
+        List<String> outcomeMessages = new ArrayList<>();
+
+        for (Player player : gameSession.getPlayers()) {
+            String selectedLocationId = player.getSelectedLocationId();
+            if (selectedLocationId == null || selectedLocationId.isEmpty()) continue;
+
+            Location playerLocation = locations.stream()
+                    .filter(loc -> selectedLocationId.equals(loc.getId()))
+                    .findFirst().orElse(null);
+
+            if (playerLocation == null || playerLocation.getTraits() == null || playerLocation.getTraits().isEmpty()) continue;
+
+            Set<String> existingTraitIds = player.getTraits() == null ? new HashSet<>() :
+                    player.getTraits().stream().map(Trait::getTraitId).collect(Collectors.toSet());
+
+            List<Trait> newTraits = playerLocation.getTraits().stream()
+                    .filter(trait -> trait.getTraitId() != null && !existingTraitIds.contains(trait.getTraitId()))
+                    .collect(Collectors.toList());
+
+            if (newTraits.isEmpty()) continue;
+
+            for (Trait trait : newTraits) {
+                applyTraitToPlayers(trait, List.of(player));
+                outcomeMessages.add(player.getUserName() + " gained the " + getTypeWord(trait) + " '" + trait.getTraitLabel() + "'");
+            }
+
+            player.setGameCode(gameCode);
+            gameSessionDAO.updatePlayer(player);
+        }
+
+        if (!outcomeMessages.isEmpty()) {
+            ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
+            activePlayerSession.setGameCode(gameSession.getGameCode());
+            activePlayerSession.setOutcomeDisplay(outcomeMessages);
+            activeSessionDAO.update(activePlayerSession);
         }
     }
 

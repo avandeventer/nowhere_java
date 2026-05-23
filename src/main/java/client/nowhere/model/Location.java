@@ -20,6 +20,7 @@ public class Location {
     private String iconDirectory;
     private String authorId;
     private String selectedOptionId;
+    private List<Trait> traits;
 
     public Location () {
         this.id = UUID.randomUUID().toString();
@@ -131,6 +132,14 @@ public class Location {
 
     public void setSelectedOptionId(String selectedOptionId) {
         this.selectedOptionId = selectedOptionId;
+    }
+
+    public List<Trait> getTraits() {
+        return traits;
+    }
+
+    public void setTraits(List<Trait> traits) {
+        this.traits = traits;
     }
 
     @JsonIgnore

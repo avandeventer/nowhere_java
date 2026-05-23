@@ -131,14 +131,14 @@ public enum GameState {
             }
             case NAVIGATE_WINNER -> {
                 //Loops back to make choice. This loop is broken in NAVIGATE_WINNER case in GameSessionHelper.updateGameSession
-                return locationVoting ? LOCATION_OPTION_MAKE_CHOICE_VOTING : MAKE_CHOICE_VOTING;
+                return locationVoting ? MAKE_PARTNER_CHOICE_VOTING : MAKE_CHOICE_VOTING;
             }
-            case LOCATION_OPTION_MAKE_CHOICE_VOTING -> {
-                return LOCATION_OPTION_MAKE_CHOICE_WINNER;
-            }
-            case LOCATION_OPTION_MAKE_CHOICE_WINNER -> {
-                return MAKE_PARTNER_CHOICE_VOTING;
-            }
+            // case LOCATION_OPTION_MAKE_CHOICE_VOTING -> {
+            //     return LOCATION_OPTION_MAKE_CHOICE_WINNER;
+            // }
+            // case LOCATION_OPTION_MAKE_CHOICE_WINNER -> {
+            //     return MAKE_PARTNER_CHOICE_VOTING;
+            // }
             case MAKE_PARTNER_CHOICE_VOTING -> {
                 return MAKE_PARTNER_CHOICE_WINNER;
             }
@@ -432,7 +432,7 @@ public enum GameState {
                 if (phaseId == SET_ENCOUNTERS) {
                         return new PhaseBaseInfo(
                                 "What could we encounter here?",
-                                "Name some things that we might see on our adventure through this place",
+                                "Read the name of the location you've been assigned and list some things that we might see on our adventures there",
                                 CollaborativeMode.RAPID_FIRE,
                                 SET_ENCOUNTERS,
                                 SET_ENCOUNTERS_VOTING,

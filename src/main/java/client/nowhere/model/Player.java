@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class Player {
 
@@ -203,8 +204,13 @@ public class Player {
     }
 
     public String getDisplayName() {
-        if (titles != null && !titles.isEmpty()) {
-            return userName + ", " + String.join(", ", titles);
+        List<String> titleLabels = traits == null ? List.of() :
+                traits.stream()
+                        .filter(t -> t.getTraitType() == TraitType.TITLE)
+                        .map(Trait::getTraitLabel)
+                        .collect(Collectors.toList());
+        if (!titleLabels.isEmpty()) {
+            return userName + ", " + String.join(", ", titleLabels);
         }
         return userName;
     }

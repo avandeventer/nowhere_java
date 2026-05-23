@@ -22,11 +22,16 @@ public class OutcomeType {
     @Setter
     List<OutcomeType> subTypes;
 
+    @Getter
+    @Setter
+    String header;
+
     public OutcomeType () {
         this.id = "";
         this.label = "";
         this.clarifier = "";
         this.subTypes = new ArrayList<>();
+        this.header = "";
     }
 
     public OutcomeType(String id, String label) {
@@ -34,6 +39,7 @@ public class OutcomeType {
         this.label = label;
         this.clarifier = "";
         this.subTypes = new ArrayList<>();
+        this.header = "";
     }
 
     public OutcomeType(String id, String label, String clarifier) {
@@ -41,5 +47,6 @@ public class OutcomeType {
         this.label = label;
         this.clarifier = clarifier;
         this.subTypes = new ArrayList<>();
+        this.header = "";
     }
 }

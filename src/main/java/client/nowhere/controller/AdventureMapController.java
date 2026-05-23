@@ -85,4 +85,10 @@ public class AdventureMapController {
     public List<String> getLocationImages() {
         return this.adventureMapHelper.getLocationImages();
     }
+
+    @GetMapping("/trait-types")
+    @ResponseBody
+    public TraitType[] getTraitTypes() {
+        return TraitType.values();
+    }
 }
