@@ -788,8 +788,8 @@ public class CollaborativeTextHelperTest {
             String expectedLabel = entry.getValue();
             verify(gameSessionDAO).updatePlayer(argThat(p ->
                     playerId.equals(p.getAuthorId()) &&
-                    p.getTitles() != null &&
-                    p.getTitles().contains(expectedLabel)
+                        p.getTraits() != null &&
+                        p.getTraits().stream().anyMatch(t -> expectedLabel.equals(t.getTraitLabel()))
             ));
             Player updatedPlayer = gameSession.getPlayers().stream()
                     .filter(p -> playerId.equals(p.getAuthorId()))
@@ -898,8 +898,8 @@ public class CollaborativeTextHelperTest {
             for (String label : entry.getValue()) {
                 verify(gameSessionDAO).updatePlayer(argThat(p ->
                         playerId.equals(p.getAuthorId()) &&
-                        p.getTitles() != null &&
-                        p.getTitles().contains(label)
+                            p.getTraits() != null &&
+                            p.getTraits().stream().anyMatch(t -> label.equals(t.getTraitLabel()))
                 ));
                 Player updatedPlayer = gameSession.getPlayers().stream()
                         .filter(p -> playerId.equals(p.getAuthorId()))

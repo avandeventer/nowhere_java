@@ -847,10 +847,10 @@ public class GameSessionHelperTest {
                         List.of()
                 ),
                 Arguments.of(
-                        "Transition to ACCEPT_PARTNER_CHOICE_VOTING when there has been a player vote",
-                        "b1d4f188-61c0-4f0c-be74-d701bbf054ed",
+                        "Transition to MAKE_PARTNER_CHOICE_VOTING when there ARE other players present at the same location",
+                        "",
                         0,
-                        GameState.LOCATION_OPTION_MAKE_CHOICE_WINNER,
+                        GameState.NAVIGATE_WINNER,
                         GameState.MAKE_PARTNER_CHOICE_VOTING,
                         0,
                         0,
@@ -858,10 +858,10 @@ public class GameSessionHelperTest {
                         List.of()
                 ),
                 Arguments.of(
-                        "Transition to ACCEPT_PARTNER_CHOICE_VOTING when there has been a player vote",
+                        "Transition to MAKE_CHOICE_VOTING when there are NO other players present at the same location",
                         "",
                         0,
-                        GameState.LOCATION_OPTION_MAKE_CHOICE_WINNER,
+                        GameState.NAVIGATE_WINNER,
                         GameState.MAKE_CHOICE_VOTING,
                         3,
                         0,
