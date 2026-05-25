@@ -461,7 +461,9 @@
           "finalized": false
         }
       },
-      "location": null
+      "location": {
+        "label": "testtest"
+      }
     },
     {
       "storyId": "efe64144-c636-4283-add7-974dc48a6039",
@@ -515,7 +517,9 @@
           "finalized": false
         }
       },
-      "location": null
+      "location": {
+        "label": "testtest"
+      }
     },
     {
       "storyId": "7adad1bc-874b-4f6e-a70c-f8ba4aea658f",
@@ -569,7 +573,9 @@
           "finalized": false
         }
       },
-      "location": null
+      "location": {
+        "label": "testtest"
+      }
     },
     {
       "storyId": "2646c831-3ab8-4445-ae4a-3696f25837ba",
@@ -623,7 +629,9 @@
           "finalized": false
         }
       },
-      "location": null
+      "location": {
+        "label": "testtest"
+      }
     }
   ],
   "adventureMap": {

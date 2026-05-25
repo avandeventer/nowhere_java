@@ -29,6 +29,8 @@ public class OutcomeTypeHelper {
                 outcomeType.setClarifier(prequelStoryId);
             }
 
+            outcomeType.setHeader(getHeader(assignedStory));
+
             if (assignedStory.getOptions() != null && !assignedStory.getOptions().isEmpty()) {
                 for (Option option : assignedStory.getOptions()) {
                     outcomeType.getSubTypes().add(new OutcomeType(option.getOptionId(), option.getOptionText()));
@@ -38,6 +40,17 @@ public class OutcomeTypeHelper {
         }
 
         return assignedStoryOutcomeTypes;
+    }
+
+    private static String getHeader(Story assignedStory) {
+        String header = "";
+        if (assignedStory.getEncounterLabel() != null && !assignedStory.getEncounterLabel().getEncounterLabel().isEmpty()) {
+            header = assignedStory.getEncounterLabel().getEncounterLabel();
+            if (assignedStory.getLocation() != null && !assignedStory.getLocation().getLabel().isEmpty()) {
+                header = header + " (at " + assignedStory.getLocation().getLabel() + ")";
+            }
+        }
+        return header;
     }
 
     public static int getOffsetPlayerIndex(int playerIndex, int offset, int numPlayers) {
@@ -53,9 +66,9 @@ public class OutcomeTypeHelper {
      * Use this when you don't need the context for any post-distribution logic.
      * Returns an empty list if the context resolves to null.
      */
-    StoryDistributionContext distributeStoriesToPlayer(GameSession gameSession, String playerId, boolean visited, int offset) {
+    StoryDistributionContext distributeStoriesToPlayer(GameSession gameSession, String playerId, int offset) {
         List<Story> stories = gameSession.getStories().stream()
-                .filter(story -> story.isVisited() == visited)
+                .filter(story -> !story.isVisited())
                 .toList();
 
         if (stories.isEmpty()) {

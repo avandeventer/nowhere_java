@@ -2100,9 +2100,9 @@ public class CollaborativeTextHelper {
                     return buildOutcomeTypesFromEncounters(availableEncounterLabels, assignedStory);
                 }
             } else if (phaseId == WHAT_CAN_WE_TRY) {
-                StoryDistributionContext nextPlayerStoryContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, false, 1);
+                StoryDistributionContext nextPlayerStoryContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, 1);
                 int nextNextOffset = gameSession.getPlayers().size() > 4 ? 2 : 0;
-                StoryDistributionContext nextNextPlayerStoryContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, false, nextNextOffset);
+                StoryDistributionContext nextNextPlayerStoryContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, nextNextOffset);
                 List<OutcomeType> allStories = nextPlayerStoryContext.assignedStories();
                 allStories.addAll(nextNextPlayerStoryContext.assignedStories());
                 return allStories;
@@ -2111,7 +2111,7 @@ public class CollaborativeTextHelper {
                 int offsetValue = gameSession.getPlayers().size() > 4 ? 3 : 2;
 
                 // Get assigned story (only one story per player for this phase)
-                StoryDistributionContext storyContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, false, offsetValue);
+                StoryDistributionContext storyContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, offsetValue);
                 List<OutcomeType> assignedStories = storyContext.assignedStories();
 
                 if (assignedStories.isEmpty()) {
