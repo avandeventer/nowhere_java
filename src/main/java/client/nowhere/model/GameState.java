@@ -345,7 +345,7 @@ public enum GameState {
                         case WRITE_EPILOGUES, WRITE_EPILOGUES_WINNER -> WRITE_EPILOGUES;
                         case LOCATION_VOTING, LOCATION_WINNING -> LOCATION_VOTING;
                         case CAMPFIRE, CAMPFIRE_WINNERS -> CAMPFIRE;
-                        default -> null;
+                        default -> this;
                 };
         }
 
