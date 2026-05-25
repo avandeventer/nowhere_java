@@ -2032,8 +2032,7 @@ public class CollaborativeTextHelper {
             if (phaseId == GameState.SET_ENCOUNTERS) {
                 boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
                 if (!locationVoting) return new ArrayList<>();
-                CollaborativeTextPhase locationVotingPhase = collaborativeTextDAO.getCollaborativeTextPhase(
-                        gameCode, GameState.LOCATION_VOTING.name());
+                CollaborativeTextPhase locationVotingPhase = gameSession.getCollaborativeTextPhase(LOCATION_VOTING.name());
                 if (locationVotingPhase == null || locationVotingPhase.getSubmissions() == null
                         || locationVotingPhase.getSubmissions().isEmpty()) {
                     return new ArrayList<>();
@@ -2280,7 +2279,7 @@ public class CollaborativeTextHelper {
 
         if (prequelStory != null) {
             EncounterLabel prequelLabel = prequelStory.getEncounterLabel();
-            OutcomeType encounterSubType = new OutcomeType(prequelLabel.getEncounterId(), prequelLabel.getEncounterLabel(), prequelStory.getStoryId());
+            OutcomeType encounterSubType = new OutcomeType(prequelLabel.getEncounterId(), prequelLabel.getEncounterLabel(), prequelStory.getStoryId(), "");
             locationParent.getSubTypes().add(encounterSubType);
         }
 
@@ -2305,7 +2304,8 @@ public class CollaborativeTextHelper {
             EncounterLabel assignedStoryEncounter = assignedStory.getEncounterLabel();
             availableEncounterOutcomeTypes.add(new OutcomeType(assignedStoryEncounter.getEncounterId(),
                     assignedStoryEncounter.getEncounterLabel(),
-                    assignedStory.getStoryId()
+                    assignedStory.getStoryId(),
+                    ""
             ));
         }
         availableEncounterOutcomeTypes.addAll(availableEncounterLabels.stream()

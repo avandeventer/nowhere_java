@@ -163,6 +163,12 @@ public enum GameState {
             case MAKE_OUTCOME_CHOICE_WINNER -> {
                 return GameState.NAVIGATE_WINNER;
             }
+            case PREAMBLE_AGAIN -> {
+                return LOCATION_VOTING;
+            }
+            case ENDING_PREAMBLE -> {
+                return WRITE_EPILOGUES;
+            }
             case WRITE_EPILOGUES -> {
                 return WRITE_EPILOGUES_WINNER;
             }
@@ -351,6 +357,43 @@ public enum GameState {
         public PhaseBaseInfo getPhaseBaseInfo(String entityName, int roundNumber) {
                 // Determine which phase group this game state belongs to using getPhaseId()
                 GameState phaseId = getPhaseId();
+
+                if (phaseId == PREAMBLE) {
+                    return new PhaseBaseInfo(
+                            "Our Journey Begins...",
+                            "The barrier between reality and fiction is thin here. You'll work together to define the things that inhabit this place and then you'll each decide the path you take through it.",
+                            CollaborativeMode.INFORMATION,
+                            PREAMBLE,
+                            null,
+                            null,
+                            false
+                    );
+                }
+
+                if (phaseId == PREAMBLE_AGAIN) {
+                    return new PhaseBaseInfo(
+                            "We rest for a time...",
+                            "We rest for a time. We must once again build stories together before our journey is over.",
+                            CollaborativeMode.INFORMATION,
+                            PREAMBLE_AGAIN,
+                            null,
+                            null,
+                            false
+                    );
+                }
+
+                if (phaseId == ENDING_PREAMBLE) {
+                    return new PhaseBaseInfo(
+                            "And so our journey comes to an end",
+                            "We must now make our final selection. We'll soon understand how our journey has changed all of us.",
+                            CollaborativeMode.INFORMATION,
+                            ENDING_PREAMBLE,
+                            null,
+                            null,
+                            false
+                    );
+                }
+
                 if (phaseId == WHERE_ARE_WE) {
                         return new PhaseBaseInfo(
                                 "Where are we?",

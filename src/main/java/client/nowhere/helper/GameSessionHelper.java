@@ -272,13 +272,13 @@ public class GameSessionHelper {
                         if (!encounterAtNext) {
                             if (gameSession.getRoundNumber() < 2) {
                                 if (locationVoting) {
-                                    gameSession.setGameState(LOCATION_VOTING);
+                                    gameSession.setGameState(PREAMBLE_AGAIN);
                                 } else {
                                     gameSession.setGameState(WHAT_HAPPENS_HERE);
                                 }
                                 gameSession.setRoundNumber(gameSession.getRoundNumber() + 1);
                             } else {
-                                gameSession.setGameState(WRITE_EPILOGUES);
+                                gameSession.setGameState(ENDING_PREAMBLE);
                             }
                         } else {
                             Story encounterStoryAtNext = gameSession.getStoryAtCurrentPlayerCoordinates();

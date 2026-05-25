@@ -42,7 +42,7 @@ public class OutcomeType {
         this.header = "";
     }
 
-    public OutcomeType(String id, String label, String clarifier) {
+    public OutcomeType(String id, String label, String clarifier, String header) {
         this.id = id;
         this.label = label;
         this.clarifier = clarifier;

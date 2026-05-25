@@ -915,7 +915,7 @@ public class GameSessionHelperTest {
                 Arguments.of(
                         "Transitions to WRITE_EPILOGUES when no encounter at next position (round 2)",
                         "HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json",
-                        GameState.WRITE_EPILOGUES
+                        GameState.ENDING_PREAMBLE
                 )
         );
     }
