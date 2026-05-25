@@ -895,6 +895,7 @@ public class CollaborativeTextHelper {
                     TextSubmission submission = new TextSubmission();
                     submission.setSubmissionId(location.getId());
                     submission.setCurrentText(location.getLabel());
+                    submission.setOriginalText(location.getDescription());
                     submission.setOutcomeType(location.getIconDirectory());
                     submission.setCreatedAt(Timestamp.now());
                     submission.setLastModified(Timestamp.now());
