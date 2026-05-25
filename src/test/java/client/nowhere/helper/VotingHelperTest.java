@@ -251,6 +251,7 @@ public class VotingHelperTest {
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
         String gameCode = gameSession.getGameCode();
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        String phaseId = gameSession.getGameState().getPhaseId().name();
         PlayerVote playerVote = new PlayerVote("", "24fca1a7-efc5-4813-8530-448f0e5c29d1", "edefbad5-4e7f-4769-9637-c7aa3c246c7f", 1);
         votingHelper.submitPlayerVotes(
                 gameSession.getGameCode(),
@@ -259,6 +260,12 @@ public class VotingHelperTest {
 
         Story activeStory = gameSession.getStoryAtCurrentPlayerCoordinates();
         assertEquals(List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1"), activeStory.getPlayerIds());
+
+        verify(collaborativeTextDAO, times(1)).addVoteAtomically(
+                eq(gameCode),
+                eq(phaseId),
+                eq(playerVote)
+        );
 
         for(Player player : gameSession.getPlayers()) {
             if (!activeStory.getPlayerIds().contains(player.getAuthorId())) {

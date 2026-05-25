@@ -268,6 +268,11 @@ public class VotingHelper {
         }
         String phaseId = phaseIdState.name();
 
+        // Submit each vote atomically
+        for (PlayerVote vote : playerVotes) {
+            collaborativeTextDAO.addVoteAtomically(gameCode, phaseId, vote);
+        }
+
         if (phaseIdState == GameState.LOCATION_VOTING) {
             String votingPlayerId = playerVotes.getFirst().getPlayerId();
             if (votingPlayerId != null && !votingPlayerId.isEmpty()) {
