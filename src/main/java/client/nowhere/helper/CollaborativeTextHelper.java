@@ -2159,13 +2159,8 @@ public class CollaborativeTextHelper {
                         .toList());
                 allSubTypes.addAll(traitSubTypes);
 
-                // Return single OutcomeType with story info and subTypes array
-                OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt);
-                if (assignedStoryOutcomeType.getClarifier() != null && !assignedStoryOutcomeType.getClarifier().isEmpty()) {
-                    storyOutcomeType.setClarifier(assignedStoryOutcomeType.getClarifier());
-                }
-                storyOutcomeType.setSubTypes(allSubTypes);
-                return List.of(storyOutcomeType);
+                assignedStoryOutcomeType.setSubTypes(allSubTypes);
+                return List.of(assignedStoryOutcomeType);
             } else if (phaseId == GameState.WRITE_EPILOGUES){
                 // Calculate offset: 1 for 4 players, 2 for more than 4 players
                 int offsetValue = gameSession.getPlayers().size() > 4 ? -2 : -1;
