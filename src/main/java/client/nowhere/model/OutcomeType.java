@@ -24,14 +24,14 @@ public class OutcomeType {
 
     @Getter
     @Setter
-    String header;
+    List<String> headers;
 
     public OutcomeType () {
         this.id = "";
         this.label = "";
         this.clarifier = "";
         this.subTypes = new ArrayList<>();
-        this.header = "";
+        this.headers = new ArrayList<>();
     }
 
     public OutcomeType(String id, String label) {
@@ -39,14 +39,14 @@ public class OutcomeType {
         this.label = label;
         this.clarifier = "";
         this.subTypes = new ArrayList<>();
-        this.header = "";
+        this.headers = new ArrayList<>();
     }
 
-    public OutcomeType(String id, String label, String clarifier, String header) {
+    public OutcomeType(String id, String label, String clarifier, List<String> headers) {
         this.id = id;
         this.label = label;
         this.clarifier = clarifier;
         this.subTypes = new ArrayList<>();
-        this.header = "";
+        this.headers = headers;
     }
 }

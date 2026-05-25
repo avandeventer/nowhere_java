@@ -29,7 +29,7 @@ public class OutcomeTypeHelper {
                 outcomeType.setClarifier(prequelStoryId);
             }
 
-            outcomeType.setHeader(getHeader(assignedStory));
+            outcomeType.setHeaders(getHeaders(assignedStory));
 
             if (assignedStory.getOptions() != null && !assignedStory.getOptions().isEmpty()) {
                 for (Option option : assignedStory.getOptions()) {
@@ -42,15 +42,15 @@ public class OutcomeTypeHelper {
         return assignedStoryOutcomeTypes;
     }
 
-    private static String getHeader(Story assignedStory) {
-        String header = "";
+    private static List<String> getHeaders(Story assignedStory) {
+        List<String> headers = new ArrayList<>();
         if (assignedStory.getEncounterLabel() != null && !assignedStory.getEncounterLabel().getEncounterLabel().isEmpty()) {
-            header = assignedStory.getEncounterLabel().getEncounterLabel();
-            if (assignedStory.getLocation() != null && !assignedStory.getLocation().getLabel().isEmpty()) {
-                header = header + " (at " + assignedStory.getLocation().getLabel() + ")";
-            }
+            headers.add(assignedStory.getEncounterLabel().getEncounterLabel());
         }
-        return header;
+        if (assignedStory.getLocation() != null && !assignedStory.getLocation().getLabel().isEmpty()) {
+            headers.add("at " + assignedStory.getLocation().getLabel());
+        }
+        return headers;
     }
 
     public static int getOffsetPlayerIndex(int playerIndex, int offset, int numPlayers) {

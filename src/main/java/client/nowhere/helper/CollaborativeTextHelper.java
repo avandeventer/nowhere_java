@@ -2279,7 +2279,7 @@ public class CollaborativeTextHelper {
 
         if (prequelStory != null) {
             EncounterLabel prequelLabel = prequelStory.getEncounterLabel();
-            OutcomeType encounterSubType = new OutcomeType(prequelLabel.getEncounterId(), prequelLabel.getEncounterLabel(), prequelStory.getStoryId(), "");
+            OutcomeType encounterSubType = new OutcomeType(prequelLabel.getEncounterId(), prequelLabel.getEncounterLabel(), prequelStory.getStoryId(), new ArrayList<>());
             locationParent.getSubTypes().add(encounterSubType);
         }
 
@@ -2305,7 +2305,7 @@ public class CollaborativeTextHelper {
             availableEncounterOutcomeTypes.add(new OutcomeType(assignedStoryEncounter.getEncounterId(),
                     assignedStoryEncounter.getEncounterLabel(),
                     assignedStory.getStoryId(),
-                    ""
+                    new ArrayList<>()
             ));
         }
         availableEncounterOutcomeTypes.addAll(availableEncounterLabels.stream()
