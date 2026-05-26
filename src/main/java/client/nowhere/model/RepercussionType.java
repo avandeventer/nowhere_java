@@ -35,7 +35,7 @@ public enum RepercussionType {
             "Companion",
             "",
             "Encountered entity joins you",
-            "Player will receive this Encounter as a Trait",
+            "Player will receive this Encounter as a Companion",
             "#E60000"
     );
 
