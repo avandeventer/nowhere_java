@@ -979,8 +979,6 @@ public class CollaborativeTextHelper {
                 ? gameSession.getAdventureMap().getLocations()
                 : adventureMapDAO.getLocations(gameCode);
 
-        List<String> outcomeMessages = new ArrayList<>();
-
         for (Player player : gameSession.getPlayers()) {
             String selectedLocationId = player.getSelectedLocationId();
             if (selectedLocationId == null || selectedLocationId.isEmpty()) continue;
@@ -996,17 +994,46 @@ public class CollaborativeTextHelper {
 
             List<Trait> newTraits = playerLocation.getTraits().stream()
                     .filter(trait -> trait.getTraitId() != null && !existingTraitIds.contains(trait.getTraitId()))
-                    .collect(Collectors.toList());
+                    .toList();
 
             if (newTraits.isEmpty()) continue;
 
             for (Trait trait : newTraits) {
                 applyTraitToPlayers(trait, List.of(player));
-                outcomeMessages.add(player.getUserName() + " gained the " + getTypeWord(trait) + " '" + trait.getTraitLabel() + "'");
             }
 
             player.setGameCode(gameCode);
             gameSessionDAO.updatePlayer(player);
+        }
+    }
+
+    void setLocationTraitOutcomeDisplay(GameSession gameSession) {
+        List<String> outcomeDisplay = gameSession.getActivePlayerSession().getOutcomeDisplay();
+        if (outcomeDisplay != null && !outcomeDisplay.isEmpty()) {
+            return;
+        }
+
+        Location playerLocation = gameSession.getStoryAtCurrentPlayerCoordinates().getLocation();
+        
+        if (playerLocation == null) return;
+
+        List<Player> playersAtCurrentLocation = gameSession.getPlayers().stream()
+                .filter(p -> playerLocation.getId().equals(p.getSelectedLocationId()))
+                .toList();
+
+        List<String> outcomeMessages = new ArrayList<>();
+
+        for (Player player : playersAtCurrentLocation) {
+            String selectedLocationId = player.getSelectedLocationId();
+            if (selectedLocationId == null || selectedLocationId.isEmpty()) continue;
+
+            if (playerLocation.getTraits() == null || playerLocation.getTraits().isEmpty()) continue;
+
+            for (Trait trait : playerLocation.getTraits()) {
+                if (trait.getTraitId() != null) {
+                    outcomeMessages.add(player.getUserName() + " gained the " + getTypeWord(trait) + " '" + trait.getTraitLabel() + "'");
+                }
+            }
         }
 
         if (!outcomeMessages.isEmpty()) {

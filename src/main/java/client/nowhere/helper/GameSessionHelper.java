@@ -269,7 +269,15 @@ public class GameSessionHelper {
                     Story lastEncounterStory = gameSession.getStoryAtCurrentPlayerCoordinates();
                     if (lastEncounterStory != null && lastEncounterStory.getSelectedOption() != null) {
                         boolean encounterAtNext = collaborativeTextHelper.navigateToNextCoordinate(gameSession.getGameCode());
-                        if (!encounterAtNext) {
+                        if (encounterAtNext) {
+                            Story encounterStoryAtNext = gameSession.getStoryAtCurrentPlayerCoordinates();
+                            String lastLocationId = lastEncounterStory.getLocation().getId();
+                            if (encounterStoryAtNext.getLocation().getId().equals(lastLocationId)) {
+                                gameSession.setGameStateToNext();
+                            } else {
+                                collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession);
+                            }
+                        } else {
                             if (gameSession.getRoundNumber() < 2) {
                                 if (locationVoting) {
                                     gameSession.setGameState(PREAMBLE_AGAIN);
@@ -280,13 +288,9 @@ public class GameSessionHelper {
                             } else {
                                 gameSession.setGameState(ENDING_PREAMBLE);
                             }
-                        } else {
-                            Story encounterStoryAtNext = gameSession.getStoryAtCurrentPlayerCoordinates();
-                            String lastLocationId = lastEncounterStory.getLocation().getId();
-                            if (encounterStoryAtNext.getLocation().getId().equals(lastLocationId)) {
-                                gameSession.setGameStateToNext();
-                            }
                         }
+                    } else {
+                        collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession);
                     }
                     break;
                 default:
