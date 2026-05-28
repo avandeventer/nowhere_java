@@ -735,6 +735,14 @@ public class CollaborativeTextHelper {
             );
         }
 
+        if (repercussions.isEmpty() && gameSession.getRoundNumber() < 2) {
+            String encounterLabel = (story.getEncounterLabel() != null
+                    && story.getEncounterLabel().getEncounterLabel() != null)
+                    ? story.getEncounterLabel().getEncounterLabel()
+                    : "This encounter";
+            outcomeDisplay.add(encounterLabel + "\" may return again next round.");
+        }
+
         // Persist affected players
         for (Player player : allPlayers) {
             if (updatedPlayerIds.contains(player.getAuthorId())) {
@@ -1518,11 +1526,11 @@ public class CollaborativeTextHelper {
     /**
      * Handles NAVIGATE_VOTING phase in streamlined mode: Moves player to next encounter (x++)
      */
-    public boolean navigateToNextCoordinate(String gameCode) {
+    public Story navigateToNextCoordinate(GameSession gameSession) {
         try {
             // Get current game session and player coordinates
-            GameSession gameSession = getGameSession(gameCode);
             GameBoard gameBoard = gameSession.getGameBoard();
+            String gameCode = gameSession.getGameCode();
             if (gameBoard == null) {
                 System.err.println("Game board not found for game: " + gameCode);
                 throw new GameStateException("Game board not found for game in handleNavigationStreamlined: " + gameCode);
@@ -1541,10 +1549,17 @@ public class CollaborativeTextHelper {
             // Create new player coordinates
             PlayerCoordinates newCoordinates = new PlayerCoordinates(newX, newY);
 
-            gameSessionDAO.updatePlayerCoordinates(gameCode, newCoordinates);
-            clearStoryWritingPhases(gameCode);
+            gameSessionDAO.updatePlayerCoordinates(gameSession.getGameCode(), newCoordinates);
+            clearStoryWritingPhases(gameSession.getGameCode());
 
-            return gameBoard.getEncounter(newX, newY) != null;
+            Encounter encounter = gameBoard.getEncounter(newX, newY);
+            if(encounter == null) {
+                return null;
+            } else {
+                return gameSession.getStories().stream()
+                        .filter(story -> story.getStoryId().equals(encounter.getStoryId()))
+                        .toList().stream().findFirst().orElse(null);
+            }
         } catch (Exception e) {
             System.err.println("Failed to handle NAVIGATE_VOTING (streamlined): " + e.getMessage());
             throw e;

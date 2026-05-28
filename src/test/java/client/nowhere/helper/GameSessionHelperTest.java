@@ -867,6 +867,28 @@ public class GameSessionHelperTest {
                         0,
                         "MAKE_PARTNER_CHOICE_VOTING.json",
                         List.of()
+                ),
+                Arguments.of(
+                        "Transition to NAVIGATE_WINNER when story location changes",
+                        "",
+                        0,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        GameState.NAVIGATE_WINNER,
+                        0,
+                        0,
+                        "NAVIGATE_VOTING.json",
+                        List.of()
+                ),
+                Arguments.of(
+                        "Transition to MAKE_CHOICE_VOTING when story location is the same",
+                        "",
+                        0,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        GameState.MAKE_CHOICE_VOTING,
+                        2,
+                        0,
+                        "NAVIGATE_VOTING.json",
+                        List.of()
                 )
         );
     }

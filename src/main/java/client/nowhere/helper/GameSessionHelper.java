@@ -268,11 +268,10 @@ public class GameSessionHelper {
                 case NAVIGATE_WINNER:
                     Story lastEncounterStory = gameSession.getStoryAtCurrentPlayerCoordinates();
                     if (lastEncounterStory != null && lastEncounterStory.getSelectedOption() != null) {
-                        boolean encounterAtNext = collaborativeTextHelper.navigateToNextCoordinate(gameSession.getGameCode());
-                        if (encounterAtNext) {
-                            Story encounterStoryAtNext = gameSession.getStoryAtCurrentPlayerCoordinates();
+                        Story nextEncounterStory = collaborativeTextHelper.navigateToNextCoordinate(gameSession);
+                        if (nextEncounterStory != null) {
                             String lastLocationId = lastEncounterStory.getLocation().getId();
-                            if (encounterStoryAtNext.getLocation().getId().equals(lastLocationId)) {
+                            if (nextEncounterStory.getLocation().getId().equals(lastLocationId)) {
                                 gameSession.setGameStateToNext();
                             } else {
                                 collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession);
