@@ -25,6 +25,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -634,7 +635,8 @@ public class GameSessionHelperTest {
             int xCoordinate,
             int yCoordinate,
             String testFileName,
-            List<String> expectedUpdatedPlayerIds
+            List<String> expectedUpdatedPlayerIds,
+            List<String> expectedOutcomeDisplay
     ) throws Exception {
         // Arrange - Load test data from JSON
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
@@ -693,6 +695,13 @@ public class GameSessionHelperTest {
                 verify(gameSessionDAO).updatePlayer(argThat(p -> playerId.equals(p.getAuthorId())));
             }
             verify(activeSessionDAO).update(any(ActivePlayerSession.class));
+        }
+
+        // Assert - Verify outcome display
+        if (!expectedOutcomeDisplay.isEmpty()) {
+            ArgumentCaptor<ActivePlayerSession> outcomeCaptor = ArgumentCaptor.forClass(ActivePlayerSession.class);
+            verify(activeSessionDAO).update(outcomeCaptor.capture());
+            assertEquals(expectedOutcomeDisplay, outcomeCaptor.getValue().getOutcomeDisplay());
         }
     }
 
@@ -766,7 +775,8 @@ public class GameSessionHelperTest {
         //        int xCoordinate,
         //        int yCoordinate,
         //        String testFileName,
-        //        List<String> expectedUpdatedPlayerIds
+        //        List<String> expectedUpdatedPlayerIds,
+        //        List<String> expectedOutcomeDisplay
 
         return Stream.of(
                 Arguments.of(
@@ -778,6 +788,7 @@ public class GameSessionHelperTest {
                         0,
                         0,
                         "MAKE_CHOICE_VOTING_START.json",
+                        List.of(),
                         List.of()
                 ),
                 Arguments.of(
@@ -789,6 +800,7 @@ public class GameSessionHelperTest {
                         2,
                         0,
                         "MAKE_CHOICE_VOTING_START.json",
+                        List.of(),
                         List.of()
                 ),
                 Arguments.of(
@@ -800,7 +812,8 @@ public class GameSessionHelperTest {
                         0,
                         0,
                         "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
-                        List.of("e8852f24-cdc8-465c-b244-56ce08029584") // Joe
+                        List.of("e8852f24-cdc8-465c-b244-56ce08029584"), // Joe
+                        List.of()
                 ),
                 Arguments.of(
                         "Rooting out prod bug in round 2",
@@ -811,6 +824,7 @@ public class GameSessionHelperTest {
                         6,
                         0,
                         "ACTUAL_GAME_WRITE_EPILOGUES.json",
+                        List.of(),
                         List.of()
                 ),
                 Arguments.of(
@@ -822,6 +836,7 @@ public class GameSessionHelperTest {
                         9,
                         0,
                         "HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json",
+                        List.of(),
                         List.of()
                 ),
                 Arguments.of(
@@ -833,6 +848,7 @@ public class GameSessionHelperTest {
                         0,
                         0,
                         "MAKE_PARTNER_CHOICE_VOTING.json",
+                        List.of(),
                         List.of()
                 ),
                 Arguments.of(
@@ -844,6 +860,7 @@ public class GameSessionHelperTest {
                         0,
                         0,
                         "MAKE_PARTNER_CHOICE_VOTING.json",
+                        List.of(),
                         List.of()
                 ),
                 Arguments.of(
@@ -855,6 +872,7 @@ public class GameSessionHelperTest {
                         0,
                         0,
                         "MAKE_PARTNER_CHOICE_VOTING.json",
+                        List.of(),
                         List.of()
                 ),
                 Arguments.of(
@@ -866,10 +884,11 @@ public class GameSessionHelperTest {
                         3,
                         0,
                         "MAKE_PARTNER_CHOICE_VOTING.json",
+                        List.of(),
                         List.of()
                 ),
                 Arguments.of(
-                        "Transition to NAVIGATE_WINNER when story location changes",
+                        "Transition to NAVIGATE_WINNER on initial story and set initial location outcome display",
                         "",
                         0,
                         GameState.MAKE_OUTCOME_CHOICE_WINNER,
@@ -877,7 +896,8 @@ public class GameSessionHelperTest {
                         0,
                         0,
                         "NAVIGATE_VOTING.json",
-                        List.of()
+                        List.of(),
+                        List.of("Kirsten gained the trait 'Agriculturalist'")
                 ),
                 Arguments.of(
                         "Transition to MAKE_CHOICE_VOTING when story location is the same",
@@ -888,7 +908,20 @@ public class GameSessionHelperTest {
                         2,
                         0,
                         "NAVIGATE_VOTING.json",
+                        List.of(),
                         List.of()
+                ),
+                Arguments.of(
+                        "Transition to NAVIGATE_WINNER when story location changes and set next location outcome display",
+                        "",
+                        0,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        GameState.NAVIGATE_WINNER,
+                        0,
+                        0,
+                        "NAVIGATE_WINNER_EXISTING_OUTCOME.json",
+                        List.of(),
+                        List.of("Byron gained the trait 'Party Animal'")
                 )
         );
     }

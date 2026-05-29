@@ -120,6 +120,12 @@
             },
             "finalized": false
           }
+        },
+        {
+          "traitId": "df3ab185-ba2b-40d5-8751-70278cd22361",
+          "traitLabel": "Ghosts D",
+          "traitType": "COMPANION",
+          "textSubmission": null
         }
       ],
       "titles": null,
@@ -270,9 +276,9 @@
       "firstPlayer": false
     }
   ],
-  "gameState": "MAKE_CHOICE_VOTING",
+  "gameState": "MAKE_OUTCOME_CHOICE_WINNER",
   "activePlayerSession": {
-    "gameCode": "",
+    "gameCode": "35A7D5",
     "playerId": "",
     "playerChoiceOptionId": "",
     "selectedLocationOptionId": "",
@@ -302,7 +308,9 @@
       "location": null
     },
     "location": null,
-    "outcomeDisplay": [],
+    "outcomeDisplay": [
+      "Kirsten gained the trait 'Agriculturalist'"
+    ],
     "locationOutcomeDisplay": [],
     "ritualStory": null,
     "setNextPlayerTurn": false,
@@ -322,10 +330,10 @@
   "activeGameStateSession": {
     "gameCode": null,
     "isPlayerDone": {
-      "66484ede-f2d2-44de-95eb-acf67545995e": true,
-      "c27f9beb-f139-4401-b5cb-676d3b63a1c0": true,
+      "66484ede-f2d2-44de-95eb-acf67545995e": false,
+      "c27f9beb-f139-4401-b5cb-676d3b63a1c0": false,
       "c240db87-299a-479f-b5e3-c4a063be673c": false,
-      "62c3c565-d7b7-4823-9a5c-b7de8910a7b3": true
+      "62c3c565-d7b7-4823-9a5c-b7de8910a7b3": false
     }
   },
   "stories": [
@@ -339,13 +347,13 @@
       "prequelStorySelectedOptionId": "",
       "gameCode": "35A7D5",
       "mainPlotStory": false,
-      "visited": false,
+      "visited": true,
       "playerId": "c240db87-299a-479f-b5e3-c4a063be673c",
       "playerIds": [
         "c240db87-299a-479f-b5e3-c4a063be673c"
       ],
       "partnerIds": [],
-      "selectedOptionId": null,
+      "selectedOptionId": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
       "playerSucceeded": false,
       "prequelStoryPlayerId": "",
       "repercussions": null,
@@ -760,7 +768,7 @@
               "repercussions": []
             }
           ],
-          "selectedForkId": ""
+          "selectedForkId": "28cb9ba5-d3ed-4041-a24e-bdfb88dd426c"
         }
       ],
       "encounterLabel": {
@@ -885,7 +893,7 @@
       "prequelStorySelectedOptionId": "",
       "gameCode": "35A7D5",
       "mainPlotStory": false,
-      "visited": false,
+      "visited": true,
       "playerId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
       "playerIds": [
         "62c3c565-d7b7-4823-9a5c-b7de8910a7b3"
@@ -894,7 +902,13 @@
       "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStoryPlayerId": "",
-      "repercussions": null,
+      "repercussions": [
+        {
+          "repercussionType": "All Players",
+          "repercussionSubmission": null,
+          "color": "#f57c00"
+        }
+      ],
       "prequelOutcomeDisplay": null,
       "sequelStory": false,
       "saveGameStory": false,
@@ -1059,10 +1073,16 @@
                 },
                 "finalized": false
               },
-              "repercussions": []
+              "repercussions": [
+                {
+                  "repercussionType": "All Players",
+                  "repercussionSubmission": null,
+                  "color": "#f57c00"
+                }
+              ]
             }
           ],
-          "selectedForkId": ""
+          "selectedForkId": "0ebdf290-dff7-4955-8d58-174f2ac077fa"
         }
       ],
       "encounterLabel": {
@@ -1187,15 +1207,13 @@
       "prequelStorySelectedOptionId": "",
       "gameCode": "35A7D5",
       "mainPlotStory": false,
-      "visited": false,
+      "visited": true,
       "playerId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
       "playerIds": [
         "c27f9beb-f139-4401-b5cb-676d3b63a1c0"
       ],
-      "partnerIds": [
-        "66484ede-f2d2-44de-95eb-acf67545995e"
-      ],
-      "selectedOptionId": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
+      "partnerIds": [],
+      "selectedOptionId": "",
       "playerSucceeded": false,
       "prequelStoryPlayerId": "",
       "repercussions": null,
@@ -1284,10 +1302,16 @@
                 },
                 "finalized": false
               },
-              "repercussions": []
+              "repercussions": [
+                {
+                  "repercussionType": "Companion",
+                  "repercussionSubmission": "Ghosts D",
+                  "color": "#E60000"
+                }
+              ]
             }
           ],
-          "selectedForkId": ""
+          "selectedForkId": "b3f18a68-6c7a-4b54-a6e5-c280c9e05814"
         },
         {
           "optionId": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
@@ -3259,7 +3283,14 @@
         "locationId": "b9a884ae-33ca-4076-8725-9836b501551e"
       }
     ],
-    "traits": []
+    "traits": [
+      {
+        "traitId": "df3ab185-ba2b-40d5-8751-70278cd22361",
+        "traitLabel": "Ghosts D",
+        "traitType": "COMPANION",
+        "textSubmission": null
+      }
+    ]
   },
   "didWeSucceed": false,
   "totalPointsTowardsVictory": 0,
@@ -3273,7 +3304,7 @@
   "gameMode": "DUNGEON_MODE",
   "gameBoard": {
     "playerCoordinates": {
-      "xCoordinate": 0,
+      "xCoordinate": 1,
       "yCoordinate": 0
     },
     "dungeonGrid": {
@@ -3328,13 +3359,13 @@
     },
     "encounterAtPlayerCoordinates": {
       "encounterLabel": {
-        "encounterId": "894125c1-d796-469e-ad43-16d911e873aa",
-        "encounterLabel": "Simon, the Cow B",
+        "encounterId": "8231062d-1871-44af-bf7a-faa19b7e71bb",
+        "encounterLabel": "A Knock on the Door A",
         "textSubmission": null,
         "locationId": null
       },
-      "storyId": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-      "storyPrompt": "Simon the Cow is here. He looks up passively and moos at you C",
+      "storyId": "145a1445-3923-43a0-8ebe-7f4eabb05586",
+      "storyPrompt": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
       "encounterType": "NORMAL",
       "visited": false
     }
@@ -3418,67 +3449,12 @@
           "finalized": false
         }
       ],
-      "playerVotes": {
-        "66484ede-f2d2-44de-95eb-acf67545995e": [
-          {
-            "voteId": "",
-            "playerId": "66484ede-f2d2-44de-95eb-acf67545995e",
-            "submissionId": "f734d40d-5373-448c-9b11-2391f1ed2d51",
-            "ranking": 1,
-            "votedAt": {
-              "seconds": 1779739361,
-              "nanos": 992000000
-            }
-          }
-        ],
-        "c27f9beb-f139-4401-b5cb-676d3b63a1c0": [
-          {
-            "voteId": "",
-            "playerId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-            "submissionId": "f734d40d-5373-448c-9b11-2391f1ed2d51",
-            "ranking": 1,
-            "votedAt": {
-              "seconds": 1779739365,
-              "nanos": 249000000
-            }
-          }
-        ],
-        "c240db87-299a-479f-b5e3-c4a063be673c": [
-          {
-            "voteId": "",
-            "playerId": "c240db87-299a-479f-b5e3-c4a063be673c",
-            "submissionId": "b9a884ae-33ca-4076-8725-9836b501551e",
-            "ranking": 1,
-            "votedAt": {
-              "seconds": 1779742188,
-              "nanos": 718000000
-            }
-          }
-        ],
-        "62c3c565-d7b7-4823-9a5c-b7de8910a7b3": [
-          {
-            "voteId": "",
-            "playerId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-            "submissionId": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
-            "ranking": 1,
-            "votedAt": {
-              "seconds": 1779742174,
-              "nanos": 416000000
-            }
-          }
-        ]
-      },
-      "playersWhoSubmitted": [
-        null
-      ],
-      "playersWhoVoted": [
-        "66484ede-f2d2-44de-95eb-acf67545995e",
-        "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-        "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-        "c240db87-299a-479f-b5e3-c4a063be673c"
-      ],
+      "playerVotes": {},
+      "playersWhoSubmitted": [],
+      "playersWhoVoted": [],
       "finalResult": null,
       "submissionViews": {},
+      "complete": false,
       "submissionsWithoutParentSubmissions": [
         {
           "submissionId": "f734d40d-5373-448c-9b11-2391f1ed2d51",
@@ -3552,641 +3528,7 @@
           },
           "finalized": false
         }
-      ],
-      "complete": false
-    },
-    "HOW_DOES_THIS_RESOLVE_AGAIN": {
-      "phaseId": "HOW_DOES_THIS_RESOLVE_AGAIN",
-      "question": null,
-      "phaseType": null,
-      "submissions": [
-        {
-          "submissionId": "044b27fc-a37e-4a98-9883-2bb92ba241bc",
-          "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "originalText": "",
-          "currentText": "You are also beyond life and they realize that and become your friends! C",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "You are also beyond life and they realize that and become your friends! C",
-              "submissionId": null,
-              "outcomeType": "6",
-              "outcomeTypeWithLabel": {
-                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-                "label": "Oooh there are ghosties here. They're so spooky! A",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "6",
-                    "label": "use trait: Undead",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "6",
-          "outcomeTypeWithLabel": {
-            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-            "label": "Oooh there are ghosties here. They're so spooky! A",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "6",
-                "label": "use trait: Undead",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "98ddfd5b-c924-42c5-b3bb-341664e92fb5",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "",
-          "currentText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
-              "submissionId": null,
-              "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
-              "outcomeTypeWithLabel": {
-                "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-                "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "4519835c-2ee8-4960-b177-450c26d9573a",
-                    "label": "use trait: Party Animal",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": [
-                  "A Knock on the Door A",
-                  "at A Bustling Tavern in the Woods"
-                ]
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
-          "outcomeTypeWithLabel": {
-            "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-            "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "4519835c-2ee8-4960-b177-450c26d9573a",
-                "label": "use trait: Party Animal",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": [
-              "A Knock on the Door A",
-              "at A Bustling Tavern in the Woods"
-            ]
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "28cb9ba5-d3ed-4041-a24e-bdfb88dd426c",
-          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "",
-          "currentText": "You pet ole Simon the cow and he loves it! He mooz.",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "You pet ole Simon the cow and he loves it! He mooz.",
-              "submissionId": null,
-              "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-                    "label": "Pet him B",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": [
-                  "Simon, the Cow B",
-                  "at An Old Farmhouse"
-                ]
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-                "label": "Pet him B",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": [
-              "Simon, the Cow B",
-              "at An Old Farmhouse"
-            ]
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "cd4c0076-99ff-4e5e-a6af-8a72044edaf0",
-          "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "",
-          "currentText": "You use your spirituality to bind yourself with the sword. B",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "You use your spirituality to bind yourself with the sword. B",
-              "submissionId": null,
-              "outcomeType": "ff4fe029-eca1-4c19-a582-9eedc4d34087",
-              "outcomeTypeWithLabel": {
-                "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-                "label": "There's a big sword in a stone here!! Dang! D",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "ff4fe029-eca1-4c19-a582-9eedc4d34087",
-                    "label": "use trait: Reverent",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": [
-                  "A Big ole Sword in a Stone",
-                  "at An Altar to an Old God"
-                ]
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "ff4fe029-eca1-4c19-a582-9eedc4d34087",
-          "outcomeTypeWithLabel": {
-            "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-            "label": "There's a big sword in a stone here!! Dang! D",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "ff4fe029-eca1-4c19-a582-9eedc4d34087",
-                "label": "use trait: Reverent",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": [
-              "A Big ole Sword in a Stone",
-              "at An Altar to an Old God"
-            ]
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "71e2297e-5c8d-4eb8-b873-7fb91eb32642",
-          "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "You are also beyond life and they realize that and become your friends! C",
-          "currentText": "You are also beyond life and they realize that and become your friends! C ",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "You are also beyond life and they realize that and become your friends! C",
-              "submissionId": null,
-              "outcomeType": "6",
-              "outcomeTypeWithLabel": {
-                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-                "label": "Oooh there are ghosties here. They're so spooky! A",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "6",
-                    "label": "use trait: Undead",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "",
-              "submissionId": "044b27fc-a37e-4a98-9883-2bb92ba241bc",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Title",
-                "repercussionSubmission": "Friend of Ghosts",
-                "color": "#7b1fa2"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "6",
-          "outcomeTypeWithLabel": {
-            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-            "label": "Oooh there are ghosties here. They're so spooky! A",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "6",
-                "label": "use trait: Undead",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "0ebdf290-dff7-4955-8d58-174f2ac077fa",
-          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
-          "currentText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D A crazy network of knocking starts. A",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
-              "submissionId": null,
-              "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
-              "outcomeTypeWithLabel": {
-                "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-                "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "4519835c-2ee8-4960-b177-450c26d9573a",
-                    "label": "use trait: Party Animal",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": [
-                  "A Knock on the Door A",
-                  "at A Bustling Tavern in the Woods"
-                ]
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "A crazy network of knocking starts. A",
-              "submissionId": "98ddfd5b-c924-42c5-b3bb-341664e92fb5",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "All Players",
-                "repercussionSubmission": null,
-                "color": "#f57c00"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
-          "outcomeTypeWithLabel": {
-            "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-            "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "4519835c-2ee8-4960-b177-450c26d9573a",
-                "label": "use trait: Party Animal",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": [
-              "A Knock on the Door A",
-              "at A Bustling Tavern in the Woods"
-            ]
-          },
-          "finalized": false
-        }
-      ],
-      "playerVotes": {},
-      "playersWhoSubmitted": [
-        "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-        "c240db87-299a-479f-b5e3-c4a063be673c",
-        "66484ede-f2d2-44de-95eb-acf67545995e",
-        "c27f9beb-f139-4401-b5cb-676d3b63a1c0"
-      ],
-      "playersWhoVoted": [],
-      "finalResult": null,
-      "submissionViews": {
-        "044b27fc-a37e-4a98-9883-2bb92ba241bc": [],
-        "cd4c0076-99ff-4e5e-a6af-8a72044edaf0": [
-          "66484ede-f2d2-44de-95eb-acf67545995e"
-        ],
-        "0ebdf290-dff7-4955-8d58-174f2ac077fa": [
-          "c27f9beb-f139-4401-b5cb-676d3b63a1c0"
-        ],
-        "28cb9ba5-d3ed-4041-a24e-bdfb88dd426c": [
-          "c240db87-299a-479f-b5e3-c4a063be673c",
-          "62c3c565-d7b7-4823-9a5c-b7de8910a7b3"
-        ],
-        "71e2297e-5c8d-4eb8-b873-7fb91eb32642": [
-          "66484ede-f2d2-44de-95eb-acf67545995e"
-        ],
-        "98ddfd5b-c924-42c5-b3bb-341664e92fb5": [
-          "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "c27f9beb-f139-4401-b5cb-676d3b63a1c0"
-        ]
-      },
-      "submissionsWithoutParentSubmissions": [
-        {
-          "submissionId": "28cb9ba5-d3ed-4041-a24e-bdfb88dd426c",
-          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "",
-          "currentText": "You pet ole Simon the cow and he loves it! He mooz.",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "You pet ole Simon the cow and he loves it! He mooz.",
-              "submissionId": null,
-              "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-                    "label": "Pet him B",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": [
-                  "Simon, the Cow B",
-                  "at An Old Farmhouse"
-                ]
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-                "label": "Pet him B",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": [
-              "Simon, the Cow B",
-              "at An Old Farmhouse"
-            ]
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "cd4c0076-99ff-4e5e-a6af-8a72044edaf0",
-          "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "",
-          "currentText": "You use your spirituality to bind yourself with the sword. B",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "You use your spirituality to bind yourself with the sword. B",
-              "submissionId": null,
-              "outcomeType": "ff4fe029-eca1-4c19-a582-9eedc4d34087",
-              "outcomeTypeWithLabel": {
-                "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-                "label": "There's a big sword in a stone here!! Dang! D",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "ff4fe029-eca1-4c19-a582-9eedc4d34087",
-                    "label": "use trait: Reverent",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": [
-                  "A Big ole Sword in a Stone",
-                  "at An Altar to an Old God"
-                ]
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "ff4fe029-eca1-4c19-a582-9eedc4d34087",
-          "outcomeTypeWithLabel": {
-            "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-            "label": "There's a big sword in a stone here!! Dang! D",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "ff4fe029-eca1-4c19-a582-9eedc4d34087",
-                "label": "use trait: Reverent",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": [
-              "A Big ole Sword in a Stone",
-              "at An Altar to an Old God"
-            ]
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "71e2297e-5c8d-4eb8-b873-7fb91eb32642",
-          "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "You are also beyond life and they realize that and become your friends! C",
-          "currentText": "You are also beyond life and they realize that and become your friends! C ",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "You are also beyond life and they realize that and become your friends! C",
-              "submissionId": null,
-              "outcomeType": "6",
-              "outcomeTypeWithLabel": {
-                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-                "label": "Oooh there are ghosties here. They're so spooky! A",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "6",
-                    "label": "use trait: Undead",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "",
-              "submissionId": "044b27fc-a37e-4a98-9883-2bb92ba241bc",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Title",
-                "repercussionSubmission": "Friend of Ghosts",
-                "color": "#7b1fa2"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "6",
-          "outcomeTypeWithLabel": {
-            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-            "label": "Oooh there are ghosties here. They're so spooky! A",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "6",
-                "label": "use trait: Undead",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "0ebdf290-dff7-4955-8d58-174f2ac077fa",
-          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
-          "currentText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D A crazy network of knocking starts. A",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
-              "submissionId": null,
-              "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
-              "outcomeTypeWithLabel": {
-                "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-                "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "4519835c-2ee8-4960-b177-450c26d9573a",
-                    "label": "use trait: Party Animal",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": [
-                  "A Knock on the Door A",
-                  "at A Bustling Tavern in the Woods"
-                ]
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "A crazy network of knocking starts. A",
-              "submissionId": "98ddfd5b-c924-42c5-b3bb-341664e92fb5",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "All Players",
-                "repercussionSubmission": null,
-                "color": "#f57c00"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
-          "outcomeTypeWithLabel": {
-            "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-            "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "4519835c-2ee8-4960-b177-450c26d9573a",
-                "label": "use trait: Party Animal",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": [
-              "A Knock on the Door A",
-              "at A Bustling Tavern in the Woods"
-            ]
-          },
-          "finalized": false
-        }
-      ],
-      "complete": false
+      ]
     },
     "MAKE_CHOICE_VOTING": {
       "phaseId": "MAKE_CHOICE_VOTING",
@@ -5908,14 +5250,11 @@
         }
       ],
       "playerVotes": {},
-      "playersWhoSubmitted": [
-        "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-        "c240db87-299a-479f-b5e3-c4a063be673c",
-        "66484ede-f2d2-44de-95eb-acf67545995e"
-      ],
+      "playersWhoSubmitted": [],
       "playersWhoVoted": [],
       "finalResult": null,
       "submissionViews": {},
+      "complete": false,
       "submissionsWithoutParentSubmissions": [
         {
           "submissionId": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
@@ -7630,313 +6969,46 @@
           },
           "finalized": false
         }
-      ],
-      "complete": false
+      ]
+    },
+    "HOW_DOES_THIS_RESOLVE_AGAIN": {
+      "phaseId": "HOW_DOES_THIS_RESOLVE_AGAIN",
+      "question": null,
+      "phaseType": null,
+      "submissions": [],
+      "playerVotes": {},
+      "playersWhoSubmitted": [],
+      "playersWhoVoted": [],
+      "finalResult": null,
+      "submissionViews": {},
+      "complete": false,
+      "submissionsWithoutParentSubmissions": []
     },
     "WHAT_CAN_WE_TRY": {
       "phaseId": "WHAT_CAN_WE_TRY",
       "question": null,
       "phaseType": null,
-      "submissions": [
-        {
-          "submissionId": "77cb8992-eeb7-4dfb-be59-2f97322fa858",
-          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "",
-          "currentText": "Barty the Bartender should A",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "Barty the Bartender should A",
-              "submissionId": null,
-              "outcomeType": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-              "outcomeTypeWithLabel": {
-                "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-                "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-          "outcomeTypeWithLabel": {
-            "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-            "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "67959d4a-cc26-4f32-9687-a106d1b3ce89",
-          "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "originalText": "",
-          "currentText": "Moo back C",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "Moo back C",
-              "submissionId": null,
-              "outcomeType": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "b1995664-e1c1-4d90-879b-2a65ce58e2f0",
-          "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "originalText": "",
-          "currentText": "Leave it be C",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "Leave it be C",
-              "submissionId": null,
-              "outcomeType": "f8133934-78bc-4279-98e6-4b30faac7059",
-              "outcomeTypeWithLabel": {
-                "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-                "label": "There's a big sword in a stone here!! Dang! D",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "f8133934-78bc-4279-98e6-4b30faac7059",
-          "outcomeTypeWithLabel": {
-            "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-            "label": "There's a big sword in a stone here!! Dang! D",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "88463aba-833b-48c5-9896-210c0c79cd51",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "",
-          "currentText": "Boo at them!",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "Boo at them!",
-              "submissionId": null,
-              "outcomeType": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-              "outcomeTypeWithLabel": {
-                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-                "label": "Oooh there are ghosties here. They're so spooky! A",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-          "outcomeTypeWithLabel": {
-            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-            "label": "Oooh there are ghosties here. They're so spooky! A",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        }
-      ],
+      "submissions": [],
       "playerVotes": {},
-      "playersWhoSubmitted": [
-        "66484ede-f2d2-44de-95eb-acf67545995e",
-        "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-        "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-        "c240db87-299a-479f-b5e3-c4a063be673c"
-      ],
+      "playersWhoSubmitted": [],
       "playersWhoVoted": [],
       "finalResult": null,
-      "submissionViews": {
-        "88463aba-833b-48c5-9896-210c0c79cd51": [
-          "66484ede-f2d2-44de-95eb-acf67545995e"
-        ],
-        "67959d4a-cc26-4f32-9687-a106d1b3ce89": [
-          "c27f9beb-f139-4401-b5cb-676d3b63a1c0"
-        ],
-        "77cb8992-eeb7-4dfb-be59-2f97322fa858": [
-          "c240db87-299a-479f-b5e3-c4a063be673c"
-        ],
-        "b1995664-e1c1-4d90-879b-2a65ce58e2f0": [
-          "c240db87-299a-479f-b5e3-c4a063be673c"
-        ]
-      },
-      "submissionsWithoutParentSubmissions": [
-        {
-          "submissionId": "77cb8992-eeb7-4dfb-be59-2f97322fa858",
-          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "",
-          "currentText": "Barty the Bartender should A",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "Barty the Bartender should A",
-              "submissionId": null,
-              "outcomeType": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-              "outcomeTypeWithLabel": {
-                "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-                "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-          "outcomeTypeWithLabel": {
-            "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-            "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "67959d4a-cc26-4f32-9687-a106d1b3ce89",
-          "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "originalText": "",
-          "currentText": "Moo back C",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "Moo back C",
-              "submissionId": null,
-              "outcomeType": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "b1995664-e1c1-4d90-879b-2a65ce58e2f0",
-          "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "originalText": "",
-          "currentText": "Leave it be C",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "Leave it be C",
-              "submissionId": null,
-              "outcomeType": "f8133934-78bc-4279-98e6-4b30faac7059",
-              "outcomeTypeWithLabel": {
-                "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-                "label": "There's a big sword in a stone here!! Dang! D",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "f8133934-78bc-4279-98e6-4b30faac7059",
-          "outcomeTypeWithLabel": {
-            "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-            "label": "There's a big sword in a stone here!! Dang! D",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "88463aba-833b-48c5-9896-210c0c79cd51",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "",
-          "currentText": "Boo at them!",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "Boo at them!",
-              "submissionId": null,
-              "outcomeType": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-              "outcomeTypeWithLabel": {
-                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-                "label": "Oooh there are ghosties here. They're so spooky! A",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-          "outcomeTypeWithLabel": {
-            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-            "label": "Oooh there are ghosties here. They're so spooky! A",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        }
-      ],
-      "complete": false
+      "submissionViews": {},
+      "complete": false,
+      "submissionsWithoutParentSubmissions": []
+    },
+    "ACCEPT_PARTNER_CHOICE_VOTING": {
+      "phaseId": "ACCEPT_PARTNER_CHOICE_VOTING",
+      "question": null,
+      "phaseType": null,
+      "submissions": [],
+      "playerVotes": {},
+      "playersWhoSubmitted": [],
+      "playersWhoVoted": [],
+      "finalResult": null,
+      "submissionViews": {},
+      "complete": false,
+      "submissionsWithoutParentSubmissions": []
     },
     "LOCATION_OPTION_MAKE_CHOICE_VOTING": {
       "phaseId": "LOCATION_OPTION_MAKE_CHOICE_VOTING",
@@ -8095,6 +7167,7 @@
       "playersWhoVoted": [],
       "finalResult": null,
       "submissionViews": {},
+      "complete": false,
       "submissionsWithoutParentSubmissions": [
         {
           "submissionId": "970db904-acc5-4dd8-92dc-0fb42cf8619e",
@@ -8240,2006 +7313,179 @@
           },
           "finalized": false
         }
-      ],
-      "complete": false
+      ]
     },
     "WHAT_HAPPENS_HERE": {
       "phaseId": "WHAT_HAPPENS_HERE",
       "question": null,
       "phaseType": null,
-      "submissions": [
-        {
-          "submissionId": "35435e87-1d3a-4b4f-aceb-8011180a2482",
-          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "",
-          "currentText": "Oooh there are ghosties here. They're so spooky! A",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "Oooh there are ghosties here. They're so spooky! A",
-              "submissionId": null,
-              "outcomeType": "71a92289-0e1a-4aea-aca4-efbcd52db569",
-              "outcomeTypeWithLabel": {
-                "id": "f734d40d-5373-448c-9b11-2391f1ed2d51",
-                "label": "An Altar to an Old God",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "71a92289-0e1a-4aea-aca4-efbcd52db569",
-                    "label": "Ghosts D",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "71a92289-0e1a-4aea-aca4-efbcd52db569",
-          "outcomeTypeWithLabel": {
-            "id": "f734d40d-5373-448c-9b11-2391f1ed2d51",
-            "label": "An Altar to an Old God",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "71a92289-0e1a-4aea-aca4-efbcd52db569",
-                "label": "Ghosts D",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "98ee67b0-c236-415c-afbc-0e0c8ade2601",
-          "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "",
-          "currentText": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B",
-              "submissionId": null,
-              "outcomeType": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-              "outcomeTypeWithLabel": {
-                "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
-                "label": "A Bustling Tavern in the Woods",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-                    "label": "A Knock on the Door A",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-          "outcomeTypeWithLabel": {
-            "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
-            "label": "A Bustling Tavern in the Woods",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-                "label": "A Knock on the Door A",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "5c25b29c-d4dc-458b-b70e-bae41727aa4a",
-          "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "originalText": "",
-          "currentText": "Simon the Cow is here. He looks up passively and moos at you C",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "Simon the Cow is here. He looks up passively and moos at you C",
-              "submissionId": null,
-              "outcomeType": "894125c1-d796-469e-ad43-16d911e873aa",
-              "outcomeTypeWithLabel": {
-                "id": "b9a884ae-33ca-4076-8725-9836b501551e",
-                "label": "An Old Farmhouse",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "894125c1-d796-469e-ad43-16d911e873aa",
-                    "label": "Simon, the Cow B",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "894125c1-d796-469e-ad43-16d911e873aa",
-          "outcomeTypeWithLabel": {
-            "id": "b9a884ae-33ca-4076-8725-9836b501551e",
-            "label": "An Old Farmhouse",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "894125c1-d796-469e-ad43-16d911e873aa",
-                "label": "Simon, the Cow B",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "43f5f1cd-db57-4a44-bae2-cd82287956a5",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "",
-          "currentText": "There's a big sword in a stone here!! Dang! D",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "There's a big sword in a stone here!! Dang! D",
-              "submissionId": null,
-              "outcomeType": "b81e7269-5118-419d-8896-b008d01a1ad4",
-              "outcomeTypeWithLabel": {
-                "id": "f734d40d-5373-448c-9b11-2391f1ed2d51",
-                "label": "An Altar to an Old God",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "b81e7269-5118-419d-8896-b008d01a1ad4",
-                    "label": "A Big ole Sword in a Stone",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "b81e7269-5118-419d-8896-b008d01a1ad4",
-          "outcomeTypeWithLabel": {
-            "id": "f734d40d-5373-448c-9b11-2391f1ed2d51",
-            "label": "An Altar to an Old God",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "b81e7269-5118-419d-8896-b008d01a1ad4",
-                "label": "A Big ole Sword in a Stone",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "8902d6a1-d182-4bf6-b424-a29bac4543cf",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B",
-          "currentText": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B",
-              "submissionId": null,
-              "outcomeType": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-              "outcomeTypeWithLabel": {
-                "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
-                "label": "A Bustling Tavern in the Woods",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-                    "label": "A Knock on the Door A",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "You go to answer the door but then you think better of it. How will you pick who answers?",
-              "submissionId": "98ee67b0-c236-415c-afbc-0e0c8ade2601",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-          "outcomeTypeWithLabel": {
-            "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
-            "label": "A Bustling Tavern in the Woods",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-                "label": "A Knock on the Door A",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        }
-      ],
+      "submissions": [],
       "playerVotes": {},
-      "playersWhoSubmitted": [
-        "66484ede-f2d2-44de-95eb-acf67545995e",
-        "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-        "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-        "c240db87-299a-479f-b5e3-c4a063be673c"
-      ],
+      "playersWhoSubmitted": [],
       "playersWhoVoted": [],
       "finalResult": null,
-      "submissionViews": {
-        "5c25b29c-d4dc-458b-b70e-bae41727aa4a": [
-          "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "66484ede-f2d2-44de-95eb-acf67545995e"
-        ],
-        "98ee67b0-c236-415c-afbc-0e0c8ade2601": [
-          "62c3c565-d7b7-4823-9a5c-b7de8910a7b3"
-        ],
-        "35435e87-1d3a-4b4f-aceb-8011180a2482": [
-          "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "c240db87-299a-479f-b5e3-c4a063be673c"
-        ]
-      },
-      "submissionsWithoutParentSubmissions": [
-        {
-          "submissionId": "35435e87-1d3a-4b4f-aceb-8011180a2482",
-          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "",
-          "currentText": "Oooh there are ghosties here. They're so spooky! A",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "Oooh there are ghosties here. They're so spooky! A",
-              "submissionId": null,
-              "outcomeType": "71a92289-0e1a-4aea-aca4-efbcd52db569",
-              "outcomeTypeWithLabel": {
-                "id": "f734d40d-5373-448c-9b11-2391f1ed2d51",
-                "label": "An Altar to an Old God",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "71a92289-0e1a-4aea-aca4-efbcd52db569",
-                    "label": "Ghosts D",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "71a92289-0e1a-4aea-aca4-efbcd52db569",
-          "outcomeTypeWithLabel": {
-            "id": "f734d40d-5373-448c-9b11-2391f1ed2d51",
-            "label": "An Altar to an Old God",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "71a92289-0e1a-4aea-aca4-efbcd52db569",
-                "label": "Ghosts D",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "5c25b29c-d4dc-458b-b70e-bae41727aa4a",
-          "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "originalText": "",
-          "currentText": "Simon the Cow is here. He looks up passively and moos at you C",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "Simon the Cow is here. He looks up passively and moos at you C",
-              "submissionId": null,
-              "outcomeType": "894125c1-d796-469e-ad43-16d911e873aa",
-              "outcomeTypeWithLabel": {
-                "id": "b9a884ae-33ca-4076-8725-9836b501551e",
-                "label": "An Old Farmhouse",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "894125c1-d796-469e-ad43-16d911e873aa",
-                    "label": "Simon, the Cow B",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "894125c1-d796-469e-ad43-16d911e873aa",
-          "outcomeTypeWithLabel": {
-            "id": "b9a884ae-33ca-4076-8725-9836b501551e",
-            "label": "An Old Farmhouse",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "894125c1-d796-469e-ad43-16d911e873aa",
-                "label": "Simon, the Cow B",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "43f5f1cd-db57-4a44-bae2-cd82287956a5",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "",
-          "currentText": "There's a big sword in a stone here!! Dang! D",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "There's a big sword in a stone here!! Dang! D",
-              "submissionId": null,
-              "outcomeType": "b81e7269-5118-419d-8896-b008d01a1ad4",
-              "outcomeTypeWithLabel": {
-                "id": "f734d40d-5373-448c-9b11-2391f1ed2d51",
-                "label": "An Altar to an Old God",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "b81e7269-5118-419d-8896-b008d01a1ad4",
-                    "label": "A Big ole Sword in a Stone",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "b81e7269-5118-419d-8896-b008d01a1ad4",
-          "outcomeTypeWithLabel": {
-            "id": "f734d40d-5373-448c-9b11-2391f1ed2d51",
-            "label": "An Altar to an Old God",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "b81e7269-5118-419d-8896-b008d01a1ad4",
-                "label": "A Big ole Sword in a Stone",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "8902d6a1-d182-4bf6-b424-a29bac4543cf",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B",
-          "currentText": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B",
-              "submissionId": null,
-              "outcomeType": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-              "outcomeTypeWithLabel": {
-                "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
-                "label": "A Bustling Tavern in the Woods",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-                    "label": "A Knock on the Door A",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "You go to answer the door but then you think better of it. How will you pick who answers?",
-              "submissionId": "98ee67b0-c236-415c-afbc-0e0c8ade2601",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-          "outcomeTypeWithLabel": {
-            "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
-            "label": "A Bustling Tavern in the Woods",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "8231062d-1871-44af-bf7a-faa19b7e71bb",
-                "label": "A Knock on the Door A",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        }
-      ],
-      "complete": false
+      "submissionViews": {},
+      "complete": false,
+      "submissionsWithoutParentSubmissions": []
     },
-    "HOW_DOES_THIS_RESOLVE": {
-      "phaseId": "HOW_DOES_THIS_RESOLVE",
+    "MAKE_PARTNER_CHOICE_VOTING": {
+      "phaseId": "MAKE_PARTNER_CHOICE_VOTING",
       "question": null,
       "phaseType": null,
       "submissions": [
         {
-          "submissionId": "ad4686ba-ab1f-40e8-ac5f-561d4d6d7153",
+          "submissionId": "66484ede-f2d2-44de-95eb-acf67545995e",
           "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "",
-          "currentText": "Simon looks offended. He's a boy coy you weirdo! A",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "Simon looks offended. He's a boy coy you weirdo! A",
-              "submissionId": null,
-              "outcomeType": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-                    "label": "Milk him B",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
+          "originalText": null,
+          "currentText": "Andy",
+          "additions": [],
           "totalVotes": 0,
           "averageRanking": 0.0,
-          "outcomeType": "119c2506-78cf-44c8-9844-0ee9eea3e397",
+          "outcomeType": null,
           "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
+            "id": "",
+            "label": "",
             "clarifier": "",
-            "subTypes": [
-              {
-                "id": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-                "label": "Milk him B",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
+            "subTypes": [],
             "headers": []
           },
           "finalized": false
         },
         {
-          "submissionId": "2ed10118-c17f-4969-b8b3-8ddcd9644d51",
+          "submissionId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
           "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "",
-          "currentText": "You yank on it! It stays stuck... you feel bummed B",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "You yank on it! It stays stuck... you feel bummed B",
-              "submissionId": null,
-              "outcomeType": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-              "outcomeTypeWithLabel": {
-                "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-                "label": "There's a big sword in a stone here!! Dang! D",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-                    "label": "Pull on it C",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
+          "originalText": null,
+          "currentText": "Joe",
+          "additions": [],
           "totalVotes": 0,
           "averageRanking": 0.0,
-          "outcomeType": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
+          "outcomeType": null,
           "outcomeTypeWithLabel": {
-            "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-            "label": "There's a big sword in a stone here!! Dang! D",
+            "id": "",
+            "label": "",
             "clarifier": "",
-            "subTypes": [
-              {
-                "id": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-                "label": "Pull on it C",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
+            "subTypes": [],
             "headers": []
           },
           "finalized": false
         },
         {
-          "submissionId": "752c7c4f-f774-4cf2-9c08-eb83bb3f8593",
+          "submissionId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
           "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "originalText": "",
-          "currentText": "They ghosts are surprised! They didn't expect a human like you to notice them senpai. UwU! C",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "They ghosts are surprised! They didn't expect a human like you to notice them senpai. UwU! C",
-              "submissionId": null,
-              "outcomeType": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
-              "outcomeTypeWithLabel": {
-                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-                "label": "Oooh there are ghosties here. They're so spooky! A",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
-                    "label": "Wave at them D",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
+          "originalText": null,
+          "currentText": "Byron",
+          "additions": [],
           "totalVotes": 0,
           "averageRanking": 0.0,
-          "outcomeType": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
+          "outcomeType": null,
           "outcomeTypeWithLabel": {
-            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-            "label": "Oooh there are ghosties here. They're so spooky! A",
+            "id": "",
+            "label": "",
             "clarifier": "",
-            "subTypes": [
-              {
-                "id": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
-                "label": "Wave at them D",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
+            "subTypes": [],
             "headers": []
           },
           "finalized": false
         },
         {
-          "submissionId": "12a12175-45d1-4716-973f-8b6802970edf",
-          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "",
-          "currentText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-              "submissionId": null,
-              "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                    "label": "use trait: Agriculturalist",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                "label": "use trait: Agriculturalist",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "035b96d7-1a64-4df7-a76c-6c0555d86768",
-          "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "",
-          "currentText": "You pull on it! You try really hard but nothing really happens! B",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "You pull on it! You try really hard but nothing really happens! B",
-              "submissionId": null,
-              "outcomeType": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-              "outcomeTypeWithLabel": {
-                "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-                "label": "There's a big sword in a stone here!! Dang! D",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-                    "label": "Pull on it C",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-          "outcomeTypeWithLabel": {
-            "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-            "label": "There's a big sword in a stone here!! Dang! D",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-                "label": "Pull on it C",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "c8ecfdf9-cc61-4639-845a-406d08035f26",
-          "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "originalText": "",
-          "currentText": "They're actually super scared! C",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "They're actually super scared! C",
-              "submissionId": null,
-              "outcomeType": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-              "outcomeTypeWithLabel": {
-                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-                "label": "Oooh there are ghosties here. They're so spooky! A",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-                    "label": "Boo at them D",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-          "outcomeTypeWithLabel": {
-            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-            "label": "Oooh there are ghosties here. They're so spooky! A",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-                "label": "Boo at them D",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "fc01de1d-c6e1-4dda-8e98-c4d6cbad4bf4",
+          "submissionId": "c240db87-299a-479f-b5e3-c4a063be673c",
           "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "",
-          "currentText": "You knock so good with the ghost! You party hard with him! D",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "You knock so good with the ghost! You party hard with him! D",
-              "submissionId": null,
-              "outcomeType": "7604c173-a812-4f50-bae4-f3e898f83d26",
-              "outcomeTypeWithLabel": {
-                "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-                "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "7604c173-a812-4f50-bae4-f3e898f83d26",
-                    "label": "Knock back B",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
+          "originalText": null,
+          "currentText": "Kirsten",
+          "additions": [],
           "totalVotes": 0,
           "averageRanking": 0.0,
-          "outcomeType": "7604c173-a812-4f50-bae4-f3e898f83d26",
+          "outcomeType": null,
           "outcomeTypeWithLabel": {
-            "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-            "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
+            "id": "",
+            "label": "",
             "clarifier": "",
-            "subTypes": [
-              {
-                "id": "7604c173-a812-4f50-bae4-f3e898f83d26",
-                "label": "Knock back B",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "b3f18a68-6c7a-4b54-a6e5-c280c9e05814",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "They're actually super scared! C",
-          "currentText": "They're actually super scared! C The ghosties love you!",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "They're actually super scared! C",
-              "submissionId": null,
-              "outcomeType": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-              "outcomeTypeWithLabel": {
-                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-                "label": "Oooh there are ghosties here. They're so spooky! A",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-                    "label": "Boo at them D",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "The ghosties love you!",
-              "submissionId": "c8ecfdf9-cc61-4639-845a-406d08035f26",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Companion",
-                "repercussionSubmission": "Ghosts D",
-                "color": "#E60000"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-          "outcomeTypeWithLabel": {
-            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-            "label": "Oooh there are ghosties here. They're so spooky! A",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-                "label": "Boo at them D",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "fcb08dfc-4f5d-4b57-9679-a6adf43c5744",
-          "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-          "originalText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-          "currentText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him! ",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-              "submissionId": null,
-              "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                    "label": "use trait: Agriculturalist",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "",
-              "submissionId": "12a12175-45d1-4716-973f-8b6802970edf",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Trait",
-                "repercussionSubmission": "Cattle Rider",
-                "color": "#0288d1"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                "label": "use trait: Agriculturalist",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "74eeef55-718a-4527-945e-6640e0ea683c",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-          "currentText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him! He decides to join you on your quest D",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-              "submissionId": null,
-              "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                    "label": "use trait: Agriculturalist",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "He decides to join you on your quest D",
-              "submissionId": "12a12175-45d1-4716-973f-8b6802970edf",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Companion",
-                "repercussionSubmission": "A Big ole Sword in a Stone",
-                "color": "#E60000"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                "label": "use trait: Agriculturalist",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "6a1d16bd-c3d6-43cc-8bc9-269a63b9d845",
-          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "You yank on it! It stays stuck... you feel bummed B",
-          "currentText": "You yank on it! It stays stuck... you feel bummed B Your friends all agree that the next time you see this you'll all try together.",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "You yank on it! It stays stuck... you feel bummed B",
-              "submissionId": null,
-              "outcomeType": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-              "outcomeTypeWithLabel": {
-                "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-                "label": "There's a big sword in a stone here!! Dang! D",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-                    "label": "Pull on it C",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "Your friends all agree that the next time you see this you'll all try together.",
-              "submissionId": "2ed10118-c17f-4969-b8b3-8ddcd9644d51",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "All Players",
-                "repercussionSubmission": null,
-                "color": "#f57c00"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-          "outcomeTypeWithLabel": {
-            "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-            "label": "There's a big sword in a stone here!! Dang! D",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-                "label": "Pull on it C",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "3e0e18c6-4ccc-4b09-8969-6aae6063e6d7",
-          "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "Simon looks offended. He's a boy coy you weirdo! A",
-          "currentText": "Simon looks offended. He's a boy coy you weirdo! A ",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "Simon looks offended. He's a boy coy you weirdo! A",
-              "submissionId": null,
-              "outcomeType": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-                    "label": "Milk him B",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "",
-              "submissionId": "ad4686ba-ab1f-40e8-ac5f-561d4d6d7153",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Title",
-                "repercussionSubmission": "Weirdo",
-                "color": "#7b1fa2"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-                "label": "Milk him B",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "1595f2a7-1248-459f-a83c-94fd2dfc0a21",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him! ",
-          "currentText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!  Simon joins you!",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-              "submissionId": null,
-              "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                    "label": "use trait: Agriculturalist",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "",
-              "submissionId": "12a12175-45d1-4716-973f-8b6802970edf",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Trait",
-                "repercussionSubmission": "Cattle Rider",
-                "color": "#0288d1"
-              }
-            },
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "Simon joins you!",
-              "submissionId": "fcb08dfc-4f5d-4b57-9679-a6adf43c5744",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Companion",
-                "repercussionSubmission": null,
-                "color": "#E60000"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                "label": "use trait: Agriculturalist",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "ffc227be-2409-4fbb-8157-3f0379754b7b",
-          "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him! ",
-          "currentText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!  ",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-              "submissionId": null,
-              "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                    "label": "use trait: Agriculturalist",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "",
-              "submissionId": "12a12175-45d1-4716-973f-8b6802970edf",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Trait",
-                "repercussionSubmission": "Cattle Rider",
-                "color": "#0288d1"
-              }
-            },
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "",
-              "submissionId": "fcb08dfc-4f5d-4b57-9679-a6adf43c5744",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Title",
-                "repercussionSubmission": "Desperado",
-                "color": "#7b1fa2"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                "label": "use trait: Agriculturalist",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "4c6bbbfd-a95b-4c9c-bf86-20b00858e2bc",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "They ghosts are surprised! They didn't expect a human like you to notice them senpai. UwU! C",
-          "currentText": "They ghosts are surprised! They didn't expect a human like you to notice them senpai. UwU! C Companion trait doesn't work?",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "They ghosts are surprised! They didn't expect a human like you to notice them senpai. UwU! C",
-              "submissionId": null,
-              "outcomeType": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
-              "outcomeTypeWithLabel": {
-                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-                "label": "Oooh there are ghosties here. They're so spooky! A",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
-                    "label": "Wave at them D",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "Companion trait doesn't work?",
-              "submissionId": "752c7c4f-f774-4cf2-9c08-eb83bb3f8593",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Companion",
-                "repercussionSubmission": "Ghosts D",
-                "color": "#E60000"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
-          "outcomeTypeWithLabel": {
-            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-            "label": "Oooh there are ghosties here. They're so spooky! A",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
-                "label": "Wave at them D",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
+            "subTypes": [],
             "headers": []
           },
           "finalized": false
         }
       ],
       "playerVotes": {},
-      "playersWhoSubmitted": [
-        "66484ede-f2d2-44de-95eb-acf67545995e",
-        "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-        "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-        "c240db87-299a-479f-b5e3-c4a063be673c"
-      ],
+      "playersWhoSubmitted": [],
       "playersWhoVoted": [],
       "finalResult": null,
-      "submissionViews": {
-        "b3f18a68-6c7a-4b54-a6e5-c280c9e05814": [
-          "62c3c565-d7b7-4823-9a5c-b7de8910a7b3"
-        ],
-        "2ed10118-c17f-4969-b8b3-8ddcd9644d51": [],
-        "fcb08dfc-4f5d-4b57-9679-a6adf43c5744": [],
-        "fc01de1d-c6e1-4dda-8e98-c4d6cbad4bf4": [
-          "c27f9beb-f139-4401-b5cb-676d3b63a1c0"
-        ],
-        "c8ecfdf9-cc61-4639-845a-406d08035f26": [],
-        "ad4686ba-ab1f-40e8-ac5f-561d4d6d7153": [],
-        "035b96d7-1a64-4df7-a76c-6c0555d86768": [
-          "c240db87-299a-479f-b5e3-c4a063be673c"
-        ],
-        "74eeef55-718a-4527-945e-6640e0ea683c": [
-          "66484ede-f2d2-44de-95eb-acf67545995e"
-        ],
-        "ffc227be-2409-4fbb-8157-3f0379754b7b": [
-          "c240db87-299a-479f-b5e3-c4a063be673c"
-        ],
-        "3e0e18c6-4ccc-4b09-8969-6aae6063e6d7": [
-          "66484ede-f2d2-44de-95eb-acf67545995e"
-        ],
-        "6a1d16bd-c3d6-43cc-8bc9-269a63b9d845": [
-          "c27f9beb-f139-4401-b5cb-676d3b63a1c0"
-        ],
-        "752c7c4f-f774-4cf2-9c08-eb83bb3f8593": [],
-        "1595f2a7-1248-459f-a83c-94fd2dfc0a21": [
-          "62c3c565-d7b7-4823-9a5c-b7de8910a7b3"
-        ],
-        "12a12175-45d1-4716-973f-8b6802970edf": []
-      },
+      "submissionViews": {},
+      "complete": false,
       "submissionsWithoutParentSubmissions": [
         {
-          "submissionId": "035b96d7-1a64-4df7-a76c-6c0555d86768",
-          "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "",
-          "currentText": "You pull on it! You try really hard but nothing really happens! B",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "You pull on it! You try really hard but nothing really happens! B",
-              "submissionId": null,
-              "outcomeType": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-              "outcomeTypeWithLabel": {
-                "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-                "label": "There's a big sword in a stone here!! Dang! D",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-                    "label": "Pull on it C",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-          "outcomeTypeWithLabel": {
-            "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-            "label": "There's a big sword in a stone here!! Dang! D",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-                "label": "Pull on it C",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "fc01de1d-c6e1-4dda-8e98-c4d6cbad4bf4",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "",
-          "currentText": "You knock so good with the ghost! You party hard with him! D",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "You knock so good with the ghost! You party hard with him! D",
-              "submissionId": null,
-              "outcomeType": "7604c173-a812-4f50-bae4-f3e898f83d26",
-              "outcomeTypeWithLabel": {
-                "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-                "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "7604c173-a812-4f50-bae4-f3e898f83d26",
-                    "label": "Knock back B",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "7604c173-a812-4f50-bae4-f3e898f83d26",
-          "outcomeTypeWithLabel": {
-            "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
-            "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "7604c173-a812-4f50-bae4-f3e898f83d26",
-                "label": "Knock back B",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "b3f18a68-6c7a-4b54-a6e5-c280c9e05814",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "They're actually super scared! C",
-          "currentText": "They're actually super scared! C The ghosties love you!",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "They're actually super scared! C",
-              "submissionId": null,
-              "outcomeType": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-              "outcomeTypeWithLabel": {
-                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-                "label": "Oooh there are ghosties here. They're so spooky! A",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-                    "label": "Boo at them D",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "The ghosties love you!",
-              "submissionId": "c8ecfdf9-cc61-4639-845a-406d08035f26",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Companion",
-                "repercussionSubmission": "Ghosts D",
-                "color": "#E60000"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-          "outcomeTypeWithLabel": {
-            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-            "label": "Oooh there are ghosties here. They're so spooky! A",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
-                "label": "Boo at them D",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "74eeef55-718a-4527-945e-6640e0ea683c",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-          "currentText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him! He decides to join you on your quest D",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-              "submissionId": null,
-              "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                    "label": "use trait: Agriculturalist",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "He decides to join you on your quest D",
-              "submissionId": "12a12175-45d1-4716-973f-8b6802970edf",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Companion",
-                "repercussionSubmission": "A Big ole Sword in a Stone",
-                "color": "#E60000"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                "label": "use trait: Agriculturalist",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "6a1d16bd-c3d6-43cc-8bc9-269a63b9d845",
+          "submissionId": "66484ede-f2d2-44de-95eb-acf67545995e",
           "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-          "originalText": "You yank on it! It stays stuck... you feel bummed B",
-          "currentText": "You yank on it! It stays stuck... you feel bummed B Your friends all agree that the next time you see this you'll all try together.",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "You yank on it! It stays stuck... you feel bummed B",
-              "submissionId": null,
-              "outcomeType": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-              "outcomeTypeWithLabel": {
-                "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-                "label": "There's a big sword in a stone here!! Dang! D",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-                    "label": "Pull on it C",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "Your friends all agree that the next time you see this you'll all try together.",
-              "submissionId": "2ed10118-c17f-4969-b8b3-8ddcd9644d51",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "All Players",
-                "repercussionSubmission": null,
-                "color": "#f57c00"
-              }
-            }
-          ],
+          "originalText": null,
+          "currentText": "Andy",
+          "additions": [],
           "totalVotes": 0,
           "averageRanking": 0.0,
-          "outcomeType": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
+          "outcomeType": null,
           "outcomeTypeWithLabel": {
-            "id": "f8133934-78bc-4279-98e6-4b30faac7059",
-            "label": "There's a big sword in a stone here!! Dang! D",
+            "id": "",
+            "label": "",
             "clarifier": "",
-            "subTypes": [
-              {
-                "id": "89d8b444-4bf1-4f3b-939f-a4b4be8ca15a",
-                "label": "Pull on it C",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
+            "subTypes": [],
             "headers": []
           },
           "finalized": false
         },
         {
-          "submissionId": "3e0e18c6-4ccc-4b09-8969-6aae6063e6d7",
+          "submissionId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
           "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "Simon looks offended. He's a boy coy you weirdo! A",
-          "currentText": "Simon looks offended. He's a boy coy you weirdo! A ",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "Simon looks offended. He's a boy coy you weirdo! A",
-              "submissionId": null,
-              "outcomeType": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-                    "label": "Milk him B",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "",
-              "submissionId": "ad4686ba-ab1f-40e8-ac5f-561d4d6d7153",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Title",
-                "repercussionSubmission": "Weirdo",
-                "color": "#7b1fa2"
-              }
-            }
-          ],
+          "originalText": null,
+          "currentText": "Joe",
+          "additions": [],
           "totalVotes": 0,
           "averageRanking": 0.0,
-          "outcomeType": "119c2506-78cf-44c8-9844-0ee9eea3e397",
+          "outcomeType": null,
           "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
+            "id": "",
+            "label": "",
             "clarifier": "",
-            "subTypes": [
-              {
-                "id": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-                "label": "Milk him B",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
+            "subTypes": [],
             "headers": []
           },
           "finalized": false
         },
         {
-          "submissionId": "1595f2a7-1248-459f-a83c-94fd2dfc0a21",
+          "submissionId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
+          "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
+          "originalText": null,
+          "currentText": "Byron",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "c240db87-299a-479f-b5e3-c4a063be673c",
           "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him! ",
-          "currentText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!  Simon joins you!",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-              "submissionId": null,
-              "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                    "label": "use trait: Agriculturalist",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "",
-              "submissionId": "12a12175-45d1-4716-973f-8b6802970edf",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Trait",
-                "repercussionSubmission": "Cattle Rider",
-                "color": "#0288d1"
-              }
-            },
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "Simon joins you!",
-              "submissionId": "fcb08dfc-4f5d-4b57-9679-a6adf43c5744",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Companion",
-                "repercussionSubmission": null,
-                "color": "#E60000"
-              }
-            }
-          ],
+          "originalText": null,
+          "currentText": "Kirsten",
+          "additions": [],
           "totalVotes": 0,
           "averageRanking": 0.0,
-          "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
+          "outcomeType": null,
           "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
+            "id": "",
+            "label": "",
             "clarifier": "",
-            "subTypes": [
-              {
-                "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                "label": "use trait: Agriculturalist",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "ffc227be-2409-4fbb-8157-3f0379754b7b",
-          "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-          "originalText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him! ",
-          "currentText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!  ",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "addedText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-              "submissionId": null,
-              "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                    "label": "use trait: Agriculturalist",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "",
-              "submissionId": "12a12175-45d1-4716-973f-8b6802970edf",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Trait",
-                "repercussionSubmission": "Cattle Rider",
-                "color": "#0288d1"
-              }
-            },
-            {
-              "additionId": "",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "addedText": "",
-              "submissionId": "fcb08dfc-4f5d-4b57-9679-a6adf43c5744",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Title",
-                "repercussionSubmission": "Desperado",
-                "color": "#7b1fa2"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-          "outcomeTypeWithLabel": {
-            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-            "label": "Simon the Cow is here. He looks up passively and moos at you C",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                "label": "use trait: Agriculturalist",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "4c6bbbfd-a95b-4c9c-bf86-20b00858e2bc",
-          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-          "originalText": "They ghosts are surprised! They didn't expect a human like you to notice them senpai. UwU! C",
-          "currentText": "They ghosts are surprised! They didn't expect a human like you to notice them senpai. UwU! C Companion trait doesn't work?",
-          "additions": [
-            {
-              "additionId": "",
-              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-              "addedText": "They ghosts are surprised! They didn't expect a human like you to notice them senpai. UwU! C",
-              "submissionId": null,
-              "outcomeType": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
-              "outcomeTypeWithLabel": {
-                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-                "label": "Oooh there are ghosties here. They're so spooky! A",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
-                    "label": "Wave at them D",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "repercussion": null
-            },
-            {
-              "additionId": "",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "addedText": "Companion trait doesn't work?",
-              "submissionId": "752c7c4f-f774-4cf2-9c08-eb83bb3f8593",
-              "outcomeType": null,
-              "outcomeTypeWithLabel": null,
-              "repercussion": {
-                "repercussionType": "Companion",
-                "repercussionSubmission": "Ghosts D",
-                "color": "#E60000"
-              }
-            }
-          ],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
-          "outcomeTypeWithLabel": {
-            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
-            "label": "Oooh there are ghosties here. They're so spooky! A",
-            "clarifier": "",
-            "subTypes": [
-              {
-                "id": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
-                "label": "Wave at them D",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              }
-            ],
+            "subTypes": [],
             "headers": []
           },
           "finalized": false
         }
-      ],
-      "complete": false
+      ]
     },
     "SET_ENCOUNTERS": {
       "phaseId": "SET_ENCOUNTERS",
@@ -10573,20 +7819,21 @@
         "12bdca07-0220-49ab-b4aa-3f184c19fa58": [
           "c240db87-299a-479f-b5e3-c4a063be673c"
         ],
-        "ad4c748a-c75e-4347-bff7-49c03454c743": [
-          "62c3c565-d7b7-4823-9a5c-b7de8910a7b3"
-        ],
         "3d605d67-1d07-4c88-97ff-938ff6f28262": [
-          "c27f9beb-f139-4401-b5cb-676d3b63a1c0"
-        ],
-        "2ed675b0-d895-4485-a3f6-8a5cb3ab892e": [
           "c27f9beb-f139-4401-b5cb-676d3b63a1c0"
         ],
         "0ce05e3f-8291-47b0-b5d9-54403bf1f8ad": [
           "c240db87-299a-479f-b5e3-c4a063be673c"
         ],
+        "2ed675b0-d895-4485-a3f6-8a5cb3ab892e": [
+          "c27f9beb-f139-4401-b5cb-676d3b63a1c0"
+        ],
+        "ad4c748a-c75e-4347-bff7-49c03454c743": [
+          "62c3c565-d7b7-4823-9a5c-b7de8910a7b3"
+        ],
         "86ce0a38-c7c0-48b9-99e8-c31d93764795": []
       },
+      "complete": false,
       "submissionsWithoutParentSubmissions": [
         {
           "submissionId": "3d605d67-1d07-4c88-97ff-938ff6f28262",
@@ -10894,417 +8141,37 @@
           },
           "finalized": false
         }
-      ],
-      "complete": false
-    }
-  },
-  "storyAtCurrentPlayerCoordinates": {
-    "storyId": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-    "prompt": "Simon the Cow is here. He looks up passively and moos at you C",
-    "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-    "outcomeAuthorId": "",
-    "prequelStorySucceeded": false,
-    "prequelStoryId": "",
-    "prequelStorySelectedOptionId": "",
-    "gameCode": "35A7D5",
-    "mainPlotStory": false,
-    "visited": false,
-    "playerId": "c240db87-299a-479f-b5e3-c4a063be673c",
-    "playerIds": [
-      "c240db87-299a-479f-b5e3-c4a063be673c"
-    ],
-    "partnerIds": [],
-    "selectedOptionId": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-    "playerSucceeded": false,
-    "prequelStoryPlayerId": "",
-    "repercussions": null,
-    "prequelOutcomeDisplay": null,
-    "sequelStory": false,
-    "saveGameStory": false,
-    "options": [
-      {
-        "optionId": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-        "optionText": "use trait: Agriculturalist",
-        "attemptText": "use trait: Agriculturalist",
-        "statRequirement": null,
-        "statDC": 0,
-        "playerStatDCs": [],
-        "successText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him! ",
-        "outcomeAuthorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-        "successResults": [],
-        "failureText": "",
-        "failureResults": [],
-        "selectedByPlayerId": null,
-        "playerSucceeded": false,
-        "pointsRewarded": 0,
-        "successMarginText": "",
-        "outcomeForks": [
-          {
-            "textSubmission": {
-              "submissionId": "74eeef55-718a-4527-945e-6640e0ea683c",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "originalText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-              "currentText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him! He decides to join you on your quest D",
-              "additions": [
-                {
-                  "additionId": "",
-                  "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-                  "addedText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-                  "submissionId": null,
-                  "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                  "outcomeTypeWithLabel": {
-                    "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                    "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                    "clarifier": "",
-                    "subTypes": [
-                      {
-                        "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                        "label": "use trait: Agriculturalist",
-                        "clarifier": "",
-                        "subTypes": [],
-                        "headers": []
-                      }
-                    ],
-                    "headers": []
-                  },
-                  "repercussion": null
-                },
-                {
-                  "additionId": "",
-                  "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-                  "addedText": "He decides to join you on your quest D",
-                  "submissionId": "12a12175-45d1-4716-973f-8b6802970edf",
-                  "outcomeType": null,
-                  "outcomeTypeWithLabel": null,
-                  "repercussion": {
-                    "repercussionType": "Companion",
-                    "repercussionSubmission": "A Big ole Sword in a Stone",
-                    "color": "#E60000"
-                  }
-                }
-              ],
-              "totalVotes": 0,
-              "averageRanking": 0.0,
-              "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                    "label": "use trait: Agriculturalist",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "finalized": false
-            },
-            "repercussions": []
-          },
-          {
-            "textSubmission": {
-              "submissionId": "1595f2a7-1248-459f-a83c-94fd2dfc0a21",
-              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-              "originalText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him! ",
-              "currentText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!  Simon joins you!",
-              "additions": [
-                {
-                  "additionId": "",
-                  "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-                  "addedText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-                  "submissionId": null,
-                  "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                  "outcomeTypeWithLabel": {
-                    "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                    "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                    "clarifier": "",
-                    "subTypes": [
-                      {
-                        "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                        "label": "use trait: Agriculturalist",
-                        "clarifier": "",
-                        "subTypes": [],
-                        "headers": []
-                      }
-                    ],
-                    "headers": []
-                  },
-                  "repercussion": null
-                },
-                {
-                  "additionId": "",
-                  "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-                  "addedText": "",
-                  "submissionId": "12a12175-45d1-4716-973f-8b6802970edf",
-                  "outcomeType": null,
-                  "outcomeTypeWithLabel": null,
-                  "repercussion": {
-                    "repercussionType": "Trait",
-                    "repercussionSubmission": "Cattle Rider",
-                    "color": "#0288d1"
-                  }
-                },
-                {
-                  "additionId": "",
-                  "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
-                  "addedText": "Simon joins you!",
-                  "submissionId": "fcb08dfc-4f5d-4b57-9679-a6adf43c5744",
-                  "outcomeType": null,
-                  "outcomeTypeWithLabel": null,
-                  "repercussion": {
-                    "repercussionType": "Companion",
-                    "repercussionSubmission": null,
-                    "color": "#E60000"
-                  }
-                }
-              ],
-              "totalVotes": 0,
-              "averageRanking": 0.0,
-              "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                    "label": "use trait: Agriculturalist",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "finalized": false
-            },
-            "repercussions": []
-          },
-          {
-            "textSubmission": {
-              "submissionId": "ffc227be-2409-4fbb-8157-3f0379754b7b",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "originalText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him! ",
-              "currentText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!  ",
-              "additions": [
-                {
-                  "additionId": "",
-                  "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-                  "addedText": "You're an algriculturalist so you know what to do here. You goad Simon into helping you cross to the other side of the field. You ride him!",
-                  "submissionId": null,
-                  "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                  "outcomeTypeWithLabel": {
-                    "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                    "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                    "clarifier": "",
-                    "subTypes": [
-                      {
-                        "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                        "label": "use trait: Agriculturalist",
-                        "clarifier": "",
-                        "subTypes": [],
-                        "headers": []
-                      }
-                    ],
-                    "headers": []
-                  },
-                  "repercussion": null
-                },
-                {
-                  "additionId": "",
-                  "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
-                  "addedText": "",
-                  "submissionId": "12a12175-45d1-4716-973f-8b6802970edf",
-                  "outcomeType": null,
-                  "outcomeTypeWithLabel": null,
-                  "repercussion": {
-                    "repercussionType": "Trait",
-                    "repercussionSubmission": "Cattle Rider",
-                    "color": "#0288d1"
-                  }
-                },
-                {
-                  "additionId": "",
-                  "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-                  "addedText": "",
-                  "submissionId": "fcb08dfc-4f5d-4b57-9679-a6adf43c5744",
-                  "outcomeType": null,
-                  "outcomeTypeWithLabel": null,
-                  "repercussion": {
-                    "repercussionType": "Title",
-                    "repercussionSubmission": "Desperado",
-                    "color": "#7b1fa2"
-                  }
-                }
-              ],
-              "totalVotes": 0,
-              "averageRanking": 0.0,
-              "outcomeType": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-                    "label": "use trait: Agriculturalist",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "finalized": false
-            },
-            "repercussions": []
-          }
-        ],
-        "selectedForkId": ""
-      },
-      {
-        "optionId": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-        "optionText": "Milk him B",
-        "attemptText": "Milk him B",
-        "statRequirement": null,
-        "statDC": 0,
-        "playerStatDCs": [],
-        "successText": "Simon looks offended. He's a boy coy you weirdo! A ",
-        "outcomeAuthorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-        "successResults": [],
-        "failureText": "",
-        "failureResults": [],
-        "selectedByPlayerId": null,
-        "playerSucceeded": false,
-        "pointsRewarded": 0,
-        "successMarginText": "",
-        "outcomeForks": [
-          {
-            "textSubmission": {
-              "submissionId": "3e0e18c6-4ccc-4b09-8969-6aae6063e6d7",
-              "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-              "originalText": "Simon looks offended. He's a boy coy you weirdo! A",
-              "currentText": "Simon looks offended. He's a boy coy you weirdo! A ",
-              "additions": [
-                {
-                  "additionId": "",
-                  "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-                  "addedText": "Simon looks offended. He's a boy coy you weirdo! A",
-                  "submissionId": null,
-                  "outcomeType": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-                  "outcomeTypeWithLabel": {
-                    "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                    "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                    "clarifier": "",
-                    "subTypes": [
-                      {
-                        "id": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-                        "label": "Milk him B",
-                        "clarifier": "",
-                        "subTypes": [],
-                        "headers": []
-                      }
-                    ],
-                    "headers": []
-                  },
-                  "repercussion": null
-                },
-                {
-                  "additionId": "",
-                  "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
-                  "addedText": "",
-                  "submissionId": "ad4686ba-ab1f-40e8-ac5f-561d4d6d7153",
-                  "outcomeType": null,
-                  "outcomeTypeWithLabel": null,
-                  "repercussion": {
-                    "repercussionType": "Title",
-                    "repercussionSubmission": "Weirdo",
-                    "color": "#7b1fa2"
-                  }
-                }
-              ],
-              "totalVotes": 0,
-              "averageRanking": 0.0,
-              "outcomeType": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-              "outcomeTypeWithLabel": {
-                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                "clarifier": "",
-                "subTypes": [
-                  {
-                    "id": "119c2506-78cf-44c8-9844-0ee9eea3e397",
-                    "label": "Milk him B",
-                    "clarifier": "",
-                    "subTypes": [],
-                    "headers": []
-                  }
-                ],
-                "headers": []
-              },
-              "finalized": false
-            },
-            "repercussions": []
-          }
-        ],
-        "selectedForkId": ""
-      },
-      {
-        "optionId": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-        "optionText": "Pet him B",
-        "attemptText": "Pet him B",
-        "statRequirement": null,
-        "statDC": 0,
-        "playerStatDCs": [],
-        "successText": "You pet ole Simon the cow and he loves it! He mooz.",
-        "outcomeAuthorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-        "successResults": [],
-        "failureText": "",
-        "failureResults": [],
-        "selectedByPlayerId": null,
-        "playerSucceeded": false,
-        "pointsRewarded": 0,
-        "successMarginText": "",
-        "outcomeForks": [
-          {
-            "textSubmission": {
-              "submissionId": "28cb9ba5-d3ed-4041-a24e-bdfb88dd426c",
+      ]
+    },
+    "HOW_DOES_THIS_RESOLVE": {
+      "phaseId": "HOW_DOES_THIS_RESOLVE",
+      "question": null,
+      "phaseType": null,
+      "submissions": [],
+      "playerVotes": {},
+      "playersWhoSubmitted": [],
+      "playersWhoVoted": [],
+      "finalResult": null,
+      "submissionViews": {},
+      "complete": false,
+      "submissionsWithoutParentSubmissions": []
+    },
+    "MAKE_OUTCOME_CHOICE_VOTING": {
+      "phaseId": "MAKE_OUTCOME_CHOICE_VOTING",
+      "question": null,
+      "phaseType": null,
+      "submissions": [
+        {
+          "submissionId": "28cb9ba5-d3ed-4041-a24e-bdfb88dd426c",
+          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+          "originalText": "",
+          "currentText": "You pet ole Simon the cow and he loves it! He mooz.",
+          "additions": [
+            {
+              "additionId": "",
               "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-              "originalText": "",
-              "currentText": "You pet ole Simon the cow and he loves it! He mooz.",
-              "additions": [
-                {
-                  "additionId": "",
-                  "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
-                  "addedText": "You pet ole Simon the cow and he loves it! He mooz.",
-                  "submissionId": null,
-                  "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-                  "outcomeTypeWithLabel": {
-                    "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
-                    "label": "Simon the Cow is here. He looks up passively and moos at you C",
-                    "clarifier": "",
-                    "subTypes": [
-                      {
-                        "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
-                        "label": "Pet him B",
-                        "clarifier": "",
-                        "subTypes": [],
-                        "headers": []
-                      }
-                    ],
-                    "headers": [
-                      "Simon, the Cow B",
-                      "at An Old Farmhouse"
-                    ]
-                  },
-                  "repercussion": null
-                }
-              ],
-              "totalVotes": 0,
-              "averageRanking": 0.0,
+              "addedText": "You pet ole Simon the cow and he loves it! He mooz.",
+              "submissionId": null,
               "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
               "outcomeTypeWithLabel": {
                 "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
@@ -11324,29 +8191,780 @@
                   "at An Old Farmhouse"
                 ]
               },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+          "outcomeTypeWithLabel": {
+            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
+            "label": "Simon the Cow is here. He looks up passively and moos at you C",
+            "clarifier": "",
+            "subTypes": [
+              {
+                "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+                "label": "Pet him B",
+                "clarifier": "",
+                "subTypes": [],
+                "headers": []
+              }
+            ],
+            "headers": [
+              "Simon, the Cow B",
+              "at An Old Farmhouse"
+            ]
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "0ebdf290-dff7-4955-8d58-174f2ac077fa",
+          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+          "originalText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
+          "currentText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D A crazy network of knocking starts. A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
+              "addedText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
+              "submissionId": null,
+              "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
+              "outcomeTypeWithLabel": {
+                "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
+                "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "4519835c-2ee8-4960-b177-450c26d9573a",
+                    "label": "use trait: Party Animal",
+                    "clarifier": "",
+                    "subTypes": [],
+                    "headers": []
+                  }
+                ],
+                "headers": [
+                  "A Knock on the Door A",
+                  "at A Bustling Tavern in the Woods"
+                ]
+              },
+              "repercussion": null
+            },
+            {
+              "additionId": "",
+              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+              "addedText": "A crazy network of knocking starts. A",
+              "submissionId": "98ddfd5b-c924-42c5-b3bb-341664e92fb5",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null,
+              "repercussion": {
+                "repercussionType": "All Players",
+                "repercussionSubmission": null,
+                "color": "#f57c00"
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
+          "outcomeTypeWithLabel": {
+            "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
+            "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
+            "clarifier": "",
+            "subTypes": [
+              {
+                "id": "4519835c-2ee8-4960-b177-450c26d9573a",
+                "label": "use trait: Party Animal",
+                "clarifier": "",
+                "subTypes": [],
+                "headers": []
+              }
+            ],
+            "headers": [
+              "A Knock on the Door A",
+              "at A Bustling Tavern in the Woods"
+            ]
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "b3f18a68-6c7a-4b54-a6e5-c280c9e05814",
+          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
+          "originalText": "They're actually super scared! C",
+          "currentText": "They're actually super scared! C The ghosties love you!",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
+              "addedText": "They're actually super scared! C",
+              "submissionId": null,
+              "outcomeType": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
+              "outcomeTypeWithLabel": {
+                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
+                "label": "Oooh there are ghosties here. They're so spooky! A",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
+                    "label": "Boo at them D",
+                    "clarifier": "",
+                    "subTypes": [],
+                    "headers": []
+                  }
+                ],
+                "headers": []
+              },
+              "repercussion": null
+            },
+            {
+              "additionId": "",
+              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
+              "addedText": "The ghosties love you!",
+              "submissionId": "c8ecfdf9-cc61-4639-845a-406d08035f26",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null,
+              "repercussion": {
+                "repercussionType": "Companion",
+                "repercussionSubmission": "Ghosts D",
+                "color": "#E60000"
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
+          "outcomeTypeWithLabel": {
+            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
+            "label": "Oooh there are ghosties here. They're so spooky! A",
+            "clarifier": "",
+            "subTypes": [
+              {
+                "id": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
+                "label": "Boo at them D",
+                "clarifier": "",
+                "subTypes": [],
+                "headers": []
+              }
+            ],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "28cb9ba5-d3ed-4041-a24e-bdfb88dd426c",
+          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+          "originalText": "",
+          "currentText": "You pet ole Simon the cow and he loves it! He mooz.",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+              "addedText": "You pet ole Simon the cow and he loves it! He mooz.",
+              "submissionId": null,
+              "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+              "outcomeTypeWithLabel": {
+                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
+                "label": "Simon the Cow is here. He looks up passively and moos at you C",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+                    "label": "Pet him B",
+                    "clarifier": "",
+                    "subTypes": [],
+                    "headers": []
+                  }
+                ],
+                "headers": [
+                  "Simon, the Cow B",
+                  "at An Old Farmhouse"
+                ]
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+          "outcomeTypeWithLabel": {
+            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
+            "label": "Simon the Cow is here. He looks up passively and moos at you C",
+            "clarifier": "",
+            "subTypes": [
+              {
+                "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+                "label": "Pet him B",
+                "clarifier": "",
+                "subTypes": [],
+                "headers": []
+              }
+            ],
+            "headers": [
+              "Simon, the Cow B",
+              "at An Old Farmhouse"
+            ]
+          },
+          "finalized": false
+        }
+      ],
+      "playerVotes": {
+        "c240db87-299a-479f-b5e3-c4a063be673c": [
+          {
+            "voteId": "",
+            "playerId": "c240db87-299a-479f-b5e3-c4a063be673c",
+            "submissionId": "119c2506-78cf-44c8-9844-0ee9eea3e397",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1780031810,
+              "nanos": 116000000
+            }
+          },
+          {
+            "voteId": "",
+            "playerId": "c240db87-299a-479f-b5e3-c4a063be673c",
+            "submissionId": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1780032694,
+              "nanos": 194000000
+            }
+          },
+          {
+            "voteId": "",
+            "playerId": "c240db87-299a-479f-b5e3-c4a063be673c",
+            "submissionId": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1780032751,
+              "nanos": 430000000
+            }
+          },
+          {
+            "voteId": "",
+            "playerId": "c240db87-299a-479f-b5e3-c4a063be673c",
+            "submissionId": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1780032912,
+              "nanos": 463000000
+            }
+          },
+          {
+            "voteId": "",
+            "playerId": "c240db87-299a-479f-b5e3-c4a063be673c",
+            "submissionId": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1780033155,
+              "nanos": 330000000
+            }
+          },
+          {
+            "voteId": "",
+            "playerId": "c240db87-299a-479f-b5e3-c4a063be673c",
+            "submissionId": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1780033169,
+              "nanos": 695000000
+            }
+          },
+          {
+            "voteId": "",
+            "playerId": "c240db87-299a-479f-b5e3-c4a063be673c",
+            "submissionId": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1780033247,
+              "nanos": 387000000
+            }
+          },
+          {
+            "voteId": "",
+            "playerId": "c240db87-299a-479f-b5e3-c4a063be673c",
+            "submissionId": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+            "ranking": 1,
+            "votedAt": {
+              "seconds": 1780063802,
+              "nanos": 84000000
+            }
+          }
+        ]
+      },
+      "playersWhoSubmitted": [
+        "66484ede-f2d2-44de-95eb-acf67545995e",
+        "c240db87-299a-479f-b5e3-c4a063be673c"
+      ],
+      "playersWhoVoted": [
+        "c240db87-299a-479f-b5e3-c4a063be673c"
+      ],
+      "finalResult": null,
+      "submissionViews": {},
+      "complete": false,
+      "submissionsWithoutParentSubmissions": [
+        {
+          "submissionId": "28cb9ba5-d3ed-4041-a24e-bdfb88dd426c",
+          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+          "originalText": "",
+          "currentText": "You pet ole Simon the cow and he loves it! He mooz.",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+              "addedText": "You pet ole Simon the cow and he loves it! He mooz.",
+              "submissionId": null,
+              "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+              "outcomeTypeWithLabel": {
+                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
+                "label": "Simon the Cow is here. He looks up passively and moos at you C",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+                    "label": "Pet him B",
+                    "clarifier": "",
+                    "subTypes": [],
+                    "headers": []
+                  }
+                ],
+                "headers": [
+                  "Simon, the Cow B",
+                  "at An Old Farmhouse"
+                ]
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+          "outcomeTypeWithLabel": {
+            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
+            "label": "Simon the Cow is here. He looks up passively and moos at you C",
+            "clarifier": "",
+            "subTypes": [
+              {
+                "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+                "label": "Pet him B",
+                "clarifier": "",
+                "subTypes": [],
+                "headers": []
+              }
+            ],
+            "headers": [
+              "Simon, the Cow B",
+              "at An Old Farmhouse"
+            ]
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "0ebdf290-dff7-4955-8d58-174f2ac077fa",
+          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+          "originalText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
+          "currentText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D A crazy network of knocking starts. A",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
+              "addedText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
+              "submissionId": null,
+              "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
+              "outcomeTypeWithLabel": {
+                "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
+                "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "4519835c-2ee8-4960-b177-450c26d9573a",
+                    "label": "use trait: Party Animal",
+                    "clarifier": "",
+                    "subTypes": [],
+                    "headers": []
+                  }
+                ],
+                "headers": [
+                  "A Knock on the Door A",
+                  "at A Bustling Tavern in the Woods"
+                ]
+              },
+              "repercussion": null
+            },
+            {
+              "additionId": "",
+              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+              "addedText": "A crazy network of knocking starts. A",
+              "submissionId": "98ddfd5b-c924-42c5-b3bb-341664e92fb5",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null,
+              "repercussion": {
+                "repercussionType": "All Players",
+                "repercussionSubmission": null,
+                "color": "#f57c00"
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
+          "outcomeTypeWithLabel": {
+            "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
+            "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
+            "clarifier": "",
+            "subTypes": [
+              {
+                "id": "4519835c-2ee8-4960-b177-450c26d9573a",
+                "label": "use trait: Party Animal",
+                "clarifier": "",
+                "subTypes": [],
+                "headers": []
+              }
+            ],
+            "headers": [
+              "A Knock on the Door A",
+              "at A Bustling Tavern in the Woods"
+            ]
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "b3f18a68-6c7a-4b54-a6e5-c280c9e05814",
+          "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
+          "originalText": "They're actually super scared! C",
+          "currentText": "They're actually super scared! C The ghosties love you!",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
+              "addedText": "They're actually super scared! C",
+              "submissionId": null,
+              "outcomeType": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
+              "outcomeTypeWithLabel": {
+                "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
+                "label": "Oooh there are ghosties here. They're so spooky! A",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
+                    "label": "Boo at them D",
+                    "clarifier": "",
+                    "subTypes": [],
+                    "headers": []
+                  }
+                ],
+                "headers": []
+              },
+              "repercussion": null
+            },
+            {
+              "additionId": "",
+              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
+              "addedText": "The ghosties love you!",
+              "submissionId": "c8ecfdf9-cc61-4639-845a-406d08035f26",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null,
+              "repercussion": {
+                "repercussionType": "Companion",
+                "repercussionSubmission": "Ghosts D",
+                "color": "#E60000"
+              }
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
+          "outcomeTypeWithLabel": {
+            "id": "88d798eb-a320-4607-9c6b-6b6a3aa871ee",
+            "label": "Oooh there are ghosties here. They're so spooky! A",
+            "clarifier": "",
+            "subTypes": [
+              {
+                "id": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
+                "label": "Boo at them D",
+                "clarifier": "",
+                "subTypes": [],
+                "headers": []
+              }
+            ],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "28cb9ba5-d3ed-4041-a24e-bdfb88dd426c",
+          "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+          "originalText": "",
+          "currentText": "You pet ole Simon the cow and he loves it! He mooz.",
+          "additions": [
+            {
+              "additionId": "",
+              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+              "addedText": "You pet ole Simon the cow and he loves it! He mooz.",
+              "submissionId": null,
+              "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+              "outcomeTypeWithLabel": {
+                "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
+                "label": "Simon the Cow is here. He looks up passively and moos at you C",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+                    "label": "Pet him B",
+                    "clarifier": "",
+                    "subTypes": [],
+                    "headers": []
+                  }
+                ],
+                "headers": [
+                  "Simon, the Cow B",
+                  "at An Old Farmhouse"
+                ]
+              },
+              "repercussion": null
+            }
+          ],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+          "outcomeTypeWithLabel": {
+            "id": "ec8a19d5-5ec0-4dd4-af86-203b30c54c2d",
+            "label": "Simon the Cow is here. He looks up passively and moos at you C",
+            "clarifier": "",
+            "subTypes": [
+              {
+                "id": "346d7fd5-90a7-446c-aa45-a538ae9a9e35",
+                "label": "Pet him B",
+                "clarifier": "",
+                "subTypes": [],
+                "headers": []
+              }
+            ],
+            "headers": [
+              "Simon, the Cow B",
+              "at An Old Farmhouse"
+            ]
+          },
+          "finalized": false
+        }
+      ]
+    }
+  },
+  "storyAtCurrentPlayerCoordinates": {
+    "storyId": "145a1445-3923-43a0-8ebe-7f4eabb05586",
+    "prompt": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
+    "authorId": "c27f9beb-f139-4401-b5cb-676d3b63a1c0",
+    "outcomeAuthorId": "",
+    "prequelStorySucceeded": false,
+    "prequelStoryId": "",
+    "prequelStorySelectedOptionId": "",
+    "gameCode": "35A7D5",
+    "mainPlotStory": false,
+    "visited": true,
+    "playerId": "62c3c565-d7b7-4823-9a5c-b7de8910a7b3",
+    "playerIds": [
+      "62c3c565-d7b7-4823-9a5c-b7de8910a7b3"
+    ],
+    "partnerIds": [],
+    "selectedOptionId": "",
+    "playerSucceeded": false,
+    "prequelStoryPlayerId": "",
+    "repercussions": [
+      {
+        "repercussionType": "All Players",
+        "repercussionSubmission": null,
+        "color": "#f57c00"
+      }
+    ],
+    "prequelOutcomeDisplay": null,
+    "sequelStory": false,
+    "saveGameStory": false,
+    "options": [
+      {
+        "optionId": "7604c173-a812-4f50-bae4-f3e898f83d26",
+        "optionText": "Knock back B",
+        "attemptText": "Knock back B",
+        "statRequirement": null,
+        "statDC": 0,
+        "playerStatDCs": [],
+        "successText": "You knock so good with the ghost! You party hard with him! D",
+        "outcomeAuthorId": "c240db87-299a-479f-b5e3-c4a063be673c",
+        "successResults": [],
+        "failureText": "",
+        "failureResults": [],
+        "selectedByPlayerId": null,
+        "playerSucceeded": false,
+        "pointsRewarded": 0,
+        "successMarginText": "",
+        "outcomeForks": [
+          {
+            "textSubmission": {
+              "submissionId": "fc01de1d-c6e1-4dda-8e98-c4d6cbad4bf4",
+              "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
+              "originalText": "",
+              "currentText": "You knock so good with the ghost! You party hard with him! D",
+              "additions": [
+                {
+                  "additionId": "",
+                  "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
+                  "addedText": "You knock so good with the ghost! You party hard with him! D",
+                  "submissionId": null,
+                  "outcomeType": "7604c173-a812-4f50-bae4-f3e898f83d26",
+                  "outcomeTypeWithLabel": {
+                    "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
+                    "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
+                    "clarifier": "",
+                    "subTypes": [
+                      {
+                        "id": "7604c173-a812-4f50-bae4-f3e898f83d26",
+                        "label": "Knock back B",
+                        "clarifier": "",
+                        "subTypes": [],
+                        "headers": []
+                      }
+                    ],
+                    "headers": []
+                  },
+                  "repercussion": null
+                }
+              ],
+              "totalVotes": 0,
+              "averageRanking": 0.0,
+              "outcomeType": "7604c173-a812-4f50-bae4-f3e898f83d26",
+              "outcomeTypeWithLabel": {
+                "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
+                "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "7604c173-a812-4f50-bae4-f3e898f83d26",
+                    "label": "Knock back B",
+                    "clarifier": "",
+                    "subTypes": [],
+                    "headers": []
+                  }
+                ],
+                "headers": []
+              },
               "finalized": false
             },
             "repercussions": []
           }
         ],
         "selectedForkId": ""
+      },
+      {
+        "optionId": "4519835c-2ee8-4960-b177-450c26d9573a",
+        "optionText": "use trait: Party Animal",
+        "attemptText": "use trait: Party Animal",
+        "statRequirement": null,
+        "statDC": 0,
+        "playerStatDCs": [],
+        "successText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D A crazy network of knocking starts. A",
+        "outcomeAuthorId": "c240db87-299a-479f-b5e3-c4a063be673c",
+        "successResults": [],
+        "failureText": "",
+        "failureResults": [],
+        "selectedByPlayerId": null,
+        "playerSucceeded": false,
+        "pointsRewarded": 0,
+        "successMarginText": "",
+        "outcomeForks": [
+          {
+            "textSubmission": {
+              "submissionId": "0ebdf290-dff7-4955-8d58-174f2ac077fa",
+              "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+              "originalText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
+              "currentText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D A crazy network of knocking starts. A",
+              "additions": [
+                {
+                  "additionId": "",
+                  "authorId": "c240db87-299a-479f-b5e3-c4a063be673c",
+                  "addedText": "Your party spirit drives you to open the door yourself! It's a strange pale man, but he brought tobacco to smoke! Everyone cheers! D",
+                  "submissionId": null,
+                  "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
+                  "outcomeTypeWithLabel": {
+                    "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
+                    "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
+                    "clarifier": "",
+                    "subTypes": [
+                      {
+                        "id": "4519835c-2ee8-4960-b177-450c26d9573a",
+                        "label": "use trait: Party Animal",
+                        "clarifier": "",
+                        "subTypes": [],
+                        "headers": []
+                      }
+                    ],
+                    "headers": [
+                      "A Knock on the Door A",
+                      "at A Bustling Tavern in the Woods"
+                    ]
+                  },
+                  "repercussion": null
+                },
+                {
+                  "additionId": "",
+                  "authorId": "66484ede-f2d2-44de-95eb-acf67545995e",
+                  "addedText": "A crazy network of knocking starts. A",
+                  "submissionId": "98ddfd5b-c924-42c5-b3bb-341664e92fb5",
+                  "outcomeType": null,
+                  "outcomeTypeWithLabel": null,
+                  "repercussion": {
+                    "repercussionType": "All Players",
+                    "repercussionSubmission": null,
+                    "color": "#f57c00"
+                  }
+                }
+              ],
+              "totalVotes": 0,
+              "averageRanking": 0.0,
+              "outcomeType": "4519835c-2ee8-4960-b177-450c26d9573a",
+              "outcomeTypeWithLabel": {
+                "id": "145a1445-3923-43a0-8ebe-7f4eabb05586",
+                "label": "There is a mysterious knock at the door. In a sort of fun rhythmic tone. Ominous, but in a fun way! B You go to answer the door but then you think better of it. How will you pick who answers?",
+                "clarifier": "",
+                "subTypes": [
+                  {
+                    "id": "4519835c-2ee8-4960-b177-450c26d9573a",
+                    "label": "use trait: Party Animal",
+                    "clarifier": "",
+                    "subTypes": [],
+                    "headers": []
+                  }
+                ],
+                "headers": [
+                  "A Knock on the Door A",
+                  "at A Bustling Tavern in the Woods"
+                ]
+              },
+              "finalized": false
+            },
+            "repercussions": [
+              {
+                "repercussionType": "All Players",
+                "repercussionSubmission": null,
+                "color": "#f57c00"
+              }
+            ]
+          }
+        ],
+        "selectedForkId": "0ebdf290-dff7-4955-8d58-174f2ac077fa"
       }
     ],
     "encounterLabel": {
-      "encounterId": "894125c1-d796-469e-ad43-16d911e873aa",
-      "encounterLabel": "Simon, the Cow B",
+      "encounterId": "8231062d-1871-44af-bf7a-faa19b7e71bb",
+      "encounterLabel": "A Knock on the Door A",
       "textSubmission": null,
       "locationId": null
     },
     "location": {
       "locationId": 0,
-      "description": "An old farmhouse sits in the middle of a wide open field here. It's difficult to tell from the outside if it is abandoned or not, but there are strange crops here of a kind you have never seen before.",
+      "description": "The silence of the wilds is interrupted by the distant sound of a rowdy crowd of tavern patrons. In the distance you can make out the soft glow of roaring fire behind a pair of iron windows. It would be warm and inviting if it wasn't so strange to hear such revelry in the middle of nowhere.",
       "locationIndex": 0,
-      "id": "b9a884ae-33ca-4076-8725-9836b501551e",
-      "label": "An Old Farmhouse",
+      "id": "c132ef6c-1cc7-4862-b516-5c3ecb8e423f",
+      "label": "A Bustling Tavern in the Woods",
       "options": [
         {
-          "optionId": "0435523f-ba8e-49c2-8be1-1e937870985a",
+          "optionId": "28b795b4-eba2-45f1-8f43-0b341d743ffa",
           "optionText": "",
           "attemptText": "",
           "statRequirement": null,
@@ -11380,7 +8998,7 @@
           "selectedForkId": ""
         },
         {
-          "optionId": "545ea377-3277-43c7-8654-7fe44ef9f88c",
+          "optionId": "0f15fd39-f7c9-4e70-96a2-f1ea34148c23",
           "optionText": "",
           "attemptText": "",
           "statRequirement": null,
@@ -11414,13 +9032,13 @@
           "selectedForkId": ""
         }
       ],
-      "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Farmlands.png",
+      "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Tavern.png",
       "authorId": null,
       "selectedOptionId": null,
       "traits": [
         {
-          "traitId": "5cef18d6-1c25-48ff-87b7-b093da7d7188",
-          "traitLabel": "Agriculturalist",
+          "traitId": "4519835c-2ee8-4960-b177-450c26d9573a",
+          "traitLabel": "Party Animal",
           "traitType": "STANDARD",
           "textSubmission": {
             "submissionId": null,

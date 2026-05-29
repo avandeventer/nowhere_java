@@ -274,7 +274,9 @@ public class GameSessionHelper {
                             if (nextEncounterStory.getLocation().getId().equals(lastLocationId)) {
                                 gameSession.setGameStateToNext();
                             } else {
-                                collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession);
+                                ActivePlayerSession navigateWinnerSession = gameSession.getActivePlayerSession();
+                                navigateWinnerSession.setGameCode(gameSession.getGameCode());
+                                collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), nextEncounterStory, navigateWinnerSession);
                             }
                         } else {
                             if (gameSession.getRoundNumber() < 2) {
@@ -289,7 +291,11 @@ public class GameSessionHelper {
                             }
                         }
                     } else {
-                        collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession);
+                        if (lastEncounterStory != null) {
+                            ActivePlayerSession navigateWinnerSession = gameSession.getActivePlayerSession();
+                            navigateWinnerSession.setGameCode(gameSession.getGameCode());
+                            collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), lastEncounterStory, navigateWinnerSession);
+                        }
                     }
                     break;
                 default:

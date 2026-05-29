@@ -1019,12 +1019,12 @@ public class CollaborativeTextHelper {
         }
     }
 
-    void setLocationTraitOutcomeDisplay(GameSession gameSession) {
-        Location playerLocation = gameSession.getStoryAtCurrentPlayerCoordinates().getLocation();
-        
+    void setLocationTraitOutcomeDisplay(List<Player> players, Story story, ActivePlayerSession activePlayerSession) {
+        Location playerLocation = story.getLocation();
+
         if (playerLocation == null) return;
 
-        List<Player> playersAtCurrentLocation = gameSession.getPlayers().stream()
+        List<Player> playersAtCurrentLocation = players.stream()
                 .filter(p -> playerLocation.getId().equals(p.getSelectedLocationId()))
                 .toList();
 
@@ -1044,8 +1044,6 @@ public class CollaborativeTextHelper {
         }
 
         if (!outcomeMessages.isEmpty()) {
-            ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
-            activePlayerSession.setGameCode(gameSession.getGameCode());
             activePlayerSession.setOutcomeDisplay(outcomeMessages);
             activeSessionDAO.update(activePlayerSession);
         }
