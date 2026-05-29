@@ -696,6 +696,9 @@ public class CollaborativeTextHelper {
         // Resolve which players are at this story vs all players
         List<String> storyPlayerIds = (story.getPlayerIds() != null)
                 ? story.getPlayerIds() : List.of();
+        List<String> partnerPlayerIds = (story.getPartnerIds() != null)
+                ? story.getPartnerIds() : List.of();
+        storyPlayerIds.addAll(partnerPlayerIds);
         List<Player> allPlayers = gameSession.getPlayers();
         List<Player> storyPlayers = allPlayers.stream()
                 .filter(p -> storyPlayerIds.contains(p.getAuthorId()))
@@ -797,7 +800,8 @@ public class CollaborativeTextHelper {
         for (Trait trait : newTraits) {
             updatedPlayerIds.addAll(applyTraitToPlayers(trait, storyPlayers));
             String typeWord = getTypeWord(trait);
-            outcomeDisplay.add("You gained the " + typeWord + " \"" + trait.getTraitLabel() + "\"!");
+            String both = storyPlayers.size() == 2 ? "both " : "";
+            outcomeDisplay.add("You " + both + "gained the " + typeWord + " \"" + trait.getTraitLabel() + "\"!");
         }
 
         // Persist new traits to AdventureMap
@@ -1016,11 +1020,6 @@ public class CollaborativeTextHelper {
     }
 
     void setLocationTraitOutcomeDisplay(GameSession gameSession) {
-        List<String> outcomeDisplay = gameSession.getActivePlayerSession().getOutcomeDisplay();
-        if (outcomeDisplay != null && !outcomeDisplay.isEmpty()) {
-            return;
-        }
-
         Location playerLocation = gameSession.getStoryAtCurrentPlayerCoordinates().getLocation();
         
         if (playerLocation == null) return;

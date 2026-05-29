@@ -1049,7 +1049,32 @@ public class CollaborativeTextHelperTest {
                         false,
                         "WRITE_EPILOGUES_TEDWOOD.json",
                         new PlayerCoordinates(6, 0)
+                ),
+                Arguments.of(
+                        "Ghosts D (2, 0) - Player and partner both get ghost companion - option Wave at them D",
+                        "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
+                        "4c6bbbfd-a95b-4c9c-bf86-20b00858e2bc",
+                        Map.of(
+                                "c27f9beb-f139-4401-b5cb-676d3b63a1c0", List.of("Ghosts D"),
+                                "66484ede-f2d2-44de-95eb-acf67545995e", List.of("Ghosts D")
+                        ),
+                        Map.of(),
+                        List.of(
+                                "You both gained the companion \"Ghosts D\"!"
+                        ),
+                        false,
+                        "NAVIGATE_VOTING.json",
+                        new PlayerCoordinates(2, 0)
                 )
+                //        String scenarioName,
+                //        String selectedOptionId,
+                //        String votedSubmissionId,
+                //        Map<String, List<String>> expectedTraitLabelByPlayerId,
+                //        Map<String, List<String>> expectedTitleLabelByPlayerId,
+                //        List<String> expectedOutcomeDisplayMessages,
+                //        boolean shouldUpdateStoryRepercussions,
+                //        String fileName,
+                //        PlayerCoordinates playerCoordinates
         );
     }
 

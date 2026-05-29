@@ -1192,8 +1192,10 @@
       "playerIds": [
         "c27f9beb-f139-4401-b5cb-676d3b63a1c0"
       ],
-      "partnerIds": [],
-      "selectedOptionId": "ed4a3263-7235-4561-b9d9-ccbd268ffb22",
+      "partnerIds": [
+        "66484ede-f2d2-44de-95eb-acf67545995e"
+      ],
+      "selectedOptionId": "bfe841c6-7bd2-4bc1-94d7-c644ebfd859e",
       "playerSucceeded": false,
       "prequelStoryPlayerId": "",
       "repercussions": null,
