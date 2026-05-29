@@ -280,7 +280,11 @@ public class VotingHelper {
             }
         }
 
-        if (phaseIdState == GameState.MAKE_CHOICE_VOTING) {
+        if (phaseIdState == GameState.ACCEPT_PARTNER_CHOICE_VOTING) {
+            setNonVotingPlayersToDone(gameSession, playerVotes);
+        }
+
+        if (phaseIdState == GameState.MAKE_CHOICE_VOTING || phaseIdState == GameState.MAKE_PARTNER_CHOICE_VOTING) {
             setNonActivePlayersToDone(gameSession);
         }
 
@@ -290,6 +294,16 @@ public class VotingHelper {
 
         // Return updated phase
         return collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+    }
+
+    private void setNonVotingPlayersToDone(GameSession gameSession, List<PlayerVote> playerVotes) {
+        String votingPlayerId = playerVotes.getFirst().getPlayerId();
+
+        for (Player player : gameSession.getPlayers()) {
+                if (!votingPlayerId.equals(player.getAuthorId())) {
+                    activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), player.getAuthorId(), true);
+                }
+        }
     }
 
     private void setNonActivePlayersToDone(GameSession gameSession) {
