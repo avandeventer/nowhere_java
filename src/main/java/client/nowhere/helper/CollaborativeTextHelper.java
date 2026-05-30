@@ -128,7 +128,7 @@ public class CollaborativeTextHelper {
 
     private List<TextSubmission> getWinningSubmissions(GameState phaseId, CollaborativeTextPhase phase, GameSession gameSession) {
         switch (phaseId) {
-            case GameState.MAKE_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_VOTING, GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING, GameState.MAKE_PARTNER_CHOICE_VOTING, ACCEPT_PARTNER_CHOICE_WINNER -> {
+            case GameState.MAKE_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_VOTING, GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING, GameState.MAKE_PARTNER_CHOICE_VOTING, ACCEPT_PARTNER_CHOICE_VOTING -> {
                 return calculateWinnersFromVotes(phase, gameSession.getGameState(), gameSession);
             }
             case GameState.HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> {
