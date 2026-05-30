@@ -5,19 +5,30 @@ import lombok.Getter;
 public enum TraitType {
 
     STANDARD (
-            "Standard"
+            "Standard",
+            "#0288d1"
     ),
     TITLE (
-            "Title"
+            "Title",
+            "#7b1fa2"
     ),
     COMPANION (
-            "Companion"
+            "Companion",
+            "#E60000"
+    ),
+    RELATIONSHIP (
+            "Relationship",
+            "E981AE"
     );
 
     @Getter
     final String name;
 
-    TraitType (String name) {
+    @Getter
+    public final String color;
+
+    TraitType (String name, String color) {
         this.name = name;
+        this.color = color;
     }
 }

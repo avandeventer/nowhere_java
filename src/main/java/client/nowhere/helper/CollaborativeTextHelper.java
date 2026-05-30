@@ -1786,9 +1786,33 @@ public class CollaborativeTextHelper {
                             }
                         });
             }
+            addRelationshipTraitsToPlayers(gameSession, winnerPlayerId, storyPlayerId);
         } catch (Exception e) {
             System.err.println("Failed to handle ACCEPT_PARTNER_CHOICE_VOTING: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private void addRelationshipTraitsToPlayers(GameSession gameSession, String winnerPlayerId, String storyPlayerId) {
+        Optional<Player> partneredPlayerOpt = gameSession.getPlayers().stream()
+                .filter(p -> p.getAuthorId().equals(winnerPlayerId)).findFirst();
+        Optional<Player> storyPlayerOpt = gameSession.getPlayers().stream()
+                .filter(p -> p.getAuthorId().equals(storyPlayerId)).findFirst();
+
+        if (partneredPlayerOpt.isPresent() && storyPlayerOpt.isPresent()) {
+            Player partneredPlayer = partneredPlayerOpt.get();
+            Player storyPlayer = storyPlayerOpt.get();
+            String partnerId = winnerPlayerId + storyPlayerId;
+
+            String relationshipLabel = "partner ";
+            if (partneredPlayer.getTraits().stream().anyMatch(t -> t.getTraitId().equals(partnerId))) {
+                relationshipLabel = "besties ";
+            }
+
+            applyTraitToPlayers(new Trait(partnerId, relationshipLabel + "(" + storyPlayer.getUserName() + ")",  TraitType.RELATIONSHIP), List.of(partneredPlayer));
+            applyTraitToPlayers(new Trait(partnerId, relationshipLabel + "(" + partneredPlayer.getUserName() + ")",  TraitType.RELATIONSHIP), List.of(storyPlayer));
+            gameSessionDAO.updatePlayer(partneredPlayer);
+            gameSessionDAO.updatePlayer(storyPlayer);
         }
     }
 
@@ -2461,7 +2485,7 @@ public class CollaborativeTextHelper {
 
         return relevantTraits.stream()
                 .map(trait -> new OutcomeType(trait.getTraitId(),
-                        ((trait.getTraitType() != null && trait.getTraitType().equals(TraitType.TITLE)) ? "use title: " : "use trait: ") + trait.getTraitLabel()))
+                        ((trait.getTraitType() != null && !trait.getTraitType().equals(TraitType.STANDARD)) ? "use " + trait.getTraitType() + ": " : "use trait: ") + trait.getTraitLabel()))
                 .collect(Collectors.toList());
     }
 

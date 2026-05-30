@@ -245,7 +245,7 @@ public class GameSessionHelper {
                 case MAKE_PARTNER_CHOICE_VOTING:
                     if (shouldSkipPartnerChoicePhases(gameSession)) {
                         gameSession.setGameState(MAKE_CHOICE_VOTING);
-                    } else {
+                    } else if (gameSession.getRoundNumber() < 2) {
                         collaborativeTextHelper.initializeMakePartnerChoiceVoting(gameSession.getGameCode());
                     }
                     break;
@@ -253,7 +253,7 @@ public class GameSessionHelper {
                     CollaborativeTextPhase makePartnerPhase = gameSession.getCollaborativeTextPhase(MAKE_PARTNER_CHOICE_VOTING.name());
                     if (makePartnerPhase == null || makePartnerPhase.getPlayerVotes() == null || makePartnerPhase.getPlayerVotes().isEmpty()) {
                         gameSession.setGameState(MAKE_CHOICE_VOTING);
-                    } else {
+                    } else if (gameSession.getRoundNumber() < 2){
                         collaborativeTextHelper.initializeAcceptPartnerChoiceVoting(gameSession.getGameCode());
                         gameSession.setGameState(ACCEPT_PARTNER_CHOICE_VOTING);
                     }

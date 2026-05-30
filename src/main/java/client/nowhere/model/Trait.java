@@ -44,6 +44,12 @@ public class Trait {
         this.traitType = type;
     }
 
+    public Trait(String id, String traitLabel, TraitType type) {
+        this.traitId = id;
+        this.traitLabel = traitLabel;
+        this.traitType = type;
+    }
+
     public Trait(String traitLabel, TextSubmission textSubmission) {
         this.traitId = UUID.randomUUID().toString();
         this.traitLabel = traitLabel;
