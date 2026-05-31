@@ -71,10 +71,10 @@ public class VotingHelper {
                 return new ArrayList<>();
             }
             String myLocationId = storyPlayer.getSelectedLocationId();
-            List<String> existingPlayerIds = currentStory.getPlayerIds();
+            String existingPlayerId = currentStory.getPlayerId();
             List<String> sharedLocationPlayerIds = gameSession.getPlayers().stream()
                     .filter(p -> !p.getAuthorId().equals(playerId)
-                            && !existingPlayerIds.contains(p.getAuthorId())
+                            && !existingPlayerId.equals(p.getAuthorId())
                             && myLocationId.equals(p.getSelectedLocationId()))
                     .map(Player::getAuthorId)
                     .toList();

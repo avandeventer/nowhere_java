@@ -826,8 +826,10 @@ public class CollaborativeTextHelper {
         Set<String> updatedPlayerIds = new HashSet<>();
         for (Player player : players) {
             if (player.getTraits() == null) player.setTraits(new ArrayList<>());
-            player.getTraits().add(trait);
-            updatedPlayerIds.add(player.getAuthorId());
+            if (player.getTraits().stream().noneMatch(t -> t.getTraitId().equals(trait.getTraitLabel()))) {
+                player.getTraits().add(trait);
+                updatedPlayerIds.add(player.getAuthorId());
+            }
         }
         return updatedPlayerIds;
     }
@@ -1712,14 +1714,18 @@ public class CollaborativeTextHelper {
             if (players == null || players.isEmpty()) return;
 
             String phaseId = GameState.MAKE_PARTNER_CHOICE_VOTING.name();
-            for (Player player : players) {
-                TextSubmission submission = new TextSubmission();
-                submission.setSubmissionId(player.getAuthorId());
-                submission.setCurrentText(player.getDisplayName());
-                submission.setAuthorId(player.getAuthorId());
-                submission.setCreatedAt(Timestamp.now());
-                submission.setLastModified(Timestamp.now());
-                collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+
+            List<TextSubmission> existingPartnerChoices = gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions();
+            if (existingPartnerChoices == null || existingPartnerChoices.isEmpty()) {
+                for (Player player : players) {
+                    TextSubmission submission = new TextSubmission();
+                    submission.setSubmissionId(player.getAuthorId());
+                    submission.setCurrentText(player.getDisplayName());
+                    submission.setAuthorId(player.getAuthorId());
+                    submission.setCreatedAt(Timestamp.now());
+                    submission.setLastModified(Timestamp.now());
+                    collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+                }
             }
         } catch (Exception e) {
             System.err.println("Failed to initialize MAKE_PARTNER_CHOICE_VOTING phase: " + e.getMessage());
@@ -1727,10 +1733,9 @@ public class CollaborativeTextHelper {
         }
     }
 
-    public void initializeAcceptPartnerChoiceVoting(String gameCode) {
+    public void initializeAcceptPartnerChoiceVoting(GameSession gameSession) {
         try {
-            CollaborativeTextPhase makePartnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(
-                    gameCode, GameState.MAKE_PARTNER_CHOICE_VOTING.name());
+            CollaborativeTextPhase makePartnerPhase = gameSession.getCollaborativeTextPhase(GameState.MAKE_PARTNER_CHOICE_VOTING.name());
             if (makePartnerPhase == null || makePartnerPhase.getPlayerVotes() == null
                     || makePartnerPhase.getSubmissions() == null) return;
 
@@ -1740,6 +1745,10 @@ public class CollaborativeTextHelper {
                     .collect(Collectors.toSet());
 
             String phaseId = GameState.ACCEPT_PARTNER_CHOICE_VOTING.name();
+            CollaborativeTextPhase acceptPartnerPhase = gameSession.getCollaborativeTextPhase(phaseId);
+            if (acceptPartnerPhase != null && acceptPartnerPhase.getSubmissions() != null && !acceptPartnerPhase.getSubmissions().isEmpty()) return;
+
+            String gameCode = gameSession.getGameCode();
             for (TextSubmission submission : makePartnerPhase.getSubmissions()) {
                 if (votedForIds.contains(submission.getSubmissionId())) {
                     collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);

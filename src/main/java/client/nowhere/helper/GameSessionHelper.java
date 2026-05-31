@@ -243,9 +243,9 @@ public class GameSessionHelper {
                     }
                     break;
                 case MAKE_PARTNER_CHOICE_VOTING:
-                    if (shouldSkipPartnerChoicePhases(gameSession)) {
+                    if (shouldSkipPartnerChoicePhases(existingSession)) {
                         gameSession.setGameState(MAKE_CHOICE_VOTING);
-                    } else if (gameSession.getRoundNumber() < 2) {
+                    } else {
                         collaborativeTextHelper.initializeMakePartnerChoiceVoting(gameSession.getGameCode());
                     }
                     break;
@@ -254,7 +254,7 @@ public class GameSessionHelper {
                     if (makePartnerPhase == null || makePartnerPhase.getPlayerVotes() == null || makePartnerPhase.getPlayerVotes().isEmpty()) {
                         gameSession.setGameState(MAKE_CHOICE_VOTING);
                     } else {
-                        collaborativeTextHelper.initializeAcceptPartnerChoiceVoting(gameSession.getGameCode());
+                        collaborativeTextHelper.initializeAcceptPartnerChoiceVoting(gameSession);
                         gameSession.setGameState(ACCEPT_PARTNER_CHOICE_VOTING);
                     }
                     break;
@@ -655,11 +655,11 @@ public class GameSessionHelper {
 
         String myLocationId = storyPlayer.getSelectedLocationId();
 
-        List<String> existingPlayerIds = currentStory.getPlayerIds();
+        String existingPlayerId = currentStory.getPlayerId();
 
         List<Player> otherPlayers = gameSession.getPlayers().stream()
                 .filter(p -> !p.getAuthorId().equals(storyPlayerId)
-                        && !existingPlayerIds.contains(p.getAuthorId())).toList();
+                        && !existingPlayerId.equals(p.getAuthorId())).toList();
 
         // Skip if no other players share the same selectedLocationId (excluding players already on the story)
         return otherPlayers.stream()
