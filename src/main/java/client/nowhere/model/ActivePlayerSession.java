@@ -17,12 +17,14 @@ public class ActivePlayerSession {
     RepercussionOutput repercussions;
     boolean startTimer;
     boolean writeTimerDone;
+    boolean contributionPhaseActive;
 
     public ActivePlayerSession() {
         this.isPlayerDoneWithTurn = new HashMap<>();
         this.repercussions = new RepercussionOutput();
         this.startTimer = false;
         this.writeTimerDone = false;
+        this.contributionPhaseActive = false;
     }
 
     public String getPlayerId() {
@@ -53,6 +55,7 @@ public class ActivePlayerSession {
         this.repercussions = updatedSession.getRepercussions();
         this.startTimer = updatedSession.isStartTimer();
         this.writeTimerDone = updatedSession.isWriteTimerDone();
+        this.contributionPhaseActive = updatedSession.isContributionPhaseActive();
         if (
             updatedSession.getIsPlayerDoneWithTurn() != null
             && updatedSession.getIsPlayerDoneWithTurn().size() > 0
@@ -142,6 +145,7 @@ public class ActivePlayerSession {
         this.locationOutcomeDisplay = new ArrayList<>();
         this.startTimer = false;
         this.writeTimerDone = false;
+        this.contributionPhaseActive = false;
     }
 
     public void resetPlayerDoneWithTurn(List<Player> players) {
@@ -184,5 +188,13 @@ public class ActivePlayerSession {
 
     public void setWriteTimerDone(boolean writeTimerDone) {
         this.writeTimerDone = writeTimerDone;
+    }
+
+    public boolean isContributionPhaseActive() {
+        return contributionPhaseActive;
+    }
+
+    public void setContributionPhaseActive(boolean contributionPhaseActive) {
+        this.contributionPhaseActive = contributionPhaseActive;
     }
 }
