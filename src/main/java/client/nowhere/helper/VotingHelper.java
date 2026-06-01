@@ -280,11 +280,11 @@ public class VotingHelper {
             }
         }
 
-        if (phaseIdState == GameState.ACCEPT_PARTNER_CHOICE_VOTING) {
+        if (phaseIdState == GameState.ACCEPT_PARTNER_CHOICE_VOTING || phaseIdState == GameState.MAKE_PARTNER_CHOICE_VOTING) {
             setNonVotingPlayersToDone(gameSession, playerVotes);
         }
 
-        if (phaseIdState == GameState.MAKE_CHOICE_VOTING || phaseIdState == GameState.MAKE_PARTNER_CHOICE_VOTING) {
+        if (phaseIdState == GameState.MAKE_CHOICE_VOTING) {
             setNonActivePlayersToDone(gameSession);
         }
 
@@ -333,7 +333,7 @@ public class VotingHelper {
     public List<OutcomeType> getMakeChoiceStoryOutcomes(GameSession gameSession, String playerId) {
         GameState phaseId = gameSession.getGameState().getPhaseId();
 
-        if (phaseId != GameState.MAKE_CHOICE_VOTING) {
+        if (phaseId != GameState.MAKE_CHOICE_VOTING && phaseId != GameState.MAKE_PARTNER_CHOICE_VOTING) {
             return new ArrayList<>();
         }
 
