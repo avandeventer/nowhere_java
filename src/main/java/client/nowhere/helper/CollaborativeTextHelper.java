@@ -1937,7 +1937,7 @@ public class CollaborativeTextHelper {
 
         String phaseInstructions = getPhaseInstructionsForMode(gameState, phaseType, baseInfo);
 
-        String collaborativeModeInstructions = getCollaborativeModeInstructions(
+        CollaborativePhaseTypeInstructions collaborativeModeInstructions = getCollaborativeModeInstructions(
             baseInfo.collaborativeMode(), 
             phaseType, 
             gameState
@@ -1975,13 +1975,14 @@ public class CollaborativeTextHelper {
             baseInfo.phaseQuestion(),
             phaseInstructions,
             baseInfo.collaborativeMode(),
-            collaborativeModeInstructions,
+            collaborativeModeInstructions.contributionPhaseInstructions(),
             storyToIterateOn,
             phaseType,
             baseInfo.showGameBoard(),
             locationVotingSubmissions,
             activePlayers,
-            playersAtLocation
+            playersAtLocation,
+            collaborativeModeInstructions.phaseModeInstructions()
         );
     }
 
@@ -2044,7 +2045,7 @@ public class CollaborativeTextHelper {
     /**
      * Gets collaborative mode instructions, reusing logic based on collaborative mode and phase type
      */
-    private String getCollaborativeModeInstructions(
+    private CollaborativePhaseTypeInstructions getCollaborativeModeInstructions(
             CollaborativeMode collaborativeMode,
             PhaseType phaseType,
             GameState gameState
@@ -2052,19 +2053,32 @@ public class CollaborativeTextHelper {
         // For SUBMISSION phase, return mode-specific instructions
         if (phaseType == PhaseType.SUBMISSION) {
             if (collaborativeMode == CollaborativeMode.RAPID_FIRE) {
-                return "Submit as many ideas as you can from your device!";
+                return new CollaborativePhaseTypeInstructions(
+                        "Submit as many ideas as you can from your device!",
+                        ""
+                );
             } else {
+                String contributionPhaseInstruction =
+                        gameState == HOW_DOES_THIS_RESOLVE || gameState == HOW_DOES_THIS_RESOLVE_AGAIN ?
+                            "Players are adding to each other's submissions! Submit your writing to start using your player class ability on your friends' ideas!"
+                                : "Players are adding to each other's submissions! Submit your writing to start adding to your friends' ideas!";
                 // SHARE_TEXT mode
                 if (gameState == GameState.WHAT_WILL_BECOME_OF_US) {
-                    return "Your friends will help, but each of us starts with a different prompt for this one!";
+                    return new CollaborativePhaseTypeInstructions(
+                            "Your friends will help, but each of us starts with a different prompt for this one!",
+                            contributionPhaseInstruction
+                    );
                 } else {
-                    return "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!";
+                    return new CollaborativePhaseTypeInstructions(
+                            "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!",
+                            contributionPhaseInstruction
+                    );
                 }
             }
         }
-        
+
         // For VOTING and WINNING phases, return empty string (instructions are in phaseInstructions)
-        return "";
+        return CollaborativePhaseTypeInstructions.empty();
     }
 
     /**

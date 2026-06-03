@@ -13,6 +13,7 @@ public record CollaborativeTextPhaseInfo(
     Boolean showGameBoard,
     List<TextSubmission> locationVotingSubmissions,
     List<Player> activePlayers,
-    List<Player> playersAtLocation
+    List<Player> playersAtLocation,
+    String phaseTypeInstructions
 ) {}
 
