@@ -1975,14 +1975,14 @@ public class CollaborativeTextHelper {
             baseInfo.phaseQuestion(),
             phaseInstructions,
             baseInfo.collaborativeMode(),
-            collaborativeModeInstructions.contributionPhaseInstructions(),
+            collaborativeModeInstructions.phaseModeInstructions(),
             storyToIterateOn,
             phaseType,
             baseInfo.showGameBoard(),
             locationVotingSubmissions,
             activePlayers,
             playersAtLocation,
-            collaborativeModeInstructions.phaseModeInstructions()
+            collaborativeModeInstructions.contributionPhaseInstructions()
         );
     }
 
