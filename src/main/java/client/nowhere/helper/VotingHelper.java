@@ -54,7 +54,14 @@ public class VotingHelper {
             if (phase == null) {
                 throw new ValidationException("LOCATION_VOTING phase not found for game: " + gameCode);
             }
-            return phase.getSubmissions();
+            List<TextSubmission> submissions = phase.getSubmissions();
+            int total = submissions.size();
+            int firstHalfSize = (total + 1) / 2;
+            if (gameSession.getRoundNumber() < 2) {
+                return submissions.subList(0, firstHalfSize);
+            } else {
+                return submissions.subList(firstHalfSize, total);
+            }
         }
 
         if (phaseIdState == GameState.MAKE_PARTNER_CHOICE_VOTING) {
@@ -280,16 +287,13 @@ public class VotingHelper {
             }
         }
 
-        if (phaseIdState == GameState.ACCEPT_PARTNER_CHOICE_VOTING || phaseIdState == GameState.MAKE_PARTNER_CHOICE_VOTING) {
-            setNonVotingPlayersToDone(gameSession, playerVotes);
-        }
-
-        if (phaseIdState == GameState.MAKE_CHOICE_VOTING) {
-            setNonActivePlayersToDone(gameSession);
-        }
-
-        if (phaseIdState == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
-            setActivePlayersToDone(gameSession);
+        switch (phaseIdState) {
+            case ACCEPT_PARTNER_CHOICE_VOTING, MAKE_PARTNER_CHOICE_VOTING ->
+                setNonVotingPlayersToDone(gameSession, playerVotes);
+            case MAKE_CHOICE_VOTING ->
+                setNonActivePlayersToDone(gameSession);
+            case MAKE_OUTCOME_CHOICE_VOTING ->
+                setActivePlayersToDone(gameSession);
         }
 
         // Return updated phase
