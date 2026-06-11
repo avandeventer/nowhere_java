@@ -134,26 +134,28 @@ public class VotingHelper {
             }
             case MAKE_OUTCOME_CHOICE_VOTING: {
                 Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
-                if (currentStory != null) {
-                    boolean isPartner = currentStory.getPartnerIds().contains(playerId);
-                    boolean allPlayersInStory = gameSession.getPlayers().stream()
-                            .allMatch(p -> currentStory.getPlayerIds().contains(p.getAuthorId()));
-                    boolean excludePlayerFromVote = !isPartner && (allPlayersInStory
-                            ? !currentStory.getPlayerId().equals(playerId)
-                            : currentStory.getPlayerIds().contains(playerId));
-                    if (excludePlayerFromVote) {
-                        activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
-                        return new ArrayList<>();
-                    }
+                if (currentStory == null) {
+                    return new ArrayList<>();
                 }
-                if (currentStory != null && !currentStory.getSelectedOptionId().isEmpty()) {
-                    Option selectedOption = currentStory.getSelectedOption();
-                    if (selectedOption == null || selectedOption.getOutcomeForks() == null) {
-                        return null;
-                    }
-                    return selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
+
+                boolean isPartner = currentStory.getPartnerIds().contains(playerId);
+                boolean allPlayersInStory = gameSession.getPlayers().stream()
+                        .allMatch(p -> currentStory.getPlayerIds().contains(p.getAuthorId()));
+                boolean excludePlayerFromVote = !isPartner && (allPlayersInStory
+                        ? !currentStory.getPlayerId().equals(playerId)
+                        : currentStory.getPlayerIds().contains(playerId));
+                if (excludePlayerFromVote) {
+                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    return new ArrayList<>();
                 }
-                // falls through to default
+
+                Option selectedOption = currentStory.getSelectedOption();
+
+                if (selectedOption == null || selectedOption.getOutcomeForks() == null) {
+                    return new ArrayList<>();
+                }
+
+                return selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
             }
             default: {
                 CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhase(phaseId);
