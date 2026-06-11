@@ -49,152 +49,150 @@ public class VotingHelper {
         }
         String phaseId = phaseIdState.name();
 
-        if (phaseIdState == GameState.LOCATION_VOTING) {
-            CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseIdState.name());
-            if (phase == null) {
-                throw new ValidationException("LOCATION_VOTING phase not found for game: " + gameCode);
+        switch (phaseIdState) {
+            case LOCATION_VOTING: {
+                CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseIdState.name());
+                if (phase == null) {
+                    throw new ValidationException("LOCATION_VOTING phase not found for game: " + gameCode);
+                }
+                List<TextSubmission> submissions = phase.getSubmissions();
+                int total = submissions.size();
+                int firstHalfSize = (total + 1) / 2;
+                if (gameSession.getRoundNumber() < 2) {
+                    return submissions.subList(0, firstHalfSize);
+                } else {
+                    return submissions.subList(firstHalfSize, total);
+                }
             }
-            List<TextSubmission> submissions = phase.getSubmissions();
-            int total = submissions.size();
-            int firstHalfSize = (total + 1) / 2;
-            if (gameSession.getRoundNumber() < 2) {
-                return submissions.subList(0, firstHalfSize);
-            } else {
-                return submissions.subList(firstHalfSize, total);
-            }
-        }
-
-        if (phaseIdState == GameState.MAKE_PARTNER_CHOICE_VOTING) {
-            Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
-            if (currentStory == null || !playerId.equals(currentStory.getPlayerId())) {
-                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
-                return new ArrayList<>();
-            }
-            Player storyPlayer = gameSession.getPlayers().stream()
-                    .filter(p -> p.getAuthorId().equals(playerId))
-                    .findFirst().orElse(null);
-            if (storyPlayer == null || storyPlayer.getSelectedLocationId() == null) {
-                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
-                return new ArrayList<>();
-            }
-            String myLocationId = storyPlayer.getSelectedLocationId();
-            String existingPlayerId = currentStory.getPlayerId();
-            List<String> sharedLocationPlayerIds = gameSession.getPlayers().stream()
-                    .filter(p -> !p.getAuthorId().equals(playerId)
-                            && !existingPlayerId.equals(p.getAuthorId())
-                            && myLocationId.equals(p.getSelectedLocationId()))
-                    .map(Player::getAuthorId)
-                    .toList();
-            if (sharedLocationPlayerIds.isEmpty()) {
-                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
-                return new ArrayList<>();
-            }
-            CollaborativeTextPhase partnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
-            if (partnerPhase == null || partnerPhase.getSubmissions() == null) return new ArrayList<>();
-            return partnerPhase.getSubmissions().stream()
-                    .filter(s -> sharedLocationPlayerIds.contains(s.getSubmissionId()))
-                    .toList();
-        }
-
-        if (phaseIdState == GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING) {
-            Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
-            if (currentStory == null || !playerId.equals(currentStory.getPlayerId())) {
-                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
-                return new ArrayList<>();
-            }
-            CollaborativeTextPhase locationOptionPhase = collaborativeTextDAO.getCollaborativeTextPhase(
-                    gameCode, phaseIdState.name());
-            if (locationOptionPhase == null || locationOptionPhase.getSubmissions() == null) {
-                return new ArrayList<>();
-            }
-            String locationId = currentStory.getLocation() != null ? currentStory.getLocation().getId() : null;
-            return locationOptionPhase.getSubmissions().stream()
-                    .filter(s -> locationId != null && locationId.equals(s.getOutcomeType()))
-                    .toList();
-        }
-
-        if (phaseIdState == GameState.ACCEPT_PARTNER_CHOICE_VOTING) {
-            CollaborativeTextPhase makePartnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(
-                    gameCode, GameState.MAKE_PARTNER_CHOICE_VOTING.name());
-            if (makePartnerPhase == null || makePartnerPhase.getPlayerVotes() == null) {
-                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
-                return new ArrayList<>();
-            }
-            boolean wasVotedFor = makePartnerPhase.getPlayerVotes().values().stream()
-                    .flatMap(List::stream)
-                    .anyMatch(v -> playerId.equals(v.getSubmissionId()));
-            if (!wasVotedFor) {
-                activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
-                return new ArrayList<>();
-            }
-            CollaborativeTextPhase partnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(
-                    gameCode, GameState.MAKE_PARTNER_CHOICE_VOTING.name());
-            if (partnerPhase == null || partnerPhase.getSubmissions() == null) return new ArrayList<>();
-            return partnerPhase.getSubmissions().stream()
-                    .filter(s -> playerId.equals(s.getSubmissionId()))
-                    .toList();
-        }
-
-        if (phaseIdState == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
-            Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
-            if (currentStory != null) {
-                boolean isPartner = currentStory.getPartnerIds().contains(playerId);
-                boolean allPlayersInStory = gameSession.getPlayers().stream()
-                        .allMatch(p -> currentStory.getPlayerIds().contains(p.getAuthorId()));
-                boolean excludePlayerFromVote = !isPartner && (allPlayersInStory
-                        ? !currentStory.getPlayerId().equals(playerId)
-                        : currentStory.getPlayerIds().contains(playerId));
-                if (excludePlayerFromVote) {
+            case MAKE_PARTNER_CHOICE_VOTING: {
+                Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+                if (currentStory == null || !playerId.equals(currentStory.getPlayerId())) {
                     activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
                     return new ArrayList<>();
                 }
-            }
-
-            if (currentStory != null && !currentStory.getSelectedOptionId().isEmpty()) {
-                Option selectedOption = currentStory.getSelectedOption();
-                if (selectedOption == null || selectedOption.getOutcomeForks() == null) {
-                    return null;
+                Player storyPlayer = gameSession.getPlayers().stream()
+                        .filter(p -> p.getAuthorId().equals(playerId))
+                        .findFirst().orElse(null);
+                if (storyPlayer == null || storyPlayer.getSelectedLocationId() == null) {
+                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    return new ArrayList<>();
                 }
-                return selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
+                String myLocationId = storyPlayer.getSelectedLocationId();
+                String existingPlayerId = currentStory.getPlayerId();
+                List<String> sharedLocationPlayerIds = gameSession.getPlayers().stream()
+                        .filter(p -> !p.getAuthorId().equals(playerId)
+                                && !existingPlayerId.equals(p.getAuthorId())
+                                && myLocationId.equals(p.getSelectedLocationId()))
+                        .map(Player::getAuthorId)
+                        .toList();
+                if (sharedLocationPlayerIds.isEmpty()) {
+                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    return new ArrayList<>();
+                }
+                CollaborativeTextPhase partnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
+                if (partnerPhase == null || partnerPhase.getSubmissions() == null) return new ArrayList<>();
+                return partnerPhase.getSubmissions().stream()
+                        .filter(s -> sharedLocationPlayerIds.contains(s.getSubmissionId()))
+                        .toList();
+            }
+            case LOCATION_OPTION_MAKE_CHOICE_VOTING: {
+                Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+                if (currentStory == null || !playerId.equals(currentStory.getPlayerId())) {
+                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    return new ArrayList<>();
+                }
+                CollaborativeTextPhase locationOptionPhase = collaborativeTextDAO.getCollaborativeTextPhase(
+                        gameCode, phaseIdState.name());
+                if (locationOptionPhase == null || locationOptionPhase.getSubmissions() == null) {
+                    return new ArrayList<>();
+                }
+                String locationId = currentStory.getLocation() != null ? currentStory.getLocation().getId() : null;
+                return locationOptionPhase.getSubmissions().stream()
+                        .filter(s -> locationId != null && locationId.equals(s.getOutcomeType()))
+                        .toList();
+            }
+            case ACCEPT_PARTNER_CHOICE_VOTING: {
+                CollaborativeTextPhase makePartnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(
+                        gameCode, GameState.MAKE_PARTNER_CHOICE_VOTING.name());
+                if (makePartnerPhase == null || makePartnerPhase.getPlayerVotes() == null) {
+                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    return new ArrayList<>();
+                }
+                boolean wasVotedFor = makePartnerPhase.getPlayerVotes().values().stream()
+                        .flatMap(List::stream)
+                        .anyMatch(v -> playerId.equals(v.getSubmissionId()));
+                if (!wasVotedFor) {
+                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    return new ArrayList<>();
+                }
+                CollaborativeTextPhase partnerPhase = collaborativeTextDAO.getCollaborativeTextPhase(
+                        gameCode, GameState.MAKE_PARTNER_CHOICE_VOTING.name());
+                if (partnerPhase == null || partnerPhase.getSubmissions() == null) return new ArrayList<>();
+                return partnerPhase.getSubmissions().stream()
+                        .filter(s -> playerId.equals(s.getSubmissionId()))
+                        .toList();
+            }
+            case MAKE_OUTCOME_CHOICE_VOTING: {
+                Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
+                if (currentStory != null) {
+                    boolean isPartner = currentStory.getPartnerIds().contains(playerId);
+                    boolean allPlayersInStory = gameSession.getPlayers().stream()
+                            .allMatch(p -> currentStory.getPlayerIds().contains(p.getAuthorId()));
+                    boolean excludePlayerFromVote = !isPartner && (allPlayersInStory
+                            ? !currentStory.getPlayerId().equals(playerId)
+                            : currentStory.getPlayerIds().contains(playerId));
+                    if (excludePlayerFromVote) {
+                        activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                        return new ArrayList<>();
+                    }
+                }
+                if (currentStory != null && !currentStory.getSelectedOptionId().isEmpty()) {
+                    Option selectedOption = currentStory.getSelectedOption();
+                    if (selectedOption == null || selectedOption.getOutcomeForks() == null) {
+                        return null;
+                    }
+                    return selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
+                }
+                // falls through to default
+            }
+            default: {
+                CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhase(phaseId);
+                List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameSession, playerId);
+
+                OutcomeType outcomeType = outcomeTypes.isEmpty() ? null : outcomeTypes.getFirst();
+                if (phase == null) {
+                    throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
+                }
+
+                // Return top 5 submissions except player's own, ordered by most additions first, then by creation time
+                // For WHAT_DO_WE_FEAR, return all submissions; for WHAT_ARE_WE_CAPABLE_OF, return top 6; for others, return top 5
+                // For WHAT_WILL_BECOME_OF_US, include player's own submissions (they'll be filtered by outcomeType on frontend)
+                boolean isWhatDoWeFear = phaseIdState == GameState.WHAT_DO_WE_FEAR;
+                boolean isWhatAreWeCapableOf = phaseIdState == GameState.WHAT_ARE_WE_CAPABLE_OF;
+                int limit = isWhatDoWeFear ? Integer.MAX_VALUE : (isWhatAreWeCapableOf ? 6 : 5);
+
+                List<TextSubmission> submissionsPlayerCanVoteOn = phase.getSubmissions().stream()
+                        .filter(textSubmission -> isSubmissionAvailableForVoting(textSubmission, playerId, outcomeType))
+                        .peek(textSubmission -> setOutcomeTypeWithLabelIfMatch(textSubmission, outcomeType))
+                        .sorted((s1, s2) -> {
+                            // First sort by number of additions (descending - most additions first)
+                            int additionsComparison = Integer.compare(s2.getAdditions().size(), s1.getAdditions().size());
+                            if (additionsComparison != 0) {
+                                return additionsComparison;
+                            }
+                            // If additions are equal, sort by creation time (descending - newest first)
+                            return s2.getCreatedAt().compareTo(s1.getCreatedAt());
+                        })
+                        .limit(limit)
+                        .toList();
+
+                if (submissionsPlayerCanVoteOn.isEmpty() && phaseIdState == GameState.MAKE_CHOICE_VOTING) {
+                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                }
+
+                return submissionsPlayerCanVoteOn;
             }
         }
-
-        // Retrieve the phase
-        CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhase(phaseId);
-        List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameSession, playerId);
-
-        OutcomeType outcomeType = outcomeTypes.isEmpty() ? null : outcomeTypes.getFirst();
-        if (phase == null) {
-            throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
-        }
-
-        // Return top 5 submissions except player's own, ordered by most additions first, then by creation time
-        // For WHAT_DO_WE_FEAR, return all submissions; for WHAT_ARE_WE_CAPABLE_OF, return top 6; for others, return top 5
-        // For WHAT_WILL_BECOME_OF_US, include player's own submissions (they'll be filtered by outcomeType on frontend)
-        boolean isWhatDoWeFear = phaseIdState == GameState.WHAT_DO_WE_FEAR;
-        boolean isWhatAreWeCapableOf = phaseIdState == GameState.WHAT_ARE_WE_CAPABLE_OF;
-        int limit = isWhatDoWeFear ? Integer.MAX_VALUE : (isWhatAreWeCapableOf ? 6 : 5);
-
-        List<TextSubmission> submissionsPlayerCanVoteOn = phase.getSubmissions().stream()
-                .filter(textSubmission -> isSubmissionAvailableForVoting(textSubmission, playerId, outcomeType))
-                .peek(textSubmission -> setOutcomeTypeWithLabelIfMatch(textSubmission, outcomeType))
-                .sorted((s1, s2) -> {
-                    // First sort by number of additions (descending - most additions first)
-                    int additionsComparison = Integer.compare(s2.getAdditions().size(), s1.getAdditions().size());
-                    if (additionsComparison != 0) {
-                        return additionsComparison;
-                    }
-                    // If additions are equal, sort by creation time (descending - newest first)
-                    return s2.getCreatedAt().compareTo(s1.getCreatedAt());
-                })
-                .limit(limit)
-                .toList();
-
-        if (submissionsPlayerCanVoteOn.isEmpty() && phaseIdState == GameState.MAKE_CHOICE_VOTING) {
-            activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
-        }
-
-        return submissionsPlayerCanVoteOn;
     }
 
     /**
