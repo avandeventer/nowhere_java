@@ -2437,8 +2437,6 @@ public class CollaborativeTextHelper {
                 .sorted(Comparator.comparing(EncounterLabel::getEncounterId))
                 .toList();
 
-        if (locationLabels.isEmpty()) return new ArrayList<>();
-
         // Players writing about this location = those whose offset-assigned player chose locationId
         List<Player> sortedPlayers = playerSortResult.getSortedPlayers();
         List<Player> playersWritingAboutLocation = sortedPlayers.stream()
