@@ -2233,6 +2233,7 @@ public class CollaborativeTextHelper {
                 if (relatedSubmissions.isEmpty()) {
                     List<OutcomeType> preCanned = createPreCannedOptions(assignedStoryId, storyPrompt);
                     preCanned.getFirst().getSubTypes().addAll(traitSubTypes);
+                    preCanned.getFirst().setHeaders(assignedStoryOutcomeType.getHeaders());
                     return preCanned;
                 }
 
@@ -2564,7 +2565,7 @@ public class CollaborativeTextHelper {
         // Randomly select 3 options
         List<String> shuffled = new ArrayList<>(preCannedOptions);
         Collections.shuffle(shuffled);
-        List<String> selectedOptions = shuffled.subList(0, Math.min(3, shuffled.size()));
+        List<String> selectedOptions = shuffled.subList(0, Math.min(1, shuffled.size()));
         
         // Create subTypes from pre-canned options
         List<OutcomeType> preCannedSubTypes = new ArrayList<>();
