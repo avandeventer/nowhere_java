@@ -1715,8 +1715,11 @@ public class CollaborativeTextHelper {
 
             String phaseId = GameState.MAKE_PARTNER_CHOICE_VOTING.name();
 
-            List<TextSubmission> existingPartnerChoices = gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions();
-            if (existingPartnerChoices == null || existingPartnerChoices.isEmpty()) {
+            CollaborativeTextPhase partnerPhase = gameSession.getCollaborativeTextPhases().get(phaseId);
+
+            if (partnerPhase == null
+                    || partnerPhase.getSubmissions() == null
+                    || partnerPhase.getSubmissions().isEmpty()) {
                 for (Player player : players) {
                     TextSubmission submission = new TextSubmission();
                     submission.setSubmissionId(player.getAuthorId());
@@ -1730,6 +1733,7 @@ public class CollaborativeTextHelper {
         } catch (Exception e) {
             System.err.println("Failed to initialize MAKE_PARTNER_CHOICE_VOTING phase: " + e.getMessage());
             e.printStackTrace();
+            throw new GameStateException("Failed to initialize MAKE_PARTNER_CHOICE_VOTING phase", e);
         }
     }
 

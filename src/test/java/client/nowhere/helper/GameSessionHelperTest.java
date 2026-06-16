@@ -779,78 +779,78 @@ public class GameSessionHelperTest {
         //        List<String> expectedOutcomeDisplay
 
         return Stream.of(
-//                Arguments.of(
-//                        "Single fork - transitions to MAKE_OUTCOME_CHOICE_WINNER",
-//                        "edefbad5-4e7f-4769-9637-c7aa3c246c7f", // Option with 1 outcome fork
-//                        1,
-//                        GameState.MAKE_CHOICE_VOTING,
-//                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
-//                        0,
-//                        0,
-//                        "MAKE_CHOICE_VOTING_START.json",
-//                        List.of(),
-//                        List.of()
-//                ),
-//                Arguments.of(
-//                        "Multiple forks - stays in MAKE_OUTCOME_CHOICE_VOTING",
-//                        "775136bb-2379-4f2b-9801-ce7fdd218d1f", // Option with 2+ outcome forks
-//                        2,
-//                        GameState.MAKE_CHOICE_VOTING,
-//                        GameState.MAKE_OUTCOME_CHOICE_VOTING,
-//                        2,
-//                        0,
-//                        "MAKE_CHOICE_VOTING_START.json",
-//                        List.of(),
-//                        List.of()
-//                ),
-//                Arguments.of(
-//                        "Single fork - transitions to MAKE_OUTCOME_CHOICE_WINNER with Repercussions",
-//                        "7b7d3fee-e839-408d-836e-211dfbb1c34b", // Option with 1 outcome fork and Repercussions to process
-//                        1,
-//                        GameState.MAKE_CHOICE_VOTING,
-//                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
-//                        0,
-//                        0,
-//                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
-//                        List.of("e8852f24-cdc8-465c-b244-56ce08029584"), // Joe
-//                        List.of()
-//                ),
-//                Arguments.of(
-//                        "Rooting out prod bug in round 2",
-//                        "76792952-31c5-443e-805a-c69279ae3b1b",
-//                        2,
-//                        GameState.MAKE_CHOICE_VOTING,
-//                        GameState.MAKE_OUTCOME_CHOICE_VOTING,
-//                        6,
-//                        0,
-//                        "ACTUAL_GAME_WRITE_EPILOGUES.json",
-//                        List.of(),
-//                        List.of()
-//                ),
-//                Arguments.of(
-//                        "Transition to MAKE_OUTCOME_CHOICE_WINNER with no fork",
-//                        "01ff46f6-3629-4d49-ac3f-0fb7a8736a66",
-//                        1,
-//                        GameState.MAKE_CHOICE_VOTING,
-//                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
-//                        9,
-//                        0,
-//                        "HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json",
-//                        List.of(),
-//                        List.of()
-//                ),
-//                Arguments.of(
-//                        "Transition to ACCEPT_PARTNER_CHOICE_VOTING when there has been a player vote",
-//                        "b1d4f188-61c0-4f0c-be74-d701bbf054ed",
-//                        0,
-//                        GameState.MAKE_PARTNER_CHOICE_VOTING,
-//                        GameState.ACCEPT_PARTNER_CHOICE_VOTING,
-//                        0,
-//                        0,
-//                        "MAKE_PARTNER_CHOICE_VOTING.json",
-//                        List.of(),
-//                        List.of()
-//                ),
+                Arguments.of(
+                        "Single fork - transitions to MAKE_OUTCOME_CHOICE_WINNER",
+                        "edefbad5-4e7f-4769-9637-c7aa3c246c7f", // Option with 1 outcome fork
+                        1,
+                        GameState.MAKE_CHOICE_VOTING,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        0,
+                        0,
+                        "MAKE_CHOICE_VOTING_START.json",
+                        List.of(),
+                        List.of()
+                ),
+                Arguments.of(
+                        "Multiple forks - stays in MAKE_OUTCOME_CHOICE_VOTING",
+                        "775136bb-2379-4f2b-9801-ce7fdd218d1f", // Option with 2+ outcome forks
+                        2,
+                        GameState.MAKE_CHOICE_VOTING,
+                        GameState.MAKE_OUTCOME_CHOICE_VOTING,
+                        2,
+                        0,
+                        "MAKE_CHOICE_VOTING_START.json",
+                        List.of(),
+                        List.of()
+                ),
+                Arguments.of(
+                        "Single fork - transitions to MAKE_OUTCOME_CHOICE_WINNER with Repercussions",
+                        "7b7d3fee-e839-408d-836e-211dfbb1c34b", // Option with 1 outcome fork and Repercussions to process
+                        1,
+                        GameState.MAKE_CHOICE_VOTING,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        0,
+                        0,
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
+                        List.of("e8852f24-cdc8-465c-b244-56ce08029584"), // Joe
+                        List.of()
+                ),
+                Arguments.of(
+                        "Rooting out prod bug in round 2",
+                        "76792952-31c5-443e-805a-c69279ae3b1b",
+                        2,
+                        GameState.MAKE_CHOICE_VOTING,
+                        GameState.MAKE_OUTCOME_CHOICE_VOTING,
+                        6,
+                        0,
+                        "ACTUAL_GAME_WRITE_EPILOGUES.json",
+                        List.of(),
+                        List.of()
+                ),
+                Arguments.of(
+                        "Transition to MAKE_OUTCOME_CHOICE_WINNER with no fork",
+                        "01ff46f6-3629-4d49-ac3f-0fb7a8736a66",
+                        1,
+                        GameState.MAKE_CHOICE_VOTING,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        9,
+                        0,
+                        "HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json",
+                        List.of(),
+                        List.of()
+                ),
+                Arguments.of(
+                        "Transition to ACCEPT_PARTNER_CHOICE_VOTING when there has been a player vote",
+                        "b1d4f188-61c0-4f0c-be74-d701bbf054ed",
+                        0,
+                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        GameState.ACCEPT_PARTNER_CHOICE_VOTING,
+                        0,
+                        0,
+                        "MAKE_PARTNER_CHOICE_VOTING.json",
+                        List.of(),
+                        List.of()
+                ),
                 Arguments.of(
                         "Transition to MAKE_CHOICE_VOTING when there has NOT been a player vote",
                         "",
@@ -862,68 +862,80 @@ public class GameSessionHelperTest {
                         "MAKE_PARTNER_CHOICE_VOTING.json",
                         List.of(),
                         List.of()
+                ),
+                Arguments.of(
+                        "Transition to MAKE_PARTNER_CHOICE_VOTING when there ARE other players present at the same location, don't initialize partner voting (existing submissions)",
+                        "",
+                        0,
+
+                        GameState.NAVIGATE_WINNER,
+                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        0,
+                        0,
+                        "MAKE_PARTNER_CHOICE_VOTING.json",
+                        List.of(),
+                        List.of()
+                ),
+                Arguments.of(
+                        "Transition to MAKE_CHOICE_VOTING when there are NO other players present at the same location",
+                        "",
+                        0,
+                        GameState.NAVIGATE_WINNER,
+                        GameState.MAKE_CHOICE_VOTING,
+                        3,
+                        0,
+                        "MAKE_PARTNER_CHOICE_VOTING.json",
+                        List.of(),
+                        List.of()
+                ),
+                Arguments.of(
+                        "Transition to MAKE_PARTNER_CHOICE_VOTING when there ARE other players present at the same location, initialize voting phase",
+                        "",
+                        0,
+                        GameState.NAVIGATE_WINNER,
+                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        1,
+                        0,
+                        "MAKE_PARTNER_CHOICE_VOTING_Not_Initialized.json",
+                        List.of(),
+                        List.of()
+                ),
+                Arguments.of(
+                        "Transition to NAVIGATE_WINNER on initial story and set initial location outcome display",
+                        "",
+                        0,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        GameState.NAVIGATE_WINNER,
+                        0,
+                        0,
+                        "NAVIGATE_VOTING.json",
+                        List.of(),
+                        List.of("Kirsten gained the trait 'Agriculturalist'")
+                ),
+                Arguments.of(
+                        "Transition to MAKE_CHOICE_VOTING when story location is the same",
+                        "",
+                        0,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        GameState.MAKE_CHOICE_VOTING,
+                        2,
+                        0,
+                        "NAVIGATE_VOTING.json",
+                        List.of(),
+                        List.of()
+                ),
+                Arguments.of(
+                        "Transition to NAVIGATE_WINNER when story location changes and set next location outcome display",
+                        "",
+                        0,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        GameState.NAVIGATE_WINNER,
+                        0,
+                        0,
+                        "NAVIGATE_WINNER_EXISTING_OUTCOME.json",
+                        List.of(),
+                        List.of("Byron gained the trait 'Party Animal'")
                 )
-//                ,
-//                Arguments.of(
-//                        "Transition to MAKE_PARTNER_CHOICE_VOTING when there ARE other players present at the same location",
-//                        "",
-//                        0,
-//                        GameState.NAVIGATE_WINNER,
-//                        GameState.MAKE_PARTNER_CHOICE_VOTING,
-//                        0,
-//                        0,
-//                        "MAKE_PARTNER_CHOICE_VOTING.json",
-//                        List.of(),
-//                        List.of()
-//                ),
-//                Arguments.of(
-//                        "Transition to MAKE_CHOICE_VOTING when there are NO other players present at the same location",
-//                        "",
-//                        0,
-//                        GameState.NAVIGATE_WINNER,
-//                        GameState.MAKE_CHOICE_VOTING,
-//                        3,
-//                        0,
-//                        "MAKE_PARTNER_CHOICE_VOTING.json",
-//                        List.of(),
-//                        List.of()
-//                ),
-//                Arguments.of(
-//                        "Transition to NAVIGATE_WINNER on initial story and set initial location outcome display",
-//                        "",
-//                        0,
-//                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
-//                        GameState.NAVIGATE_WINNER,
-//                        0,
-//                        0,
-//                        "NAVIGATE_VOTING.json",
-//                        List.of(),
-//                        List.of("Kirsten gained the trait 'Agriculturalist'")
-//                ),
-//                Arguments.of(
-//                        "Transition to MAKE_CHOICE_VOTING when story location is the same",
-//                        "",
-//                        0,
-//                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
-//                        GameState.MAKE_CHOICE_VOTING,
-//                        2,
-//                        0,
-//                        "NAVIGATE_VOTING.json",
-//                        List.of(),
-//                        List.of()
-//                ),
-//                Arguments.of(
-//                        "Transition to NAVIGATE_WINNER when story location changes and set next location outcome display",
-//                        "",
-//                        0,
-//                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
-//                        GameState.NAVIGATE_WINNER,
-//                        0,
-//                        0,
-//                        "NAVIGATE_WINNER_EXISTING_OUTCOME.json",
-//                        List.of(),
-//                        List.of("Byron gained the trait 'Party Animal'")
-//                )
         );
     }
 

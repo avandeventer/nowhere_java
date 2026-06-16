@@ -243,7 +243,7 @@ public class GameSessionHelper {
                     }
                     break;
                 case MAKE_PARTNER_CHOICE_VOTING:
-                    if (shouldSkipPartnerChoicePhases(existingSession)) {
+                    if (shouldSkipPartnerChoicePhases(gameSession)) {
                         gameSession.setGameState(MAKE_CHOICE_VOTING);
                     } else {
                         collaborativeTextHelper.initializeMakePartnerChoiceVoting(gameSession.getGameCode());
