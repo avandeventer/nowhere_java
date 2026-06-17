@@ -103,6 +103,22 @@ public class CollaborativeTextHelper {
         return calculateWinningSubmission(gameSession);
     }
 
+    public List<TextSubmission> getWinningSubmissions(String gameCode) {
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        GameState phaseIdState = gameSession.getGameState().getPhaseId();
+        if (phaseIdState == null) {
+            throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
+        }
+        String phaseId = phaseIdState.name();
+
+        CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhase(phaseId);
+        if (phase == null) {
+            throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
+        }
+
+        return getWinningSubmissions(phaseIdState, phase, gameSession);
+    }
+
     public List<TextSubmission> calculateWinningSubmission(GameSession gameSession) {
         GameState phaseIdState = gameSession.getGameState().getPhaseId();
         if (phaseIdState == null) {
@@ -110,7 +126,6 @@ public class CollaborativeTextHelper {
         }
         String phaseId = phaseIdState.name();
 
-        // Get phase from DAO
         CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhase(phaseId);
         if (phase == null) {
             throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
@@ -826,7 +841,7 @@ public class CollaborativeTextHelper {
         Set<String> updatedPlayerIds = new HashSet<>();
         for (Player player : players) {
             if (player.getTraits() == null) player.setTraits(new ArrayList<>());
-            if (player.getTraits().stream().noneMatch(t -> t.getTraitId().equals(trait.getTraitLabel()))) {
+            if (player.getTraits().stream().noneMatch(t -> t.getTraitLabel().equals(trait.getTraitLabel()))) {
                 player.getTraits().add(trait);
                 updatedPlayerIds.add(player.getAuthorId());
             }
