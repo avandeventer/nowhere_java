@@ -63,6 +63,12 @@ public class GameSessionHelper {
         return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, adventureMap, saveGameId, storiesToWritePerRound, storiesToPlayPerRound, gameMode);
     }
 
+    public GameSession adminUpdateGameSession(GameSession gameSession) {
+        GameSession newGameSession = gameSessionDAO.getGame(gameSession.getGameCode());
+        newGameSession.setGameState(gameSession.getGameState());
+        return updateGameSession(newGameSession, false);
+    }
+
     public GameSession updateToNextGameState(String gameCode) {
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
         if (gameSession.getGameState().equals(INIT)) {
@@ -273,7 +279,11 @@ public class GameSessionHelper {
                         if (nextEncounterStory != null) {
                             String lastLocationId = lastEncounterStory.getLocation().getId();
                             if (nextEncounterStory.getLocation().getId().equals(lastLocationId)) {
-                                gameSession.setGameStateToNext();
+                                if (shouldSkipPartnerChoicePhases(gameSession)) {
+                                    gameSession.setGameState(MAKE_CHOICE_VOTING);
+                                } else {
+                                    gameSession.setGameStateToNext(locationVoting);
+                                }
                             } else {
                                 ActivePlayerSession navigateWinnerSession = gameSession.getActivePlayerSession();
                                 navigateWinnerSession.setGameCode(gameSession.getGameCode());

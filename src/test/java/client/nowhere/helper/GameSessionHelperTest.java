@@ -97,7 +97,7 @@ public class GameSessionHelperTest {
         );
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{3}")
     @MethodSource("provideGameSessionScenarios")
     void testUpdateGameSessionStart_MultipleScenarios(
             int playerCount,
@@ -538,7 +538,7 @@ public class GameSessionHelperTest {
         return locations;
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("providePreamblePhaseScenarios")
     void testUpdateGameSession_PREAMBLE_Phase_AdventureMapIntegration(
             String scenarioName,
@@ -624,7 +624,7 @@ public class GameSessionHelperTest {
      *
      * Uses real CollaborativeTextHelper.getMakeChoiceVotingOutcomeForks to verify distribution logic.
      */
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideMakeOutcomeChoiceVotingScenarios")
     void testUpdateGameSession_MAKE_OUTCOME_CHOICE_VOTING_TransitionLogic(
             String scenarioName,
@@ -712,7 +712,7 @@ public class GameSessionHelperTest {
      *
      * Uses real CollaborativeTextHelper.getMakeChoiceVotingOutcomeForks to verify distribution logic.
      */
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideMakeOutcomeChoiceVotingScenarios")
     void testUpdateGameSession_MAKE_OUTCOME_CHOICE_VOTING_TestOutcomeForks(
             String scenarioName,
@@ -901,6 +901,18 @@ public class GameSessionHelperTest {
                         List.of()
                 ),
                 Arguments.of(
+                        "Transition to MAKE_PARTNER_CHOICE_VOTING at encounter 2 in the same location, when there ARE other unpartnered players present at the same location, skip initialize make partner voting",
+                        "",
+                        0,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        1,
+                        0,
+                        "MAKE_PARTNER_CHOICE_VOTING_Not_Initialized.json",
+                        List.of(),
+                        List.of()
+                ),
+                Arguments.of(
                         "Transition to NAVIGATE_WINNER on initial story and set initial location outcome display",
                         "",
                         0,
@@ -947,7 +959,7 @@ public class GameSessionHelperTest {
      * - Then routes to WRITE_EPILOGUES (round >= 2) or WHAT_HAPPENS_HERE (round < 2) based on
      *   whether there is an encounter at the next board position.
      */
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideMakeOutcomeChoiceWinnerScenarios")
     void testUpdateGameSession_MAKE_OUTCOME_CHOICE_WINNER_TransitionLogic(
             String scenarioName,
