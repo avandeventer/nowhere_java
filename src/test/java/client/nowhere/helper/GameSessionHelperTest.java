@@ -658,9 +658,13 @@ public class GameSessionHelperTest {
         }
 
         // Mock the dependencies
+        GameSession existingGameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
+        gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
+        gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
+
         when(gameSessionDAO.getGame(gameCode))
                 .thenReturn(gameSession)
-                .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson(testFileName));
+                .thenAnswer(invocation -> existingGameSession);
         when(gameSessionDAO.updateGameSession(any(GameSession.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(true);
@@ -925,7 +929,7 @@ public class GameSessionHelperTest {
                         List.of("Kirsten gained the trait 'Agriculturalist'")
                 ),
                 Arguments.of(
-                        "Transition to MAKE_CHOICE_VOTING when story location is the same",
+                        "Transition to MAKE_CHOICE_VOTING when story location is the same and players are already partnered",
                         "",
                         0,
                         GameState.MAKE_OUTCOME_CHOICE_WINNER,
@@ -947,6 +951,18 @@ public class GameSessionHelperTest {
                         "NAVIGATE_WINNER_EXISTING_OUTCOME.json",
                         List.of(),
                         List.of("Byron gained the trait 'Party Animal'")
+                ),
+                Arguments.of(
+                        "Transition to MAKE_PARTNER_CHOICE_VOTING at encounter 2 in the same location, when there ARE other unpartnered players present at the same location, and other players are already partnered, skip initialize make partner voting",
+                        "",
+                        0,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        4,
+                        0,
+                        "MAKE_PARTNER_CHOICE_VOTING_Round2_FourPlayers.json",
+                        List.of(),
+                        List.of()
                 )
         );
     }
