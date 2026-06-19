@@ -78,11 +78,9 @@ public class VotingHelper {
                     return new ArrayList<>();
                 }
                 String myLocationId = storyPlayer.getSelectedLocationId();
-                String existingPlayerId = currentStory.getPlayerId();
-                List<String> sharedLocationPlayerIds = gameSession.getPlayers().stream()
-                        .filter(p -> !p.getAuthorId().equals(playerId)
-                                && !existingPlayerId.equals(p.getAuthorId())
-                                && myLocationId.equals(p.getSelectedLocationId()))
+                List<String> sharedLocationPlayerIds = GameSessionHelper.getAvailablePartnersAtLocation(
+                        gameSession, myLocationId, playerId)
+                        .stream()
                         .map(Player::getAuthorId)
                         .toList();
                 if (sharedLocationPlayerIds.isEmpty()) {
