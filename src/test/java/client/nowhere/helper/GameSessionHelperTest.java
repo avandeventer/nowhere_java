@@ -963,6 +963,18 @@ public class GameSessionHelperTest {
                         "MAKE_PARTNER_CHOICE_VOTING_Round2_FourPlayers.json",
                         List.of(),
                         List.of()
+                ),
+                Arguments.of(
+                        "Transition to ENDING_PREAMBLE game state when all encounters have completed in round 2",
+                        "",
+                        0,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        GameState.ENDING_PREAMBLE,
+                        7,
+                        0,
+                        "MAKE_PARTNER_CHOICE_VOTING_Round2_FourPlayers_Ending.json",
+                        List.of(),
+                        List.of()
                 )
         );
     }

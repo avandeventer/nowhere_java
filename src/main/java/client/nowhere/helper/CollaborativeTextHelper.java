@@ -2001,7 +2001,7 @@ public class CollaborativeTextHelper {
             locationVotingSubmissions,
             activePlayers,
             playersAtLocation,
-            collaborativeModeInstructions.contributionPhaseInstructions()
+            collaborativeModeInstructions
         );
     }
 
@@ -2074,9 +2074,11 @@ public class CollaborativeTextHelper {
             if (collaborativeMode == CollaborativeMode.RAPID_FIRE) {
                 return new CollaborativePhaseTypeInstructions(
                         "Submit as many ideas as you can from your device!",
-                        ""
+                        "",
+                        30
                 );
             } else {
+                int maxCharacterLimit = gameState == WRITE_EPILOGUES ? 250 : 150;
                 String contributionPhaseInstruction =
                         gameState == HOW_DOES_THIS_RESOLVE || gameState == HOW_DOES_THIS_RESOLVE_AGAIN ?
                             "Players are adding to each other's submissions! Submit your writing to start using your player class ability on your friends' ideas!"
@@ -2085,12 +2087,14 @@ public class CollaborativeTextHelper {
                 if (gameState == GameState.WHAT_WILL_BECOME_OF_US) {
                     return new CollaborativePhaseTypeInstructions(
                             "Your friends will help, but each of us starts with a different prompt for this one!",
-                            contributionPhaseInstruction
+                            contributionPhaseInstruction,
+                            maxCharacterLimit
                     );
                 } else {
                     return new CollaborativePhaseTypeInstructions(
                             "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!",
-                            contributionPhaseInstruction
+                            contributionPhaseInstruction,
+                            maxCharacterLimit
                     );
                 }
             }

@@ -2,9 +2,10 @@ package client.nowhere.model;
 
 public record CollaborativePhaseTypeInstructions(
     String phaseModeInstructions,
-    String contributionPhaseInstructions
+    String contributionPhaseInstructions,
+    int characterLimit
 ) {
     public static CollaborativePhaseTypeInstructions empty() {
-        return new CollaborativePhaseTypeInstructions("", "");
+        return new CollaborativePhaseTypeInstructions("", "", 150);
     }
 }

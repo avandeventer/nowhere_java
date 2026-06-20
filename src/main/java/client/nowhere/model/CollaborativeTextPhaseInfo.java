@@ -14,6 +14,6 @@ public record CollaborativeTextPhaseInfo(
     List<TextSubmission> locationVotingSubmissions,
     List<Player> activePlayers,
     List<Player> playersAtLocation,
-    String phaseTypeInstructions
+    CollaborativePhaseTypeInstructions collaborativePhaseTypeInstructions
 ) {}
 
