@@ -235,10 +235,10 @@ public class CollaborativeTextDAO {
      * @param phaseId The phase ID
      * @param playerId The player requesting submissions
      * @param requestedCount Number of submissions requested
-     * @param outcomeTypeId Optional outcome type ID to filter by (for WHAT_WILL_BECOME_OF_US phase)
+     * @param excludeOutcomeTypeIds Optional outcome type ID to filter by (for WHAT_WILL_BECOME_OF_US phase)
      * @return List of available submissions
      */
-    public List<TextSubmission> getAvailableSubmissionsForPlayerAtomically(String gameCode, String phaseId, String playerId, int requestedCount, String outcomeTypeId, boolean showNewSubmissions) {
+    public List<TextSubmission> getAvailableSubmissionsForPlayerAtomically(String gameCode, String phaseId, String playerId, int requestedCount, List<String> excludeOutcomeTypeIds, boolean showNewSubmissions) {
         try {
             return db.runTransaction((Transaction.Function<List<TextSubmission>>) transaction -> {
                 // Get the current phase
@@ -253,7 +253,7 @@ public class CollaborativeTextDAO {
                 }
  
                 // Get available submissions
-                List<TextSubmission> availableSubmissions = phase.getAvailableSubmissionsForPlayer(playerId, outcomeTypeId);
+                List<TextSubmission> availableSubmissions = phase.getAvailableSubmissionsForPlayer(playerId, excludeOutcomeTypeIds);
 
                 availableSubmissions = availableSubmissions.stream()
                         .sorted(Comparator

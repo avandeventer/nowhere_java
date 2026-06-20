@@ -168,16 +168,13 @@ public class CollaborativeTextHelper {
 
         String phaseId = phaseIdState.name();
 
-        boolean streamlinedMode = featureFlagHelper.getFlagValue("streamlinedCollaborativeStories");
+        List<String> excludeOutcomeTypeIds = gameSession.getStories().stream()
+                .filter(story -> playerId.equals(story.getPlayerId()))
+                .map(Story::getStoryId)
+                .collect(Collectors.toList());
+        excludeOutcomeTypeIds.add(playerId);
 
-        if ((outcomeTypeId == null || outcomeTypeId.trim().isEmpty()) && !streamlinedMode) {
-            OutcomeType outcomeType = getOutcomeTypeForPlayer(gameCode, playerId);
-            if (outcomeType != null && outcomeType.getId() != null) {
-                outcomeTypeId = outcomeType.getId();
-            }
-        }
-
-        return collaborativeTextDAO.getAvailableSubmissionsForPlayerAtomically(gameCode, phaseId, playerId, requestedCount, outcomeTypeId, showNewSubmissions);
+        return collaborativeTextDAO.getAvailableSubmissionsForPlayerAtomically(gameCode, phaseId, playerId, requestedCount, excludeOutcomeTypeIds, showNewSubmissions);
     }
 
 

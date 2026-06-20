@@ -111,10 +111,10 @@ public class CollaborativeTextPhase {
     /**
      * Gets submissions that a player can still view (not exhausted).
      * @param playerId The player requesting submissions
-     * @param outcomeTypeId Optional outcome type ID to filter by (for WHAT_WILL_BECOME_OF_US phase)
+     * @param excludeOutcomeTypeIds Optional outcome type ID list to filter out
      * @return List of submissions available to the player
      */
-    public List<TextSubmission> getAvailableSubmissionsForPlayer(String playerId, String outcomeTypeId) {
+    public List<TextSubmission> getAvailableSubmissionsForPlayer(String playerId, List<String> excludeOutcomeTypeIds) {
         // Build set of submission IDs the player was last to contribute to.
         // A submission X is in this set if another submission exists whose last addition
         // was by this player and references X as its parent.
@@ -142,10 +142,10 @@ public class CollaborativeTextPhase {
                         return false;
                     }
 
-                    // Filter by outcome type if provided (for WHAT_WILL_BECOME_OF_US phase)
-                    if (outcomeTypeId != null && !outcomeTypeId.isEmpty()) {
-                        String submissionOutcomeType = submission.getOutcomeType();
-                        if (submissionOutcomeType == null || !outcomeTypeId.equals(submissionOutcomeType)) {
+                    // Exclude submissions whose outcomeTypeWithLabel.id matches any excluded ID
+                    if (excludeOutcomeTypeIds != null && !excludeOutcomeTypeIds.isEmpty()) {
+                        OutcomeType outcomeTypeWithLabel = submission.getOutcomeTypeWithLabel();
+                        if (outcomeTypeWithLabel != null && excludeOutcomeTypeIds.contains(outcomeTypeWithLabel.getId())) {
                             return false;
                         }
                     }
