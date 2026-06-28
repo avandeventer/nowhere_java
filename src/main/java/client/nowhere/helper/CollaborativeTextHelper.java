@@ -1106,8 +1106,9 @@ public class CollaborativeTextHelper {
             }
 
             Map<String, PlayerSortResult> playersAssignedForDistribution = new HashMap<>();
+            int offsetValue = MAKE_CHOICE_VOTING.getPhaseId().getOutcomeTypeOffset(gameSession.getPlayers().size());
             for (Player player: gameSession.getPlayers()) {
-                PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, player.getAuthorId(), -1);
+                PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, player.getAuthorId(), offsetValue);
                 playersAssignedForDistribution.put(playerSortResult.getAssignedAuthor().getAuthorId(), playerSortResult);
             }
 
@@ -2162,12 +2163,9 @@ public class CollaborativeTextHelper {
                     if (locationVoting) {
                         return distributeEncounterLabelsByLocation(playerId, gameSession, encounterLabels, null);
                     }
-                    int offsetValue = gameSession.getPlayers().size() > 4 ? 1 : 2;
-                    List<EncounterLabel> playerAssignedEncounterLabels = distributeEncounterLabels(playerId, gameSession, offsetValue, encounterLabels);
+                    List<EncounterLabel> playerAssignedEncounterLabels = distributeEncounterLabels(playerId, gameSession, phaseId.getOutcomeTypeOffset(gameSession.getPlayers().size()), encounterLabels);
                     return buildOutcomeTypesFromEncounters(playerAssignedEncounterLabels, null);
                 } else {
-                    int offsetValue = gameSession.getPlayers().size() > 4 ? 1 : 2;
-
                     // Get encounter labels distributed to this player
                     List<EncounterLabel> allEncounterLabels = getEncounterLabels(gameCode);
                     boolean locationVotingRound2 = featureFlagHelper.getFlagValue("locationVoting");
@@ -2182,7 +2180,7 @@ public class CollaborativeTextHelper {
                         return distributeEncounterLabelsByLocation(playerId, gameSession, allEncounterLabels, prequelStory);
                     }
 
-                    List<EncounterLabel> assignedPlayerEncounterLabels = distributeEncounterLabels(playerId, gameSession, offsetValue, allEncounterLabels);
+                    List<EncounterLabel> assignedPlayerEncounterLabels = distributeEncounterLabels(playerId, gameSession, phaseId.getOutcomeTypeOffset(gameSession.getPlayers().size()), allEncounterLabels);
 
                     // Non-locationVoting round 2: filter out used encounter labels and find prequel
                     Set<String> assignedLabelIds = assignedPlayerEncounterLabels.stream()
@@ -2207,14 +2205,13 @@ public class CollaborativeTextHelper {
                 }
             } else if (phaseId == WHAT_CAN_WE_TRY) {
                 StoryDistributionContext nextPlayerStoryContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, 1);
-                int nextNextOffset = gameSession.getPlayers().size() > 4 ? 2 : 0;
+                int nextNextOffset = phaseId.getOutcomeTypeOffset(gameSession.getPlayers().size());
                 StoryDistributionContext nextNextPlayerStoryContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, nextNextOffset);
                 List<OutcomeType> allStories = nextPlayerStoryContext.assignedStories();
                 allStories.addAll(nextNextPlayerStoryContext.assignedStories());
                 return allStories;
             } else if (phaseId == GameState.HOW_DOES_THIS_RESOLVE || phaseId == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
-                // Calculate offset: 3 if more than 4 players, else 2
-                int offsetValue = gameSession.getPlayers().size() > 4 ? 3 : 2;
+                int offsetValue = phaseId.getOutcomeTypeOffset(gameSession.getPlayers().size());
 
                 // Get assigned story (only one story per player for this phase)
                 StoryDistributionContext storyContext = outcomeTypeHelper.distributeStoriesToPlayer(gameSession, playerId, offsetValue);
@@ -2269,8 +2266,7 @@ public class CollaborativeTextHelper {
                 assignedStoryOutcomeType.setSubTypes(allSubTypes);
                 return List.of(assignedStoryOutcomeType);
             } else if (phaseId == GameState.WRITE_EPILOGUES){
-                // Calculate offset: 1 for 4 players, 2 for more than 4 players
-                int offsetValue = gameSession.getPlayers().size() > 4 ? -2 : -1;
+                int offsetValue = phaseId.getOutcomeTypeOffset(gameSession.getPlayers().size());
                 PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, playerId, offsetValue);
 
                 Player assignedPlayer = playerSortResult.getAssignedAuthor();
@@ -2442,7 +2438,8 @@ public class CollaborativeTextHelper {
     private @NonNull List<OutcomeType> distributeEncounterLabelsByLocation(
             String playerId, GameSession gameSession, List<EncounterLabel> allEncounterLabels, Story prequelStory) {
 
-        int offsetValue = gameSession.getPlayers().size() > 4 ? 2 : 1;
+
+        int offsetValue = gameSession.getGameState().getPhaseId().getOutcomeTypeOffset(gameSession.getPlayers().size());
         PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, playerId, offsetValue);
         Player assignedPlayer = playerSortResult.getAssignedAuthor();
 

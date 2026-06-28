@@ -1,3 +1,192 @@
+# Nowhere — Java Backend
+
+## Build & Deploy
+
+```
 gradlew build
 move file to home directory
 gcloud run deploy
+```
+
+---
+
+## Project Overview
+
+Nowhere is a real-time collaborative storytelling game played over the web. Players collectively
+build a world and then navigate it encounter-by-encounter, writing scenes, proposing actions, and
+voting on outcomes together.
+
+The backend is a **Spring Boot** service that manages game state, player sessions, text submissions,
+and voting. It persists data to **Firebase/Firestore**, which both clients subscribe to for real-time
+updates.
+
+---
+
+## Monorepo Structure
+
+```
+nowhere-storytelling-suite/
+├── nowhere_java/           ← this backend (Spring Boot)
+├── nowhere-game-client/    ← Angular app for the host/shared screen ("TV")
+└── nowhere-player-client/  ← Angular app for individual players (phones)
+```
+
+The game-client is the shared display everyone watches. The player-client is each person's
+individual device. Both receive real-time updates from Firestore.
+
+---
+
+## Key Packages
+
+```
+src/main/java/client/nowhere/
+├── controller/     HTTP endpoints (game session, player session, collaborative text, etc.)
+├── dao/            Firestore read/write helpers
+├── factory/        Object construction (phases, outcomes, stories)
+├── helper/         Core game logic (CollaborativeTextHelper, OutcomeTypeHelper, etc.)
+├── model/          Domain objects (see below)
+└── config/         Firebase config, CORS, etc.
+```
+
+---
+
+## Core Domain Models
+
+| Model | Description |
+|---|---|
+| `GameSession` | Top-level game; holds `GameState`, round number, player list, `AdventureMap`, `GameBoard` |
+| `GameState` | Enum driving the full state machine (see Phase Reference below) |
+| `ActiveGameStateSession` | Per-game server-side phase state; holds `TextSubmission[]` for the current phase |
+| `ActivePlayerSession` | Per-player live state: `startTimer`, `contributionPhaseActive`, `writeTimerDone` |
+| `AdventureMap` | Holds `EncounterLabel[]` — the named locations players create in world setup |
+| `GameBoard` | `DungeonGrid`: a `Map<"x,y", Encounter>` representing the dungeon |
+| `Encounter` | A single cell on the grid; links to a `Story` and an `EncounterLabel` |
+| `Story` | A written scene: `prompt`, `authorId`, `selectedOptionId`, `Option[]`, `repercussions` |
+| `Option` | A proposed action: `optionText`, `successText`, `OutcomeFork[]` |
+| `TextSubmission` | A player's submission in a collaborative phase; has a `currentText` and `additions[]` |
+| `OutcomeType` / `OutcomeTypeWithLabel` | Describes what a player is assigned to write about in a given phase |
+| `Player` | A participant: `displayName`, `authorId`, `joinedAt`, `traits`, `playerCoordinates` |
+| `Repercussion` / `RepercussionType` | Stat changes that result from story outcomes |
+| `CollaborativeTextPhase` | Holds all `TextSubmission[]` for one phase keyed by `GameState` |
+| `CollaborativePhaseTypeInstructions` | Per-phase writing config: `phaseModeInstructions`, `contributionPhaseInstructions`, `characterLimit` |
+
+---
+
+## Collaborative Writing Modes
+
+Every collaborative writing phase runs in one of two modes:
+
+**RAPID_FIRE** — Each player writes their own submission independently. Submissions are then ranked
+by the number of additions other players made to them. Top N become the winners.
+
+**SHARE_TEXT** — Players write an initial submission, then can add to each other's submissions
+during a contribution phase. The game-client drives this with a two-ring nested timer: the outer
+ring counts down the initial writing window; when it completes, the inner ring counts down the
+contribution window.
+
+---
+
+## Game Flow (Dungeon Mode)
+
+### Macro Structure
+
+```
+INIT → PREAMBLE
+  │
+  ▼
+WORLD SETUP
+  SET_ENCOUNTERS → SET_ENCOUNTERS_WINNERS          [RAPID_FIRE]
+    EncounterLabels created on AdventureMap
+  │
+  ▼ (repeat for 2 rounds)
+STORY WRITING (per round)
+  WHAT_HAPPENS_HERE → WHAT_HAPPENS_HERE_WINNER     [SHARE_TEXT]
+    Stories + Encounters placed on GameBoard
+  WHAT_CAN_WE_TRY → WHAT_CAN_WE_TRY_WINNERS       [RAPID_FIRE]
+    Options added to Stories
+  HOW_DOES_THIS_RESOLVE → WINNERS                  [SHARE_TEXT]
+    successText + OutcomeForks added to Options
+  HOW_DOES_THIS_RESOLVE_AGAIN → WINNERS            [SHARE_TEXT]
+  │
+  ▼ (repeat per encounter in round)
+ENCOUNTER RESOLUTION
+  MAKE_CHOICE_VOTING → MAKE_CHOICE_WINNER
+    story.selectedOptionId set by group vote
+  MAKE_OUTCOME_CHOICE_VOTING → MAKE_OUTCOME_CHOICE_WINNER
+    option.successText set by group vote
+  NAVIGATE_WINNER
+    playerCoordinates.x++
+    → more encounters? loop back to ENCOUNTER RESOLUTION
+    → round done, round < 2? loop back to STORY WRITING
+    → round >= 2? proceed to epilogue
+  │
+  ▼
+WRITE_EPILOGUES → WRITE_EPILOGUES_WINNER           [SHARE_TEXT]
+  Players write about another player's character arc
+  │
+  ▼
+FINALE
+```
+
+### Player Assignment Logic
+
+Players are sorted by `joinedAt` timestamp. Work is distributed by offsetting from each player's
+index so no one writes about their own content.
+
+| Phase | Assignment |
+|---|---|
+| `WHAT_HAPPENS_HERE` round 1 | Player gets EncounterLabel authored by player at `index + offset` |
+| `WHAT_HAPPENS_HERE` round 2+ | Player gets a Story via `distributeStoriesToPlayer(offset)` |
+| `WHAT_CAN_WE_TRY` | Player gets 1–2 stories from offset players |
+| `HOW_DOES_THIS_RESOLVE` | Player gets one story; its WHAT_CAN_WE_TRY submissions are selectable subTypes |
+| `MAKE_CHOICE_VOTING` | Only players assigned to the current encounter vote |
+| `WRITE_EPILOGUES` | Player writes about the character at `index - offset` |
+
+### Encounter Generation
+
+- `SET_ENCOUNTERS_WINNERS`: Submissions ranked by addition count. Top N become `EncounterLabel[]`
+  on `AdventureMap`.
+- `WHAT_HAPPENS_HERE_WINNER`: Each winning submission becomes a `Story` placed at `(x+i, y)` on
+  the `GameBoard`. Players whose submissions didn't win receive pre-canned stories (e.g., "The
+  Slime Lord", "A Festival!", etc.) placed at adjacent coordinates.
+
+---
+
+## OutcomeType → Story Element Mapping
+
+See `src/docs/.OUTCOMES.md` for the full phase-by-phase breakdown of how `OutcomeType` IDs map to
+domain objects and how `TextSubmission.currentText` flows into story fields.
+
+## Player Classes & Repercussions
+
+See `src/docs/.CLASSES.md` for how player classes gate repercussion types, how repercussions are
+attached to text additions, and how they resolve into traits, titles, and companions on players.
+
+## Player Character Lifecycle
+
+See `src/docs/.PLAYER_LIFECYCLE.md` for the full arc of a player character from joining and class
+selection through encounter resolution, repercussion accumulation, and epilogue.
+
+The short version: `CollaborativeTextHelper.submitTextAddition` accepts submissions, and
+`calculateWinningSubmission` converts them into story elements. `getOutcomeTypes` tells each player
+what they are assigned to write about for the current phase.
+
+---
+
+## Unimplemented / Placeholder States
+
+| State(s) | Notes |
+|---|---|
+| `SET_TRAITS` / `WHO_ARE_YOU` | Guarded by `includeTraits=true`; not yet implemented |
+| `WHAT_DOES_IT_MEAN` | Same guard; not yet implemented |
+| `CAMPFIRE` / `CAMPFIRE_WINNERS` | Has PhaseBaseInfo for rounds 1–4 but no transition leads here |
+| `NAVIGATE_VOTING` | Directional (N/S/E/W) voting — not wired into current flow |
+| `EPILOGUE_PREAMBLE` / `LOCATION_SELECT_COLLABORATIVE` | Defined but not triggered |
+
+---
+
+## CLAUDE.md Rules
+
+When working on game state transitions, `getOutcomeTypes`, `initializeLocationVoting`, or any logic
+that affects player content assignment, **read `src/.OUTCOMES.md` first**. Update it when those
+areas change.
