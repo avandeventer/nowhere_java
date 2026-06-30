@@ -21,6 +21,8 @@ public class Location {
     private String authorId;
     private String selectedOptionId;
     private List<Trait> traits;
+    private boolean startingLocation = false;
+    private List<Story> startingStories;
 
     public Location () {
         this.id = UUID.randomUUID().toString();
@@ -140,6 +142,22 @@ public class Location {
 
     public void setTraits(List<Trait> traits) {
         this.traits = traits;
+    }
+
+    public boolean isStartingLocation() {
+        return startingLocation;
+    }
+
+    public void setStartingLocation(boolean startingLocation) {
+        this.startingLocation = startingLocation;
+    }
+
+    public List<Story> getStartingStories() {
+        return startingStories;
+    }
+
+    public void setStartingStories(List<Story> startingStories) {
+        this.startingStories = startingStories;
     }
 
     @JsonIgnore

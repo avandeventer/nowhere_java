@@ -84,7 +84,9 @@ public enum GameState {
         MAKE_PARTNER_CHOICE_VOTING,
         MAKE_PARTNER_CHOICE_WINNER,
         ACCEPT_PARTNER_CHOICE_VOTING,
-        ACCEPT_PARTNER_CHOICE_WINNER;
+        ACCEPT_PARTNER_CHOICE_WINNER,
+        DEFINING_TRAITS_VOTING,
+        DEFINING_TRAITS_WINNER;
 
     public GameState getNextGameState(GameMode gameMode, boolean locationVoting) {
             if (gameMode == GameMode.TOWN_MODE) {
@@ -169,6 +171,12 @@ public enum GameState {
                 return LOCATION_VOTING;
             }
             case ENDING_PREAMBLE -> {
+                return DEFINING_TRAITS_VOTING;
+            }
+            case DEFINING_TRAITS_VOTING -> {
+                return DEFINING_TRAITS_WINNER;
+            }
+            case DEFINING_TRAITS_WINNER -> {
                 return WRITE_EPILOGUES;
             }
             case WRITE_EPILOGUES -> {
@@ -347,6 +355,7 @@ public enum GameState {
                         case WRITE_EPILOGUES, WRITE_EPILOGUES_WINNER -> WRITE_EPILOGUES;
                         case LOCATION_VOTING, LOCATION_WINNING -> LOCATION_VOTING;
                         case CAMPFIRE, CAMPFIRE_WINNERS -> CAMPFIRE;
+                        case DEFINING_TRAITS_VOTING, DEFINING_TRAITS_WINNER -> DEFINING_TRAITS_VOTING;
                         default -> this;
                 };
         }
@@ -493,7 +502,7 @@ public enum GameState {
                                 WHAT_HAPPENS_HERE,
                                 WHAT_HAPPENS_HERE_VOTING,
                                 WHAT_HAPPENS_HERE_WINNER,
-                                roundNumber == 4
+                                roundNumber == 5
                         );
                 }
                 if (phaseId == WHAT_CAN_WE_TRY) {
@@ -599,10 +608,21 @@ public enum GameState {
                             false
                     );
                 }
+                if (phaseId == DEFINING_TRAITS_VOTING) {
+                    return new PhaseBaseInfo(
+                            "What defines you?",
+                            "Select the trait that most defined your journey, and the price you paid along the way.",
+                            CollaborativeMode.RAPID_FIRE,
+                            DEFINING_TRAITS_VOTING,
+                            null,
+                            DEFINING_TRAITS_WINNER,
+                            false
+                    );
+                }
                 if (phaseId == WRITE_EPILOGUES) {
                     return new PhaseBaseInfo(
                             "How have we grown?",
-                            "See which of your friends you've been assigned and write how they've changed from their adventure!",
+                            "You've been assigned a player's character. Review their defining choices and write how their story concluded — did they achieve what they set out to become?",
                             CollaborativeMode.SHARE_TEXT,
                             WRITE_EPILOGUES,
                             null,

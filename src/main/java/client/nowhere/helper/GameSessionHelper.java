@@ -268,9 +268,15 @@ public class GameSessionHelper {
                     collaborativeTextHelper.initializeLocationVoting(gameSession.getGameCode());
                     break;
                 case SET_ENCOUNTERS:
-                    if (locationVoting && gameSession.getRoundNumber() >= 2) {
+                    if (gameSession.getRoundNumber() == 0) {
+                        collaborativeTextHelper.handleRoundZeroBoard(gameSession);
+                        gameSession.setGameState(NAVIGATE_WINNER);
+                    } else if (locationVoting && gameSession.getRoundNumber() >= 2) {
                         gameSession.setGameState(WHAT_HAPPENS_HERE);
                     }
+                    break;
+                case DEFINING_TRAITS_VOTING:
+                    collaborativeTextHelper.initializeDefiningTraits(gameSession.getGameCode());
                     break;
                 case NAVIGATE_WINNER:
                     Story lastEncounterStory = gameSession.getStoryAtCurrentPlayerCoordinates();
@@ -279,7 +285,7 @@ public class GameSessionHelper {
                         if (nextEncounterStory != null) {
                             String lastLocationId = lastEncounterStory.getLocation().getId();
                             if (nextEncounterStory.getLocation().getId().equals(lastLocationId)) {
-                                if (shouldSkipPartnerChoicePhases(gameSession, nextEncounterStory)) {
+                                if (gameSession.getRoundNumber() == 0 || shouldSkipPartnerChoicePhases(gameSession, nextEncounterStory)) {
                                     gameSession.setGameState(MAKE_CHOICE_VOTING);
                                 } else {
                                     gameSession.setGameStateToNext(locationVoting);

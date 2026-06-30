@@ -27,12 +27,16 @@ public class Player {
 
     private PlayerClassOption playerClass;
     private String selectedLocationId;
+    private List<DefiningTrait> definingTraits;
 
     public PlayerClassOption getPlayerClass() { return playerClass; }
     public void setPlayerClass(PlayerClassOption playerClass) { this.playerClass = playerClass; }
 
     public String getSelectedLocationId() { return selectedLocationId; }
     public void setSelectedLocationId(String selectedLocationId) { this.selectedLocationId = selectedLocationId; }
+
+    public List<DefiningTrait> getDefiningTraits() { return definingTraits; }
+    public void setDefiningTraits(List<DefiningTrait> definingTraits) { this.definingTraits = definingTraits; }
 
     public Player() { }
 
@@ -200,6 +204,9 @@ public class Player {
         this.setPlayerClass(player.getPlayerClass());
         if (player.getSelectedLocationId() != null) {
             this.setSelectedLocationId(player.getSelectedLocationId());
+        }
+        if (player.getDefiningTraits() != null) {
+            this.setDefiningTraits(player.getDefiningTraits());
         }
     }
 
