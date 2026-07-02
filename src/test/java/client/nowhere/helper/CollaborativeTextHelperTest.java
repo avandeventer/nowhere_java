@@ -1087,7 +1087,7 @@ public class CollaborativeTextHelperTest {
      * - HOW_DOES_THIS_RESOLVE: offset 2 for <=4 players, 3 for >4 players
      * - WHAT_HAPPENS_HERE (round > 1): offset 2 for <=4 players, 1 for >4 players
      */
-    @ParameterizedTest
+    @ParameterizedTest(name = "{0}")
     @MethodSource("provideOutcomeTypeDistributionScenarios")
     void testGetOutcomeTypes_DistributesStoriesCorrectlyPerPlayer(
             String scenarioName,
@@ -1237,10 +1237,10 @@ public class CollaborativeTextHelperTest {
                         GameState.WHAT_HAPPENS_HERE,
                         // Round 1: Players get all encounter labels from one other player
                         Map.of(
-                                "Andy",    List.of("1d8a56a7-34b8-48a9-ad09-933f4190af86", "4172f20f-6f18-449b-aa36-7c6e91ed129c"), // encounters written by Byron
-                                "Joe",     List.of("ac69cefe-d2f8-4203-a046-20b2a25d1250", "24a38dde-3c6f-456a-8e12-4a8a4b12cf80"), // encounter written by Kirsten
-                                "Byron",   List.of("1b2c7a37-35a7-479e-bb23-b2d3c577cf36"), // encounter written by Andy
-                                "Kirsten", List.of("8f4b1306-aac6-454a-be85-a769f91a4250", "1536d22a-f0e5-4ec8-9985-3c5091449c62")  // encounter written by Joe
+                                "Andy",    List.of("8f4b1306-aac6-454a-be85-a769f91a4250", "1536d22a-f0e5-4ec8-9985-3c5091449c62"), // encounters written by Byron
+                                "Joe",     List.of("1d8a56a7-34b8-48a9-ad09-933f4190af86", "4172f20f-6f18-449b-aa36-7c6e91ed129c"), // encounter written by Kirsten
+                                "Byron",   List.of("ac69cefe-d2f8-4203-a046-20b2a25d1250", "24a38dde-3c6f-456a-8e12-4a8a4b12cf80"), // encounter written by Andy
+                                "Kirsten", List.of("1b2c7a37-35a7-479e-bb23-b2d3c577cf36")  // encounter written by Joe
                         ),
                         Map.of(),
                         false
@@ -1250,10 +1250,10 @@ public class CollaborativeTextHelperTest {
                         "WHAT_HAPPENS_HERE_ROUND2_REPERCUSSIONS.json",
                         GameState.WHAT_HAPPENS_HERE,
                         Map.of(
-                                "Andy", List.of("595ed596-1850-4fd3-8716-25e39ece5055"), // encounter written by Subodh?
-                                "Joe", List.of("93fc1c2b-c26d-4af9-87d4-58f183dc7881", "5ecaf9e8-bd35-4e95-854f-18591c9d9d47"), // encounter written by Kirsten
-                                "Subodh", List.of(), // encounter (not) written by Andy
-                                "Kirsten", List.of("5feb03e7-f0aa-4bc2-bf71-7d8beadab9c5", "9d971bbe-4c5d-4b0d-aa9f-11913a147d47")  // encounter written by Joe
+                                "Andy", List.of("5feb03e7-f0aa-4bc2-bf71-7d8beadab9c5", "9d971bbe-4c5d-4b0d-aa9f-11913a147d47"), // encounter written by Subodh?
+                                "Joe", List.of("595ed596-1850-4fd3-8716-25e39ece5055"), // encounter written by Kirsten
+                                "Subodh", List.of("93fc1c2b-c26d-4af9-87d4-58f183dc7881", "5ecaf9e8-bd35-4e95-854f-18591c9d9d47"), // encounter (not) written by Andy
+                                "Kirsten", List.of()  // encounter written by Joe
                         ),
                         Map.of(),
                         false
@@ -1263,10 +1263,10 @@ public class CollaborativeTextHelperTest {
                         "WHAT_HAPPENS_HERE_DEFAULT_ENCOUNTER.json",
                         GameState.WHAT_HAPPENS_HERE,
                         Map.of(
-                                "Andy", List.of("f8b8aa18-9780-4849-b55d-182691907a47", "9ea77155-0142-4165-96e6-c638fc94a28b", "8b143162-8b97-4118-bd7d-9ae7aab5ff05", "b8e4f45c-07ed-4243-bb77-af48dbbc442e"), // encounter written by Goni?
-                                "Parker", List.of(), // Kirsten did not finish writing her encounters so Parker should get default ones
-                                "Goni", List.of("c11e1c27-763f-4337-8257-57a2cf6dfc11", "9fd3bedf-3941-4a5d-b3e7-ce06ea3cba55", "6643bc0e-8da3-481d-b234-c52bdedf73e1"), // encounter written by Andy
-                                "Kirsten", List.of("c0d7c65c-a8fd-4add-aa1b-76277cdbb95c", "aa51d73f-4d2a-48b3-8f1d-dd3ba83554de", "4b378acb-6083-4470-8c88-7d841347aeba")  // encounter written by Parker?
+                                "Andy", List.of("c0d7c65c-a8fd-4add-aa1b-76277cdbb95c", "aa51d73f-4d2a-48b3-8f1d-dd3ba83554de", "4b378acb-6083-4470-8c88-7d841347aeba"), // encounter written by Goni?
+                                "Parker", List.of("f8b8aa18-9780-4849-b55d-182691907a47", "9ea77155-0142-4165-96e6-c638fc94a28b", "8b143162-8b97-4118-bd7d-9ae7aab5ff05", "b8e4f45c-07ed-4243-bb77-af48dbbc442e"), // Kirsten did not finish writing her encounters so Parker should get default ones
+                                "Goni", List.of(), // encounter written by Andy
+                                "Kirsten", List.of("c11e1c27-763f-4337-8257-57a2cf6dfc11", "9fd3bedf-3941-4a5d-b3e7-ce06ea3cba55", "6643bc0e-8da3-481d-b234-c52bdedf73e1")  // encounter written by Parker?
                         ),
                         Map.of(),
                         false
@@ -1276,11 +1276,11 @@ public class CollaborativeTextHelperTest {
                         "HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json",
                         WHAT_HAPPENS_HERE,
                         Map.of(
-                                "Andy", List.of("8b3f0422-4b38-417f-88a5-56fb2e375d02", "8aa481ba-6a31-4b0b-943e-c76149b02606"), // encounter written by Goni?
-                                "Joe", List.of("5006a27c-0709-4a09-b13d-aa75bbbf5e4d"), // Kirsten did not finish writing her encounters so Parker should get default ones
-                                "Byron", List.of("76ac45b2-98e9-4918-ae69-9247abe74fca", "3111e23b-aaea-4ce2-965e-f31c6a02497e"), // encounter written by Andy
-                                "Kirsten", List.of(),  // encounter written by Parker?
-                                "Subodh", List.of("5430f947-10e8-4c21-b551-4ba823cfdcca", "4a6cc022-58e0-4276-9302-9ce909a08d5e")  // encounter written by Parker?
+                                "Andy", List.of("5006a27c-0709-4a09-b13d-aa75bbbf5e4d"), // encounter written by Goni?
+                                "Joe", List.of("76ac45b2-98e9-4918-ae69-9247abe74fca", "3111e23b-aaea-4ce2-965e-f31c6a02497e"), // Kirsten did not finish writing her encounters so Parker should get default ones
+                                "Byron", List.of(), // encounter written by Andy
+                                "Kirsten", List.of("5430f947-10e8-4c21-b551-4ba823cfdcca", "4a6cc022-58e0-4276-9302-9ce909a08d5e"),  // encounter written by Parker?
+                                "Subodh", List.of("8b3f0422-4b38-417f-88a5-56fb2e375d02", "8aa481ba-6a31-4b0b-943e-c76149b02606")  // encounter written by Parker?
                         ),
                         Map.of(),
                         false
