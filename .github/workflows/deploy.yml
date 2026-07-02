@@ -63,8 +63,8 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.action != 'closed'
     runs-on: ubuntu-latest
     env:
-      SANDBOX_SERVICE: ${{ secrets.DOCKER_IMAGE_NAME }}-pr-${{ github.event.pull_request.number }}
-      SANDBOX_IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_ARTIFACT_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:pr-${{ github.event.pull_request.number }}
+      SANDBOX_SERVICE: ${{ secrets.DOCKER_IMAGE_NAME }}-sandbox
+      SANDBOX_IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_ARTIFACT_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:sandbox
 
     steps:
       - name: Checkout repository
@@ -112,7 +112,7 @@ jobs:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
     env:
-      SANDBOX_SERVICE: ${{ secrets.DOCKER_IMAGE_NAME }}-pr-${{ github.event.pull_request.number }}
+      SANDBOX_SERVICE: ${{ secrets.DOCKER_IMAGE_NAME }}-sandbox
 
     steps:
       - name: Authenticate with Google Cloud
