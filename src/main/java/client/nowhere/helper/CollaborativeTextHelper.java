@@ -2480,7 +2480,6 @@ public class CollaborativeTextHelper {
     private @NonNull List<OutcomeType> distributeEncounterLabelsByLocation(
             String playerId, GameSession gameSession, List<EncounterLabel> allEncounterLabels, Story prequelStory) {
 
-
         int offsetValue = gameSession.getGameState().getPhaseId().getOutcomeTypeOffset(gameSession.getPlayers().size());
         PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, playerId, offsetValue);
         Player assignedPlayer = playerSortResult.getAssignedAuthor();
