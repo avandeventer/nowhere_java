@@ -175,7 +175,7 @@ public class Location {
                 )).entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
-                .get();
+                .orElse(new StatType());
     }
 
     @Override

@@ -281,7 +281,8 @@ public class Option {
         }
 
         Optional<OutcomeFork> forkOptional = this.getOutcomeForks().stream()
-                .filter(fork -> fork.getTextSubmission().getSubmissionId().equals(selectedForkId)).findFirst();
+                .filter(fork -> fork.getTextSubmission().getSubmissionId() != null
+                        && fork.getTextSubmission().getSubmissionId().equals(selectedForkId)).findFirst();
 
         if (forkOptional.isEmpty() && this.getOutcomeForks().size() == 1) {
             return this.getOutcomeForks().getFirst();

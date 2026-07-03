@@ -9,7 +9,7 @@ import java.util.List;
 public class OutcomeFork {
     @Getter
     @Setter
-    TextSubmission textSubmission;
+    TextSubmission textSubmission = new TextSubmission();
 
     @Getter
     @Setter
