@@ -1048,9 +1048,7 @@ public class CollaborativeTextHelper {
         }
     }
 
-    void setLocationTraitOutcomeDisplay(List<Player> players, Story story, ActivePlayerSession activePlayerSession) {
-        Location playerLocation = story.getLocation();
-
+    void setLocationTraitOutcomeDisplay(List<Player> players, Location playerLocation, ActivePlayerSession activePlayerSession) {
         if (playerLocation == null) return;
 
         List<Player> playersAtCurrentLocation = players.stream()
@@ -2661,7 +2659,7 @@ public class CollaborativeTextHelper {
                     .stream()
                     .filter(p -> p.getJoinedAt() != null)
                     .sorted(Comparator.comparing(Player::getJoinedAt))
-                    .collect(Collectors.toList());
+                    .toList();
 
             Map<String, Integer> locationPlayerCount = new HashMap<>();
             List<TextSubmission> storyOptionSubmissions = new ArrayList<>();

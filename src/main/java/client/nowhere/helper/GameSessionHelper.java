@@ -250,6 +250,10 @@ public class GameSessionHelper {
                 case SET_ENCOUNTERS:
                     if (gameSession.getRoundNumber() == 0) {
                         collaborativeTextHelper.handleRoundZeroBoard(gameSession);
+                        ActivePlayerSession playerSession = gameSession.getActivePlayerSession();
+                        playerSession.setGameCode(gameSession.getGameCode());
+                        Location playerLocation = gameSession.getStoryAtCurrentPlayerCoordinates().getLocation();
+                        collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), playerLocation, playerSession);
                         gameSession.setGameState(NAVIGATE_WINNER);
                     } else if (locationVoting && gameSession.getRoundNumber() >= 2) {
                         gameSession.setGameState(WHAT_HAPPENS_HERE);
@@ -265,7 +269,7 @@ public class GameSessionHelper {
                         if (nextEncounterStory != null) {
                             String lastLocationId = lastEncounterStory.getLocation().getId();
                             if (nextEncounterStory.getLocation().getId().equals(lastLocationId)) {
-                                if (gameSession.getRoundNumber() == 0 || shouldSkipPartnerChoicePhases(gameSession, nextEncounterStory)) {
+                                if (shouldSkipPartnerChoicePhases(gameSession, nextEncounterStory)) {
                                     gameSession.setGameState(MAKE_CHOICE_VOTING);
                                 } else {
                                     gameSession.setGameStateToNext(locationVoting);
@@ -273,7 +277,7 @@ public class GameSessionHelper {
                             } else {
                                 ActivePlayerSession navigateWinnerSession = gameSession.getActivePlayerSession();
                                 navigateWinnerSession.setGameCode(gameSession.getGameCode());
-                                collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), nextEncounterStory, navigateWinnerSession);
+                                collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), nextEncounterStory.getLocation(), navigateWinnerSession);
                             }
                         } else {
                             if (gameSession.getRoundNumber() < 2) {
@@ -291,7 +295,7 @@ public class GameSessionHelper {
                         if (lastEncounterStory != null) {
                             ActivePlayerSession navigateWinnerSession = gameSession.getActivePlayerSession();
                             navigateWinnerSession.setGameCode(gameSession.getGameCode());
-                            collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), lastEncounterStory, navigateWinnerSession);
+                            collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), lastEncounterStory.getLocation(), navigateWinnerSession);
                         }
                     }
                     break;
@@ -657,6 +661,7 @@ public class GameSessionHelper {
     }
 
     private boolean shouldSkipPartnerChoicePhases(GameSession gameSession, Story nextEncounterStory) {
+        if(gameSession.getRoundNumber() == 0) return true;
         if (nextEncounterStory == null) return true;
         if (!nextEncounterStory.getPartnerIds().isEmpty()) return true;
 
