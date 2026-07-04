@@ -2664,6 +2664,7 @@ public class CollaborativeTextHelper {
                     .collect(Collectors.toList());
 
             Map<String, Integer> locationPlayerCount = new HashMap<>();
+            List<TextSubmission> storyOptionSubmissions = new ArrayList<>();
 
             for (int i = 0; i < players.size(); i++) {
                 Player player = players.get(i);
@@ -2680,10 +2681,12 @@ public class CollaborativeTextHelper {
                 locationPlayerCount.put(locationId, countForLocation + 1);
 
                 Story template = location.getStartingStories().get(storyIndex);
+                List<Option> options = template.getOptions() == null ? new ArrayList<>() : template.getOptions();
+
                 Story story = new Story();
                 story.setNewStoryId();
                 story.setPrompt(template.getPrompt());
-                story.setOptions(template.getOptions());
+                story.setOptions(options);
                 story.setGameCode(gameCode);
                 story.setLocation(location);
                 story.setAuthorId(player.getAuthorId());
@@ -2698,6 +2701,18 @@ public class CollaborativeTextHelper {
 
                 storyDAO.createStory(story);
 
+                for (Option option : options) {
+                    TextSubmission sub = new TextSubmission();
+                    sub.setSubmissionId(option.getOptionId());
+                    sub.setOutcomeType(option.getOptionId());
+                    sub.setCurrentText(option.getOptionText());
+                    sub.setOriginalText(option.getOptionText());
+                    sub.setAuthorId(player.getAuthorId());
+                    sub.setCreatedAt(Timestamp.now());
+                    sub.setLastModified(Timestamp.now());
+                    storyOptionSubmissions.add(sub);
+                }
+
                 Encounter encounter = new Encounter(
                         encounterLabel,
                         EncounterType.NORMAL,
@@ -2708,6 +2723,7 @@ public class CollaborativeTextHelper {
             }
 
             gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
+            initializeMakeChoiceVotingPhase(gameCode, storyOptionSubmissions);
         } catch (Exception e) {
             System.err.println("Failed to handle round zero board: " + e.getMessage());
             e.printStackTrace();
