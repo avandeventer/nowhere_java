@@ -252,7 +252,8 @@ public class GameSessionHelper {
                         collaborativeTextHelper.handleRoundZeroBoard(gameSession);
                         ActivePlayerSession playerSession = gameSession.getActivePlayerSession();
                         playerSession.setGameCode(gameSession.getGameCode());
-                        Location playerLocation = gameSession.getStoryAtCurrentPlayerCoordinates().getLocation();
+                        GameSession refreshedSession = gameSessionDAO.getGame(gameSession.getGameCode());
+                        Location playerLocation = refreshedSession.getStoryAtCurrentPlayerCoordinates().getLocation();
                         collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), playerLocation, playerSession);
                         gameSession.setGameState(NAVIGATE_WINNER);
                     } else if (locationVoting && gameSession.getRoundNumber() >= 2) {
