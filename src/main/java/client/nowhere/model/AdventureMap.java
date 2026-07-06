@@ -144,6 +144,9 @@ public class AdventureMap {
             if (!gameSessionDisplayUpdates.getPlayerDescription().isEmpty()) {
                 existingDisplay.setPlayerDescription(gameSessionDisplayUpdates.getPlayerDescription());
             }
+            if (!gameSessionDisplayUpdates.getMidwayDescription().isEmpty()) {
+                existingDisplay.setMidwayDescription(gameSessionDisplayUpdates.getMidwayDescription());
+            }
             if (!gameSessionDisplayUpdates.getEndingDescription().isEmpty()) {
                 existingDisplay.setEndingDescription(gameSessionDisplayUpdates.getEndingDescription());
             }
