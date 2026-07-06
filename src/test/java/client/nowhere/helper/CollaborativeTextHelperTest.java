@@ -758,9 +758,10 @@ public class CollaborativeTextHelperTest {
             String votedOptionId,
             Map<String, String> expectedTraitLabelByPlayerId,
             Map<String, String> expectedTitleLabelByPlayerId,
-            List<String> expectedOutcomeDisplayMessages
+            List<String> expectedOutcomeDisplayMessages,
+            String gameFile
     ) throws IOException {
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(gameFile);
         gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
         gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(0);
         String gameCode = gameSession.getGameCode();
@@ -816,7 +817,8 @@ public class CollaborativeTextHelperTest {
                         "7b7d3fee-e839-408d-836e-211dfbb1c34b",
                         Map.of("e8852f24-cdc8-465c-b244-56ce08029584", "Bear scritcher A"), // Joe
                         Map.of(),
-                        List.of("You gained the trait \"Bear scritcher A\"!")
+                        List.of("You gained the trait \"Bear scritcher A\"!"),
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json"
                 ),
                 Arguments.of(
                         "FUN PEOPLE (1,0) - use trait Shifty - Subodh gets trait Greedy",
@@ -824,7 +826,8 @@ public class CollaborativeTextHelperTest {
                         "8",
                         Map.of("63ca67f3-d11d-4cc8-a667-6b68a1bb432b", "Greedy A"), // Subodh
                         Map.of(),
-                        List.of("You gained the trait \"Greedy A\"!")
+                        List.of("You gained the trait \"Greedy A\"!"),
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json"
                 ),
                 Arguments.of(
                         "Snailz (2,0) - Race them - Kirsten gets title Snail Champion",
@@ -832,7 +835,8 @@ public class CollaborativeTextHelperTest {
                         "0e9339d9-3c0a-478a-93e0-a631e1ddede4",
                         Map.of("ddfc6892-16dd-4e38-9252-27a3688ae038", "Snailz A"),
                         Map.of("ddfc6892-16dd-4e38-9252-27a3688ae038", "Snail Champion"), // Kirsten
-                        List.of("You gained the title \"Snail Champion\"!", "You gained the companion \"Snailz A\"!")
+                        List.of("You gained the title \"Snail Champion\"!", "You gained the companion \"Snailz A\"!"),
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json"
                 ),
                 Arguments.of(
                         "Time Travelers (3,0) - use trait Alcoholic - 3 forks, no auto-resolve",
@@ -840,8 +844,19 @@ public class CollaborativeTextHelperTest {
                         "11",
                         Map.of(),
                         Map.of(),
-                        List.of()
+                        List.of(),
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json"
                 )
+//                ,
+//                Arguments.of(
+//                        "Fire Spinner (0, 0) - Tutorial stories award players pre built traits",
+//                        0,
+//                        "49fc71e1-9fe7-4664-a178-bf631f182460",
+//                        Map.of("ddfc6892-16dd-4e38-9252-27a3688ae038", "Snailz A"),
+//                        Map.of(), // Kirsten
+//                        List.of("You gained the destiny \"Become Dependable\"!"),
+//                        "MAKE_CHOICE_VOTING_TUTORIAL.json"
+//                )
         );
     }
 

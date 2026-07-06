@@ -2658,7 +2658,7 @@ public class CollaborativeTextHelper {
             List<Player> players = gameSession.getPlayers() == null ? new ArrayList<>() : gameSession.getPlayers()
                     .stream()
                     .filter(p -> p.getJoinedAt() != null)
-                    .sorted(Comparator.comparing(Player::getJoinedAt))
+                    .sorted(Comparator.comparing(Player::getSelectedLocationId, Comparator.nullsLast(Comparator.naturalOrder())))
                     .toList();
 
             Map<String, Integer> locationPlayerCount = new HashMap<>();
@@ -2697,8 +2697,6 @@ public class CollaborativeTextHelper {
                         : new EncounterLabel(location.getId(), location.getLabel());
                 story.setEncounterLabel(encounterLabel);
 
-                storyDAO.createStory(story);
-
                 for (Option option : options) {
                     TextSubmission sub = new TextSubmission();
                     sub.setSubmissionId(option.getOptionId());
@@ -2709,7 +2707,23 @@ public class CollaborativeTextHelper {
                     sub.setCreatedAt(Timestamp.now());
                     sub.setLastModified(Timestamp.now());
                     storyOptionSubmissions.add(sub);
+                    if (option.getOutcomeForks() == null) continue;
+                    for (OutcomeFork fork : option.getOutcomeForks()) {
+                        if (fork.getRepercussions() == null || fork.getRepercussions().isEmpty()) continue;
+                        List<TextAddition> additions = fork.getRepercussions().stream().map(repercussion -> {
+                            TextAddition addition = new TextAddition();
+                            addition.setAdditionId(UUID.randomUUID().toString());
+                            addition.setAuthorId(player.getAuthorId());
+                            addition.setAddedText(repercussion.getRepercussionSubmission());
+                            addition.setSubmissionId(option.getOptionId());
+                            addition.setRepercussion(repercussion);
+                            return addition;
+                        }).collect(Collectors.toList());
+                        fork.getTextSubmission().setAdditions(additions);
+                    }
                 }
+
+                storyDAO.createStory(story);
 
                 Encounter encounter = new Encounter(
                         encounterLabel,
