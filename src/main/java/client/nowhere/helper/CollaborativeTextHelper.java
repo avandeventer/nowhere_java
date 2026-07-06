@@ -842,6 +842,9 @@ public class CollaborativeTextHelper {
         if (trait.getTraitType() == TraitType.COMPANION) {
             return "companion";
         }
+        if (trait.getTraitType() == TraitType.DESTINY) {
+            return "destiny";
+        }
         return "trait";
     }
 
@@ -2686,7 +2689,14 @@ public class CollaborativeTextHelper {
                 story.setPrompt(template.getPrompt());
                 story.setOptions(options);
                 story.setGameCode(gameCode);
-                story.setLocation(location);
+                Location storyLocation = new Location(location.getId(), location.getLabel(), location.getDescription(), location.getOptions(), location.getIconDirectory());
+                storyLocation.setLocationId(location.getLocationId());
+                storyLocation.setLocationIndex(location.getLocationIndex());
+                storyLocation.setAuthorId(location.getAuthorId());
+                storyLocation.setSelectedOptionId(location.getSelectedOptionId());
+                storyLocation.setTraits(location.getTraits());
+                storyLocation.setStartingLocation(location.isStartingLocation());
+                story.setLocation(storyLocation);
                 story.setAuthorId(player.getAuthorId());
                 story.setPlayerId(player.getAuthorId());
                 story.setPlayerIds(new ArrayList<>(List.of(player.getAuthorId())));

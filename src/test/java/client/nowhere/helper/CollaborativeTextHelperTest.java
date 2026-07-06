@@ -846,17 +846,16 @@ public class CollaborativeTextHelperTest {
                         Map.of(),
                         List.of(),
                         "MAKE_CHOICE_VOTING_REPERCUSSIONS.json"
+                ),
+                Arguments.of(
+                        "Your Teacher (0, 0) - Tutorial stories award players pre built traits",
+                        0,
+                        "17db3eed-af19-4026-a5cd-d14e83d1f715", //95cb67a9-7d5a-45b9-93a2-8edcf7ed1413
+                        Map.of("75c21c2f-7904-4bbd-9b46-1e5b74d5e01f", "Gain Knowledge"),
+                        Map.of(),
+                        List.of("You gained the destiny \"Gain Knowledge\"!"),
+                        "MAKE_CHOICE_VOTING_TUTORIAL.json"
                 )
-//                ,
-//                Arguments.of(
-//                        "Fire Spinner (0, 0) - Tutorial stories award players pre built traits",
-//                        0,
-//                        "49fc71e1-9fe7-4664-a178-bf631f182460",
-//                        Map.of("ddfc6892-16dd-4e38-9252-27a3688ae038", "Snailz A"),
-//                        Map.of(), // Kirsten
-//                        List.of("You gained the destiny \"Become Dependable\"!"),
-//                        "MAKE_CHOICE_VOTING_TUTORIAL.json"
-//                )
         );
     }
 

@@ -1,214 +1,10 @@
 {
-  "gameCode": "CFCPDJ",
+  "gameCode": "QUGNWZ",
   "players": [
     {
-      "authorId": "32c44621-3222-46a5-a840-9775b7ef0158",
+      "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
       "userName": "Andy",
-      "displayName": "Andy, squire",
-      "strength": 4,
-      "dexterity": 4,
-      "charisma": 4,
-      "intellect": 4,
-      "wealth": 4,
-      "magic": 4,
-      "favor": 4,
-      "playerStats": [
-        {
-          "statType": {
-            "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
-            "label": "Favor",
-            "description": "",
-            "favorEntity": "",
-            "favorType": true
-          },
-          "value": 4
-        }
-      ],
-      "traits": [
-        {
-          "traitId": "5",
-          "traitLabel": "Saucy",
-          "traitType": "STANDARD",
-          "textSubmission": null
-        },
-        {
-          "traitId": "4f51389a-de92-4595-87fc-960a2b30ad5b",
-          "traitLabel": "squire",
-          "traitType": "TITLE",
-          "textSubmission": {
-            "submissionId": null,
-            "authorId": null,
-            "originalText": null,
-            "currentText": null,
-            "additions": [],
-            "totalVotes": 0,
-            "averageRanking": 0.0,
-            "outcomeType": null,
-            "outcomeTypeWithLabel": {
-              "id": "",
-              "label": "",
-              "clarifier": "",
-              "subTypes": [],
-              "headers": []
-            },
-            "finalized": false
-          }
-        }
-      ],
-      "titles": null,
-      "gameCode": "CFCPDJ",
-      "joinedAt": 1783268485415,
-      "playerClass": {
-        "name": "Bard",
-        "description": "Your skill with spreading a good tale allows you to spread story outcomes to all players, including yourself",
-        "repercussionTypes": [
-          "ALL_PLAYERS"
-        ]
-      },
-      "selectedLocationId": "542ca08f-f676-4a33-b747-dd29806ce2aa",
-      "definingTraits": null,
-      "firstPlayer": true
-    },
-    {
-      "authorId": "f4da941d-7cb2-4743-86e1-07cc5b76513f",
-      "userName": "Joe",
-      "displayName": "Joe",
-      "strength": 4,
-      "dexterity": 4,
-      "charisma": 4,
-      "intellect": 4,
-      "wealth": 4,
-      "magic": 4,
-      "favor": 4,
-      "playerStats": [
-        {
-          "statType": {
-            "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
-            "label": "Favor",
-            "description": "",
-            "favorEntity": "",
-            "favorType": true
-          },
-          "value": 4
-        }
-      ],
-      "traits": [
-        {
-          "traitId": "6",
-          "traitLabel": "Undead",
-          "traitType": "STANDARD",
-          "textSubmission": null
-        },
-        {
-          "traitId": "badae2ef-5754-4efd-bc9b-9419387d6088",
-          "traitLabel": "merrymaker",
-          "traitType": "STANDARD",
-          "textSubmission": {
-            "submissionId": null,
-            "authorId": null,
-            "originalText": null,
-            "currentText": null,
-            "additions": [],
-            "totalVotes": 0,
-            "averageRanking": 0.0,
-            "outcomeType": null,
-            "outcomeTypeWithLabel": {
-              "id": "",
-              "label": "",
-              "clarifier": "",
-              "subTypes": [],
-              "headers": []
-            },
-            "finalized": false
-          }
-        }
-      ],
-      "titles": null,
-      "gameCode": "CFCPDJ",
-      "joinedAt": 1783268500388,
-      "playerClass": {
-        "name": "Herald",
-        "description": "Your rank allows you to give new titles to other players",
-        "repercussionTypes": [
-          "TITLE"
-        ]
-      },
-      "selectedLocationId": "a9f1dad4-e029-450b-96cf-f73e585da675",
-      "definingTraits": null,
-      "firstPlayer": false
-    },
-    {
-      "authorId": "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84",
-      "userName": "Byron",
-      "displayName": "Byron, squire",
-      "strength": 4,
-      "dexterity": 4,
-      "charisma": 4,
-      "intellect": 4,
-      "wealth": 4,
-      "magic": 4,
-      "favor": 4,
-      "playerStats": [
-        {
-          "statType": {
-            "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
-            "label": "Favor",
-            "description": "",
-            "favorEntity": "",
-            "favorType": true
-          },
-          "value": 4
-        }
-      ],
-      "traits": [
-        {
-          "traitId": "3",
-          "traitLabel": "Fast",
-          "traitType": "STANDARD",
-          "textSubmission": null
-        },
-        {
-          "traitId": "4f51389a-de92-4595-87fc-960a2b30ad5b",
-          "traitLabel": "squire",
-          "traitType": "TITLE",
-          "textSubmission": {
-            "submissionId": null,
-            "authorId": null,
-            "originalText": null,
-            "currentText": null,
-            "additions": [],
-            "totalVotes": 0,
-            "averageRanking": 0.0,
-            "outcomeType": null,
-            "outcomeTypeWithLabel": {
-              "id": "",
-              "label": "",
-              "clarifier": "",
-              "subTypes": [],
-              "headers": []
-            },
-            "finalized": false
-          }
-        }
-      ],
-      "titles": null,
-      "gameCode": "CFCPDJ",
-      "joinedAt": 1783268506847,
-      "playerClass": {
-        "name": "Scribe",
-        "description": "Your fondness for recording the histories of other adventurers allows you to add Traits to other players",
-        "repercussionTypes": [
-          "TRAIT"
-        ]
-      },
-      "selectedLocationId": "542ca08f-f676-4a33-b747-dd29806ce2aa",
-      "definingTraits": null,
-      "firstPlayer": false
-    },
-    {
-      "authorId": "37f9fe1b-8de5-4156-bc50-ecc9da990ad0",
-      "userName": "Kirsten",
-      "displayName": "Kirsten",
+      "displayName": "Andy",
       "strength": 4,
       "dexterity": 4,
       "charisma": 4,
@@ -236,6 +32,74 @@
           "textSubmission": null
         },
         {
+          "traitId": "cfa76ee5-3f44-4c76-bcc8-24ad5bf3c0f9",
+          "traitLabel": "curious",
+          "traitType": "STANDARD",
+          "textSubmission": {
+            "submissionId": null,
+            "authorId": null,
+            "originalText": null,
+            "currentText": null,
+            "additions": [],
+            "totalVotes": 0,
+            "averageRanking": 0.0,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": {
+              "id": "",
+              "label": "",
+              "clarifier": "",
+              "subTypes": [],
+              "headers": []
+            },
+            "finalized": false
+          }
+        }
+      ],
+      "titles": null,
+      "gameCode": "QUGNWZ",
+      "joinedAt": 1783312877330,
+      "playerClass": {
+        "name": "Bard",
+        "description": "Your skill with spreading a good tale allows you to spread story outcomes to all players, including yourself",
+        "repercussionTypes": [
+          "ALL_PLAYERS"
+        ]
+      },
+      "selectedLocationId": "1fabde4f-91af-4272-bd28-135d0631e227",
+      "definingTraits": null,
+      "firstPlayer": true
+    },
+    {
+      "authorId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
+      "userName": "Joe",
+      "displayName": "Joe",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+            "label": "Favor",
+            "description": "",
+            "favorEntity": "",
+            "favorType": true
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "7",
+          "traitLabel": "In Love",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
           "traitId": "badae2ef-5754-4efd-bc9b-9419387d6088",
           "traitLabel": "merrymaker",
           "traitType": "STANDARD",
@@ -260,8 +124,144 @@
         }
       ],
       "titles": null,
-      "gameCode": "CFCPDJ",
-      "joinedAt": 1783268511486,
+      "gameCode": "QUGNWZ",
+      "joinedAt": 1783312882374,
+      "playerClass": {
+        "name": "Scribe",
+        "description": "Your fondness for recording the histories of other adventurers allows you to add Traits to other players",
+        "repercussionTypes": [
+          "TRAIT"
+        ]
+      },
+      "selectedLocationId": "a9f1dad4-e029-450b-96cf-f73e585da675",
+      "definingTraits": null,
+      "firstPlayer": false
+    },
+    {
+      "authorId": "b2c95637-fba1-4575-9475-97aeb1aca470",
+      "userName": "Byron",
+      "displayName": "Byron",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+            "label": "Favor",
+            "description": "",
+            "favorEntity": "",
+            "favorType": true
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "4",
+          "traitLabel": "Wealthy",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "cfa76ee5-3f44-4c76-bcc8-24ad5bf3c0f9",
+          "traitLabel": "curious",
+          "traitType": "STANDARD",
+          "textSubmission": {
+            "submissionId": null,
+            "authorId": null,
+            "originalText": null,
+            "currentText": null,
+            "additions": [],
+            "totalVotes": 0,
+            "averageRanking": 0.0,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": {
+              "id": "",
+              "label": "",
+              "clarifier": "",
+              "subTypes": [],
+              "headers": []
+            },
+            "finalized": false
+          }
+        }
+      ],
+      "titles": null,
+      "gameCode": "QUGNWZ",
+      "joinedAt": 1783312886815,
+      "playerClass": {
+        "name": "Herald",
+        "description": "Your rank allows you to give new titles to other players",
+        "repercussionTypes": [
+          "TITLE"
+        ]
+      },
+      "selectedLocationId": "1fabde4f-91af-4272-bd28-135d0631e227",
+      "definingTraits": null,
+      "firstPlayer": false
+    },
+    {
+      "authorId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
+      "userName": "Kirsten",
+      "displayName": "Kirsten",
+      "strength": 4,
+      "dexterity": 4,
+      "charisma": 4,
+      "intellect": 4,
+      "wealth": 4,
+      "magic": 4,
+      "favor": 4,
+      "playerStats": [
+        {
+          "statType": {
+            "id": "9c71c497-93b5-4af4-a059-6951b9c2a18e",
+            "label": "Favor",
+            "description": "",
+            "favorEntity": "",
+            "favorType": true
+          },
+          "value": 4
+        }
+      ],
+      "traits": [
+        {
+          "traitId": "3",
+          "traitLabel": "Fast",
+          "traitType": "STANDARD",
+          "textSubmission": null
+        },
+        {
+          "traitId": "badae2ef-5754-4efd-bc9b-9419387d6088",
+          "traitLabel": "merrymaker",
+          "traitType": "STANDARD",
+          "textSubmission": {
+            "submissionId": null,
+            "authorId": null,
+            "originalText": null,
+            "currentText": null,
+            "additions": [],
+            "totalVotes": 0,
+            "averageRanking": 0.0,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": {
+              "id": "",
+              "label": "",
+              "clarifier": "",
+              "subTypes": [],
+              "headers": []
+            },
+            "finalized": false
+          }
+        }
+      ],
+      "titles": null,
+      "gameCode": "QUGNWZ",
+      "joinedAt": 1783312891872,
       "playerClass": {
         "name": "Fabulist",
         "description": "Your penchant for writing fables allows you to convert Encounters players may have into Traits that stay with them",
@@ -276,7 +276,7 @@
   ],
   "gameState": "MAKE_CHOICE_VOTING",
   "activePlayerSession": {
-    "gameCode": "",
+    "gameCode": "QUGNWZ",
     "playerId": "",
     "playerChoiceOptionId": "",
     "selectedLocationOptionId": "",
@@ -306,15 +306,17 @@
       "location": null
     },
     "location": null,
-    "outcomeDisplay": [],
+    "outcomeDisplay": [
+      "You gained the trait \"Gain Experience\"!"
+    ],
     "locationOutcomeDisplay": [],
     "ritualStory": null,
     "setNextPlayerTurn": false,
     "isPlayerDoneWithTurn": {
-      "32c44621-3222-46a5-a840-9775b7ef0158": false,
-      "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84": false,
-      "f4da941d-7cb2-4743-86e1-07cc5b76513f": false,
-      "37f9fe1b-8de5-4156-bc50-ecc9da990ad0": false
+      "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f": false,
+      "b2c95637-fba1-4575-9475-97aeb1aca470": false,
+      "43bc10eb-c05b-4aec-b0d1-38b2be2cd037": false,
+      "e15edf7b-9425-4eb4-bd50-710e165228fa": false
     },
     "repercussions": {
       "ending": null,
@@ -325,29 +327,29 @@
     "contributionPhaseActive": false
   },
   "activeGameStateSession": {
-    "gameCode": "CFCPDJ",
+    "gameCode": "QUGNWZ",
     "isPlayerDone": {
-      "32c44621-3222-46a5-a840-9775b7ef0158": true,
-      "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84": false,
-      "f4da941d-7cb2-4743-86e1-07cc5b76513f": false,
-      "37f9fe1b-8de5-4156-bc50-ecc9da990ad0": false
+      "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f": true,
+      "b2c95637-fba1-4575-9475-97aeb1aca470": false,
+      "43bc10eb-c05b-4aec-b0d1-38b2be2cd037": false,
+      "e15edf7b-9425-4eb4-bd50-710e165228fa": false
     }
   },
   "stories": [
     {
-      "storyId": "0e426d87-820b-4f1c-8f5b-7906183db716",
-      "prompt": "The drills have been intense in preparation for our descent into The Drop, but today has been oddly quiet. “Tonight is the night we’ve been preparing for.\" your captain barks. \"Those of you who return from The Drop will have proven your worth in the eyes of the Academy and in the eyes of the town.” He holds up two banners. “Each of you must choose your ceremonial guide for The Drop. Choose the beast which most represents the journey you intend to have inside.”",
-      "authorId": "32c44621-3222-46a5-a840-9775b7ef0158",
+      "storyId": "aea8d547-15a6-4f4f-b73b-9ea825703a30",
+      "prompt": "Class the morning before The Drop feels tense so your teacher attempts to lighten the mood by asking everyone questions about it. \"You know many people believe that the world inside The Drop changes based on your intention so it might help to go in with an idea of who you hope you become!\" she makes eye contact with you. \"Who do you hope to be when you grow older?\"",
+      "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
       "outcomeAuthorId": "",
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
       "prequelStorySelectedOptionId": "",
-      "gameCode": "CFCPDJ",
+      "gameCode": "QUGNWZ",
       "mainPlotStory": false,
       "visited": true,
-      "playerId": "32c44621-3222-46a5-a840-9775b7ef0158",
+      "playerId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
       "playerIds": [
-        "32c44621-3222-46a5-a840-9775b7ef0158"
+        "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f"
       ],
       "partnerIds": [],
       "selectedOptionId": "",
@@ -359,13 +361,13 @@
       "saveGameStory": false,
       "options": [
         {
-          "optionId": "49fc71e1-9fe7-4664-a178-bf631f182460",
-          "optionText": "Choose the Ox",
-          "attemptText": "Choose the Ox",
+          "optionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+          "optionText": "Say you want to learn a lot!",
+          "attemptText": "Say you want to learn a lot!",
           "statRequirement": null,
           "statDC": 0,
           "playerStatDCs": [],
-          "successText": "You take the banner of the Ox off the top of the pile. \"Very well. Keep it close and it will give you the energy to do the work to persevere with your friends.\"",
+          "successText": "\"Very good! I'm so glad my lessons have made you yearn to learn!\" she chuckles to herself before moving on to the next student.",
           "outcomeAuthorId": "",
           "successResults": [],
           "failureText": "",
@@ -381,7 +383,21 @@
                 "authorId": null,
                 "originalText": null,
                 "currentText": null,
-                "additions": [],
+                "additions": [
+                  {
+                    "additionId": "aa0ae777-ba6b-4932-bc83-98c40335eb4e",
+                    "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+                    "addedText": "Gain Knowledge",
+                    "submissionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+                    "outcomeType": null,
+                    "outcomeTypeWithLabel": null,
+                    "repercussion": {
+                      "repercussionType": "Destiny",
+                      "repercussionSubmission": "Gain Knowledge",
+                      "color": "#FFD700"
+                    }
+                  }
+                ],
                 "totalVotes": 0,
                 "averageRanking": 0.0,
                 "outcomeType": null,
@@ -397,7 +413,7 @@
               "repercussions": [
                 {
                   "repercussionType": "Destiny",
-                  "repercussionSubmission": "Become Dependable",
+                  "repercussionSubmission": "Gain Knowledge",
                   "color": "#FFD700"
                 }
               ]
@@ -406,13 +422,13 @@
           "selectedForkId": ""
         },
         {
-          "optionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-          "optionText": "Choose the Lion",
-          "attemptText": "Choose the Lion",
+          "optionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+          "optionText": "Say you want to see a lot!",
+          "attemptText": "Say you want to see a lot!",
           "statRequirement": null,
           "statDC": 0,
           "playerStatDCs": [],
-          "successText": "You select the banner of the roaring Lion from the leftmost pile. \"Okay then. May the Lion give you the strength to do what must be done when your choices become more difficult.\"",
+          "successText": "\"Hm\" she ponders. \"Well you're very likely to get your wish in The Drop! I certainly did...\" she trails off for a moment before moving on.",
           "outcomeAuthorId": "",
           "successResults": [],
           "failureText": "",
@@ -428,7 +444,21 @@
                 "authorId": null,
                 "originalText": null,
                 "currentText": null,
-                "additions": [],
+                "additions": [
+                  {
+                    "additionId": "e3b63b55-caed-47f9-9eaf-fc5af7aae932",
+                    "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+                    "addedText": "Gain Experience",
+                    "submissionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+                    "outcomeType": null,
+                    "outcomeTypeWithLabel": null,
+                    "repercussion": {
+                      "repercussionType": "Destiny",
+                      "repercussionSubmission": "Gain Experience",
+                      "color": "#FFD700"
+                    }
+                  }
+                ],
                 "totalVotes": 0,
                 "averageRanking": 0.0,
                 "outcomeType": null,
@@ -441,15 +471,21 @@
                 },
                 "finalized": false
               },
-              "repercussions": []
+              "repercussions": [
+                {
+                  "repercussionType": "Destiny",
+                  "repercussionSubmission": "Gain Experience",
+                  "color": "#FFD700"
+                }
+              ]
             }
           ],
           "selectedForkId": ""
         }
       ],
       "encounterLabel": {
-        "encounterId": "cee51dda-d0eb-414c-b8b6-ae1c31c97076",
-        "encounterLabel": "Owl Rank Captain",
+        "encounterId": "fcdb36f7-b41d-4d2a-ba03-0ffd5b19dbae",
+        "encounterLabel": "Your Teacher",
         "textSubmission": {
           "submissionId": null,
           "authorId": null,
@@ -472,13 +508,13 @@
       },
       "location": {
         "locationId": 0,
-        "description": "Blocks of smooth sandstone draped in regal blues and reds stand staunchly off the town center as a symbol of the need to be prepared for anything. Children play war games in the front garden without an understanding of their implications.",
+        "description": "The red brick old schoolhouse sits on a hill between town and The Drop. Other kids gather uncertainly at the front door, whispering about the upcoming festival. ",
         "locationIndex": 0,
-        "id": "542ca08f-f676-4a33-b747-dd29806ce2aa",
-        "label": "The Knights Academy",
+        "id": "1fabde4f-91af-4272-bd28-135d0631e227",
+        "label": "The Schoolhouse",
         "options": [
           {
-            "optionId": "eaf42774-1a2e-4c8b-8289-2f0124438f9e",
+            "optionId": "da76e90a-8279-4ff2-b4ae-de8e59741246",
             "optionText": "",
             "attemptText": "",
             "statRequirement": null,
@@ -497,7 +533,7 @@
             "selectedForkId": ""
           },
           {
-            "optionId": "82529af0-7b11-49da-a10d-708a7845ce1a",
+            "optionId": "77f8493e-b4b4-4a88-a3ed-187aabca5a1c",
             "optionText": "",
             "attemptText": "",
             "statRequirement": null,
@@ -516,14 +552,14 @@
             "selectedForkId": ""
           }
         ],
-        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/School.png",
         "authorId": null,
         "selectedOptionId": null,
         "traits": [
           {
-            "traitId": "4f51389a-de92-4595-87fc-960a2b30ad5b",
-            "traitLabel": "squire",
-            "traitType": "TITLE",
+            "traitId": "cfa76ee5-3f44-4c76-bcc8-24ad5bf3c0f9",
+            "traitLabel": "curious",
+            "traitType": "STANDARD",
             "textSubmission": {
               "submissionId": null,
               "authorId": null,
@@ -548,7 +584,7 @@
         "startingStories": [
           {
             "storyId": "",
-            "prompt": "The drills have been intense in preparation for our descent into The Drop, but today has been oddly quiet. “Tonight is the night we’ve been preparing for.\" your captain barks. \"Those of you who return from The Drop will have proven your worth in the eyes of the Academy and in the eyes of the town.” He holds up two banners. “Each of you must choose your ceremonial guide for The Drop. Choose the beast which most represents the journey you intend to have inside.”",
+            "prompt": "Class the morning before The Drop feels tense so your teacher attempts to lighten the mood by asking everyone questions about it. \"You know many people believe that the world inside The Drop changes based on your intention so it might help to go in with an idea of who you hope you become!\" she makes eye contact with you. \"Who do you hope to be when you grow older?\"",
             "authorId": "",
             "outcomeAuthorId": "",
             "prequelStorySucceeded": false,
@@ -569,13 +605,13 @@
             "saveGameStory": false,
             "options": [
               {
-                "optionId": "49fc71e1-9fe7-4664-a178-bf631f182460",
-                "optionText": "Choose the Ox",
+                "optionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+                "optionText": "Say you want to learn a lot!",
                 "attemptText": "",
                 "statRequirement": null,
                 "statDC": 0,
                 "playerStatDCs": [],
-                "successText": "You take the banner of the Ox off the top of the pile. \"Very well. Keep it close and it will give you the energy to do the work to persevere with your friends.\"",
+                "successText": "\"Very good! I'm so glad my lessons have made you yearn to learn!\" she chuckles to herself before moving on to the next student.",
                 "outcomeAuthorId": "",
                 "successResults": [],
                 "failureText": "",
@@ -591,7 +627,21 @@
                       "authorId": null,
                       "originalText": null,
                       "currentText": null,
-                      "additions": [],
+                      "additions": [
+                        {
+                          "additionId": "aa0ae777-ba6b-4932-bc83-98c40335eb4e",
+                          "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+                          "addedText": "Gain Knowledge",
+                          "submissionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+                          "outcomeType": null,
+                          "outcomeTypeWithLabel": null,
+                          "repercussion": {
+                            "repercussionType": "Destiny",
+                            "repercussionSubmission": "Gain Knowledge",
+                            "color": "#FFD700"
+                          }
+                        }
+                      ],
                       "totalVotes": 0,
                       "averageRanking": 0.0,
                       "outcomeType": null,
@@ -607,7 +657,7 @@
                     "repercussions": [
                       {
                         "repercussionType": "Destiny",
-                        "repercussionSubmission": "Become Dependable",
+                        "repercussionSubmission": "Gain Knowledge",
                         "color": "#FFD700"
                       }
                     ]
@@ -616,13 +666,13 @@
                 "selectedForkId": ""
               },
               {
-                "optionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-                "optionText": "Choose the Lion",
+                "optionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+                "optionText": "Say you want to see a lot!",
                 "attemptText": "",
                 "statRequirement": null,
                 "statDC": 0,
                 "playerStatDCs": [],
-                "successText": "You select the banner of the roaring Lion from the leftmost pile. \"Okay then. May the Lion give you the strength to do what must be done when your choices become more difficult.\"",
+                "successText": "\"Hm\" she ponders. \"Well you're very likely to get your wish in The Drop! I certainly did...\" she trails off for a moment before moving on.",
                 "outcomeAuthorId": "",
                 "successResults": [],
                 "failureText": "",
@@ -638,7 +688,21 @@
                       "authorId": null,
                       "originalText": null,
                       "currentText": null,
-                      "additions": [],
+                      "additions": [
+                        {
+                          "additionId": "e3b63b55-caed-47f9-9eaf-fc5af7aae932",
+                          "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+                          "addedText": "Gain Experience",
+                          "submissionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+                          "outcomeType": null,
+                          "outcomeTypeWithLabel": null,
+                          "repercussion": {
+                            "repercussionType": "Destiny",
+                            "repercussionSubmission": "Gain Experience",
+                            "color": "#FFD700"
+                          }
+                        }
+                      ],
                       "totalVotes": 0,
                       "averageRanking": 0.0,
                       "outcomeType": null,
@@ -654,7 +718,7 @@
                     "repercussions": [
                       {
                         "repercussionType": "Destiny",
-                        "repercussionSubmission": "Become Strong",
+                        "repercussionSubmission": "Gain Experience",
                         "color": "#FFD700"
                       }
                     ]
@@ -664,8 +728,150 @@
               }
             ],
             "encounterLabel": {
-              "encounterId": "cee51dda-d0eb-414c-b8b6-ae1c31c97076",
-              "encounterLabel": "Owl Rank Captain",
+              "encounterId": "fcdb36f7-b41d-4d2a-ba03-0ffd5b19dbae",
+              "encounterLabel": "Your Teacher",
+              "textSubmission": {
+                "submissionId": null,
+                "authorId": null,
+                "originalText": null,
+                "currentText": null,
+                "additions": [],
+                "totalVotes": 0,
+                "averageRanking": 0.0,
+                "outcomeType": null,
+                "outcomeTypeWithLabel": {
+                  "id": "",
+                  "label": "",
+                  "clarifier": "",
+                  "subTypes": [],
+                  "headers": []
+                },
+                "finalized": false
+              },
+              "locationId": null
+            },
+            "location": null
+          },
+          {
+            "storyId": "",
+            "prompt": "Your teacher turns to you now. \"And how about you? What do you hope to gain?\"",
+            "authorId": "",
+            "outcomeAuthorId": "",
+            "prequelStorySucceeded": false,
+            "prequelStoryId": "",
+            "prequelStorySelectedOptionId": "",
+            "gameCode": "",
+            "mainPlotStory": false,
+            "visited": false,
+            "playerId": "",
+            "playerIds": [],
+            "partnerIds": [],
+            "selectedOptionId": "",
+            "playerSucceeded": false,
+            "prequelStoryPlayerId": "",
+            "repercussions": null,
+            "prequelOutcomeDisplay": null,
+            "sequelStory": false,
+            "saveGameStory": false,
+            "options": [
+              {
+                "optionId": "6a8c0d44-a57d-4b51-b753-b76fd8734005",
+                "optionText": "Say you want to learn a lot!",
+                "attemptText": "",
+                "statRequirement": null,
+                "statDC": 0,
+                "playerStatDCs": [],
+                "successText": "\"Very good! I'm so glad my lessons have made you yearn to learn^!\" she chuckles to herself before moving on to the next student.",
+                "outcomeAuthorId": "",
+                "successResults": [],
+                "failureText": "",
+                "failureResults": [],
+                "selectedByPlayerId": null,
+                "playerSucceeded": false,
+                "pointsRewarded": 0,
+                "successMarginText": "",
+                "outcomeForks": [
+                  {
+                    "textSubmission": {
+                      "submissionId": null,
+                      "authorId": null,
+                      "originalText": null,
+                      "currentText": null,
+                      "additions": [],
+                      "totalVotes": 0,
+                      "averageRanking": 0.0,
+                      "outcomeType": null,
+                      "outcomeTypeWithLabel": {
+                        "id": "",
+                        "label": "",
+                        "clarifier": "",
+                        "subTypes": [],
+                        "headers": []
+                      },
+                      "finalized": false
+                    },
+                    "repercussions": [
+                      {
+                        "repercussionType": "Destiny",
+                        "repercussionSubmission": "Gain Knowledge",
+                        "color": "#FFD700"
+                      }
+                    ]
+                  }
+                ],
+                "selectedForkId": ""
+              },
+              {
+                "optionId": "bd6f23fd-9759-4c29-b3bc-42b5acaec8be",
+                "optionText": "Say you want to see a lot!",
+                "attemptText": "",
+                "statRequirement": null,
+                "statDC": 0,
+                "playerStatDCs": [],
+                "successText": "\"Hm\" she ponders. \"Well you're very likely to get your wish in The Drop! I certainly did...\" she trails off for a moment before moving on.",
+                "outcomeAuthorId": "",
+                "successResults": [],
+                "failureText": "",
+                "failureResults": [],
+                "selectedByPlayerId": null,
+                "playerSucceeded": false,
+                "pointsRewarded": 0,
+                "successMarginText": "",
+                "outcomeForks": [
+                  {
+                    "textSubmission": {
+                      "submissionId": null,
+                      "authorId": null,
+                      "originalText": null,
+                      "currentText": null,
+                      "additions": [],
+                      "totalVotes": 0,
+                      "averageRanking": 0.0,
+                      "outcomeType": null,
+                      "outcomeTypeWithLabel": {
+                        "id": "",
+                        "label": "",
+                        "clarifier": "",
+                        "subTypes": [],
+                        "headers": []
+                      },
+                      "finalized": false
+                    },
+                    "repercussions": [
+                      {
+                        "repercussionType": "Destiny",
+                        "repercussionSubmission": "Gain Experience",
+                        "color": "#FFD700"
+                      }
+                    ]
+                  }
+                ],
+                "selectedForkId": ""
+              }
+            ],
+            "encounterLabel": {
+              "encounterId": "9a3f43a8-312b-426a-a5d3-badd16b96e6e",
+              "encounterLabel": "Your Teacher",
               "textSubmission": {
                 "submissionId": null,
                 "authorId": null,
@@ -692,19 +898,608 @@
       }
     },
     {
-      "storyId": "50875675-7602-4c15-b7a2-1331056ab1ed",
-      "prompt": "You have visited the Feast at the Pyre in years past, but this year, your year, feels more ominous. There is a woman here spinning fire on the end of colorfully dyed sticks as she tells the tales of groups of children who entered The Drop in years of yore. She finishes a tale warning the crowd about the dangers of entering The Drop with friends who you do not trust and then suddenly she catches eyes with you. “YOU. You look like you’re the right age for the ritual this year, eh? What sorts of relationships do you hope you have?”",
-      "authorId": "f4da941d-7cb2-4743-86e1-07cc5b76513f",
+      "storyId": "8729b5ee-a6cb-412f-b7a4-0c6a7cc2cc5e",
+      "prompt": "Your teacher turns to you now. \"And how about you? What do you hope to gain?\"",
+      "authorId": "b2c95637-fba1-4575-9475-97aeb1aca470",
       "outcomeAuthorId": "",
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
       "prequelStorySelectedOptionId": "",
-      "gameCode": "CFCPDJ",
+      "gameCode": "QUGNWZ",
       "mainPlotStory": false,
       "visited": false,
-      "playerId": "f4da941d-7cb2-4743-86e1-07cc5b76513f",
+      "playerId": "b2c95637-fba1-4575-9475-97aeb1aca470",
       "playerIds": [
-        "f4da941d-7cb2-4743-86e1-07cc5b76513f"
+        "b2c95637-fba1-4575-9475-97aeb1aca470"
+      ],
+      "partnerIds": [],
+      "selectedOptionId": "",
+      "playerSucceeded": false,
+      "prequelStoryPlayerId": "",
+      "repercussions": null,
+      "prequelOutcomeDisplay": null,
+      "sequelStory": false,
+      "saveGameStory": false,
+      "options": [
+        {
+          "optionId": "6a8c0d44-a57d-4b51-b753-b76fd8734005",
+          "optionText": "Say you want to learn a lot!",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [],
+          "successText": "\"Very good! I'm so glad my lessons have made you yearn to learn^!\" she chuckles to herself before moving on to the next student.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": "",
+          "outcomeForks": [
+            {
+              "textSubmission": {
+                "submissionId": null,
+                "authorId": null,
+                "originalText": null,
+                "currentText": null,
+                "additions": [
+                  {
+                    "additionId": "9bb1aaec-4c32-4ede-a09c-5551c9be68cc",
+                    "authorId": "b2c95637-fba1-4575-9475-97aeb1aca470",
+                    "addedText": "Gain Knowledge",
+                    "submissionId": "6a8c0d44-a57d-4b51-b753-b76fd8734005",
+                    "outcomeType": null,
+                    "outcomeTypeWithLabel": null,
+                    "repercussion": {
+                      "repercussionType": "Destiny",
+                      "repercussionSubmission": "Gain Knowledge",
+                      "color": "#FFD700"
+                    }
+                  }
+                ],
+                "totalVotes": 0,
+                "averageRanking": 0.0,
+                "outcomeType": null,
+                "outcomeTypeWithLabel": {
+                  "id": "",
+                  "label": "",
+                  "clarifier": "",
+                  "subTypes": [],
+                  "headers": []
+                },
+                "finalized": false
+              },
+              "repercussions": [
+                {
+                  "repercussionType": "Destiny",
+                  "repercussionSubmission": "Gain Knowledge",
+                  "color": "#FFD700"
+                }
+              ]
+            }
+          ],
+          "selectedForkId": ""
+        },
+        {
+          "optionId": "bd6f23fd-9759-4c29-b3bc-42b5acaec8be",
+          "optionText": "Say you want to see a lot!",
+          "attemptText": "",
+          "statRequirement": null,
+          "statDC": 0,
+          "playerStatDCs": [],
+          "successText": "\"Hm\" she ponders. \"Well you're very likely to get your wish in The Drop! I certainly did...\" she trails off for a moment before moving on.",
+          "outcomeAuthorId": "",
+          "successResults": [],
+          "failureText": "",
+          "failureResults": [],
+          "selectedByPlayerId": null,
+          "playerSucceeded": false,
+          "pointsRewarded": 0,
+          "successMarginText": "",
+          "outcomeForks": [
+            {
+              "textSubmission": {
+                "submissionId": null,
+                "authorId": null,
+                "originalText": null,
+                "currentText": null,
+                "additions": [
+                  {
+                    "additionId": "a050799d-5a9c-422a-8f7d-b66f398734ef",
+                    "authorId": "b2c95637-fba1-4575-9475-97aeb1aca470",
+                    "addedText": "Gain Experience",
+                    "submissionId": "bd6f23fd-9759-4c29-b3bc-42b5acaec8be",
+                    "outcomeType": null,
+                    "outcomeTypeWithLabel": null,
+                    "repercussion": {
+                      "repercussionType": "Destiny",
+                      "repercussionSubmission": "Gain Experience",
+                      "color": "#FFD700"
+                    }
+                  }
+                ],
+                "totalVotes": 0,
+                "averageRanking": 0.0,
+                "outcomeType": null,
+                "outcomeTypeWithLabel": {
+                  "id": "",
+                  "label": "",
+                  "clarifier": "",
+                  "subTypes": [],
+                  "headers": []
+                },
+                "finalized": false
+              },
+              "repercussions": [
+                {
+                  "repercussionType": "Destiny",
+                  "repercussionSubmission": "Gain Experience",
+                  "color": "#FFD700"
+                }
+              ]
+            }
+          ],
+          "selectedForkId": ""
+        }
+      ],
+      "encounterLabel": {
+        "encounterId": "9a3f43a8-312b-426a-a5d3-badd16b96e6e",
+        "encounterLabel": "Your Teacher",
+        "textSubmission": {
+          "submissionId": null,
+          "authorId": null,
+          "originalText": null,
+          "currentText": null,
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": null,
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        "locationId": null
+      },
+      "location": {
+        "locationId": 0,
+        "description": "The red brick old schoolhouse sits on a hill between town and The Drop. Other kids gather uncertainly at the front door, whispering about the upcoming festival. ",
+        "locationIndex": 0,
+        "id": "1fabde4f-91af-4272-bd28-135d0631e227",
+        "label": "The Schoolhouse",
+        "options": [
+          {
+            "optionId": "da76e90a-8279-4ff2-b4ae-de8e59741246",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          },
+          {
+            "optionId": "77f8493e-b4b4-4a88-a3ed-187aabca5a1c",
+            "optionText": "",
+            "attemptText": "",
+            "statRequirement": null,
+            "statDC": 0,
+            "playerStatDCs": [],
+            "successText": "",
+            "outcomeAuthorId": "",
+            "successResults": [],
+            "failureText": "",
+            "failureResults": [],
+            "selectedByPlayerId": null,
+            "playerSucceeded": false,
+            "pointsRewarded": 0,
+            "successMarginText": "",
+            "outcomeForks": null,
+            "selectedForkId": ""
+          }
+        ],
+        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/School.png",
+        "authorId": null,
+        "selectedOptionId": null,
+        "traits": [
+          {
+            "traitId": "cfa76ee5-3f44-4c76-bcc8-24ad5bf3c0f9",
+            "traitLabel": "curious",
+            "traitType": "STANDARD",
+            "textSubmission": {
+              "submissionId": null,
+              "authorId": null,
+              "originalText": null,
+              "currentText": null,
+              "additions": [],
+              "totalVotes": 0,
+              "averageRanking": 0.0,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": {
+                "id": "",
+                "label": "",
+                "clarifier": "",
+                "subTypes": [],
+                "headers": []
+              },
+              "finalized": false
+            }
+          }
+        ],
+        "startingLocation": true,
+        "startingStories": [
+          {
+            "storyId": "",
+            "prompt": "Class the morning before The Drop feels tense so your teacher attempts to lighten the mood by asking everyone questions about it. \"You know many people believe that the world inside The Drop changes based on your intention so it might help to go in with an idea of who you hope you become!\" she makes eye contact with you. \"Who do you hope to be when you grow older?\"",
+            "authorId": "",
+            "outcomeAuthorId": "",
+            "prequelStorySucceeded": false,
+            "prequelStoryId": "",
+            "prequelStorySelectedOptionId": "",
+            "gameCode": "",
+            "mainPlotStory": false,
+            "visited": false,
+            "playerId": "",
+            "playerIds": [],
+            "partnerIds": [],
+            "selectedOptionId": "",
+            "playerSucceeded": false,
+            "prequelStoryPlayerId": "",
+            "repercussions": null,
+            "prequelOutcomeDisplay": null,
+            "sequelStory": false,
+            "saveGameStory": false,
+            "options": [
+              {
+                "optionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+                "optionText": "Say you want to learn a lot!",
+                "attemptText": "",
+                "statRequirement": null,
+                "statDC": 0,
+                "playerStatDCs": [],
+                "successText": "\"Very good! I'm so glad my lessons have made you yearn to learn!\" she chuckles to herself before moving on to the next student.",
+                "outcomeAuthorId": "",
+                "successResults": [],
+                "failureText": "",
+                "failureResults": [],
+                "selectedByPlayerId": null,
+                "playerSucceeded": false,
+                "pointsRewarded": 0,
+                "successMarginText": "",
+                "outcomeForks": [
+                  {
+                    "textSubmission": {
+                      "submissionId": null,
+                      "authorId": null,
+                      "originalText": null,
+                      "currentText": null,
+                      "additions": [
+                        {
+                          "additionId": "aa0ae777-ba6b-4932-bc83-98c40335eb4e",
+                          "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+                          "addedText": "Gain Knowledge",
+                          "submissionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+                          "outcomeType": null,
+                          "outcomeTypeWithLabel": null,
+                          "repercussion": {
+                            "repercussionType": "Destiny",
+                            "repercussionSubmission": "Gain Knowledge",
+                            "color": "#FFD700"
+                          }
+                        }
+                      ],
+                      "totalVotes": 0,
+                      "averageRanking": 0.0,
+                      "outcomeType": null,
+                      "outcomeTypeWithLabel": {
+                        "id": "",
+                        "label": "",
+                        "clarifier": "",
+                        "subTypes": [],
+                        "headers": []
+                      },
+                      "finalized": false
+                    },
+                    "repercussions": [
+                      {
+                        "repercussionType": "Destiny",
+                        "repercussionSubmission": "Gain Knowledge",
+                        "color": "#FFD700"
+                      }
+                    ]
+                  }
+                ],
+                "selectedForkId": ""
+              },
+              {
+                "optionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+                "optionText": "Say you want to see a lot!",
+                "attemptText": "",
+                "statRequirement": null,
+                "statDC": 0,
+                "playerStatDCs": [],
+                "successText": "\"Hm\" she ponders. \"Well you're very likely to get your wish in The Drop! I certainly did...\" she trails off for a moment before moving on.",
+                "outcomeAuthorId": "",
+                "successResults": [],
+                "failureText": "",
+                "failureResults": [],
+                "selectedByPlayerId": null,
+                "playerSucceeded": false,
+                "pointsRewarded": 0,
+                "successMarginText": "",
+                "outcomeForks": [
+                  {
+                    "textSubmission": {
+                      "submissionId": null,
+                      "authorId": null,
+                      "originalText": null,
+                      "currentText": null,
+                      "additions": [
+                        {
+                          "additionId": "e3b63b55-caed-47f9-9eaf-fc5af7aae932",
+                          "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+                          "addedText": "Gain Experience",
+                          "submissionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+                          "outcomeType": null,
+                          "outcomeTypeWithLabel": null,
+                          "repercussion": {
+                            "repercussionType": "Destiny",
+                            "repercussionSubmission": "Gain Experience",
+                            "color": "#FFD700"
+                          }
+                        }
+                      ],
+                      "totalVotes": 0,
+                      "averageRanking": 0.0,
+                      "outcomeType": null,
+                      "outcomeTypeWithLabel": {
+                        "id": "",
+                        "label": "",
+                        "clarifier": "",
+                        "subTypes": [],
+                        "headers": []
+                      },
+                      "finalized": false
+                    },
+                    "repercussions": [
+                      {
+                        "repercussionType": "Destiny",
+                        "repercussionSubmission": "Gain Experience",
+                        "color": "#FFD700"
+                      }
+                    ]
+                  }
+                ],
+                "selectedForkId": ""
+              }
+            ],
+            "encounterLabel": {
+              "encounterId": "fcdb36f7-b41d-4d2a-ba03-0ffd5b19dbae",
+              "encounterLabel": "Your Teacher",
+              "textSubmission": {
+                "submissionId": null,
+                "authorId": null,
+                "originalText": null,
+                "currentText": null,
+                "additions": [],
+                "totalVotes": 0,
+                "averageRanking": 0.0,
+                "outcomeType": null,
+                "outcomeTypeWithLabel": {
+                  "id": "",
+                  "label": "",
+                  "clarifier": "",
+                  "subTypes": [],
+                  "headers": []
+                },
+                "finalized": false
+              },
+              "locationId": null
+            },
+            "location": null
+          },
+          {
+            "storyId": "",
+            "prompt": "Your teacher turns to you now. \"And how about you? What do you hope to gain?\"",
+            "authorId": "",
+            "outcomeAuthorId": "",
+            "prequelStorySucceeded": false,
+            "prequelStoryId": "",
+            "prequelStorySelectedOptionId": "",
+            "gameCode": "",
+            "mainPlotStory": false,
+            "visited": false,
+            "playerId": "",
+            "playerIds": [],
+            "partnerIds": [],
+            "selectedOptionId": "",
+            "playerSucceeded": false,
+            "prequelStoryPlayerId": "",
+            "repercussions": null,
+            "prequelOutcomeDisplay": null,
+            "sequelStory": false,
+            "saveGameStory": false,
+            "options": [
+              {
+                "optionId": "6a8c0d44-a57d-4b51-b753-b76fd8734005",
+                "optionText": "Say you want to learn a lot!",
+                "attemptText": "",
+                "statRequirement": null,
+                "statDC": 0,
+                "playerStatDCs": [],
+                "successText": "\"Very good! I'm so glad my lessons have made you yearn to learn^!\" she chuckles to herself before moving on to the next student.",
+                "outcomeAuthorId": "",
+                "successResults": [],
+                "failureText": "",
+                "failureResults": [],
+                "selectedByPlayerId": null,
+                "playerSucceeded": false,
+                "pointsRewarded": 0,
+                "successMarginText": "",
+                "outcomeForks": [
+                  {
+                    "textSubmission": {
+                      "submissionId": null,
+                      "authorId": null,
+                      "originalText": null,
+                      "currentText": null,
+                      "additions": [
+                        {
+                          "additionId": "9bb1aaec-4c32-4ede-a09c-5551c9be68cc",
+                          "authorId": "b2c95637-fba1-4575-9475-97aeb1aca470",
+                          "addedText": "Gain Knowledge",
+                          "submissionId": "6a8c0d44-a57d-4b51-b753-b76fd8734005",
+                          "outcomeType": null,
+                          "outcomeTypeWithLabel": null,
+                          "repercussion": {
+                            "repercussionType": "Destiny",
+                            "repercussionSubmission": "Gain Knowledge",
+                            "color": "#FFD700"
+                          }
+                        }
+                      ],
+                      "totalVotes": 0,
+                      "averageRanking": 0.0,
+                      "outcomeType": null,
+                      "outcomeTypeWithLabel": {
+                        "id": "",
+                        "label": "",
+                        "clarifier": "",
+                        "subTypes": [],
+                        "headers": []
+                      },
+                      "finalized": false
+                    },
+                    "repercussions": [
+                      {
+                        "repercussionType": "Destiny",
+                        "repercussionSubmission": "Gain Knowledge",
+                        "color": "#FFD700"
+                      }
+                    ]
+                  }
+                ],
+                "selectedForkId": ""
+              },
+              {
+                "optionId": "bd6f23fd-9759-4c29-b3bc-42b5acaec8be",
+                "optionText": "Say you want to see a lot!",
+                "attemptText": "",
+                "statRequirement": null,
+                "statDC": 0,
+                "playerStatDCs": [],
+                "successText": "\"Hm\" she ponders. \"Well you're very likely to get your wish in The Drop! I certainly did...\" she trails off for a moment before moving on.",
+                "outcomeAuthorId": "",
+                "successResults": [],
+                "failureText": "",
+                "failureResults": [],
+                "selectedByPlayerId": null,
+                "playerSucceeded": false,
+                "pointsRewarded": 0,
+                "successMarginText": "",
+                "outcomeForks": [
+                  {
+                    "textSubmission": {
+                      "submissionId": null,
+                      "authorId": null,
+                      "originalText": null,
+                      "currentText": null,
+                      "additions": [
+                        {
+                          "additionId": "a050799d-5a9c-422a-8f7d-b66f398734ef",
+                          "authorId": "b2c95637-fba1-4575-9475-97aeb1aca470",
+                          "addedText": "Gain Experience",
+                          "submissionId": "bd6f23fd-9759-4c29-b3bc-42b5acaec8be",
+                          "outcomeType": null,
+                          "outcomeTypeWithLabel": null,
+                          "repercussion": {
+                            "repercussionType": "Destiny",
+                            "repercussionSubmission": "Gain Experience",
+                            "color": "#FFD700"
+                          }
+                        }
+                      ],
+                      "totalVotes": 0,
+                      "averageRanking": 0.0,
+                      "outcomeType": null,
+                      "outcomeTypeWithLabel": {
+                        "id": "",
+                        "label": "",
+                        "clarifier": "",
+                        "subTypes": [],
+                        "headers": []
+                      },
+                      "finalized": false
+                    },
+                    "repercussions": [
+                      {
+                        "repercussionType": "Destiny",
+                        "repercussionSubmission": "Gain Experience",
+                        "color": "#FFD700"
+                      }
+                    ]
+                  }
+                ],
+                "selectedForkId": ""
+              }
+            ],
+            "encounterLabel": {
+              "encounterId": "9a3f43a8-312b-426a-a5d3-badd16b96e6e",
+              "encounterLabel": "Your Teacher",
+              "textSubmission": {
+                "submissionId": null,
+                "authorId": null,
+                "originalText": null,
+                "currentText": null,
+                "additions": [],
+                "totalVotes": 0,
+                "averageRanking": 0.0,
+                "outcomeType": null,
+                "outcomeTypeWithLabel": {
+                  "id": "",
+                  "label": "",
+                  "clarifier": "",
+                  "subTypes": [],
+                  "headers": []
+                },
+                "finalized": false
+              },
+              "locationId": null
+            },
+            "location": null
+          }
+        ]
+      }
+    },
+    {
+      "storyId": "6c91158a-ec0a-49c6-97e4-e13e5a989635",
+      "prompt": "You have visited the Feast at the Pyre in years past, but this year, your year, feels more ominous. There is a woman here spinning fire on the end of colorfully dyed sticks as she tells the tales of groups of children who entered The Drop in years of yore. She finishes a tale warning the crowd about the dangers of entering The Drop with friends who you do not trust and then suddenly she catches eyes with you. “YOU. You look like you’re the right age for the ritual this year, eh? What sorts of relationships do you hope you have?”",
+      "authorId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
+      "outcomeAuthorId": "",
+      "prequelStorySucceeded": false,
+      "prequelStoryId": "",
+      "prequelStorySelectedOptionId": "",
+      "gameCode": "QUGNWZ",
+      "mainPlotStory": false,
+      "visited": false,
+      "playerId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
+      "playerIds": [
+        "43bc10eb-c05b-4aec-b0d1-38b2be2cd037"
       ],
       "partnerIds": [],
       "selectedOptionId": "",
@@ -738,7 +1533,21 @@
                 "authorId": null,
                 "originalText": null,
                 "currentText": null,
-                "additions": [],
+                "additions": [
+                  {
+                    "additionId": "549ef356-5469-45b6-83aa-211853f48073",
+                    "authorId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
+                    "addedText": "Find rebellious friends",
+                    "submissionId": "844a9aa0-4fe0-4758-9692-f7de79dc1190",
+                    "outcomeType": null,
+                    "outcomeTypeWithLabel": null,
+                    "repercussion": {
+                      "repercussionType": "Destiny",
+                      "repercussionSubmission": "Find rebellious friends",
+                      "color": "#FFD700"
+                    }
+                  }
+                ],
                 "totalVotes": 0,
                 "averageRanking": 0.0,
                 "outcomeType": null,
@@ -785,7 +1594,21 @@
                 "authorId": null,
                 "originalText": null,
                 "currentText": null,
-                "additions": [],
+                "additions": [
+                  {
+                    "additionId": "3844bc1a-32a6-4bae-b8cc-6055a466fe54",
+                    "authorId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
+                    "addedText": "Find friends who get you",
+                    "submissionId": "b0bc2474-d532-449f-8661-3cc4cafed628",
+                    "outcomeType": null,
+                    "outcomeTypeWithLabel": null,
+                    "repercussion": {
+                      "repercussionType": "Destiny",
+                      "repercussionSubmission": "Find friends who get you",
+                      "color": "#FFD700"
+                    }
+                  }
+                ],
                 "totalVotes": 0,
                 "averageRanking": 0.0,
                 "outcomeType": null,
@@ -954,7 +1777,21 @@
                       "authorId": null,
                       "originalText": null,
                       "currentText": null,
-                      "additions": [],
+                      "additions": [
+                        {
+                          "additionId": "549ef356-5469-45b6-83aa-211853f48073",
+                          "authorId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
+                          "addedText": "Find rebellious friends",
+                          "submissionId": "844a9aa0-4fe0-4758-9692-f7de79dc1190",
+                          "outcomeType": null,
+                          "outcomeTypeWithLabel": null,
+                          "repercussion": {
+                            "repercussionType": "Destiny",
+                            "repercussionSubmission": "Find rebellious friends",
+                            "color": "#FFD700"
+                          }
+                        }
+                      ],
                       "totalVotes": 0,
                       "averageRanking": 0.0,
                       "outcomeType": null,
@@ -1001,7 +1838,21 @@
                       "authorId": null,
                       "originalText": null,
                       "currentText": null,
-                      "additions": [],
+                      "additions": [
+                        {
+                          "additionId": "3844bc1a-32a6-4bae-b8cc-6055a466fe54",
+                          "authorId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
+                          "addedText": "Find friends who get you",
+                          "submissionId": "b0bc2474-d532-449f-8661-3cc4cafed628",
+                          "outcomeType": null,
+                          "outcomeTypeWithLabel": null,
+                          "repercussion": {
+                            "repercussionType": "Destiny",
+                            "repercussionSubmission": "Find friends who get you",
+                            "color": "#FFD700"
+                          }
+                        }
+                      ],
                       "totalVotes": 0,
                       "averageRanking": 0.0,
                       "outcomeType": null,
@@ -1055,382 +1906,19 @@
       }
     },
     {
-      "storyId": "e798080e-8ac4-47af-b0d3-de5ae8d01f6c",
-      "prompt": "The drills have been intense in preparation for our descent into The Drop, but today has been oddly quiet. “Tonight is the night we’ve been preparing for.\" your captain barks. \"Those of you who return from The Drop will have proven your worth in the eyes of the Academy and in the eyes of the town.” He holds up two banners. “Each of you must choose your ceremonial guide for The Drop. Choose the beast which most represents the journey you intend to have inside.”",
-      "authorId": "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84",
-      "outcomeAuthorId": "",
-      "prequelStorySucceeded": false,
-      "prequelStoryId": "",
-      "prequelStorySelectedOptionId": "",
-      "gameCode": "CFCPDJ",
-      "mainPlotStory": false,
-      "visited": false,
-      "playerId": "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84",
-      "playerIds": [
-        "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84"
-      ],
-      "partnerIds": [],
-      "selectedOptionId": "",
-      "playerSucceeded": false,
-      "prequelStoryPlayerId": "",
-      "repercussions": null,
-      "prequelOutcomeDisplay": null,
-      "sequelStory": false,
-      "saveGameStory": false,
-      "options": [
-        {
-          "optionId": "49fc71e1-9fe7-4664-a178-bf631f182460",
-          "optionText": "Choose the Ox",
-          "attemptText": "",
-          "statRequirement": null,
-          "statDC": 0,
-          "playerStatDCs": [],
-          "successText": "You take the banner of the Ox off the top of the pile. \"Very well. Keep it close and it will give you the energy to do the work to persevere with your friends.\"",
-          "outcomeAuthorId": "",
-          "successResults": [],
-          "failureText": "",
-          "failureResults": [],
-          "selectedByPlayerId": null,
-          "playerSucceeded": false,
-          "pointsRewarded": 0,
-          "successMarginText": "",
-          "outcomeForks": [
-            {
-              "textSubmission": {
-                "submissionId": null,
-                "authorId": null,
-                "originalText": null,
-                "currentText": null,
-                "additions": [],
-                "totalVotes": 0,
-                "averageRanking": 0.0,
-                "outcomeType": null,
-                "outcomeTypeWithLabel": {
-                  "id": "",
-                  "label": "",
-                  "clarifier": "",
-                  "subTypes": [],
-                  "headers": []
-                },
-                "finalized": false
-              },
-              "repercussions": [
-                {
-                  "repercussionType": "Destiny",
-                  "repercussionSubmission": "Become Dependable",
-                  "color": "#FFD700"
-                }
-              ]
-            }
-          ],
-          "selectedForkId": ""
-        },
-        {
-          "optionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-          "optionText": "Choose the Lion",
-          "attemptText": "",
-          "statRequirement": null,
-          "statDC": 0,
-          "playerStatDCs": [],
-          "successText": "You select the banner of the roaring Lion from the leftmost pile. \"Okay then. May the Lion give you the strength to do what must be done when your choices become more difficult.\"",
-          "outcomeAuthorId": "",
-          "successResults": [],
-          "failureText": "",
-          "failureResults": [],
-          "selectedByPlayerId": null,
-          "playerSucceeded": false,
-          "pointsRewarded": 0,
-          "successMarginText": "",
-          "outcomeForks": [
-            {
-              "textSubmission": {
-                "submissionId": null,
-                "authorId": null,
-                "originalText": null,
-                "currentText": null,
-                "additions": [],
-                "totalVotes": 0,
-                "averageRanking": 0.0,
-                "outcomeType": null,
-                "outcomeTypeWithLabel": {
-                  "id": "",
-                  "label": "",
-                  "clarifier": "",
-                  "subTypes": [],
-                  "headers": []
-                },
-                "finalized": false
-              },
-              "repercussions": [
-                {
-                  "repercussionType": "Destiny",
-                  "repercussionSubmission": "Become Strong",
-                  "color": "#FFD700"
-                }
-              ]
-            }
-          ],
-          "selectedForkId": ""
-        }
-      ],
-      "encounterLabel": {
-        "encounterId": "cee51dda-d0eb-414c-b8b6-ae1c31c97076",
-        "encounterLabel": "Owl Rank Captain",
-        "textSubmission": {
-          "submissionId": null,
-          "authorId": null,
-          "originalText": null,
-          "currentText": null,
-          "additions": [],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": null,
-          "outcomeTypeWithLabel": {
-            "id": "",
-            "label": "",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        "locationId": null
-      },
-      "location": {
-        "locationId": 0,
-        "description": "Blocks of smooth sandstone draped in regal blues and reds stand staunchly off the town center as a symbol of the need to be prepared for anything. Children play war games in the front garden without an understanding of their implications.",
-        "locationIndex": 0,
-        "id": "542ca08f-f676-4a33-b747-dd29806ce2aa",
-        "label": "The Knights Academy",
-        "options": [
-          {
-            "optionId": "eaf42774-1a2e-4c8b-8289-2f0124438f9e",
-            "optionText": "",
-            "attemptText": "",
-            "statRequirement": null,
-            "statDC": 0,
-            "playerStatDCs": [],
-            "successText": "",
-            "outcomeAuthorId": "",
-            "successResults": [],
-            "failureText": "",
-            "failureResults": [],
-            "selectedByPlayerId": null,
-            "playerSucceeded": false,
-            "pointsRewarded": 0,
-            "successMarginText": "",
-            "outcomeForks": null,
-            "selectedForkId": ""
-          },
-          {
-            "optionId": "82529af0-7b11-49da-a10d-708a7845ce1a",
-            "optionText": "",
-            "attemptText": "",
-            "statRequirement": null,
-            "statDC": 0,
-            "playerStatDCs": [],
-            "successText": "",
-            "outcomeAuthorId": "",
-            "successResults": [],
-            "failureText": "",
-            "failureResults": [],
-            "selectedByPlayerId": null,
-            "playerSucceeded": false,
-            "pointsRewarded": 0,
-            "successMarginText": "",
-            "outcomeForks": null,
-            "selectedForkId": ""
-          }
-        ],
-        "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
-        "authorId": null,
-        "selectedOptionId": null,
-        "traits": [
-          {
-            "traitId": "4f51389a-de92-4595-87fc-960a2b30ad5b",
-            "traitLabel": "squire",
-            "traitType": "TITLE",
-            "textSubmission": {
-              "submissionId": null,
-              "authorId": null,
-              "originalText": null,
-              "currentText": null,
-              "additions": [],
-              "totalVotes": 0,
-              "averageRanking": 0.0,
-              "outcomeType": null,
-              "outcomeTypeWithLabel": {
-                "id": "",
-                "label": "",
-                "clarifier": "",
-                "subTypes": [],
-                "headers": []
-              },
-              "finalized": false
-            }
-          }
-        ],
-        "startingLocation": true,
-        "startingStories": [
-          {
-            "storyId": "",
-            "prompt": "The drills have been intense in preparation for our descent into The Drop, but today has been oddly quiet. “Tonight is the night we’ve been preparing for.\" your captain barks. \"Those of you who return from The Drop will have proven your worth in the eyes of the Academy and in the eyes of the town.” He holds up two banners. “Each of you must choose your ceremonial guide for The Drop. Choose the beast which most represents the journey you intend to have inside.”",
-            "authorId": "",
-            "outcomeAuthorId": "",
-            "prequelStorySucceeded": false,
-            "prequelStoryId": "",
-            "prequelStorySelectedOptionId": "",
-            "gameCode": "",
-            "mainPlotStory": false,
-            "visited": false,
-            "playerId": "",
-            "playerIds": [],
-            "partnerIds": [],
-            "selectedOptionId": "",
-            "playerSucceeded": false,
-            "prequelStoryPlayerId": "",
-            "repercussions": null,
-            "prequelOutcomeDisplay": null,
-            "sequelStory": false,
-            "saveGameStory": false,
-            "options": [
-              {
-                "optionId": "49fc71e1-9fe7-4664-a178-bf631f182460",
-                "optionText": "Choose the Ox",
-                "attemptText": "",
-                "statRequirement": null,
-                "statDC": 0,
-                "playerStatDCs": [],
-                "successText": "You take the banner of the Ox off the top of the pile. \"Very well. Keep it close and it will give you the energy to do the work to persevere with your friends.\"",
-                "outcomeAuthorId": "",
-                "successResults": [],
-                "failureText": "",
-                "failureResults": [],
-                "selectedByPlayerId": null,
-                "playerSucceeded": false,
-                "pointsRewarded": 0,
-                "successMarginText": "",
-                "outcomeForks": [
-                  {
-                    "textSubmission": {
-                      "submissionId": null,
-                      "authorId": null,
-                      "originalText": null,
-                      "currentText": null,
-                      "additions": [],
-                      "totalVotes": 0,
-                      "averageRanking": 0.0,
-                      "outcomeType": null,
-                      "outcomeTypeWithLabel": {
-                        "id": "",
-                        "label": "",
-                        "clarifier": "",
-                        "subTypes": [],
-                        "headers": []
-                      },
-                      "finalized": false
-                    },
-                    "repercussions": [
-                      {
-                        "repercussionType": "Destiny",
-                        "repercussionSubmission": "Become Dependable",
-                        "color": "#FFD700"
-                      }
-                    ]
-                  }
-                ],
-                "selectedForkId": ""
-              },
-              {
-                "optionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-                "optionText": "Choose the Lion",
-                "attemptText": "",
-                "statRequirement": null,
-                "statDC": 0,
-                "playerStatDCs": [],
-                "successText": "You select the banner of the roaring Lion from the leftmost pile. \"Okay then. May the Lion give you the strength to do what must be done when your choices become more difficult.\"",
-                "outcomeAuthorId": "",
-                "successResults": [],
-                "failureText": "",
-                "failureResults": [],
-                "selectedByPlayerId": null,
-                "playerSucceeded": false,
-                "pointsRewarded": 0,
-                "successMarginText": "",
-                "outcomeForks": [
-                  {
-                    "textSubmission": {
-                      "submissionId": null,
-                      "authorId": null,
-                      "originalText": null,
-                      "currentText": null,
-                      "additions": [],
-                      "totalVotes": 0,
-                      "averageRanking": 0.0,
-                      "outcomeType": null,
-                      "outcomeTypeWithLabel": {
-                        "id": "",
-                        "label": "",
-                        "clarifier": "",
-                        "subTypes": [],
-                        "headers": []
-                      },
-                      "finalized": false
-                    },
-                    "repercussions": [
-                      {
-                        "repercussionType": "Destiny",
-                        "repercussionSubmission": "Become Strong",
-                        "color": "#FFD700"
-                      }
-                    ]
-                  }
-                ],
-                "selectedForkId": ""
-              }
-            ],
-            "encounterLabel": {
-              "encounterId": "cee51dda-d0eb-414c-b8b6-ae1c31c97076",
-              "encounterLabel": "Owl Rank Captain",
-              "textSubmission": {
-                "submissionId": null,
-                "authorId": null,
-                "originalText": null,
-                "currentText": null,
-                "additions": [],
-                "totalVotes": 0,
-                "averageRanking": 0.0,
-                "outcomeType": null,
-                "outcomeTypeWithLabel": {
-                  "id": "",
-                  "label": "",
-                  "clarifier": "",
-                  "subTypes": [],
-                  "headers": []
-                },
-                "finalized": false
-              },
-              "locationId": null
-            },
-            "location": null
-          }
-        ]
-      }
-    },
-    {
-      "storyId": "0c43c4d4-3660-4cc0-8c47-2c329feb263e",
+      "storyId": "6cdf141b-1f50-419b-ad90-25a396ee4a8a",
       "prompt": "You have visited the Feast at the Pyre in years past, but this year, your year, feels more ominous. There is a woman here spinning fire on the end of colorfully dyed sticks as she tells the tales of groups of children who entered The Drop in years of yore. She finishes a tale warning the crowd about the dangers of entering The Drop with friends who you do not trust and then suddenly she catches eyes with you. “YOU. You look like you’re the right age for the ritual this year, eh? What sorts of relationships do you hope you have?”",
-      "authorId": "37f9fe1b-8de5-4156-bc50-ecc9da990ad0",
+      "authorId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
       "outcomeAuthorId": "",
       "prequelStorySucceeded": false,
       "prequelStoryId": "",
       "prequelStorySelectedOptionId": "",
-      "gameCode": "CFCPDJ",
+      "gameCode": "QUGNWZ",
       "mainPlotStory": false,
       "visited": false,
-      "playerId": "37f9fe1b-8de5-4156-bc50-ecc9da990ad0",
+      "playerId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
       "playerIds": [
-        "37f9fe1b-8de5-4156-bc50-ecc9da990ad0"
+        "e15edf7b-9425-4eb4-bd50-710e165228fa"
       ],
       "partnerIds": [],
       "selectedOptionId": "",
@@ -1464,7 +1952,21 @@
                 "authorId": null,
                 "originalText": null,
                 "currentText": null,
-                "additions": [],
+                "additions": [
+                  {
+                    "additionId": "1d7fe8d0-baef-4fb9-aaa5-115a7d093898",
+                    "authorId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
+                    "addedText": "Find rebellious friends",
+                    "submissionId": "844a9aa0-4fe0-4758-9692-f7de79dc1190",
+                    "outcomeType": null,
+                    "outcomeTypeWithLabel": null,
+                    "repercussion": {
+                      "repercussionType": "Destiny",
+                      "repercussionSubmission": "Find rebellious friends",
+                      "color": "#FFD700"
+                    }
+                  }
+                ],
                 "totalVotes": 0,
                 "averageRanking": 0.0,
                 "outcomeType": null,
@@ -1511,7 +2013,21 @@
                 "authorId": null,
                 "originalText": null,
                 "currentText": null,
-                "additions": [],
+                "additions": [
+                  {
+                    "additionId": "3e0e8f31-dce5-4feb-95d2-c613220808e7",
+                    "authorId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
+                    "addedText": "Find friends who get you",
+                    "submissionId": "b0bc2474-d532-449f-8661-3cc4cafed628",
+                    "outcomeType": null,
+                    "outcomeTypeWithLabel": null,
+                    "repercussion": {
+                      "repercussionType": "Destiny",
+                      "repercussionSubmission": "Find friends who get you",
+                      "color": "#FFD700"
+                    }
+                  }
+                ],
                 "totalVotes": 0,
                 "averageRanking": 0.0,
                 "outcomeType": null,
@@ -1680,7 +2196,21 @@
                       "authorId": null,
                       "originalText": null,
                       "currentText": null,
-                      "additions": [],
+                      "additions": [
+                        {
+                          "additionId": "1d7fe8d0-baef-4fb9-aaa5-115a7d093898",
+                          "authorId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
+                          "addedText": "Find rebellious friends",
+                          "submissionId": "844a9aa0-4fe0-4758-9692-f7de79dc1190",
+                          "outcomeType": null,
+                          "outcomeTypeWithLabel": null,
+                          "repercussion": {
+                            "repercussionType": "Destiny",
+                            "repercussionSubmission": "Find rebellious friends",
+                            "color": "#FFD700"
+                          }
+                        }
+                      ],
                       "totalVotes": 0,
                       "averageRanking": 0.0,
                       "outcomeType": null,
@@ -1727,7 +2257,21 @@
                       "authorId": null,
                       "originalText": null,
                       "currentText": null,
-                      "additions": [],
+                      "additions": [
+                        {
+                          "additionId": "3e0e8f31-dce5-4feb-95d2-c613220808e7",
+                          "authorId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
+                          "addedText": "Find friends who get you",
+                          "submissionId": "b0bc2474-d532-449f-8661-3cc4cafed628",
+                          "outcomeType": null,
+                          "outcomeTypeWithLabel": null,
+                          "repercussion": {
+                            "repercussionType": "Destiny",
+                            "repercussionSubmission": "Find friends who get you",
+                            "color": "#FFD700"
+                          }
+                        }
+                      ],
                       "totalVotes": 0,
                       "averageRanking": 0.0,
                       "outcomeType": null,
@@ -3577,7 +4121,14 @@
       "location": null
     },
     "encounterLabels": [],
-    "traits": []
+    "traits": [
+      {
+        "traitId": "7663c33a-8e6f-4bf7-84f3-1ad47667e3be",
+        "traitLabel": "Gain Experience",
+        "traitType": "DESTINY",
+        "textSubmission": null
+      }
+    ]
   },
   "didWeSucceed": false,
   "totalPointsTowardsVictory": 0,
@@ -3597,8 +4148,8 @@
     "dungeonGrid": {
       "0,0": {
         "encounterLabel": {
-          "encounterId": "cee51dda-d0eb-414c-b8b6-ae1c31c97076",
-          "encounterLabel": "Owl Rank Captain",
+          "encounterId": "fcdb36f7-b41d-4d2a-ba03-0ffd5b19dbae",
+          "encounterLabel": "Your Teacher",
           "textSubmission": {
             "submissionId": null,
             "authorId": null,
@@ -3619,12 +4170,41 @@
           },
           "locationId": null
         },
-        "storyId": "0e426d87-820b-4f1c-8f5b-7906183db716",
-        "storyPrompt": "The drills have been intense in preparation for our descent into The Drop, but today has been oddly quiet. “Tonight is the night we’ve been preparing for.\" your captain barks. \"Those of you who return from The Drop will have proven your worth in the eyes of the Academy and in the eyes of the town.” He holds up two banners. “Each of you must choose your ceremonial guide for The Drop. Choose the beast which most represents the journey you intend to have inside.”",
+        "storyId": "aea8d547-15a6-4f4f-b73b-9ea825703a30",
+        "storyPrompt": "Class the morning before The Drop feels tense so your teacher attempts to lighten the mood by asking everyone questions about it. \"You know many people believe that the world inside The Drop changes based on your intention so it might help to go in with an idea of who you hope you become!\" she makes eye contact with you. \"Who do you hope to be when you grow older?\"",
         "encounterType": "NORMAL",
         "visited": false
       },
       "1,0": {
+        "encounterLabel": {
+          "encounterId": "9a3f43a8-312b-426a-a5d3-badd16b96e6e",
+          "encounterLabel": "Your Teacher",
+          "textSubmission": {
+            "submissionId": null,
+            "authorId": null,
+            "originalText": null,
+            "currentText": null,
+            "additions": [],
+            "totalVotes": 0,
+            "averageRanking": 0.0,
+            "outcomeType": null,
+            "outcomeTypeWithLabel": {
+              "id": "",
+              "label": "",
+              "clarifier": "",
+              "subTypes": [],
+              "headers": []
+            },
+            "finalized": false
+          },
+          "locationId": null
+        },
+        "storyId": "8729b5ee-a6cb-412f-b7a4-0c6a7cc2cc5e",
+        "storyPrompt": "Your teacher turns to you now. \"And how about you? What do you hope to gain?\"",
+        "encounterType": "NORMAL",
+        "visited": false
+      },
+      "2,0": {
         "encounterLabel": {
           "encounterId": "589f71c9-daa5-4e74-9f3b-0aff6a260b0d",
           "encounterLabel": "Fire Spinner",
@@ -3648,37 +4228,8 @@
           },
           "locationId": null
         },
-        "storyId": "50875675-7602-4c15-b7a2-1331056ab1ed",
+        "storyId": "6c91158a-ec0a-49c6-97e4-e13e5a989635",
         "storyPrompt": "You have visited the Feast at the Pyre in years past, but this year, your year, feels more ominous. There is a woman here spinning fire on the end of colorfully dyed sticks as she tells the tales of groups of children who entered The Drop in years of yore. She finishes a tale warning the crowd about the dangers of entering The Drop with friends who you do not trust and then suddenly she catches eyes with you. “YOU. You look like you’re the right age for the ritual this year, eh? What sorts of relationships do you hope you have?”",
-        "encounterType": "NORMAL",
-        "visited": false
-      },
-      "2,0": {
-        "encounterLabel": {
-          "encounterId": "cee51dda-d0eb-414c-b8b6-ae1c31c97076",
-          "encounterLabel": "Owl Rank Captain",
-          "textSubmission": {
-            "submissionId": null,
-            "authorId": null,
-            "originalText": null,
-            "currentText": null,
-            "additions": [],
-            "totalVotes": 0,
-            "averageRanking": 0.0,
-            "outcomeType": null,
-            "outcomeTypeWithLabel": {
-              "id": "",
-              "label": "",
-              "clarifier": "",
-              "subTypes": [],
-              "headers": []
-            },
-            "finalized": false
-          },
-          "locationId": null
-        },
-        "storyId": "e798080e-8ac4-47af-b0d3-de5ae8d01f6c",
-        "storyPrompt": "The drills have been intense in preparation for our descent into The Drop, but today has been oddly quiet. “Tonight is the night we’ve been preparing for.\" your captain barks. \"Those of you who return from The Drop will have proven your worth in the eyes of the Academy and in the eyes of the town.” He holds up two banners. “Each of you must choose your ceremonial guide for The Drop. Choose the beast which most represents the journey you intend to have inside.”",
         "encounterType": "NORMAL",
         "visited": false
       },
@@ -3706,7 +4257,7 @@
           },
           "locationId": null
         },
-        "storyId": "0c43c4d4-3660-4cc0-8c47-2c329feb263e",
+        "storyId": "6cdf141b-1f50-419b-ad90-25a396ee4a8a",
         "storyPrompt": "You have visited the Feast at the Pyre in years past, but this year, your year, feels more ominous. There is a woman here spinning fire on the end of colorfully dyed sticks as she tells the tales of groups of children who entered The Drop in years of yore. She finishes a tale warning the crowd about the dangers of entering The Drop with friends who you do not trust and then suddenly she catches eyes with you. “YOU. You look like you’re the right age for the ritual this year, eh? What sorts of relationships do you hope you have?”",
         "encounterType": "NORMAL",
         "visited": false
@@ -3714,8 +4265,8 @@
     },
     "encounterAtPlayerCoordinates": {
       "encounterLabel": {
-        "encounterId": "cee51dda-d0eb-414c-b8b6-ae1c31c97076",
-        "encounterLabel": "Owl Rank Captain",
+        "encounterId": "fcdb36f7-b41d-4d2a-ba03-0ffd5b19dbae",
+        "encounterLabel": "Your Teacher",
         "textSubmission": {
           "submissionId": null,
           "authorId": null,
@@ -3736,8 +4287,8 @@
         },
         "locationId": null
       },
-      "storyId": "0e426d87-820b-4f1c-8f5b-7906183db716",
-      "storyPrompt": "The drills have been intense in preparation for our descent into The Drop, but today has been oddly quiet. “Tonight is the night we’ve been preparing for.\" your captain barks. \"Those of you who return from The Drop will have proven your worth in the eyes of the Academy and in the eyes of the town.” He holds up two banners. “Each of you must choose your ceremonial guide for The Drop. Choose the beast which most represents the journey you intend to have inside.”",
+      "storyId": "aea8d547-15a6-4f4f-b73b-9ea825703a30",
+      "storyPrompt": "Class the morning before The Drop feels tense so your teacher attempts to lighten the mood by asking everyone questions about it. \"You know many people believe that the world inside The Drop changes based on your intention so it might help to go in with an idea of who you hope you become!\" she makes eye contact with you. \"Who do you hope to be when you grow older?\"",
       "encounterType": "NORMAL",
       "visited": false
     }
@@ -3749,24 +4300,6 @@
       "phaseType": null,
       "submissions": [
         {
-          "submissionId": "542ca08f-f676-4a33-b747-dd29806ce2aa",
-          "authorId": null,
-          "originalText": "Blocks of smooth sandstone draped in regal blues and reds stand staunchly off the town center as a symbol of the need to be prepared for anything. Children play war games in the front garden without an understanding of their implications.",
-          "currentText": "The Knights Academy",
-          "additions": [],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
-          "outcomeTypeWithLabel": {
-            "id": "",
-            "label": "",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
           "submissionId": "1fabde4f-91af-4272-bd28-135d0631e227",
           "authorId": null,
           "originalText": "The red brick old schoolhouse sits on a hill between town and The Drop. Other kids gather uncertainly at the front door, whispering about the upcoming festival. ",
@@ -3793,6 +4326,24 @@
           "totalVotes": 0,
           "averageRanking": 0.0,
           "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/TownSquare.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "542ca08f-f676-4a33-b747-dd29806ce2aa",
+          "authorId": null,
+          "originalText": "Blocks of smooth sandstone draped in regal blues and reds stand staunchly off the town center as a symbol of the need to be prepared for anything. Children play war games in the front garden without an understanding of their implications.",
+          "currentText": "The Knights Academy",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
           "outcomeTypeWithLabel": {
             "id": "",
             "label": "",
@@ -3804,51 +4355,51 @@
         }
       ],
       "playerVotes": {
-        "32c44621-3222-46a5-a840-9775b7ef0158": [
+        "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f": [
           {
             "voteId": "",
-            "playerId": "32c44621-3222-46a5-a840-9775b7ef0158",
-            "submissionId": "542ca08f-f676-4a33-b747-dd29806ce2aa",
+            "playerId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+            "submissionId": "1fabde4f-91af-4272-bd28-135d0631e227",
             "ranking": 1,
             "votedAt": {
-              "seconds": 1783268964,
-              "nanos": 826000000
+              "seconds": 1783312931,
+              "nanos": 656000000
             }
           }
         ],
-        "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84": [
+        "b2c95637-fba1-4575-9475-97aeb1aca470": [
           {
             "voteId": "",
-            "playerId": "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84",
-            "submissionId": "542ca08f-f676-4a33-b747-dd29806ce2aa",
+            "playerId": "b2c95637-fba1-4575-9475-97aeb1aca470",
+            "submissionId": "1fabde4f-91af-4272-bd28-135d0631e227",
             "ranking": 1,
             "votedAt": {
-              "seconds": 1783268973,
-              "nanos": 459000000
+              "seconds": 1783312944,
+              "nanos": 836000000
             }
           }
         ],
-        "f4da941d-7cb2-4743-86e1-07cc5b76513f": [
+        "43bc10eb-c05b-4aec-b0d1-38b2be2cd037": [
           {
             "voteId": "",
-            "playerId": "f4da941d-7cb2-4743-86e1-07cc5b76513f",
+            "playerId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
             "submissionId": "a9f1dad4-e029-450b-96cf-f73e585da675",
             "ranking": 1,
             "votedAt": {
-              "seconds": 1783268967,
-              "nanos": 895000000
+              "seconds": 1783312934,
+              "nanos": 473000000
             }
           }
         ],
-        "37f9fe1b-8de5-4156-bc50-ecc9da990ad0": [
+        "e15edf7b-9425-4eb4-bd50-710e165228fa": [
           {
             "voteId": "",
-            "playerId": "37f9fe1b-8de5-4156-bc50-ecc9da990ad0",
+            "playerId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
             "submissionId": "a9f1dad4-e029-450b-96cf-f73e585da675",
             "ranking": 1,
             "votedAt": {
-              "seconds": 1783268976,
-              "nanos": 562000000
+              "seconds": 1783312947,
+              "nanos": 855000000
             }
           }
         ]
@@ -3857,32 +4408,14 @@
         null
       ],
       "playersWhoVoted": [
-        "32c44621-3222-46a5-a840-9775b7ef0158",
-        "f4da941d-7cb2-4743-86e1-07cc5b76513f",
-        "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84",
-        "37f9fe1b-8de5-4156-bc50-ecc9da990ad0"
+        "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+        "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
+        "b2c95637-fba1-4575-9475-97aeb1aca470",
+        "e15edf7b-9425-4eb4-bd50-710e165228fa"
       ],
       "finalResult": null,
       "submissionViews": {},
       "submissionsWithoutParentSubmissions": [
-        {
-          "submissionId": "542ca08f-f676-4a33-b747-dd29806ce2aa",
-          "authorId": null,
-          "originalText": "Blocks of smooth sandstone draped in regal blues and reds stand staunchly off the town center as a symbol of the need to be prepared for anything. Children play war games in the front garden without an understanding of their implications.",
-          "currentText": "The Knights Academy",
-          "additions": [],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
-          "outcomeTypeWithLabel": {
-            "id": "",
-            "label": "",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
         {
           "submissionId": "1fabde4f-91af-4272-bd28-135d0631e227",
           "authorId": null,
@@ -3910,6 +4443,24 @@
           "totalVotes": 0,
           "averageRanking": 0.0,
           "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/TownSquare.png",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "542ca08f-f676-4a33-b747-dd29806ce2aa",
+          "authorId": null,
+          "originalText": "Blocks of smooth sandstone draped in regal blues and reds stand staunchly off the town center as a symbol of the need to be prepared for anything. Children play war games in the front garden without an understanding of their implications.",
+          "currentText": "The Knights Academy",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
           "outcomeTypeWithLabel": {
             "id": "",
             "label": "",
@@ -3928,14 +4479,14 @@
       "phaseType": null,
       "submissions": [
         {
-          "submissionId": "49fc71e1-9fe7-4664-a178-bf631f182460",
-          "authorId": "32c44621-3222-46a5-a840-9775b7ef0158",
-          "originalText": "Choose the Ox",
-          "currentText": "Choose the Ox",
+          "submissionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+          "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+          "originalText": "Say you want to learn a lot!",
+          "currentText": "Say you want to learn a lot!",
           "additions": [],
           "totalVotes": 0,
           "averageRanking": 0.0,
-          "outcomeType": "49fc71e1-9fe7-4664-a178-bf631f182460",
+          "outcomeType": "17db3eed-af19-4026-a5cd-d14e83d1f715",
           "outcomeTypeWithLabel": {
             "id": "",
             "label": "",
@@ -3946,14 +4497,50 @@
           "finalized": false
         },
         {
-          "submissionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-          "authorId": "32c44621-3222-46a5-a840-9775b7ef0158",
-          "originalText": "Choose the Lion",
-          "currentText": "Choose the Lion",
+          "submissionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+          "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+          "originalText": "Say you want to see a lot!",
+          "currentText": "Say you want to see a lot!",
           "additions": [],
           "totalVotes": 0,
           "averageRanking": 0.0,
-          "outcomeType": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
+          "outcomeType": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "6a8c0d44-a57d-4b51-b753-b76fd8734005",
+          "authorId": "b2c95637-fba1-4575-9475-97aeb1aca470",
+          "originalText": "Say you want to learn a lot!",
+          "currentText": "Say you want to learn a lot!",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "6a8c0d44-a57d-4b51-b753-b76fd8734005",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "bd6f23fd-9759-4c29-b3bc-42b5acaec8be",
+          "authorId": "b2c95637-fba1-4575-9475-97aeb1aca470",
+          "originalText": "Say you want to see a lot!",
+          "currentText": "Say you want to see a lot!",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "bd6f23fd-9759-4c29-b3bc-42b5acaec8be",
           "outcomeTypeWithLabel": {
             "id": "",
             "label": "",
@@ -3965,7 +4552,7 @@
         },
         {
           "submissionId": "844a9aa0-4fe0-4758-9692-f7de79dc1190",
-          "authorId": "f4da941d-7cb2-4743-86e1-07cc5b76513f",
+          "authorId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
           "originalText": "Say you hope your Drop group are all troublemakers!",
           "currentText": "Say you hope your Drop group are all troublemakers!",
           "additions": [],
@@ -3983,7 +4570,7 @@
         },
         {
           "submissionId": "b0bc2474-d532-449f-8661-3cc4cafed628",
-          "authorId": "f4da941d-7cb2-4743-86e1-07cc5b76513f",
+          "authorId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
           "originalText": "Say you hope your Drop group gets along!",
           "currentText": "Say you hope your Drop group gets along!",
           "additions": [],
@@ -4000,44 +4587,8 @@
           "finalized": false
         },
         {
-          "submissionId": "49fc71e1-9fe7-4664-a178-bf631f182460",
-          "authorId": "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84",
-          "originalText": "Choose the Ox",
-          "currentText": "Choose the Ox",
-          "additions": [],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "49fc71e1-9fe7-4664-a178-bf631f182460",
-          "outcomeTypeWithLabel": {
-            "id": "",
-            "label": "",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-          "authorId": "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84",
-          "originalText": "Choose the Lion",
-          "currentText": "Choose the Lion",
-          "additions": [],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-          "outcomeTypeWithLabel": {
-            "id": "",
-            "label": "",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
           "submissionId": "844a9aa0-4fe0-4758-9692-f7de79dc1190",
-          "authorId": "37f9fe1b-8de5-4156-bc50-ecc9da990ad0",
+          "authorId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
           "originalText": "Say you hope your Drop group are all troublemakers!",
           "currentText": "Say you hope your Drop group are all troublemakers!",
           "additions": [],
@@ -4055,7 +4606,7 @@
         },
         {
           "submissionId": "b0bc2474-d532-449f-8661-3cc4cafed628",
-          "authorId": "37f9fe1b-8de5-4156-bc50-ecc9da990ad0",
+          "authorId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
           "originalText": "Say you hope your Drop group gets along!",
           "currentText": "Say you hope your Drop group gets along!",
           "additions": [],
@@ -4072,41 +4623,28 @@
           "finalized": false
         }
       ],
-      "playerVotes": {
-        "32c44621-3222-46a5-a840-9775b7ef0158": [
-          {
-            "voteId": "",
-            "playerId": "32c44621-3222-46a5-a840-9775b7ef0158",
-            "submissionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-            "ranking": 1,
-            "votedAt": {
-              "seconds": 1783269002,
-              "nanos": 367000000
-            }
-          }
-        ]
-      },
+      "playerVotes": { },
       "playersWhoSubmitted": [
-        "32c44621-3222-46a5-a840-9775b7ef0158",
-        "f4da941d-7cb2-4743-86e1-07cc5b76513f",
-        "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84",
-        "37f9fe1b-8de5-4156-bc50-ecc9da990ad0"
+        "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+        "b2c95637-fba1-4575-9475-97aeb1aca470",
+        "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
+        "e15edf7b-9425-4eb4-bd50-710e165228fa"
       ],
       "playersWhoVoted": [
-        "32c44621-3222-46a5-a840-9775b7ef0158"
+        "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f"
       ],
       "finalResult": null,
       "submissionViews": {},
       "submissionsWithoutParentSubmissions": [
         {
-          "submissionId": "49fc71e1-9fe7-4664-a178-bf631f182460",
-          "authorId": "32c44621-3222-46a5-a840-9775b7ef0158",
-          "originalText": "Choose the Ox",
-          "currentText": "Choose the Ox",
+          "submissionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+          "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+          "originalText": "Say you want to learn a lot!",
+          "currentText": "Say you want to learn a lot!",
           "additions": [],
           "totalVotes": 0,
           "averageRanking": 0.0,
-          "outcomeType": "49fc71e1-9fe7-4664-a178-bf631f182460",
+          "outcomeType": "17db3eed-af19-4026-a5cd-d14e83d1f715",
           "outcomeTypeWithLabel": {
             "id": "",
             "label": "",
@@ -4117,14 +4655,50 @@
           "finalized": false
         },
         {
-          "submissionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-          "authorId": "32c44621-3222-46a5-a840-9775b7ef0158",
-          "originalText": "Choose the Lion",
-          "currentText": "Choose the Lion",
+          "submissionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+          "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+          "originalText": "Say you want to see a lot!",
+          "currentText": "Say you want to see a lot!",
           "additions": [],
           "totalVotes": 0,
           "averageRanking": 0.0,
-          "outcomeType": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
+          "outcomeType": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "6a8c0d44-a57d-4b51-b753-b76fd8734005",
+          "authorId": "b2c95637-fba1-4575-9475-97aeb1aca470",
+          "originalText": "Say you want to learn a lot!",
+          "currentText": "Say you want to learn a lot!",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "6a8c0d44-a57d-4b51-b753-b76fd8734005",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "bd6f23fd-9759-4c29-b3bc-42b5acaec8be",
+          "authorId": "b2c95637-fba1-4575-9475-97aeb1aca470",
+          "originalText": "Say you want to see a lot!",
+          "currentText": "Say you want to see a lot!",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "bd6f23fd-9759-4c29-b3bc-42b5acaec8be",
           "outcomeTypeWithLabel": {
             "id": "",
             "label": "",
@@ -4136,7 +4710,7 @@
         },
         {
           "submissionId": "844a9aa0-4fe0-4758-9692-f7de79dc1190",
-          "authorId": "f4da941d-7cb2-4743-86e1-07cc5b76513f",
+          "authorId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
           "originalText": "Say you hope your Drop group are all troublemakers!",
           "currentText": "Say you hope your Drop group are all troublemakers!",
           "additions": [],
@@ -4154,7 +4728,7 @@
         },
         {
           "submissionId": "b0bc2474-d532-449f-8661-3cc4cafed628",
-          "authorId": "f4da941d-7cb2-4743-86e1-07cc5b76513f",
+          "authorId": "43bc10eb-c05b-4aec-b0d1-38b2be2cd037",
           "originalText": "Say you hope your Drop group gets along!",
           "currentText": "Say you hope your Drop group gets along!",
           "additions": [],
@@ -4171,44 +4745,8 @@
           "finalized": false
         },
         {
-          "submissionId": "49fc71e1-9fe7-4664-a178-bf631f182460",
-          "authorId": "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84",
-          "originalText": "Choose the Ox",
-          "currentText": "Choose the Ox",
-          "additions": [],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "49fc71e1-9fe7-4664-a178-bf631f182460",
-          "outcomeTypeWithLabel": {
-            "id": "",
-            "label": "",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-          "authorId": "a5fbb968-569e-4ccf-a0d1-7ee1b5fe5c84",
-          "originalText": "Choose the Lion",
-          "currentText": "Choose the Lion",
-          "additions": [],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-          "outcomeTypeWithLabel": {
-            "id": "",
-            "label": "",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
           "submissionId": "844a9aa0-4fe0-4758-9692-f7de79dc1190",
-          "authorId": "37f9fe1b-8de5-4156-bc50-ecc9da990ad0",
+          "authorId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
           "originalText": "Say you hope your Drop group are all troublemakers!",
           "currentText": "Say you hope your Drop group are all troublemakers!",
           "additions": [],
@@ -4226,7 +4764,7 @@
         },
         {
           "submissionId": "b0bc2474-d532-449f-8661-3cc4cafed628",
-          "authorId": "37f9fe1b-8de5-4156-bc50-ecc9da990ad0",
+          "authorId": "e15edf7b-9425-4eb4-bd50-710e165228fa",
           "originalText": "Say you hope your Drop group gets along!",
           "currentText": "Say you hope your Drop group gets along!",
           "additions": [],
@@ -4251,42 +4789,6 @@
       "phaseType": null,
       "submissions": [
         {
-          "submissionId": "eaf42774-1a2e-4c8b-8289-2f0124438f9e",
-          "authorId": null,
-          "originalText": null,
-          "currentText": "",
-          "additions": [],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "542ca08f-f676-4a33-b747-dd29806ce2aa",
-          "outcomeTypeWithLabel": {
-            "id": "",
-            "label": "",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "82529af0-7b11-49da-a10d-708a7845ce1a",
-          "authorId": null,
-          "originalText": null,
-          "currentText": "",
-          "additions": [],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "542ca08f-f676-4a33-b747-dd29806ce2aa",
-          "outcomeTypeWithLabel": {
-            "id": "",
-            "label": "",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
           "submissionId": "da76e90a-8279-4ff2-b4ae-de8e59741246",
           "authorId": null,
           "originalText": null,
@@ -4349,6 +4851,42 @@
           "totalVotes": 0,
           "averageRanking": 0.0,
           "outcomeType": "a9f1dad4-e029-450b-96cf-f73e585da675",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "eaf42774-1a2e-4c8b-8289-2f0124438f9e",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "542ca08f-f676-4a33-b747-dd29806ce2aa",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "82529af0-7b11-49da-a10d-708a7845ce1a",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "542ca08f-f676-4a33-b747-dd29806ce2aa",
           "outcomeTypeWithLabel": {
             "id": "",
             "label": "",
@@ -4368,42 +4906,6 @@
       "submissionViews": {},
       "submissionsWithoutParentSubmissions": [
         {
-          "submissionId": "eaf42774-1a2e-4c8b-8289-2f0124438f9e",
-          "authorId": null,
-          "originalText": null,
-          "currentText": "",
-          "additions": [],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "542ca08f-f676-4a33-b747-dd29806ce2aa",
-          "outcomeTypeWithLabel": {
-            "id": "",
-            "label": "",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
-          "submissionId": "82529af0-7b11-49da-a10d-708a7845ce1a",
-          "authorId": null,
-          "originalText": null,
-          "currentText": "",
-          "additions": [],
-          "totalVotes": 0,
-          "averageRanking": 0.0,
-          "outcomeType": "542ca08f-f676-4a33-b747-dd29806ce2aa",
-          "outcomeTypeWithLabel": {
-            "id": "",
-            "label": "",
-            "clarifier": "",
-            "subTypes": [],
-            "headers": []
-          },
-          "finalized": false
-        },
-        {
           "submissionId": "da76e90a-8279-4ff2-b4ae-de8e59741246",
           "authorId": null,
           "originalText": null,
@@ -4466,6 +4968,42 @@
           "totalVotes": 0,
           "averageRanking": 0.0,
           "outcomeType": "a9f1dad4-e029-450b-96cf-f73e585da675",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "eaf42774-1a2e-4c8b-8289-2f0124438f9e",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "542ca08f-f676-4a33-b747-dd29806ce2aa",
+          "outcomeTypeWithLabel": {
+            "id": "",
+            "label": "",
+            "clarifier": "",
+            "subTypes": [],
+            "headers": []
+          },
+          "finalized": false
+        },
+        {
+          "submissionId": "82529af0-7b11-49da-a10d-708a7845ce1a",
+          "authorId": null,
+          "originalText": null,
+          "currentText": "",
+          "additions": [],
+          "totalVotes": 0,
+          "averageRanking": 0.0,
+          "outcomeType": "542ca08f-f676-4a33-b747-dd29806ce2aa",
           "outcomeTypeWithLabel": {
             "id": "",
             "label": "",
@@ -4488,7 +5026,21 @@
           "authorId": null,
           "originalText": null,
           "currentText": null,
-          "additions": [],
+          "additions": [
+            {
+              "additionId": "e3b63b55-caed-47f9-9eaf-fc5af7aae932",
+              "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+              "addedText": "Gain Experience",
+              "submissionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null,
+              "repercussion": {
+                "repercussionType": "Destiny",
+                "repercussionSubmission": "Gain Experience",
+                "color": "#FFD700"
+              }
+            }
+          ],
           "totalVotes": 0,
           "averageRanking": 0.0,
           "outcomeType": null,
@@ -4515,7 +5067,21 @@
           "authorId": null,
           "originalText": null,
           "currentText": null,
-          "additions": [],
+          "additions": [
+            {
+              "additionId": "e3b63b55-caed-47f9-9eaf-fc5af7aae932",
+              "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+              "addedText": "Gain Experience",
+              "submissionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+              "outcomeType": null,
+              "outcomeTypeWithLabel": null,
+              "repercussion": {
+                "repercussionType": "Destiny",
+                "repercussionSubmission": "Gain Experience",
+                "color": "#FFD700"
+              }
+            }
+          ],
           "totalVotes": 0,
           "averageRanking": 0.0,
           "outcomeType": null,
@@ -4533,22 +5099,22 @@
     }
   },
   "storyAtCurrentPlayerCoordinates": {
-    "storyId": "0e426d87-820b-4f1c-8f5b-7906183db716",
-    "prompt": "The drills have been intense in preparation for our descent into The Drop, but today has been oddly quiet. “Tonight is the night we’ve been preparing for.\" your captain barks. \"Those of you who return from The Drop will have proven your worth in the eyes of the Academy and in the eyes of the town.” He holds up two banners. “Each of you must choose your ceremonial guide for The Drop. Choose the beast which most represents the journey you intend to have inside.”",
-    "authorId": "32c44621-3222-46a5-a840-9775b7ef0158",
+    "storyId": "aea8d547-15a6-4f4f-b73b-9ea825703a30",
+    "prompt": "Class the morning before The Drop feels tense so your teacher attempts to lighten the mood by asking everyone questions about it. \"You know many people believe that the world inside The Drop changes based on your intention so it might help to go in with an idea of who you hope you become!\" she makes eye contact with you. \"Who do you hope to be when you grow older?\"",
+    "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
     "outcomeAuthorId": "",
     "prequelStorySucceeded": false,
     "prequelStoryId": "",
     "prequelStorySelectedOptionId": "",
-    "gameCode": "CFCPDJ",
+    "gameCode": "QUGNWZ",
     "mainPlotStory": false,
     "visited": true,
-    "playerId": "32c44621-3222-46a5-a840-9775b7ef0158",
+    "playerId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
     "playerIds": [
-      "32c44621-3222-46a5-a840-9775b7ef0158"
+      "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f"
     ],
     "partnerIds": [],
-    "selectedOptionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
+    "selectedOptionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
     "playerSucceeded": false,
     "prequelStoryPlayerId": "",
     "repercussions": null,
@@ -4557,13 +5123,13 @@
     "saveGameStory": false,
     "options": [
       {
-        "optionId": "49fc71e1-9fe7-4664-a178-bf631f182460",
-        "optionText": "Choose the Ox",
-        "attemptText": "Choose the Ox",
+        "optionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+        "optionText": "Say you want to learn a lot!",
+        "attemptText": "Say you want to learn a lot!",
         "statRequirement": null,
         "statDC": 0,
         "playerStatDCs": [],
-        "successText": "You take the banner of the Ox off the top of the pile. \"Very well. Keep it close and it will give you the energy to do the work to persevere with your friends.\"",
+        "successText": "\"Very good! I'm so glad my lessons have made you yearn to learn!\" she chuckles to herself before moving on to the next student.",
         "outcomeAuthorId": "",
         "successResults": [],
         "failureText": "",
@@ -4579,7 +5145,21 @@
               "authorId": null,
               "originalText": null,
               "currentText": null,
-              "additions": [],
+              "additions": [
+                {
+                  "additionId": "aa0ae777-ba6b-4932-bc83-98c40335eb4e",
+                  "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+                  "addedText": "Gain Knowledge",
+                  "submissionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+                  "outcomeType": null,
+                  "outcomeTypeWithLabel": null,
+                  "repercussion": {
+                    "repercussionType": "Destiny",
+                    "repercussionSubmission": "Gain Knowledge",
+                    "color": "#FFD700"
+                  }
+                }
+              ],
               "totalVotes": 0,
               "averageRanking": 0.0,
               "outcomeType": null,
@@ -4595,7 +5175,7 @@
             "repercussions": [
               {
                 "repercussionType": "Destiny",
-                "repercussionSubmission": "Become Dependable",
+                "repercussionSubmission": "Gain Knowledge",
                 "color": "#FFD700"
               }
             ]
@@ -4604,13 +5184,13 @@
         "selectedForkId": ""
       },
       {
-        "optionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-        "optionText": "Choose the Lion",
-        "attemptText": "Choose the Lion",
+        "optionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+        "optionText": "Say you want to see a lot!",
+        "attemptText": "Say you want to see a lot!",
         "statRequirement": null,
         "statDC": 0,
         "playerStatDCs": [],
-        "successText": "You select the banner of the roaring Lion from the leftmost pile. \"Okay then. May the Lion give you the strength to do what must be done when your choices become more difficult.\"",
+        "successText": "\"Hm\" she ponders. \"Well you're very likely to get your wish in The Drop! I certainly did...\" she trails off for a moment before moving on.",
         "outcomeAuthorId": "",
         "successResults": [],
         "failureText": "",
@@ -4626,7 +5206,21 @@
               "authorId": null,
               "originalText": null,
               "currentText": null,
-              "additions": [],
+              "additions": [
+                {
+                  "additionId": "e3b63b55-caed-47f9-9eaf-fc5af7aae932",
+                  "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+                  "addedText": "Gain Experience",
+                  "submissionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+                  "outcomeType": null,
+                  "outcomeTypeWithLabel": null,
+                  "repercussion": {
+                    "repercussionType": "Destiny",
+                    "repercussionSubmission": "Gain Experience",
+                    "color": "#FFD700"
+                  }
+                }
+              ],
               "totalVotes": 0,
               "averageRanking": 0.0,
               "outcomeType": null,
@@ -4639,15 +5233,21 @@
               },
               "finalized": false
             },
-            "repercussions": []
+            "repercussions": [
+              {
+                "repercussionType": "Destiny",
+                "repercussionSubmission": "Gain Experience",
+                "color": "#FFD700"
+              }
+            ]
           }
         ],
         "selectedForkId": ""
       }
     ],
     "encounterLabel": {
-      "encounterId": "cee51dda-d0eb-414c-b8b6-ae1c31c97076",
-      "encounterLabel": "Owl Rank Captain",
+      "encounterId": "fcdb36f7-b41d-4d2a-ba03-0ffd5b19dbae",
+      "encounterLabel": "Your Teacher",
       "textSubmission": {
         "submissionId": null,
         "authorId": null,
@@ -4670,13 +5270,13 @@
     },
     "location": {
       "locationId": 0,
-      "description": "Blocks of smooth sandstone draped in regal blues and reds stand staunchly off the town center as a symbol of the need to be prepared for anything. Children play war games in the front garden without an understanding of their implications.",
+      "description": "The red brick old schoolhouse sits on a hill between town and The Drop. Other kids gather uncertainly at the front door, whispering about the upcoming festival. ",
       "locationIndex": 0,
-      "id": "542ca08f-f676-4a33-b747-dd29806ce2aa",
-      "label": "The Knights Academy",
+      "id": "1fabde4f-91af-4272-bd28-135d0631e227",
+      "label": "The Schoolhouse",
       "options": [
         {
-          "optionId": "eaf42774-1a2e-4c8b-8289-2f0124438f9e",
+          "optionId": "da76e90a-8279-4ff2-b4ae-de8e59741246",
           "optionText": "",
           "attemptText": "",
           "statRequirement": null,
@@ -4695,7 +5295,7 @@
           "selectedForkId": ""
         },
         {
-          "optionId": "82529af0-7b11-49da-a10d-708a7845ce1a",
+          "optionId": "77f8493e-b4b4-4a88-a3ed-187aabca5a1c",
           "optionText": "",
           "attemptText": "",
           "statRequirement": null,
@@ -4714,14 +5314,14 @@
           "selectedForkId": ""
         }
       ],
-      "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/Apothecary.png",
+      "iconDirectory": "https://storage.googleapis.com/nowhere_images/location_icons/School.png",
       "authorId": null,
       "selectedOptionId": null,
       "traits": [
         {
-          "traitId": "4f51389a-de92-4595-87fc-960a2b30ad5b",
-          "traitLabel": "squire",
-          "traitType": "TITLE",
+          "traitId": "cfa76ee5-3f44-4c76-bcc8-24ad5bf3c0f9",
+          "traitLabel": "curious",
+          "traitType": "STANDARD",
           "textSubmission": {
             "submissionId": null,
             "authorId": null,
@@ -4746,7 +5346,7 @@
       "startingStories": [
         {
           "storyId": "",
-          "prompt": "The drills have been intense in preparation for our descent into The Drop, but today has been oddly quiet. “Tonight is the night we’ve been preparing for.\" your captain barks. \"Those of you who return from The Drop will have proven your worth in the eyes of the Academy and in the eyes of the town.” He holds up two banners. “Each of you must choose your ceremonial guide for The Drop. Choose the beast which most represents the journey you intend to have inside.”",
+          "prompt": "Class the morning before The Drop feels tense so your teacher attempts to lighten the mood by asking everyone questions about it. \"You know many people believe that the world inside The Drop changes based on your intention so it might help to go in with an idea of who you hope you become!\" she makes eye contact with you. \"Who do you hope to be when you grow older?\"",
           "authorId": "",
           "outcomeAuthorId": "",
           "prequelStorySucceeded": false,
@@ -4767,13 +5367,13 @@
           "saveGameStory": false,
           "options": [
             {
-              "optionId": "49fc71e1-9fe7-4664-a178-bf631f182460",
-              "optionText": "Choose the Ox",
+              "optionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+              "optionText": "Say you want to learn a lot!",
               "attemptText": "",
               "statRequirement": null,
               "statDC": 0,
               "playerStatDCs": [],
-              "successText": "You take the banner of the Ox off the top of the pile. \"Very well. Keep it close and it will give you the energy to do the work to persevere with your friends.\"",
+              "successText": "\"Very good! I'm so glad my lessons have made you yearn to learn!\" she chuckles to herself before moving on to the next student.",
               "outcomeAuthorId": "",
               "successResults": [],
               "failureText": "",
@@ -4789,7 +5389,21 @@
                     "authorId": null,
                     "originalText": null,
                     "currentText": null,
-                    "additions": [],
+                    "additions": [
+                      {
+                        "additionId": "aa0ae777-ba6b-4932-bc83-98c40335eb4e",
+                        "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+                        "addedText": "Gain Knowledge",
+                        "submissionId": "17db3eed-af19-4026-a5cd-d14e83d1f715",
+                        "outcomeType": null,
+                        "outcomeTypeWithLabel": null,
+                        "repercussion": {
+                          "repercussionType": "Destiny",
+                          "repercussionSubmission": "Gain Knowledge",
+                          "color": "#FFD700"
+                        }
+                      }
+                    ],
                     "totalVotes": 0,
                     "averageRanking": 0.0,
                     "outcomeType": null,
@@ -4805,7 +5419,7 @@
                   "repercussions": [
                     {
                       "repercussionType": "Destiny",
-                      "repercussionSubmission": "Become Dependable",
+                      "repercussionSubmission": "Gain Knowledge",
                       "color": "#FFD700"
                     }
                   ]
@@ -4814,13 +5428,13 @@
               "selectedForkId": ""
             },
             {
-              "optionId": "d8b5768f-c8b7-48bf-9ea7-f6a957484348",
-              "optionText": "Choose the Lion",
+              "optionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+              "optionText": "Say you want to see a lot!",
               "attemptText": "",
               "statRequirement": null,
               "statDC": 0,
               "playerStatDCs": [],
-              "successText": "You select the banner of the roaring Lion from the leftmost pile. \"Okay then. May the Lion give you the strength to do what must be done when your choices become more difficult.\"",
+              "successText": "\"Hm\" she ponders. \"Well you're very likely to get your wish in The Drop! I certainly did...\" she trails off for a moment before moving on.",
               "outcomeAuthorId": "",
               "successResults": [],
               "failureText": "",
@@ -4836,7 +5450,21 @@
                     "authorId": null,
                     "originalText": null,
                     "currentText": null,
-                    "additions": [],
+                    "additions": [
+                      {
+                        "additionId": "e3b63b55-caed-47f9-9eaf-fc5af7aae932",
+                        "authorId": "75c21c2f-7904-4bbd-9b46-1e5b74d5e01f",
+                        "addedText": "Gain Experience",
+                        "submissionId": "95cb67a9-7d5a-45b9-93a2-8edcf7ed1413",
+                        "outcomeType": null,
+                        "outcomeTypeWithLabel": null,
+                        "repercussion": {
+                          "repercussionType": "Destiny",
+                          "repercussionSubmission": "Gain Experience",
+                          "color": "#FFD700"
+                        }
+                      }
+                    ],
                     "totalVotes": 0,
                     "averageRanking": 0.0,
                     "outcomeType": null,
@@ -4852,7 +5480,7 @@
                   "repercussions": [
                     {
                       "repercussionType": "Destiny",
-                      "repercussionSubmission": "Become Strong",
+                      "repercussionSubmission": "Gain Experience",
                       "color": "#FFD700"
                     }
                   ]
@@ -4862,8 +5490,150 @@
             }
           ],
           "encounterLabel": {
-            "encounterId": "cee51dda-d0eb-414c-b8b6-ae1c31c97076",
-            "encounterLabel": "Owl Rank Captain",
+            "encounterId": "fcdb36f7-b41d-4d2a-ba03-0ffd5b19dbae",
+            "encounterLabel": "Your Teacher",
+            "textSubmission": {
+              "submissionId": null,
+              "authorId": null,
+              "originalText": null,
+              "currentText": null,
+              "additions": [],
+              "totalVotes": 0,
+              "averageRanking": 0.0,
+              "outcomeType": null,
+              "outcomeTypeWithLabel": {
+                "id": "",
+                "label": "",
+                "clarifier": "",
+                "subTypes": [],
+                "headers": []
+              },
+              "finalized": false
+            },
+            "locationId": null
+          },
+          "location": null
+        },
+        {
+          "storyId": "",
+          "prompt": "Your teacher turns to you now. \"And how about you? What do you hope to gain?\"",
+          "authorId": "",
+          "outcomeAuthorId": "",
+          "prequelStorySucceeded": false,
+          "prequelStoryId": "",
+          "prequelStorySelectedOptionId": "",
+          "gameCode": "",
+          "mainPlotStory": false,
+          "visited": false,
+          "playerId": "",
+          "playerIds": [],
+          "partnerIds": [],
+          "selectedOptionId": "",
+          "playerSucceeded": false,
+          "prequelStoryPlayerId": "",
+          "repercussions": null,
+          "prequelOutcomeDisplay": null,
+          "sequelStory": false,
+          "saveGameStory": false,
+          "options": [
+            {
+              "optionId": "6a8c0d44-a57d-4b51-b753-b76fd8734005",
+              "optionText": "Say you want to learn a lot!",
+              "attemptText": "",
+              "statRequirement": null,
+              "statDC": 0,
+              "playerStatDCs": [],
+              "successText": "\"Very good! I'm so glad my lessons have made you yearn to learn^!\" she chuckles to herself before moving on to the next student.",
+              "outcomeAuthorId": "",
+              "successResults": [],
+              "failureText": "",
+              "failureResults": [],
+              "selectedByPlayerId": null,
+              "playerSucceeded": false,
+              "pointsRewarded": 0,
+              "successMarginText": "",
+              "outcomeForks": [
+                {
+                  "textSubmission": {
+                    "submissionId": null,
+                    "authorId": null,
+                    "originalText": null,
+                    "currentText": null,
+                    "additions": [],
+                    "totalVotes": 0,
+                    "averageRanking": 0.0,
+                    "outcomeType": null,
+                    "outcomeTypeWithLabel": {
+                      "id": "",
+                      "label": "",
+                      "clarifier": "",
+                      "subTypes": [],
+                      "headers": []
+                    },
+                    "finalized": false
+                  },
+                  "repercussions": [
+                    {
+                      "repercussionType": "Destiny",
+                      "repercussionSubmission": "Gain Knowledge",
+                      "color": "#FFD700"
+                    }
+                  ]
+                }
+              ],
+              "selectedForkId": ""
+            },
+            {
+              "optionId": "bd6f23fd-9759-4c29-b3bc-42b5acaec8be",
+              "optionText": "Say you want to see a lot!",
+              "attemptText": "",
+              "statRequirement": null,
+              "statDC": 0,
+              "playerStatDCs": [],
+              "successText": "\"Hm\" she ponders. \"Well you're very likely to get your wish in The Drop! I certainly did...\" she trails off for a moment before moving on.",
+              "outcomeAuthorId": "",
+              "successResults": [],
+              "failureText": "",
+              "failureResults": [],
+              "selectedByPlayerId": null,
+              "playerSucceeded": false,
+              "pointsRewarded": 0,
+              "successMarginText": "",
+              "outcomeForks": [
+                {
+                  "textSubmission": {
+                    "submissionId": null,
+                    "authorId": null,
+                    "originalText": null,
+                    "currentText": null,
+                    "additions": [],
+                    "totalVotes": 0,
+                    "averageRanking": 0.0,
+                    "outcomeType": null,
+                    "outcomeTypeWithLabel": {
+                      "id": "",
+                      "label": "",
+                      "clarifier": "",
+                      "subTypes": [],
+                      "headers": []
+                    },
+                    "finalized": false
+                  },
+                  "repercussions": [
+                    {
+                      "repercussionType": "Destiny",
+                      "repercussionSubmission": "Gain Experience",
+                      "color": "#FFD700"
+                    }
+                  ]
+                }
+              ],
+              "selectedForkId": ""
+            }
+          ],
+          "encounterLabel": {
+            "encounterId": "9a3f43a8-312b-426a-a5d3-badd16b96e6e",
+            "encounterLabel": "Your Teacher",
             "textSubmission": {
               "submissionId": null,
               "authorId": null,
