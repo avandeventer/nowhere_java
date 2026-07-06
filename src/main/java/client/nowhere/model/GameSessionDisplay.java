@@ -6,6 +6,7 @@ public class GameSessionDisplay {
     String playerTitle;
     String playerDescription;
     String endingDescription;
+    String midwayDescription;
     String successText;
     String neutralText;
     String failureText;
@@ -21,6 +22,7 @@ public class GameSessionDisplay {
         this.goalDescription = "";
         this.playerTitle = "";
         this.playerDescription = "";
+        this.midwayDescription = "";
         this.endingDescription = "";
         this.successText = "";
         this.neutralText = "";
@@ -94,6 +96,14 @@ public class GameSessionDisplay {
 
     public void setPlayerDescription(String playerDescription) {
         this.playerDescription = playerDescription;
+    }
+
+    public String getMidwayDescription() {
+        return midwayDescription;
+    }
+
+    public void setMidwayDescription(String midwayDescription) {
+        this.midwayDescription = midwayDescription;
     }
 
     public String getEndingDescription() {

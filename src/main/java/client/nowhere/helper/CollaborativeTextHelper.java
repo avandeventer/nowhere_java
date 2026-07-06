@@ -924,13 +924,18 @@ public class CollaborativeTextHelper {
             CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhases().get(phaseId);
             List<Location> selectedLocations = new ArrayList<>();
             boolean isRoundZero = gameSession.getRoundNumber() == 0;
+            if (gameSession.getRoundNumber() == 1) {
+                collaborativeTextDAO.clearPhase(gameCode, GameState.LOCATION_VOTING.name(), true);
+                phase.resetAll();
+            }
+
             if (phase == null || phase.getSubmissions().isEmpty()) {
                 List<Player> players = gameSession.getPlayers();
                 int playerCount = players != null ? players.size() : 0;
                 if (playerCount == 0) return;
                 List<Location> filteredLocations = adventureMap.getLocations().stream()
                         .filter(l -> isRoundZero == l.isStartingLocation())
-                        .collect(Collectors.toList());
+                        .toList();
                 List<Location> candidateLocations = new ArrayList<>(filteredLocations);
                 Collections.shuffle(candidateLocations);
                 selectedLocations = candidateLocations.subList(0, Math.min(playerCount, candidateLocations.size()));
@@ -1965,7 +1970,7 @@ public class CollaborativeTextHelper {
             ? gameSessionDisplay.getEntity() 
             : "the Entity";
 
-        PhaseBaseInfo baseInfo = gameState.getPhaseBaseInfo(entityName, gameSession.getRoundNumber());
+        PhaseBaseInfo baseInfo = gameState.getPhaseBaseInfo(entityName, gameSession.getRoundNumber(), gameSessionDisplay);
         PhaseType phaseType = determinePhaseType(gameState, baseInfo);
 
         String phaseInstructions = getPhaseInstructionsForMode(gameState, phaseType, baseInfo);

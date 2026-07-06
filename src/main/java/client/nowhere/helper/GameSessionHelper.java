@@ -91,7 +91,7 @@ public class GameSessionHelper {
         }
 
         try {
-            PhaseBaseInfo phaseBaseInfo = gameSession.getGameState().getPhaseBaseInfo("", gameSession.getRoundNumber());
+            PhaseBaseInfo phaseBaseInfo = gameSession.getGameState().getPhaseBaseInfo("", gameSession.getRoundNumber(), gameSession.getAdventureMap().getGameSessionDisplay());
 
             List<Player> players = existingSession.getPlayers();
             ActiveGameStateSession gameStateSession =
