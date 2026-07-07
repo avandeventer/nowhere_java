@@ -19,6 +19,10 @@ public enum TraitType {
     RELATIONSHIP (
             "Relationship",
             "E981AE"
+    ),
+    DESTINY (
+            "Destiny",
+            "#FFD700"
     );
 
     @Getter

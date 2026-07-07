@@ -91,7 +91,7 @@ public class GameSessionHelper {
         }
 
         try {
-            PhaseBaseInfo phaseBaseInfo = gameSession.getGameState().getPhaseBaseInfo("", gameSession.getRoundNumber());
+            PhaseBaseInfo phaseBaseInfo = gameSession.getGameState().getPhaseBaseInfo("", gameSession.getRoundNumber(), gameSession.getAdventureMap().getGameSessionDisplay());
 
             List<Player> players = existingSession.getPlayers();
             ActiveGameStateSession gameStateSession =
@@ -148,26 +148,6 @@ public class GameSessionHelper {
                         if (!saveGameId.isEmpty()) {
                             gameSession.setSaveGameId(saveGameId);
                         }
-                    }
-
-                    if (gameSession.getAdventureMap() != null
-                            && gameSession.getAdventureMap().getLocations() != null
-                            && gameSession.getAdventureMap().getLocations().size() > 5) {
-                        List<Location> allLocations = new ArrayList<>(gameSession.getAdventureMap().getLocations());
-                        
-                        Collections.shuffle(allLocations, new Random());
-                        List<Location> selectedLocations = allLocations.subList(0, 5);
-                        List<Location> unusedLocations = allLocations.subList(5, allLocations.size());
-                        
-                        gameSession.getAdventureMap().setLocations(new ArrayList<>(selectedLocations));
-                        
-                        if (gameSession.getAdventureMap().getUnusedLocations() == null) {
-                            gameSession.getAdventureMap().setUnusedLocations(new ArrayList<>());
-                        }
-                        
-                        gameSession.getAdventureMap().getUnusedLocations().addAll(new ArrayList<>(unusedLocations));
-                        
-                        adventureMapDAO.updateSessionAdventureMap(gameSession.getGameCode(), gameSession.getAdventureMap());
                     }
                     break;
                 case GENERATE_WRITE_PROMPT_AUTHORS:
@@ -268,9 +248,20 @@ public class GameSessionHelper {
                     collaborativeTextHelper.initializeLocationVoting(gameSession.getGameCode());
                     break;
                 case SET_ENCOUNTERS:
-                    if (locationVoting && gameSession.getRoundNumber() >= 2) {
+                    if (gameSession.getRoundNumber() == 0) {
+                        collaborativeTextHelper.handleRoundZeroBoard(gameSession);
+                        ActivePlayerSession playerSession = gameSession.getActivePlayerSession();
+                        playerSession.setGameCode(gameSession.getGameCode());
+                        GameSession refreshedSession = gameSessionDAO.getGame(gameSession.getGameCode());
+                        Location playerLocation = refreshedSession.getStoryAtCurrentPlayerCoordinates().getLocation();
+                        collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), playerLocation, playerSession);
+                        gameSession.setGameState(NAVIGATE_WINNER);
+                    } else if (locationVoting && gameSession.getRoundNumber() >= 2) {
                         gameSession.setGameState(WHAT_HAPPENS_HERE);
                     }
+                    break;
+                case DEFINING_TRAITS_VOTING:
+                    collaborativeTextHelper.initializeDefiningTraits(gameSession.getGameCode());
                     break;
                 case NAVIGATE_WINNER:
                     Story lastEncounterStory = gameSession.getStoryAtCurrentPlayerCoordinates();
@@ -287,7 +278,7 @@ public class GameSessionHelper {
                             } else {
                                 ActivePlayerSession navigateWinnerSession = gameSession.getActivePlayerSession();
                                 navigateWinnerSession.setGameCode(gameSession.getGameCode());
-                                collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), nextEncounterStory, navigateWinnerSession);
+                                collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), nextEncounterStory.getLocation(), navigateWinnerSession);
                             }
                         } else {
                             if (gameSession.getRoundNumber() < 2) {
@@ -305,7 +296,7 @@ public class GameSessionHelper {
                         if (lastEncounterStory != null) {
                             ActivePlayerSession navigateWinnerSession = gameSession.getActivePlayerSession();
                             navigateWinnerSession.setGameCode(gameSession.getGameCode());
-                            collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), lastEncounterStory, navigateWinnerSession);
+                            collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), lastEncounterStory.getLocation(), navigateWinnerSession);
                         }
                     }
                     break;
@@ -671,6 +662,7 @@ public class GameSessionHelper {
     }
 
     private boolean shouldSkipPartnerChoicePhases(GameSession gameSession, Story nextEncounterStory) {
+        if(gameSession.getRoundNumber() == 0) return true;
         if (nextEncounterStory == null) return true;
         if (!nextEncounterStory.getPartnerIds().isEmpty()) return true;
 

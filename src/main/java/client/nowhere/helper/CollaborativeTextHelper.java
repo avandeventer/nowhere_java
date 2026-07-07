@@ -149,8 +149,8 @@ public class CollaborativeTextHelper {
             case GameState.HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> {
                 return phase.getSubmissionsWithoutParentSubmissions();
             }
-            case GameState.LOCATION_VOTING -> {
-                // Each player's vote is their own winner — return all submissions
+            case GameState.LOCATION_VOTING, GameState.DEFINING_TRAITS_VOTING -> {
+                // Each player's selection is their own winner — return all submissions
                 return new ArrayList<>(phase.getSubmissions());
             }
             default -> {
@@ -631,6 +631,7 @@ public class CollaborativeTextHelper {
                 }
                 case GameState.SET_ENCOUNTERS -> addAllSubmissionsToAdventureMap(gameCode, winningSubmissions);
                 case GameState.LOCATION_VOTING -> handleLocationVoting(gameSession);
+                case GameState.DEFINING_TRAITS_VOTING -> handleDefiningTraitsInternal(gameSession, winningSubmissions);
                 case GameState.WHAT_HAPPENS_HERE -> handleWhatHappensHereStreamlined(gameSession, winningSubmissions);
                 case GameState.HOW_DOES_THIS_RESOLVE, GameState.HOW_DOES_THIS_RESOLVE_AGAIN -> handleHowDoesThisResolve(gameSession, winningSubmissions);
                 case GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING -> handleLocationOptionMakeChoiceVoting(gameSession, winningSubmissions);
@@ -656,16 +657,25 @@ public class CollaborativeTextHelper {
                 : gameSession.getEndings().stream().map(Ending::getEndingBody).toList();
         winningSubmissions.forEach(sub -> {
             OutcomeType outcomeTypeWithLabel = sub.getOutcomeTypeWithLabel();
-            OutcomeType storySubType = outcomeTypeWithLabel.getSubTypes().getFirst().getSubTypes().getFirst();
-            List<Story> associatedStories = storyDAO.getAuthorStoriesByStoryId(gameCode, storySubType.getId());
+            List<Story> associatedStories = new ArrayList<>();
+            if (outcomeTypeWithLabel != null
+                    && outcomeTypeWithLabel.getSubTypes() != null
+                    && !outcomeTypeWithLabel.getSubTypes().isEmpty()) {
+                OutcomeType firstSubType = outcomeTypeWithLabel.getSubTypes().getFirst();
+                if (firstSubType != null && firstSubType.getSubTypes() != null && !firstSubType.getSubTypes().isEmpty()) {
+                    OutcomeType storySubType = firstSubType.getSubTypes().getFirst();
+                    associatedStories = storyDAO.getAuthorStoriesByStoryId(gameCode, storySubType.getId());
+                }
+            }
 
             if (!existingEndingBodies.contains(sub.getCurrentText())) {
                 Ending ending = new Ending();
-                ending.setPlayerId(outcomeTypeWithLabel.getId());
-                ending.setPlayerUsername(outcomeTypeWithLabel.getLabel());
+                ending.setPlayerId(outcomeTypeWithLabel != null ? outcomeTypeWithLabel.getId() : null);
+                ending.setPlayerUsername(outcomeTypeWithLabel != null ? outcomeTypeWithLabel.getLabel() : null);
                 ending.setAuthorId(sub.getAuthorId());
                 ending.setEndingBody(sub.getCurrentText());
                 ending.setAssociatedStories(associatedStories);
+                ending.setDidWeSucceed("DESTINY_ACHIEVED".equals(sub.getOutcomeType()));
 
                 endingDAO.createEnding(gameCode, ending);
             }
@@ -723,6 +733,7 @@ public class CollaborativeTextHelper {
                 .filter(a -> (
                         RepercussionType.TRAIT.getName().equals(a.getRepercussionType())
                         || RepercussionType.TITLE.getName().equals(a.getRepercussionType())
+                        || RepercussionType.DESTINY.getName().equals(a.getRepercussionType())
                 ))
                 .map(Trait::new)
                 .toList());
@@ -831,6 +842,9 @@ public class CollaborativeTextHelper {
         if (trait.getTraitType() == TraitType.COMPANION) {
             return "companion";
         }
+        if (trait.getTraitType() == TraitType.DESTINY) {
+            return "destiny";
+        }
         return "trait";
     }
 
@@ -909,11 +923,20 @@ public class CollaborativeTextHelper {
             String phaseId = GameState.LOCATION_VOTING.name();
             CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhases().get(phaseId);
             List<Location> selectedLocations = new ArrayList<>();
+            boolean isRoundZero = gameSession.getRoundNumber() == 0;
+            if (gameSession.getRoundNumber() == 1) {
+                collaborativeTextDAO.clearPhase(gameCode, GameState.LOCATION_VOTING.name(), true);
+                phase.resetAll();
+            }
+
             if (phase == null || phase.getSubmissions().isEmpty()) {
                 List<Player> players = gameSession.getPlayers();
                 int playerCount = players != null ? players.size() : 0;
                 if (playerCount == 0) return;
-                List<Location> candidateLocations = new ArrayList<>(adventureMap.getLocations());
+                List<Location> filteredLocations = adventureMap.getLocations().stream()
+                        .filter(l -> isRoundZero == l.isStartingLocation())
+                        .toList();
+                List<Location> candidateLocations = new ArrayList<>(filteredLocations);
                 Collections.shuffle(candidateLocations);
                 selectedLocations = candidateLocations.subList(0, Math.min(playerCount, candidateLocations.size()));
 
@@ -1033,9 +1056,7 @@ public class CollaborativeTextHelper {
         }
     }
 
-    void setLocationTraitOutcomeDisplay(List<Player> players, Story story, ActivePlayerSession activePlayerSession) {
-        Location playerLocation = story.getLocation();
-
+    void setLocationTraitOutcomeDisplay(List<Player> players, Location playerLocation, ActivePlayerSession activePlayerSession) {
         if (playerLocation == null) return;
 
         List<Player> playersAtCurrentLocation = players.stream()
@@ -1949,7 +1970,7 @@ public class CollaborativeTextHelper {
             ? gameSessionDisplay.getEntity() 
             : "the Entity";
 
-        PhaseBaseInfo baseInfo = gameState.getPhaseBaseInfo(entityName, gameSession.getRoundNumber());
+        PhaseBaseInfo baseInfo = gameState.getPhaseBaseInfo(entityName, gameSession.getRoundNumber(), gameSessionDisplay);
         PhaseType phaseType = determinePhaseType(gameState, baseInfo);
 
         String phaseInstructions = getPhaseInstructionsForMode(gameState, phaseType, baseInfo);
@@ -2265,16 +2286,43 @@ public class CollaborativeTextHelper {
 
                 assignedStoryOutcomeType.setSubTypes(allSubTypes);
                 return List.of(assignedStoryOutcomeType);
+            } else if (phaseId == GameState.DEFINING_TRAITS_VOTING) {
+                Player player = gameSession.getPlayers().stream()
+                        .filter(p -> p.getAuthorId().equals(playerId))
+                        .findFirst().orElse(null);
+                if (player == null || player.getTraits() == null) return new ArrayList<>();
+                return player.getTraits().stream()
+                        .map(trait -> {
+                            OutcomeType ot = new OutcomeType(trait.getTraitId(), trait.getTraitLabel());
+                            String clarifier = (player.getSelectedLocationId() != null) ? player.getSelectedLocationId() : "";
+                            ot.setClarifier(clarifier);
+                            return ot;
+                        })
+                        .collect(Collectors.toList());
             } else if (phaseId == GameState.WRITE_EPILOGUES){
                 int offsetValue = phaseId.getOutcomeTypeOffset(gameSession.getPlayers().size());
                 PlayerSortResult playerSortResult = OutcomeTypeHelper.getPlayerAssignment(gameSession, playerId, offsetValue);
 
                 Player assignedPlayer = playerSortResult.getAssignedAuthor();
-                List<Story> assignedStories = gameSession.getStories().stream().filter(story -> story.isVisited()
-                        && story.getPlayerIds().contains(assignedPlayer.getAuthorId())).toList();
-                List<OutcomeType> outcomeTypes = assignedStories.stream()
-                        .map(CollaborativeTextHelper::convertToOutcomeType)
-                        .filter(Objects::nonNull).toList();
+                List<DefiningTrait> definingTraits = assignedPlayer.getDefiningTraits();
+
+                List<OutcomeType> outcomeTypes;
+                if (definingTraits != null && !definingTraits.isEmpty()) {
+                    outcomeTypes = definingTraits.stream()
+                            .map(dt -> {
+                                OutcomeType ot = new OutcomeType(dt.getTraitName(), dt.getTraitName());
+                                ot.setClarifier(dt.getSourceStoryId());
+                                return ot;
+                            })
+                            .collect(Collectors.toList());
+                } else {
+                    // Fall back to visited stories if no defining traits set
+                    List<Story> assignedStories = gameSession.getStories().stream().filter(story -> story.isVisited()
+                            && story.getPlayerIds().contains(assignedPlayer.getAuthorId())).toList();
+                    outcomeTypes = assignedStories.stream()
+                            .map(CollaborativeTextHelper::convertToOutcomeType)
+                            .filter(Objects::nonNull).collect(Collectors.toList());
+                }
                 OutcomeType playerOutcome = new OutcomeType(
                         assignedPlayer.getAuthorId(),
                         assignedPlayer.getDisplayName()
@@ -2594,6 +2642,164 @@ public class CollaborativeTextHelper {
         OutcomeType storyOutcomeType = new OutcomeType(assignedStoryId, storyPrompt);
         storyOutcomeType.setSubTypes(preCannedSubTypes);
         return List.of(storyOutcomeType);
+    }
+
+    public void handleRoundZeroBoard(GameSession gameSession) {
+        try {
+            String gameCode = gameSession.getGameCode();
+            AdventureMap adventureMap = gameSession.getAdventureMap();
+            if (adventureMap == null) return;
+
+            GameBoard gameBoard = gameSession.getGameBoard();
+            if (gameBoard == null) {
+                gameBoard = new GameBoard();
+                gameSession.setGameBoard(gameBoard);
+            }
+            PlayerCoordinates playerCoords = gameBoard.getPlayerCoordinates();
+            if (playerCoords == null) {
+                playerCoords = new PlayerCoordinates(0, 0);
+                gameBoard.setPlayerCoordinates(playerCoords);
+            }
+            int currentX = playerCoords.getxCoordinate();
+            int y = playerCoords.getyCoordinate();
+
+            List<Player> players = gameSession.getPlayers() == null ? new ArrayList<>() : gameSession.getPlayers()
+                    .stream()
+                    .filter(p -> p.getJoinedAt() != null)
+                    .sorted(Comparator.comparing(Player::getSelectedLocationId, Comparator.nullsLast(Comparator.naturalOrder())))
+                    .toList();
+
+            Map<String, Integer> locationPlayerCount = new HashMap<>();
+            List<TextSubmission> storyOptionSubmissions = new ArrayList<>();
+
+            for (int i = 0; i < players.size(); i++) {
+                Player player = players.get(i);
+                String locationId = player.getSelectedLocationId();
+                if (locationId == null) continue;
+
+                Location location = adventureMap.getLocations().stream()
+                        .filter(l -> l.getId().equals(locationId))
+                        .findFirst().orElse(null);
+                if (location == null || location.getStartingStories() == null || location.getStartingStories().isEmpty()) continue;
+
+                int countForLocation = locationPlayerCount.getOrDefault(locationId, 0);
+                int storyIndex = Math.min(countForLocation, location.getStartingStories().size() - 1);
+                locationPlayerCount.put(locationId, countForLocation + 1);
+
+                Story template = location.getStartingStories().get(storyIndex);
+                List<Option> options = template.getOptions() == null ? new ArrayList<>() : template.getOptions();
+
+                Story story = new Story();
+                story.setNewStoryId();
+                story.setPrompt(template.getPrompt());
+                story.setOptions(options);
+                story.setGameCode(gameCode);
+                Location storyLocation = new Location(location.getId(), location.getLabel(), location.getDescription(), location.getOptions(), location.getIconDirectory());
+                storyLocation.setLocationId(location.getLocationId());
+                storyLocation.setLocationIndex(location.getLocationIndex());
+                storyLocation.setAuthorId(location.getAuthorId());
+                storyLocation.setSelectedOptionId(location.getSelectedOptionId());
+                storyLocation.setTraits(location.getTraits());
+                storyLocation.setStartingLocation(location.isStartingLocation());
+                story.setLocation(storyLocation);
+                story.setAuthorId(player.getAuthorId());
+                story.setPlayerId(player.getAuthorId());
+                story.setPlayerIds(new ArrayList<>(List.of(player.getAuthorId())));
+                story.setCreatedAt(Timestamp.now());
+
+                EncounterLabel encounterLabel = template.getEncounterLabel() != null
+                        ? template.getEncounterLabel()
+                        : new EncounterLabel(location.getId(), location.getLabel());
+                story.setEncounterLabel(encounterLabel);
+
+                for (Option option : options) {
+                    TextSubmission sub = new TextSubmission();
+                    sub.setSubmissionId(option.getOptionId());
+                    sub.setOutcomeType(option.getOptionId());
+                    sub.setCurrentText(option.getOptionText());
+                    sub.setOriginalText(option.getOptionText());
+                    sub.setAuthorId(player.getAuthorId());
+                    sub.setCreatedAt(Timestamp.now());
+                    sub.setLastModified(Timestamp.now());
+                    storyOptionSubmissions.add(sub);
+                    if (option.getOutcomeForks() == null) continue;
+                    for (OutcomeFork fork : option.getOutcomeForks()) {
+                        if (fork.getRepercussions() == null || fork.getRepercussions().isEmpty()) continue;
+                        List<TextAddition> additions = fork.getRepercussions().stream().map(repercussion -> {
+                            TextAddition addition = new TextAddition();
+                            addition.setAdditionId(UUID.randomUUID().toString());
+                            addition.setAuthorId(player.getAuthorId());
+                            addition.setAddedText(repercussion.getRepercussionSubmission());
+                            addition.setSubmissionId(option.getOptionId());
+                            addition.setRepercussion(repercussion);
+                            return addition;
+                        }).collect(Collectors.toList());
+                        fork.getTextSubmission().setAdditions(additions);
+                    }
+                }
+
+                storyDAO.createStory(story);
+
+                Encounter encounter = new Encounter(
+                        encounterLabel,
+                        EncounterType.NORMAL,
+                        story.getStoryId(),
+                        story.getPrompt()
+                );
+                gameBoard.setEncounter(currentX + i, y, encounter);
+            }
+
+            gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
+            initializeMakeChoiceVotingPhase(gameCode, storyOptionSubmissions);
+        } catch (Exception e) {
+            System.err.println("Failed to handle round zero board: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    public void initializeDefiningTraits(String gameCode) {
+        // Defining traits are surfaced dynamically via getOutcomeTypes(DEFINING_TRAITS_VOTING)
+        // from each player's own trait list — no pre-created submissions needed.
+    }
+
+    private void handleDefiningTraitsInternal(GameSession gameSession, List<TextSubmission> winningSubmissions) {
+        for (TextSubmission sub : winningSubmissions) {
+            Player player = gameSession.getPlayers().stream()
+                    .filter(p -> p.getAuthorId().equals(sub.getAuthorId()))
+                    .findFirst().orElse(null);
+            if (player == null) continue;
+
+            OutcomeType definingOutcomeType = sub.getOutcomeTypeWithLabel();
+            if (definingOutcomeType == null) continue;
+
+            List<DefiningTrait> definingTraits = player.getDefiningTraits() != null
+                    ? new ArrayList<>(player.getDefiningTraits())
+                    : new ArrayList<>();
+
+            DefiningTrait defining = new DefiningTrait(
+                    definingOutcomeType.getLabel(),
+                    "TRAIT",
+                    "DEFINING",
+                    definingOutcomeType.getClarifier()
+            );
+            definingTraits.add(defining);
+
+            List<OutcomeType> subTypes = definingOutcomeType.getSubTypes();
+            if (subTypes != null && !subTypes.isEmpty()) {
+                OutcomeType priceOutcomeType = subTypes.getFirst();
+                DefiningTrait price = new DefiningTrait(
+                        priceOutcomeType.getLabel(),
+                        "TRAIT",
+                        "PRICE",
+                        priceOutcomeType.getClarifier()
+                );
+                definingTraits.add(price);
+            }
+
+            player.setDefiningTraits(definingTraits);
+            player.setGameCode(gameSession.getGameCode());
+            gameSessionDAO.updatePlayer(player);
+        }
     }
 
     public List<TextSubmission> getMakeChoiceVotingOutcomeForks(GameSession gameSession) {

@@ -57,6 +57,11 @@ public class VotingHelper {
                 }
                 List<TextSubmission> submissions = phase.getSubmissions();
                 int total = submissions.size();
+
+                if (gameSession.getRoundNumber() == 0) {
+                    return submissions;
+                }
+
                 int firstHalfSize = (total + 1) / 2;
                 if (gameSession.getRoundNumber() < 2) {
                     return submissions.subList(0, firstHalfSize);

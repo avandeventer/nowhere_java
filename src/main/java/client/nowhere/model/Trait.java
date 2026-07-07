@@ -26,6 +26,8 @@ public class Trait {
             this.traitType = TraitType.TITLE;
         } else if (repercussion.getRepercussionType().equals(RepercussionType.COMPANION.getName())) {
             this.traitType = TraitType.COMPANION;
+        } else if (repercussion.getRepercussionType().equals(RepercussionType.DESTINY.getName())) {
+            this.traitType = TraitType.DESTINY;
         } else {
             this.traitType = TraitType.STANDARD;
         }

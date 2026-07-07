@@ -37,6 +37,13 @@ public enum RepercussionType {
             "Encountered entity joins you",
             "Player will receive this Encounter as a Companion",
             "#E60000"
+    ),
+    DESTINY(
+            "Destiny",
+            "Add destiny trait",
+            "Give a destiny trait to the player who chooses this",
+            "Player will receive this as their Destiny",
+            "#FFD700"
     );
 
     @Getter

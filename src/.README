@@ -90,6 +90,10 @@ contribution window.
 
 ### Macro Structure
 
+`roundNumber` starts at 0 (tutorial) and increments each time all encounters in a round are
+exhausted. Writing rounds are 1 and 2. The game ends when `roundNumber >= 2` after round 2
+encounters are done.
+
 ```
 INIT → PREAMBLE
   │
@@ -98,8 +102,20 @@ WORLD SETUP
   SET_ENCOUNTERS → SET_ENCOUNTERS_WINNERS          [RAPID_FIRE]
     EncounterLabels created on AdventureMap
   │
-  ▼ (repeat for 2 rounds)
+  ▼  ROUND ZERO (Tutorial — roundNumber = 0)
+LOCATION_VOTING → LOCATION_WINNING                 (startingLocation == true only)
+  Player selects a starting location
+  → SET_ENCOUNTERS intercepts: calls handleRoundZeroBoard, jumps to NAVIGATE_WINNER
+  Starting stories from location.startingStories are placed on GameBoard (no writing phases)
+  DESTINY trait awarded via MAKE_OUTCOME_CHOICE_VOTING (single OutcomeFork auto-resolves)
+  NAVIGATE_WINNER (round 0): skip partner phases, go directly to MAKE_CHOICE_VOTING
+  → roundNumber++ (becomes 1), loop back via PREAMBLE_AGAIN
+  │
+  ▼ (repeat for rounds 1 and 2)
 STORY WRITING (per round)
+  LOCATION_VOTING → LOCATION_WINNING               (startingLocation == false only, if locationVoting)
+  SET_ENCOUNTERS → SET_ENCOUNTERS_WINNERS          [RAPID_FIRE] (round 1 only; skipped in round 2)
+    EncounterLabels created on AdventureMap
   WHAT_HAPPENS_HERE → WHAT_HAPPENS_HERE_WINNER     [SHARE_TEXT]
     Stories + Encounters placed on GameBoard
   WHAT_CAN_WE_TRY → WHAT_CAN_WE_TRY_WINNERS       [RAPID_FIRE]
@@ -110,19 +126,29 @@ STORY WRITING (per round)
   │
   ▼ (repeat per encounter in round)
 ENCOUNTER RESOLUTION
+  MAKE_PARTNER_CHOICE_VOTING / ACCEPT_PARTNER_CHOICE_VOTING  (skipped in round 0)
   MAKE_CHOICE_VOTING → MAKE_CHOICE_WINNER
     story.selectedOptionId set by group vote
   MAKE_OUTCOME_CHOICE_VOTING → MAKE_OUTCOME_CHOICE_WINNER
-    option.successText set by group vote
+    option.successText set by group vote; DESTINY repercussions awarded here in round 0
   NAVIGATE_WINNER
     playerCoordinates.x++
     → more encounters? loop back to ENCOUNTER RESOLUTION
-    → round done, round < 2? loop back to STORY WRITING
-    → round >= 2? proceed to epilogue
+    → round done, roundNumber < 2? roundNumber++, loop back to STORY WRITING
+    → roundNumber >= 2? proceed to epilogue
+  │
+  ▼
+ENDING_PREAMBLE
+  │
+  ▼
+DEFINING_TRAITS_VOTING → DEFINING_TRAITS_WINNER    [RAPID_FIRE]
+  Each player selects their defining trait and price from their own trait list
+  player.definingTraits populated
   │
   ▼
 WRITE_EPILOGUES → WRITE_EPILOGUES_WINNER           [SHARE_TEXT]
-  Players write about another player's character arc
+  Players write about another player's character arc using definingTraits as OutcomeTypes
+  Epilogue author marks whether destiny was achieved (stored in Ending.didWeSucceed)
   │
   ▼
 FINALE
@@ -140,6 +166,7 @@ index so no one writes about their own content.
 | `WHAT_CAN_WE_TRY` | Player gets 1–2 stories from offset players |
 | `HOW_DOES_THIS_RESOLVE` | Player gets one story; its WHAT_CAN_WE_TRY submissions are selectable subTypes |
 | `MAKE_CHOICE_VOTING` | Only players assigned to the current encounter vote |
+| `DEFINING_TRAITS_VOTING` | Each player selects from their own traits (no offset) |
 | `WRITE_EPILOGUES` | Player writes about the character at `index - offset` |
 
 ### Encounter Generation
