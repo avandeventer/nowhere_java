@@ -390,7 +390,7 @@ public enum GameState {
                             ? gameSessionDisplay.getPlayerDescription() : gameSessionDisplay.getMidwayDescription();
 
                     String midwayInstruction = roundNumber == 1 ? "The barrier between reality and fiction is thin here. You'll work together to define the things that inhabit this place and then you'll each decide the path you take through it."
-                            : "We rest for a time. We must once again build stories together before our journey is over.";
+                            : "We rest for a time. We must once again build stories together before our journey is over. We should each take this time to speak with each other about who we are becoming.";
 
                     return new PhaseBaseInfo(
                             midwayDescription,
