@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import client.nowhere.dao.*;
-import client.nowhere.dao.ActiveSessionDAO;
 import client.nowhere.exception.GameStateException;
 import client.nowhere.model.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -1421,7 +1420,7 @@ public class CollaborativeTextHelper {
                 removeEncountersWithNoOptions(gameSession, stories, gameCode);
             }
             // Initialize MAKE_CHOICE_VOTING phase with submissions for each option
-            initializeMakeChoiceVotingPhase(gameCode, winningSubmissions);
+            initializeMakeChoiceVotingPhase(gameSession, winningSubmissions);
         } catch (Exception e) {
             System.err.println("Failed to handle HOW_DOES_THIS_RESOLVE: " + e.getMessage());
             e.printStackTrace();
@@ -1682,7 +1681,7 @@ public class CollaborativeTextHelper {
      * Initializes the MAKE_CHOICE_VOTING phase with submissions based on winning submissions from HOW_DOES_THIS_RESOLVE
      * Each submission uses outcomeType (optionId) as submissionId and has new timestamps
      */
-    private void initializeMakeChoiceVotingPhase(String gameCode, List<TextSubmission> winningSubmissions) {
+    private void initializeMakeChoiceVotingPhase(GameSession gameSession, List<TextSubmission> winningSubmissions) {
         try {
             if (winningSubmissions == null || winningSubmissions.isEmpty()) {
                 System.err.println("No winning submissions found for MAKE_CHOICE_VOTING initialization");
@@ -1690,6 +1689,12 @@ public class CollaborativeTextHelper {
             }
 
             String phaseId = GameState.MAKE_CHOICE_VOTING.name();
+
+            if (gameSession.getCollaborativeTextPhases().get(phaseId) != null
+                    && gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions() != null
+                    && !gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions().isEmpty()) {
+                collaborativeTextDAO.clearPhase(gameSession.getGameCode(), phaseId, true);
+            }
 
             for (TextSubmission winningSubmission : winningSubmissions) {
                 if (winningSubmission.getOutcomeType() == null || winningSubmission.getOutcomeType().isEmpty()) {
@@ -1709,7 +1714,7 @@ public class CollaborativeTextHelper {
                     submission.setAdditions(new ArrayList<>(winningSubmission.getAdditions()));
                 }
 
-                collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+                collaborativeTextDAO.addSubmissionAtomically(gameSession.getGameCode(), phaseId, submission);
             }
         } catch (Exception e) {
             System.err.println("Failed to initialize MAKE_CHOICE_VOTING phase: " + e.getMessage());
@@ -1736,7 +1741,7 @@ public class CollaborativeTextHelper {
                 collaborativeTextDAO.addSubmissionAtomically(gameSession.getGameCode(), phaseId, outcomeFork.getTextSubmission());
             }
         } catch (Exception e) {
-            System.err.println("Failed to initialize MAKE_CHOICE_VOTING phase: " + e.getMessage());
+            System.err.println("Failed to initialize MAKE_OUTCOME_CHOICE_VOTING phase: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -2291,11 +2296,49 @@ public class CollaborativeTextHelper {
                         .filter(p -> p.getAuthorId().equals(playerId))
                         .findFirst().orElse(null);
                 if (player == null || player.getTraits() == null) return new ArrayList<>();
+                List<Story> allStories = gameSession.getStories() == null ? List.of() : gameSession.getStories();
+                List<Location> adventureLocations = (gameSession.getAdventureMap() != null && gameSession.getAdventureMap().getLocations() != null)
+                        ? gameSession.getAdventureMap().getLocations() : List.of();
+
                 return player.getTraits().stream()
                         .map(trait -> {
                             OutcomeType ot = new OutcomeType(trait.getTraitId(), trait.getTraitLabel());
-                            String clarifier = (player.getSelectedLocationId() != null) ? player.getSelectedLocationId() : "";
-                            ot.setClarifier(clarifier);
+
+                            String clarifier = null;
+                            for (Story story : allStories) {
+                                // Match location traits by stable traitId
+                                if (story.getLocation() != null && story.getLocation().getTraits() != null
+                                        && story.getLocation().getTraits().stream().anyMatch(t -> trait.getTraitId().equals(t.getTraitId()))) {
+                                    clarifier = story.getStoryId();
+                                    break;
+                                }
+                                // Match repercussion-sourced traits by repercussionId == traitId in the winning fork
+                                Option selectedOption = story.getSelectedOption();
+                                if (selectedOption != null) {
+                                    OutcomeFork selectedFork = selectedOption.getSelectedOutcomeFork();
+                                    if (selectedFork != null && selectedFork.getRepercussions() != null
+                                            && selectedFork.getRepercussions().stream().anyMatch(r ->
+                                                    trait.getTraitId().equals(r.getRepercussionId()))) {
+                                        clarifier = story.getStoryId();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            // Fall back to locationId from the adventure map
+                            if (clarifier == null) {
+                                for (Location loc : adventureLocations) {
+                                    if (loc.getTraits() != null
+                                            && loc.getTraits().stream().anyMatch(t -> trait.getTraitId().equals(t.getTraitId()))) {
+                                        clarifier = loc.getId();
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (clarifier != null) {
+                                ot.setClarifier(clarifier);
+                            }
                             return ot;
                         })
                         .collect(Collectors.toList());
@@ -2727,7 +2770,6 @@ public class CollaborativeTextHelper {
                         if (fork.getRepercussions() == null || fork.getRepercussions().isEmpty()) continue;
                         List<TextAddition> additions = fork.getRepercussions().stream().map(repercussion -> {
                             TextAddition addition = new TextAddition();
-                            addition.setAdditionId(UUID.randomUUID().toString());
                             addition.setAuthorId(player.getAuthorId());
                             addition.setAddedText(repercussion.getRepercussionSubmission());
                             addition.setSubmissionId(option.getOptionId());
@@ -2750,7 +2792,7 @@ public class CollaborativeTextHelper {
             }
 
             gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
-            initializeMakeChoiceVotingPhase(gameCode, storyOptionSubmissions);
+            initializeMakeChoiceVotingPhase(gameSession, storyOptionSubmissions);
         } catch (Exception e) {
             System.err.println("Failed to handle round zero board: " + e.getMessage());
             e.printStackTrace();

@@ -2,19 +2,28 @@ package client.nowhere.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.UUID;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Repercussion {
+    String repercussionId;
     String repercussionType;
     String repercussionSubmission;
 
     public Repercussion() {
+        this.repercussionId = UUID.randomUUID().toString();
         this.repercussionType = "";
         this.repercussionSubmission = "";
     }
 
     public Repercussion(String repercussionType, String repercussionSubmission) {
+        this.repercussionId = UUID.randomUUID().toString();
         this.repercussionType = repercussionType;
         this.repercussionSubmission = repercussionSubmission;
+    }
+
+    public String getRepercussionId() {
+        return repercussionId;
     }
 
     public String getRepercussionSubmission() {

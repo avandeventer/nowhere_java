@@ -622,7 +622,7 @@ public enum GameState {
                     return new PhaseBaseInfo(
                             "What defines you?",
                             "Select the trait that most defined your journey, and the price you paid along the way.",
-                            CollaborativeMode.RAPID_FIRE,
+                            CollaborativeMode.CHOOSE,
                             DEFINING_TRAITS_VOTING,
                             null,
                             DEFINING_TRAITS_WINNER,
