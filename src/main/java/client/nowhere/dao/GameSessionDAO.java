@@ -55,6 +55,21 @@ public class GameSessionDAO {
         return gameSession;
     }
 
+    public GameSession createGameSession(GameSession gameSession) {
+        DocumentReference docRef = db.collection("gameSessions").document(gameSession.getGameCode());
+
+        try {
+            ApiFuture<WriteResult> result = docRef.set(gameSession);
+            WriteResult asyncResponse = result.get();
+            System.out.println("Update time : " + result.get().toString());
+            System.out.println("Object " + result.get().toString());
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue creating the game session", e);
+        }
+        return gameSession;
+    }
+
     public Player joinGameSession(Player player) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(player.getGameCode());

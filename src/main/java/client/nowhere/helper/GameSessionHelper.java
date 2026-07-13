@@ -63,6 +63,11 @@ public class GameSessionHelper {
         return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, adventureMap, saveGameId, storiesToWritePerRound, storiesToPlayPerRound, gameMode);
     }
 
+    public GameSession createDebugGameSession(GameSession gameSession) {
+        gameSession.setGameCode(generateSessionCode());
+        return gameSessionDAO.createGameSession(gameSession);
+    }
+
     public GameSession adminUpdateGameSession(GameSession gameSession) {
         GameSession newGameSession = gameSessionDAO.getGame(gameSession.getGameCode());
         newGameSession.setGameState(gameSession.getGameState());

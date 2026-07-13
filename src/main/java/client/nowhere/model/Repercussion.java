@@ -26,6 +26,10 @@ public class Repercussion {
         return repercussionId;
     }
 
+    public void setRepercussionId(String repercussionId) {
+        this.repercussionId = repercussionId;
+    }
+
     public String getRepercussionSubmission() {
         return repercussionSubmission;
     }

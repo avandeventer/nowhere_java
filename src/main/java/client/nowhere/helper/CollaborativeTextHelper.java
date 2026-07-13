@@ -2305,11 +2305,13 @@ public class CollaborativeTextHelper {
                             OutcomeType ot = new OutcomeType(trait.getTraitId(), trait.getTraitLabel());
 
                             String clarifier = null;
+                            List<String> headers = new ArrayList<>();
                             for (Story story : allStories) {
                                 // Match location traits by stable traitId
                                 if (story.getLocation() != null && story.getLocation().getTraits() != null
                                         && story.getLocation().getTraits().stream().anyMatch(t -> trait.getTraitId().equals(t.getTraitId()))) {
-                                    clarifier = story.getStoryId();
+                                    clarifier = story.getLocation().getId();
+                                    headers.add(story.getLocation().getLabel());
                                     break;
                                 }
                                 // Match repercussion-sourced traits by repercussionId == traitId in the winning fork
@@ -2325,19 +2327,12 @@ public class CollaborativeTextHelper {
                                 }
                             }
 
-                            // Fall back to locationId from the adventure map
-                            if (clarifier == null) {
-                                for (Location loc : adventureLocations) {
-                                    if (loc.getTraits() != null
-                                            && loc.getTraits().stream().anyMatch(t -> trait.getTraitId().equals(t.getTraitId()))) {
-                                        clarifier = loc.getId();
-                                        break;
-                                    }
-                                }
-                            }
-
                             if (clarifier != null) {
                                 ot.setClarifier(clarifier);
+                            }
+
+                            if (!headers.isEmpty()) {
+                                ot.setHeaders(headers);
                             }
                             return ot;
                         })
