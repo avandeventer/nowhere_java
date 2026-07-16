@@ -2300,39 +2300,48 @@ public class CollaborativeTextHelper {
                 List<Location> adventureLocations = (gameSession.getAdventureMap() != null && gameSession.getAdventureMap().getLocations() != null)
                         ? gameSession.getAdventureMap().getLocations() : List.of();
 
+                // Precompute traitId -> clarifier in a single pass over stories, instead of
+                // rescanning every story (and its location traits / repercussions) per trait.
+                // Per-story priority (location before repercussion) and cross-story priority
+                // (first matching story in list order) match the original break-on-first-match logic.
+                Map<String, Location> traitIdToLocation = new HashMap<>();
+                Map<String, Story> traitIdToStory = new HashMap<>();
+
+                for (Story story : allStories) {
+                    if (story.getLocation() != null && story.getLocation().getTraits() != null) {
+                        for (Trait locationTrait : story.getLocation().getTraits()) {
+                            String traitId = locationTrait.getTraitId();
+                            if (!traitIdToLocation.containsKey(traitId) && !traitIdToStory.containsKey(traitId)) {
+                                traitIdToLocation.put(traitId, story.getLocation());
+                            }
+                        }
+                    }
+
+                    Option selectedOption = story.getSelectedOption();
+                    if (selectedOption != null) {
+                        OutcomeFork selectedFork = selectedOption.getSelectedOutcomeFork();
+                        if (selectedFork != null && selectedFork.getRepercussions() != null) {
+                            for (Repercussion repercussion : selectedFork.getRepercussions()) {
+                                String traitId = repercussion.getRepercussionId();
+                                if (!traitIdToLocation.containsKey(traitId) && !traitIdToStory.containsKey(traitId)) {
+                                    traitIdToStory.put(traitId, story);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 return player.getTraits().stream()
                         .map(trait -> {
                             OutcomeType ot = new OutcomeType(trait.getTraitId(), trait.getTraitLabel());
+                            String traitId = trait.getTraitId();
 
-                            String clarifier = null;
-                            List<String> headers = new ArrayList<>();
-                            for (Story story : allStories) {
-                                // Match location traits by stable traitId
-                                if (story.getLocation() != null && story.getLocation().getTraits() != null
-                                        && story.getLocation().getTraits().stream().anyMatch(t -> trait.getTraitId().equals(t.getTraitId()))) {
-                                    clarifier = story.getLocation().getId();
-                                    headers.add(story.getLocation().getLabel());
-                                    break;
-                                }
-                                // Match repercussion-sourced traits by repercussionId == traitId in the winning fork
-                                Option selectedOption = story.getSelectedOption();
-                                if (selectedOption != null) {
-                                    OutcomeFork selectedFork = selectedOption.getSelectedOutcomeFork();
-                                    if (selectedFork != null && selectedFork.getRepercussions() != null
-                                            && selectedFork.getRepercussions().stream().anyMatch(r ->
-                                                    trait.getTraitId().equals(r.getRepercussionId()))) {
-                                        clarifier = story.getStoryId();
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (clarifier != null) {
-                                ot.setClarifier(clarifier);
-                            }
-
-                            if (!headers.isEmpty()) {
-                                ot.setHeaders(headers);
+                            Location location = traitIdToLocation.get(traitId);
+                            if (location != null) {
+                                ot.setClarifier(location.getId());
+                                ot.setHeaders(new ArrayList<>(List.of(location.getLabel())));
+                            } else if (traitIdToStory.containsKey(traitId)) {
+                                ot.setClarifier(traitIdToStory.get(traitId).getStoryId());
                             }
                             return ot;
                         })
