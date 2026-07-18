@@ -61,6 +61,10 @@ public class GameSessionDAO {
         try {
             ApiFuture<WriteResult> result = docRef.set(gameSession);
             WriteResult asyncResponse = result.get();
+
+            DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getDocumentSnapshot(docRef);
+            gameSession = FirestoreDAOUtil.mapGameSession(gameSessionSnapshot);
+
             System.out.println("Update time : " + result.get().toString());
             System.out.println("Object " + result.get().toString());
         } catch (InterruptedException | ExecutionException e) {
