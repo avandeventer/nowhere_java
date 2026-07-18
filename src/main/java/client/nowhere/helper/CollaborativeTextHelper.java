@@ -2297,13 +2297,7 @@ public class CollaborativeTextHelper {
                         .findFirst().orElse(null);
                 if (player == null || player.getTraits() == null) return new ArrayList<>();
                 List<Story> allStories = gameSession.getStories() == null ? List.of() : gameSession.getStories();
-                List<Location> adventureLocations = (gameSession.getAdventureMap() != null && gameSession.getAdventureMap().getLocations() != null)
-                        ? gameSession.getAdventureMap().getLocations() : List.of();
 
-                // Precompute traitId -> clarifier in a single pass over stories, instead of
-                // rescanning every story (and its location traits / repercussions) per trait.
-                // Per-story priority (location before repercussion) and cross-story priority
-                // (first matching story in list order) match the original break-on-first-match logic.
                 Map<String, Location> traitIdToLocation = new HashMap<>();
                 Map<String, Story> traitIdToStory = new HashMap<>();
 
@@ -2339,10 +2333,12 @@ public class CollaborativeTextHelper {
                             Location location = traitIdToLocation.get(traitId);
                             if (location != null) {
                                 ot.setClarifier(location.getId());
-                                ot.setHeaders(new ArrayList<>(List.of(location.getLabel())));
+                                ot.setHeaders(List.of(new Header(location.getLabel(), "#8ecd90")));
                             } else if (traitIdToStory.containsKey(traitId)) {
                                 ot.setClarifier(traitIdToStory.get(traitId).getStoryId());
                             }
+                            Header traitHeader = new Header(trait.getTraitLabel(), trait.getTraitType().getColor());
+                            ot.setHeaders(List.of(traitHeader));
                             return ot;
                         })
                         .collect(Collectors.toList());

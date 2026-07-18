@@ -42,13 +42,13 @@ public class OutcomeTypeHelper {
         return assignedStoryOutcomeTypes;
     }
 
-    private static List<String> getHeaders(Story assignedStory) {
-        List<String> headers = new ArrayList<>();
+    private static List<Header> getHeaders(Story assignedStory) {
+        List<Header> headers = new ArrayList<>();
         if (assignedStory.getEncounterLabel() != null && !assignedStory.getEncounterLabel().getEncounterLabel().isEmpty()) {
-            headers.add(assignedStory.getEncounterLabel().getEncounterLabel());
+            headers.add(new Header(assignedStory.getEncounterLabel().getEncounterLabel(), "#4caf50"));
         }
         if (assignedStory.getLocation() != null && !assignedStory.getLocation().getLabel().isEmpty()) {
-            headers.add("at " + assignedStory.getLocation().getLabel());
+            headers.add(new Header("at " + assignedStory.getLocation().getLabel(), "#8ecd90"));
         }
         return headers;
     }

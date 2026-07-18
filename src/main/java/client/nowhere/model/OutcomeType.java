@@ -24,7 +24,7 @@ public class OutcomeType {
 
     @Getter
     @Setter
-    List<String> headers;
+    List<Header> headers;
 
     public OutcomeType () {
         this.id = "";
@@ -42,7 +42,7 @@ public class OutcomeType {
         this.headers = new ArrayList<>();
     }
 
-    public OutcomeType(String id, String label, String clarifier, List<String> headers) {
+    public OutcomeType(String id, String label, String clarifier, List<Header> headers) {
         this.id = id;
         this.label = label;
         this.clarifier = clarifier;
