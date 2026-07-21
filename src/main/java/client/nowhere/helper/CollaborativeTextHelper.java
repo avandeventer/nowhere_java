@@ -2354,7 +2354,7 @@ public class CollaborativeTextHelper {
                 if (definingTraits != null && !definingTraits.isEmpty()) {
                     outcomeTypes = definingTraits.stream()
                             .map(dt -> {
-                                OutcomeType ot = new OutcomeType(dt.getType() + ": " + dt.getTraitName(), dt.getTraitName());
+                                OutcomeType ot = new OutcomeType(dt.getTraitName(), dt.getType().toLowerCase() + ": " + dt.getTraitName());
                                 ot.setClarifier(dt.getSourceStoryId());
                                 return ot;
                             })
