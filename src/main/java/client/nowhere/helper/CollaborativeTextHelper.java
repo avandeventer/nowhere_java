@@ -2326,6 +2326,7 @@ public class CollaborativeTextHelper {
                 }
 
                 return player.getTraits().stream()
+                        .filter(trait -> !trait.getTraitType().equals(TraitType.DESTINY))
                         .map(trait -> {
                             OutcomeType ot = new OutcomeType(trait.getTraitId(), trait.getTraitLabel());
                             String traitId = trait.getTraitId();
@@ -2333,12 +2334,12 @@ public class CollaborativeTextHelper {
                             Location location = traitIdToLocation.get(traitId);
                             if (location != null) {
                                 ot.setClarifier(location.getId());
-                                ot.setHeaders(List.of(new Header(location.getLabel(), "#8ecd90")));
+                                ot.getHeaders().add(new Header("from location: " + location.getLabel(), "#8ecd90"));
                             } else if (traitIdToStory.containsKey(traitId)) {
                                 ot.setClarifier(traitIdToStory.get(traitId).getStoryId());
                             }
-                            Header traitHeader = new Header(trait.getTraitLabel(), trait.getTraitType().getColor());
-                            ot.setHeaders(List.of(traitHeader));
+                            Header traitHeader = new Header(trait.getTraitType().getName(), trait.getTraitType().getColor());
+                            ot.getHeaders().add(traitHeader);
                             return ot;
                         })
                         .collect(Collectors.toList());
@@ -2614,7 +2615,7 @@ public class CollaborativeTextHelper {
 
         return relevantTraits.stream()
                 .map(trait -> new OutcomeType(trait.getTraitId(),
-                        ((trait.getTraitType() != null && !trait.getTraitType().equals(TraitType.STANDARD)) ? "use " + trait.getTraitType() + ": " : "use trait: ") + trait.getTraitLabel()))
+                        (trait.getTraitType() != null ? "use " + trait.getTraitType() + ": " : "use trait: ") + trait.getTraitLabel()))
                 .collect(Collectors.toList());
     }
 
