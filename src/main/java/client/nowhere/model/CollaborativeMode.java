@@ -4,6 +4,7 @@ public enum CollaborativeMode {
     RAPID_FIRE,  // Simple mode - submit as many ideas as you can
     SHARE_TEXT,   // Collaborative mode - work together on shared text
     PLAYER_CONTENT,
-    INFORMATION
+    INFORMATION,
+    CHOOSE,       // Collaborative mode - choose from a set of options
 }
 

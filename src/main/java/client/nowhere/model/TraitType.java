@@ -5,7 +5,7 @@ import lombok.Getter;
 public enum TraitType {
 
     STANDARD (
-            "Standard",
+            "Trait",
             "#0288d1"
     ),
     TITLE (

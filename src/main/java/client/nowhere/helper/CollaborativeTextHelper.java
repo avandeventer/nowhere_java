@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import client.nowhere.dao.*;
-import client.nowhere.dao.ActiveSessionDAO;
 import client.nowhere.exception.GameStateException;
 import client.nowhere.model.*;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -1421,7 +1420,7 @@ public class CollaborativeTextHelper {
                 removeEncountersWithNoOptions(gameSession, stories, gameCode);
             }
             // Initialize MAKE_CHOICE_VOTING phase with submissions for each option
-            initializeMakeChoiceVotingPhase(gameCode, winningSubmissions);
+            initializeMakeChoiceVotingPhase(gameSession, winningSubmissions);
         } catch (Exception e) {
             System.err.println("Failed to handle HOW_DOES_THIS_RESOLVE: " + e.getMessage());
             e.printStackTrace();
@@ -1682,7 +1681,7 @@ public class CollaborativeTextHelper {
      * Initializes the MAKE_CHOICE_VOTING phase with submissions based on winning submissions from HOW_DOES_THIS_RESOLVE
      * Each submission uses outcomeType (optionId) as submissionId and has new timestamps
      */
-    private void initializeMakeChoiceVotingPhase(String gameCode, List<TextSubmission> winningSubmissions) {
+    private void initializeMakeChoiceVotingPhase(GameSession gameSession, List<TextSubmission> winningSubmissions) {
         try {
             if (winningSubmissions == null || winningSubmissions.isEmpty()) {
                 System.err.println("No winning submissions found for MAKE_CHOICE_VOTING initialization");
@@ -1690,6 +1689,12 @@ public class CollaborativeTextHelper {
             }
 
             String phaseId = GameState.MAKE_CHOICE_VOTING.name();
+
+            if (gameSession.getCollaborativeTextPhases().get(phaseId) != null
+                    && gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions() != null
+                    && !gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions().isEmpty()) {
+                collaborativeTextDAO.clearPhase(gameSession.getGameCode(), phaseId, true);
+            }
 
             for (TextSubmission winningSubmission : winningSubmissions) {
                 if (winningSubmission.getOutcomeType() == null || winningSubmission.getOutcomeType().isEmpty()) {
@@ -1709,7 +1714,7 @@ public class CollaborativeTextHelper {
                     submission.setAdditions(new ArrayList<>(winningSubmission.getAdditions()));
                 }
 
-                collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+                collaborativeTextDAO.addSubmissionAtomically(gameSession.getGameCode(), phaseId, submission);
             }
         } catch (Exception e) {
             System.err.println("Failed to initialize MAKE_CHOICE_VOTING phase: " + e.getMessage());
@@ -1736,7 +1741,7 @@ public class CollaborativeTextHelper {
                 collaborativeTextDAO.addSubmissionAtomically(gameSession.getGameCode(), phaseId, outcomeFork.getTextSubmission());
             }
         } catch (Exception e) {
-            System.err.println("Failed to initialize MAKE_CHOICE_VOTING phase: " + e.getMessage());
+            System.err.println("Failed to initialize MAKE_OUTCOME_CHOICE_VOTING phase: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -2291,11 +2296,50 @@ public class CollaborativeTextHelper {
                         .filter(p -> p.getAuthorId().equals(playerId))
                         .findFirst().orElse(null);
                 if (player == null || player.getTraits() == null) return new ArrayList<>();
+                List<Story> allStories = gameSession.getStories() == null ? List.of() : gameSession.getStories();
+
+                Map<String, Location> traitIdToLocation = new HashMap<>();
+                Map<String, Story> traitIdToStory = new HashMap<>();
+
+                for (Story story : allStories) {
+                    if (story.getLocation() != null && story.getLocation().getTraits() != null) {
+                        for (Trait locationTrait : story.getLocation().getTraits()) {
+                            String traitId = locationTrait.getTraitId();
+                            if (!traitIdToLocation.containsKey(traitId) && !traitIdToStory.containsKey(traitId)) {
+                                traitIdToLocation.put(traitId, story.getLocation());
+                            }
+                        }
+                    }
+
+                    Option selectedOption = story.getSelectedOption();
+                    if (selectedOption != null) {
+                        OutcomeFork selectedFork = selectedOption.getSelectedOutcomeFork();
+                        if (selectedFork != null && selectedFork.getRepercussions() != null) {
+                            for (Repercussion repercussion : selectedFork.getRepercussions()) {
+                                String traitId = repercussion.getRepercussionId();
+                                if (!traitIdToLocation.containsKey(traitId) && !traitIdToStory.containsKey(traitId)) {
+                                    traitIdToStory.put(traitId, story);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 return player.getTraits().stream()
+                        .filter(trait -> !trait.getTraitType().equals(TraitType.DESTINY))
                         .map(trait -> {
                             OutcomeType ot = new OutcomeType(trait.getTraitId(), trait.getTraitLabel());
-                            String clarifier = (player.getSelectedLocationId() != null) ? player.getSelectedLocationId() : "";
-                            ot.setClarifier(clarifier);
+                            String traitId = trait.getTraitId();
+
+                            Location location = traitIdToLocation.get(traitId);
+                            if (location != null) {
+                                ot.setClarifier(location.getId());
+                                ot.getHeaders().add(new Header("from location: " + location.getLabel(), "#8ecd90"));
+                            } else if (traitIdToStory.containsKey(traitId)) {
+                                ot.setClarifier(traitIdToStory.get(traitId).getStoryId());
+                            }
+                            Header traitHeader = new Header(trait.getTraitType().getName(), trait.getTraitType().getColor());
+                            ot.getHeaders().add(traitHeader);
                             return ot;
                         })
                         .collect(Collectors.toList());
@@ -2310,7 +2354,7 @@ public class CollaborativeTextHelper {
                 if (definingTraits != null && !definingTraits.isEmpty()) {
                     outcomeTypes = definingTraits.stream()
                             .map(dt -> {
-                                OutcomeType ot = new OutcomeType(dt.getTraitName(), dt.getTraitName());
+                                OutcomeType ot = new OutcomeType(dt.getTraitName(), dt.getType().toLowerCase() + ": " + dt.getTraitName());
                                 ot.setClarifier(dt.getSourceStoryId());
                                 return ot;
                             })
@@ -2571,7 +2615,7 @@ public class CollaborativeTextHelper {
 
         return relevantTraits.stream()
                 .map(trait -> new OutcomeType(trait.getTraitId(),
-                        ((trait.getTraitType() != null && !trait.getTraitType().equals(TraitType.STANDARD)) ? "use " + trait.getTraitType() + ": " : "use trait: ") + trait.getTraitLabel()))
+                        (trait.getTraitType() != null ? "use " + trait.getTraitType() + ": " : "use trait: ") + trait.getTraitLabel()))
                 .collect(Collectors.toList());
     }
 
@@ -2727,7 +2771,6 @@ public class CollaborativeTextHelper {
                         if (fork.getRepercussions() == null || fork.getRepercussions().isEmpty()) continue;
                         List<TextAddition> additions = fork.getRepercussions().stream().map(repercussion -> {
                             TextAddition addition = new TextAddition();
-                            addition.setAdditionId(UUID.randomUUID().toString());
                             addition.setAuthorId(player.getAuthorId());
                             addition.setAddedText(repercussion.getRepercussionSubmission());
                             addition.setSubmissionId(option.getOptionId());
@@ -2750,7 +2793,7 @@ public class CollaborativeTextHelper {
             }
 
             gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
-            initializeMakeChoiceVotingPhase(gameCode, storyOptionSubmissions);
+            initializeMakeChoiceVotingPhase(gameSession, storyOptionSubmissions);
         } catch (Exception e) {
             System.err.println("Failed to handle round zero board: " + e.getMessage());
             e.printStackTrace();
