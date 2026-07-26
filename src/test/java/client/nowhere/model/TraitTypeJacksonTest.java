@@ -45,7 +45,7 @@ public class TraitTypeJacksonTest {
         String json = objectMapper.writeValueAsString(TraitType.values());
 
         assertEquals(
-                "[{\"name\":\"Trait\",\"color\":\"#0288d1\"},{\"name\":\"Title\",\"color\":\"#7b1fa2\"},{\"name\":\"Companion\",\"color\":\"#E60000\"},{\"name\":\"Relationship\",\"color\":\"E981AE\"},{\"name\":\"Destiny\",\"color\":\"#FFD700\"}]",
+                "[{\"name\":\"Trait\",\"color\":\"#0288d1\"},{\"name\":\"Title\",\"color\":\"#7b1fa2\"},{\"name\":\"Companion\",\"color\":\"#E60000\"},{\"name\":\"Relationship\",\"color\":\"#E981AE\"},{\"name\":\"Destiny\",\"color\":\"#FFD700\"}]",
                 json
         );
     }
