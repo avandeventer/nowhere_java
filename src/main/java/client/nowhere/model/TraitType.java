@@ -22,7 +22,7 @@ public enum TraitType {
     ),
     RELATIONSHIP (
             "Relationship",
-            "E981AE"
+            "#E981AE"
     ),
     DESTINY (
             "Destiny",
