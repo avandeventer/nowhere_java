@@ -1,7 +1,11 @@
 package client.nowhere.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum TraitType {
 
     STANDARD (
@@ -34,5 +38,16 @@ public enum TraitType {
     TraitType (String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    @JsonCreator
+    public static TraitType fromJson(JsonNode node) {
+        String value = node.isObject() ? node.path("name").asText() : node.asText();
+        for (TraitType type : values()) {
+            if (type.name().equalsIgnoreCase(value) || type.name.equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Unknown TraitType: " + value);
     }
 }
