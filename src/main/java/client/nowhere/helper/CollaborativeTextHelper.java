@@ -2354,7 +2354,18 @@ public class CollaborativeTextHelper {
                 if (definingTraits != null && !definingTraits.isEmpty()) {
                     outcomeTypes = definingTraits.stream()
                             .map(dt -> {
-                                OutcomeType ot = new OutcomeType(dt.getTraitName(), dt.getType().toLowerCase() + ": " + dt.getTraitName());
+                                Optional<Trait> matchingTraitOpt = assignedPlayer.getTraits().stream().filter(t -> t.getTraitLabel().equals(dt.getTraitName())).findFirst();
+
+                                String traitTypeLabel = "";
+
+                                if (matchingTraitOpt.isPresent()) {
+                                    Trait matchingTrait = matchingTraitOpt.get();
+                                    if (matchingTrait.getTraitType() != null && matchingTrait.getTraitType().getName() != null) {
+                                        traitTypeLabel = " " + matchingTrait.getTraitType().getName();
+                                    }
+                                }
+
+                                OutcomeType ot = new OutcomeType(dt.getTraitName(), dt.getType().toLowerCase() +  traitTypeLabel + ": " + dt.getTraitName());
                                 ot.setClarifier(dt.getSourceStoryId());
                                 return ot;
                             })
