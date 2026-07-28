@@ -1,7 +1,11 @@
 package client.nowhere.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Getter;
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum RepercussionType {
     ALL_PLAYERS(
             "All Players",
@@ -67,5 +71,16 @@ public enum RepercussionType {
         this.instruction = instruction;
         this.description = description;
         this.color = color;
+    }
+
+    @JsonCreator
+    public static RepercussionType fromJson(JsonNode node) {
+        String value = node.isObject() ? node.path("name").asText() : node.asText();
+        for (RepercussionType type : values()) {
+            if (type.name().equalsIgnoreCase(value) || type.name.equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Unknown RepercussionType: " + value);
     }
 }

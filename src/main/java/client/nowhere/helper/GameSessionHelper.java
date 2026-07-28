@@ -63,6 +63,26 @@ public class GameSessionHelper {
         return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, adventureMap, saveGameId, storiesToWritePerRound, storiesToPlayPerRound, gameMode);
     }
 
+    public GameSession createDebugGameSession(GameSession gameSession) {
+        String newGameCode = generateSessionCode();
+        gameSession.setGameCode(newGameCode);
+
+        if (gameSession.getPlayers() != null) {
+            gameSession.getPlayers().forEach(player -> player.setGameCode(newGameCode));
+        }
+        if (gameSession.getStories() != null) {
+            gameSession.getStories().forEach(story -> story.setGameCode(newGameCode));
+        }
+        if (gameSession.getActivePlayerSession() != null) {
+            gameSession.getActivePlayerSession().setGameCode(newGameCode);
+        }
+        if (gameSession.getActiveGameStateSession() != null) {
+            gameSession.getActiveGameStateSession().setGameCode(newGameCode);
+        }
+
+        return gameSessionDAO.createGameSession(gameSession);
+    }
+
     public GameSession adminUpdateGameSession(GameSession gameSession) {
         GameSession newGameSession = gameSessionDAO.getGame(gameSession.getGameCode());
         newGameSession.setGameState(gameSession.getGameState());

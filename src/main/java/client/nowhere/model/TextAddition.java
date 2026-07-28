@@ -3,6 +3,8 @@ package client.nowhere.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.cloud.Timestamp;
 
+import java.util.UUID;
+
 public class TextAddition {
     private String additionId;
     private String authorId;
@@ -15,6 +17,7 @@ public class TextAddition {
 
     public TextAddition() {
         this.addedAt = Timestamp.now();
+        this.additionId = UUID.randomUUID().toString();
     }
 
     public TextAddition(String additionId, String authorId, String addedText, String submissionId, OutcomeType outcomeTypeWithLabel) {

@@ -41,4 +41,9 @@ public class AdminController {
     public GameSession update(@RequestBody GameSession gameSession) {
         return this.gameSessionHelper.adminUpdateGameSession(gameSession);
     }
+
+    @PostMapping("/game")
+    public GameSession createDebugGameSession(@RequestBody GameSession gameSession) {
+        return this.gameSessionHelper.createDebugGameSession(gameSession);
+    }
 }

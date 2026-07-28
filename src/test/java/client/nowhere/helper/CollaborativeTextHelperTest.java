@@ -1375,6 +1375,19 @@ public class CollaborativeTextHelperTest {
                         ),
                         false
                 )
+//                Arguments.of(
+//                        "DEFINING_TRAITS_VOTING - 4 players, players receive their own traits with correct clarifiers",
+//                        "DEFINING_TRAITS_VOTING.json",
+//                        DEFINING_TRAITS_VOTING,
+//                        Map.of(
+//                                "Andy",    List.of("befcb139-daa1-4c94-89da-ccb786deaac8"), // Goni is assigned to Jen
+//                                "Joe",     List.of("44c3ed0a-38d7-4089-a364-a00c15df6f20"), // Jen is assigned to Tedwood
+//                                "Byron",  List.of("46a07fda-c3c9-46f8-985a-099d60368809"), // Tewdood is assigned to Booty
+//                                "Kirsten", List.of("39f83760-aa80-46a7-88b5-cd051c299aa9") // Booty is assigned to Goni
+//                        ),
+//                        Map.of(),
+//                        false
+//                )
         );
     }
 }

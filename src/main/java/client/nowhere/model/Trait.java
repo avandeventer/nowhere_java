@@ -20,7 +20,7 @@ public class Trait {
     }
 
     public Trait(Repercussion repercussion) {
-        this.traitId = UUID.randomUUID().toString();
+        this.traitId = repercussion.getRepercussionId();
         this.traitLabel = repercussion.getRepercussionSubmission();
         if (repercussion.getRepercussionType().equals(RepercussionType.TITLE.getName())) {
             this.traitType = TraitType.TITLE;

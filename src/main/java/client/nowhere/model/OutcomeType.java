@@ -1,5 +1,6 @@
 package client.nowhere.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import java.util.ArrayList;
@@ -22,11 +23,17 @@ public class OutcomeType {
     @Setter
     List<OutcomeType> subTypes;
 
-    @Getter
-    @Setter
-    List<String> headers;
+    List<Header> headers;
 
-    public OutcomeType () {
+    public List<Header> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(List<Header> headers) {
+        this.headers = headers;
+    }
+
+    public OutcomeType() {
         this.id = "";
         this.label = "";
         this.clarifier = "";
@@ -42,7 +49,7 @@ public class OutcomeType {
         this.headers = new ArrayList<>();
     }
 
-    public OutcomeType(String id, String label, String clarifier, List<String> headers) {
+    public OutcomeType(String id, String label, String clarifier, List<Header> headers) {
         this.id = id;
         this.label = label;
         this.clarifier = clarifier;
