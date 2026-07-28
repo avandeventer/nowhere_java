@@ -415,6 +415,18 @@ public enum GameState {
                     );
                 }
 
+                if (phaseId == ENDING) {
+                    return new PhaseBaseInfo(
+                            gameSessionDisplay.getEndingDescription(),
+                            "We see who we will become",
+                            CollaborativeMode.INFORMATION,
+                            ENDING_PREAMBLE,
+                            null,
+                            null,
+                            false
+                    );
+                }
+
                 if (phaseId == WHERE_ARE_WE) {
                         return new PhaseBaseInfo(
                                 "Where are we?",
