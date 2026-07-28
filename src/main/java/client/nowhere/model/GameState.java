@@ -420,8 +420,8 @@ public enum GameState {
                             gameSessionDisplay.getEndingDescription(),
                             "We see who we will become",
                             CollaborativeMode.INFORMATION,
-                            ENDING_PREAMBLE,
                             null,
+                            ENDING,
                             null,
                             false
                     );
