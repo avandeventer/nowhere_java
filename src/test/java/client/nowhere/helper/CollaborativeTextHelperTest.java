@@ -21,7 +21,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -365,7 +364,8 @@ public class CollaborativeTextHelperTest {
     void testCalculateWinningSubmission_LOCATION_VOTING_SetsSelectedLocationIdOnPlayers(
             String scenarioName,
             String jsonFileName,
-            Map<String, String> expectedPlayerLocationIds
+            Map<String, String> expectedPlayerLocationIds,
+            Map<String, List<String>> expectedNewLocationTraitLabels
     ) throws IOException {
         // Arrange
         GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
@@ -377,19 +377,29 @@ public class CollaborativeTextHelperTest {
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
         assertNotNull(phase, "LOCATION_VOTING phase should exist in test data");
 
+        // Snapshot each player's trait count before the location traits are applied, so we can
+        // confirm only the expected number of new traits were appended (and none for players
+        // whose selected location has no traits to grant).
+        Map<String, Integer> initialTraitCounts = gameSession.getPlayers().stream()
+                .collect(Collectors.toMap(Player::getAuthorId, p -> p.getTraits() == null ? 0 : p.getTraits().size()));
+
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
         when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
 
         // Act
         collaborativeTextHelper.calculateWinningSubmission(gameCode);
 
-        // Assert - verify updatePlayer was called once per voting player with the correct selectedLocationId
+        // Assert - verify updatePlayer was called for each voting player with the correct
+        // selectedLocationId. Players whose location grants a trait are updated twice (once for
+        // the selectedLocationId, once for the trait), so we only assert a lower bound here.
         ArgumentCaptor<Player> playerCaptor = ArgumentCaptor.forClass(Player.class);
-        verify(gameSessionDAO, times(expectedPlayerLocationIds.size())).updatePlayer(playerCaptor.capture());
+        verify(gameSessionDAO, atLeast(expectedPlayerLocationIds.size())).updatePlayer(playerCaptor.capture());
 
         List<Player> updatedPlayers = playerCaptor.getAllValues();
-        Map<String, String> actualPlayerLocationIds = updatedPlayers.stream()
-                .collect(Collectors.toMap(Player::getAuthorId, Player::getSelectedLocationId));
+        Map<String, Player> actualPlayersById = updatedPlayers.stream()
+                .collect(Collectors.toMap(Player::getAuthorId, p -> p, (first, second) -> second));
+        Map<String, String> actualPlayerLocationIds = actualPlayersById.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getSelectedLocationId()));
 
         System.out.println("=== " + scenarioName + " ===");
         for (Map.Entry<String, String> expected : expectedPlayerLocationIds.entrySet()) {
@@ -397,6 +407,30 @@ public class CollaborativeTextHelperTest {
             System.out.println("Player " + expected.getKey() + " -> " + actualLocationId);
             assertEquals(expected.getValue(), actualLocationId,
                     "selectedLocationId mismatch for player " + expected.getKey());
+        }
+
+        // Assert - players receive the Trait(s) tied to the Location they selected, and players
+        // whose location has no traits are left untouched.
+        for (Map.Entry<String, List<String>> expected : expectedNewLocationTraitLabels.entrySet()) {
+            String playerId = expected.getKey();
+            List<String> expectedNewLabels = expected.getValue();
+
+            Player actualPlayer = actualPlayersById.get(playerId);
+            assertNotNull(actualPlayer, "Expected an updatePlayer call for player " + playerId);
+
+            List<String> actualTraitLabels = actualPlayer.getTraits() == null
+                    ? List.of()
+                    : actualPlayer.getTraits().stream().map(Trait::getTraitLabel).toList();
+            System.out.println("Player " + playerId + " traits -> " + actualTraitLabels);
+
+            for (String expectedLabel : expectedNewLabels) {
+                assertTrue(actualTraitLabels.contains(expectedLabel),
+                        "Expected player " + playerId + " to have gained the trait '" + expectedLabel + "'");
+            }
+
+            int expectedTraitCount = initialTraitCounts.getOrDefault(playerId, 0) + expectedNewLabels.size();
+            assertEquals(expectedTraitCount, actualTraitLabels.size(),
+                    "Unexpected trait count for player " + playerId + " after location voting");
         }
     }
 
@@ -409,6 +443,29 @@ public class CollaborativeTextHelperTest {
                                 "d0d63d8f-5f82-43ab-ac42-c7592c3a717a", "8a67c4c0-27cb-4b15-bdb6-fe27bbedd6eb", // Andy -> Farmlands
                                 "e6e4b325-d91a-430f-a122-dfcde7747b49", "8a67c4c0-27cb-4b15-bdb6-fe27bbedd6eb", // Joe -> Farmlands
                                 "cf271094-3ace-4c41-9475-0cd665ed3d4d", "8645ee4c-611e-47ee-85d8-0edc73985613"  // Byron -> Tavern
+                        ),
+                        // None of these locations have traits, so no player should gain any new trait.
+                        Map.of(
+                                "d0d63d8f-5f82-43ab-ac42-c7592c3a717a", List.<String>of(), // Andy -> Farmlands
+                                "e6e4b325-d91a-430f-a122-dfcde7747b49", List.<String>of(), // Joe -> Farmlands
+                                "cf271094-3ace-4c41-9475-0cd665ed3d4d", List.<String>of()  // Byron -> Tavern
+                        )
+                ),
+                Arguments.of(
+                        "LOCATION_VOTING - Sets selectedLocationId and location traits from each player's vote",
+                        "LOCATION_VOTING_TRAITS.json",
+                        Map.of(
+                                "d3225e29-bb90-42f9-b49c-d7136a0b76eb", "8c2deb15-33ff-4e08-867a-841ddce26502", // Andy -> From The Schoolhouse to A Wide Winding River
+                                "5b1dc1a0-1b21-479b-a6e8-18a395137029", "8c2deb15-33ff-4e08-867a-841ddce26502", // Joe -> From The Feast at the Pyre to A Wide Winding River
+                                "a5f68eb4-9efb-4299-b824-88e588e91eb8", "2a033cf6-af28-4d45-b925-edfc86c79866", // Kirsten -> From The Knights Academy to A Twisting Wizard's Tower
+                                "51c71cda-cabe-40fb-b2f4-4aa686e9b56f", "8c2deb15-33ff-4e08-867a-841ddce26502" // Byron -> From The Knights Academy to A Wide Winding River
+                        ),
+                        // A Wide Winding River grants "Nature Nerd"; A Twisting Wizard's Tower has no traits.
+                        Map.of(
+                                "d3225e29-bb90-42f9-b49c-d7136a0b76eb", List.of("Nature Nerd"), // Andy -> A Wide Winding River
+                                "5b1dc1a0-1b21-479b-a6e8-18a395137029", List.of("Nature Nerd"), // Joe -> A Wide Winding River
+                                "a5f68eb4-9efb-4299-b824-88e588e91eb8", List.<String>of(),       // Kirsten -> A Twisting Wizard's Tower
+                                "51c71cda-cabe-40fb-b2f4-4aa686e9b56f", List.of("Nature Nerd")  // Byron -> A Wide Winding River
                         )
                 )
         );

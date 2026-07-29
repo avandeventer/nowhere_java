@@ -2116,7 +2116,7 @@ public class CollaborativeTextHelper {
                     );
                 } else {
                     return new CollaborativePhaseTypeInstructions(
-                            "Look to your device and don't worry about thinking too hard about what you say. Your friends will help!",
+                            "Submit your text so that others can add to it! Don't worry about thinking too hard about what you say. Your friends will help!",
                             contributionPhaseInstruction,
                             maxCharacterLimit
                     );
@@ -2326,7 +2326,9 @@ public class CollaborativeTextHelper {
                 }
 
                 return player.getTraits().stream()
-                        .filter(trait -> !trait.getTraitType().equals(TraitType.DESTINY))
+                        .filter(trait -> trait.getTraitType() != null
+                                && !trait.getTraitType().equals(TraitType.DESTINY)
+                        )
                         .map(trait -> {
                             OutcomeType ot = new OutcomeType(trait.getTraitId(), trait.getTraitLabel());
                             String traitId = trait.getTraitId();
@@ -2611,7 +2613,8 @@ public class CollaborativeTextHelper {
 
         List<Trait> relevantTraits = storyPlayers.getFirst().getTraits()
                 .stream()
-                .filter(trait -> !trait.getTraitType().equals(TraitType.DESTINY))
+                .filter(trait -> trait.getTraitType() == null
+                        || !trait.getTraitType().equals(TraitType.DESTINY))
                 .toList();
 
         List<String> existingOptionIds = storyContext.assignedStories().stream().flatMap(story -> story.getSubTypes().stream()).map(OutcomeType::getId).toList();
