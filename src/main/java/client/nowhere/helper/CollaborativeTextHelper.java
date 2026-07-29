@@ -2609,7 +2609,10 @@ public class CollaborativeTextHelper {
             return new ArrayList<>();
         }
 
-        List<Trait> relevantTraits = new ArrayList<>(storyPlayers.getFirst().getTraits());
+        List<Trait> relevantTraits = storyPlayers.getFirst().getTraits()
+                .stream()
+                .filter(trait -> !trait.getTraitType().equals(TraitType.DESTINY))
+                .toList();
 
         List<String> existingOptionIds = storyContext.assignedStories().stream().flatMap(story -> story.getSubTypes().stream()).map(OutcomeType::getId).toList();
 
@@ -2626,7 +2629,7 @@ public class CollaborativeTextHelper {
 
         return relevantTraits.stream()
                 .map(trait -> new OutcomeType(trait.getTraitId(),
-                        (trait.getTraitType() != null ? "use " + trait.getTraitType() + ": " : "use trait: ") + trait.getTraitLabel()))
+                        (trait.getTraitType() != null ? "use " + trait.getTraitType().getName() + ": " : "use trait: ") + trait.getTraitLabel()))
                 .collect(Collectors.toList());
     }
 
