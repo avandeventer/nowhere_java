@@ -1690,11 +1690,11 @@ public class CollaborativeTextHelper {
 
             String phaseId = GameState.MAKE_CHOICE_VOTING.name();
 
-            if (gameSession.getCollaborativeTextPhases().get(phaseId) != null
-                    && gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions() != null
-                    && !gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions().isEmpty()) {
-                collaborativeTextDAO.clearPhase(gameSession.getGameCode(), phaseId, true);
-            }
+//            if (gameSession.getCollaborativeTextPhases().get(phaseId) != null
+//                    && gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions() != null
+//                    && !gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions().isEmpty()) {
+//                collaborativeTextDAO.clearPhase(gameSession.getGameCode(), phaseId, true);
+//            }
 
             for (TextSubmission winningSubmission : winningSubmissions) {
                 if (winningSubmission.getOutcomeType() == null || winningSubmission.getOutcomeType().isEmpty()) {

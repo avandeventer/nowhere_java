@@ -975,6 +975,18 @@ public class GameSessionHelperTest {
                         "MAKE_PARTNER_CHOICE_VOTING_Round2_FourPlayers_Ending.json",
                         List.of(),
                         List.of()
+                ),
+                Arguments.of(
+                        "No forks so transitions to make outcome choice winner",
+                        "6ff5e6f5-c9e6-444c-8913-d6a69b33b6ac", // Option with no forks, but partner hasn't voted yet
+                        1,
+                        GameState.MAKE_CHOICE_VOTING,
+                        GameState.MAKE_OUTCOME_CHOICE_WINNER,
+                        4,
+                        0,
+                        "MAKE_CHOICE_VOTING_WHY.json",
+                        List.of(),
+                        List.of()
                 )
         );
     }
