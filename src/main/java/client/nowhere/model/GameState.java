@@ -703,8 +703,7 @@ public enum GameState {
             case WHAT_HAPPENS_HERE -> playerCount > 4 ? 2 : 1;
             case WHAT_CAN_WE_TRY -> playerCount > 4 ? 2 : 0; //Also 1 for the other option
             case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> playerCount > 4 ? 3 : 2;
-            case MAKE_CHOICE_VOTING -> -1;
-            case WRITE_EPILOGUES -> playerCount > 4 ? -2 : -1;
+            case WRITE_EPILOGUES, MAKE_CHOICE_VOTING -> WHAT_HAPPENS_HERE.getOutcomeTypeOffset(playerCount) * -1;
             default -> 1;
         };
     }

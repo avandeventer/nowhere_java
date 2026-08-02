@@ -21,6 +21,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -355,6 +357,123 @@ public class CollaborativeTextHelperTest {
                         )
                 )
         );
+    }
+
+    private static Stream<Arguments> provideWhatHappensHereLocationVotingPlayerCounts() {
+        return Stream.of(
+                // At 4 players, WHAT_HAPPENS_HERE's forward offset (1) and the hardcoded
+                // MAKE_CHOICE_VOTING offset used for the reverse lookup (-1) happen to be correct
+                // inverses of each other (-1 mod 4 == 3 == the inverse of +1), which is exactly why
+                // every existing <=4-player WHAT_HAPPENS_HERE fixture in this file passes today.
+                Arguments.of("Four players - story assigned to correct player", 4, 1),
+                // Reproduces a bug found by auditing FINISHED_GAME.json: forward assignment uses
+                // WHAT_HAPPENS_HERE.getOutcomeTypeOffset(playerCount), which is 2 for playerCount > 4,
+                // but the reverse lookup used to figure out story.playerId from the submission's
+                // writer (CollaborativeTextHelper.java ~line 1129) is hardcoded to MAKE_CHOICE_VOTING's
+                // offset (a constant -1), not WHAT_HAPPENS_HERE's offset. Those two offsets only agree
+                // when playerCount <= 4. At 5 players they diverge, and the story gets attached to the
+                // wrong player - one join-order slot away from whoever actually selected that location.
+                Arguments.of("Five players - story assigned to WRONG player (known bug)", 5, 2)
+        );
+    }
+
+    /**
+     * Verifies that in a locationVoting-enabled game, every Story created by
+     * handleWhatHappensHereStreamlined is assigned to the player who actually selected that
+     * story's location - both for the <=4-player case (which must keep passing) and the >4-player
+     * case (which currently fails, documenting a known bug - see
+     * provideWhatHappensHereLocationVotingPlayerCounts for details).
+     */
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("provideWhatHappensHereLocationVotingPlayerCounts")
+    void testCalculateWinningSubmission_WHAT_HAPPENS_HERE_LocationVoting_AssignsStoryToCorrectPlayer(
+            String scenarioName,
+            int numPlayers,
+            int expectedOffset
+    ) throws IOException {
+        // Arrange - each player voted for their own distinct location (index i -> Location i)
+        List<Player> players = new ArrayList<>();
+        List<Location> locations = new ArrayList<>();
+        for (int i = 0; i < numPlayers; i++) {
+            Location location = new Location("location-" + i, "Location " + i);
+            locations.add(location);
+
+            Player player = new Player();
+            player.setAuthorId("player-" + i);
+            player.setUserName("Player" + i);
+            player.setJoinedAt(new Date(1_000L * i));
+            player.setSelectedLocationId(location.getId());
+            players.add(player);
+        }
+
+        // Writer i is assigned to write about whichever location was selected by the player at
+        // (i + offset) % numPlayers - see distributeEncounterLabelsByLocation, and the
+        // "WHAT_HAPPENS_HERE - Round 1, Players have chosen locations" scenario in
+        // provideOutcomeTypeDistributionScenarios which verifies this forward assignment already
+        // holds for this exact fixture shape.
+        int whatHappensHereOffset = WHAT_HAPPENS_HERE.getOutcomeTypeOffset(numPlayers);
+        assertEquals(expectedOffset, whatHappensHereOffset,
+                "This test assumes the " + numPlayers + "-player WHAT_HAPPENS_HERE offset of " + expectedOffset);
+
+        List<TextSubmission> submissions = new ArrayList<>();
+        for (int i = 0; i < numPlayers; i++) {
+            Player writer = players.get(i);
+            Player assignedTarget = players.get((i + whatHappensHereOffset) % numPlayers);
+
+            OutcomeType locationOutcome = new OutcomeType(assignedTarget.getSelectedLocationId(),
+                    "Location for " + assignedTarget.getUserName());
+            locationOutcome.setSubTypes(new ArrayList<>(List.of(
+                    new OutcomeType("encounter-" + i, "Encounter written by " + writer.getUserName()))));
+
+            TextSubmission submission = new TextSubmission();
+            submission.setSubmissionId("submission-" + i);
+            submission.setAuthorId(writer.getAuthorId());
+            submission.setCurrentText("Story written by " + writer.getUserName());
+            submission.setOutcomeTypeWithLabel(locationOutcome);
+            submissions.add(submission);
+        }
+
+        AdventureMap adventureMap = new AdventureMap();
+        adventureMap.setLocations(locations);
+
+        GameSession gameSession = new GameSession("TESTCODE", GameState.WHAT_HAPPENS_HERE_WINNER);
+        gameSession.setPlayers(players);
+        gameSession.setAdventureMap(adventureMap);
+
+        CollaborativeTextPhase phase = new CollaborativeTextPhase(WHAT_HAPPENS_HERE.name(), "", PhaseType.SUBMISSION);
+        phase.setSubmissions(submissions);
+        gameSession.setCollaborativeTextPhases(Map.of(WHAT_HAPPENS_HERE.name(), phase));
+
+        when(gameSessionDAO.getGame("TESTCODE")).thenReturn(gameSession);
+        when(collaborativeTextDAO.getCollaborativeTextPhase("TESTCODE", WHAT_HAPPENS_HERE.name())).thenReturn(phase);
+        when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(true);
+
+        // Act
+        collaborativeTextHelper.calculateWinningSubmission(gameSession);
+
+        // Assert - every created Story's assigned player should actually have selected that
+        // story's location. This is the exact invariant that broke in the real play test: Andy's
+        // Beard's selectedLocationId didn't match the location of the story he was assigned.
+        ArgumentCaptor<Story> storyCaptor = ArgumentCaptor.forClass(Story.class);
+        verify(storyDAO, times(numPlayers)).createStory(storyCaptor.capture());
+
+        Map<String, Player> playersById = players.stream()
+                .collect(Collectors.toMap(Player::getAuthorId, p -> p));
+
+        for (Story story : storyCaptor.getAllValues()) {
+            Player assignedPlayer = playersById.get(story.getPlayerId());
+            assertNotNull(assignedPlayer, "Story assigned to unknown player id: " + story.getPlayerId());
+
+            System.out.println("Story written by " + story.getAuthorId()
+                    + " -> assigned to " + story.getPlayerId()
+                    + " (selectedLocationId=" + assignedPlayer.getSelectedLocationId() + ")"
+                    + " at location " + story.getLocation().getId());
+
+            assertEquals(story.getLocation().getId(), assignedPlayer.getSelectedLocationId(),
+                    "Story at location " + story.getLocation().getId() + " was assigned to player "
+                            + story.getPlayerId() + ", whose selectedLocationId is "
+                            + assignedPlayer.getSelectedLocationId() + " instead");
+        }
     }
 
     // ===== LOCATION_VOTING TESTS =====
