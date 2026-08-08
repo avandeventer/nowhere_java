@@ -654,7 +654,25 @@ public class CollaborativeTextHelper {
         String gameCode = gameSession.getGameCode();
         List<String> existingEndingBodies = gameSession.getEndings() == null ? new ArrayList<>()
                 : gameSession.getEndings().stream().map(Ending::getEndingBody).toList();
-        winningSubmissions.forEach(sub -> {
+
+        GameBoard gameBoard = gameSession.getGameBoard();
+        if (gameBoard == null) {
+            gameBoard = new GameBoard();
+            gameSession.setGameBoard(gameBoard);
+        }
+
+        PlayerCoordinates playerCoords = gameBoard.getPlayerCoordinates();
+        if (playerCoords == null) {
+            playerCoords = new PlayerCoordinates(0, 0);
+            gameBoard.setPlayerCoordinates(playerCoords);
+        }
+
+        int currentX = playerCoords.getxCoordinate();
+        int y = playerCoords.getyCoordinate();
+        boolean encounterAdded = false;
+
+        for (int i = 0; i < winningSubmissions.size(); i++) {
+            TextSubmission sub = winningSubmissions.get(i);
             OutcomeType outcomeTypeWithLabel = sub.getOutcomeTypeWithLabel();
             List<Story> associatedStories = new ArrayList<>();
             if (outcomeTypeWithLabel != null
@@ -669,7 +687,8 @@ public class CollaborativeTextHelper {
 
             if (!existingEndingBodies.contains(sub.getCurrentText())) {
                 Ending ending = new Ending();
-                ending.setPlayerId(outcomeTypeWithLabel != null ? outcomeTypeWithLabel.getId() : null);
+                String playerId = outcomeTypeWithLabel != null ? outcomeTypeWithLabel.getId() : null;
+                ending.setPlayerId(playerId);
                 ending.setPlayerUsername(outcomeTypeWithLabel != null ? outcomeTypeWithLabel.getLabel() : null);
                 ending.setAuthorId(sub.getAuthorId());
                 ending.setEndingBody(sub.getCurrentText());
@@ -677,8 +696,19 @@ public class CollaborativeTextHelper {
                 ending.setDidWeSucceed("DESTINY_ACHIEVED".equals(sub.getOutcomeType()));
 
                 endingDAO.createEnding(gameCode, ending);
+
+                // storyId is overloaded to hold the associated playerId for EPILOGUE encounters
+                EncounterLabel encounterLabel = new EncounterLabel(
+                        outcomeTypeWithLabel != null ? outcomeTypeWithLabel.getLabel() : "");
+                Encounter encounter = new Encounter(encounterLabel, EncounterType.EPILOGUE, playerId, ending.getEndingBody());
+                gameBoard.setEncounter(currentX + i, y, encounter);
+                encounterAdded = true;
             }
-        });
+        }
+
+        if (encounterAdded) {
+            gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
+        }
     }
 
     private void handleMakeOutcomeChoices(GameSession gameSession, List<TextSubmission> winningSubmissions) {
@@ -1558,7 +1588,7 @@ public class CollaborativeTextHelper {
     /**
      * Handles NAVIGATE_VOTING phase in streamlined mode: Moves player to next encounter (x++)
      */
-    public Story navigateToNextCoordinate(GameSession gameSession) {
+    public Encounter navigateToNextCoordinate(GameSession gameSession) {
         try {
             // Get current game session and player coordinates
             GameBoard gameBoard = gameSession.getGameBoard();
@@ -1585,13 +1615,14 @@ public class CollaborativeTextHelper {
             clearStoryWritingPhases(gameSession.getGameCode());
 
             Encounter encounter = gameBoard.getEncounter(newX, newY);
-            if(encounter == null) {
-                return null;
-            } else {
-                return gameSession.getStories().stream()
-                        .filter(story -> story.getStoryId().equals(encounter.getStoryId()))
-                        .toList().stream().findFirst().orElse(null);
-            }
+            return encounter;
+//            if(encounter == null) {
+//                return null;
+//            } else {
+////                return gameSession.getStories().stream()
+////                        .filter(story -> story.getStoryId().equals(encounter.getStoryId()))
+////                        .toList().stream().findFirst().orElse(null);
+//            }
         } catch (Exception e) {
             System.err.println("Failed to handle NAVIGATE_VOTING (streamlined): " + e.getMessage());
             throw e;
@@ -2873,5 +2904,14 @@ public class CollaborativeTextHelper {
             return new ArrayList<>();
         }
         return selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
+    }
+
+    public List<OutcomeFork> getEpilogueOutcomeForks(GameSession gameSession) {
+        Ending currentEpilogue = gameSession.getEndingAtCurrentPlayerCoordinates();
+        if (currentEpilogue == null) {
+            return new ArrayList<>();
+        }
+
+        return currentEpilogue.getOutcomeForks();
     }
 }
