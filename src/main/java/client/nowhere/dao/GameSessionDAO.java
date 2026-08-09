@@ -157,6 +157,17 @@ public class GameSessionDAO {
         return db.collection("gameSessions").document(gameCode);
     }
 
+    public void deleteGame(String gameCode) {
+        try {
+            DocumentReference gameSessionRef = getGameRef(gameCode);
+            ApiFuture<WriteResult> result = gameSessionRef.delete();
+            result.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue deleting the game session", e);
+        }
+    }
+
     public GameSession getGameInTransaction(String gameCode, Transaction txn) {
         try {
             DocumentReference ref = getGameRef(gameCode);

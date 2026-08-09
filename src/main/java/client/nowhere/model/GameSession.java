@@ -264,7 +264,7 @@ public class GameSession {
 
     public Story getStoryAtCurrentPlayerCoordinates() {
         Encounter encounter = gameBoard.getEncounterAtPlayerCoordinates();
-        if (encounter == null || encounter.storyId == null) {
+        if (encounter == null || encounter.storyId == null || stories == null) {
             return null;
         }
 

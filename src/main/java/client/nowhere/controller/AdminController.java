@@ -46,4 +46,10 @@ public class AdminController {
     public GameSession createDebugGameSession(@RequestBody GameSession gameSession) {
         return this.gameSessionHelper.createDebugGameSession(gameSession);
     }
+
+    @DeleteMapping("/game")
+    @ResponseBody
+    public void deleteGame(@RequestParam String gameCode) {
+        this.gameSessionHelper.deleteGame(gameCode);
+    }
 }

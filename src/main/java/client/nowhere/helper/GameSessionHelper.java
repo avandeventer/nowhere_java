@@ -63,6 +63,10 @@ public class GameSessionHelper {
         return gameSessionDAO.createGameSession(generateSessionCode(), userProfileId, adventureMap, saveGameId, storiesToWritePerRound, storiesToPlayPerRound, gameMode);
     }
 
+    public void deleteGame(String gameCode) {
+        gameSessionDAO.deleteGame(gameCode);
+    }
+
     public GameSession createDebugGameSession(GameSession gameSession) {
         String newGameCode = generateSessionCode();
         gameSession.setGameCode(newGameCode);
