@@ -697,11 +697,15 @@ public class CollaborativeTextHelper {
             }
         }
 
-        List<Repercussion> repercussions = winningSubmission.getAdditions().stream().filter(addition ->
+        List<Repercussion> repercussions = new ArrayList<>(winningSubmission.getAdditions().stream().filter(addition ->
                         addition.getRepercussion() != null && !addition.getRepercussion().getRepercussionType().isEmpty())
-                .map(TextAddition::getRepercussion).toList();
+                .map(TextAddition::getRepercussion).toList());
 
         if (story != null) {
+            if (story.getRepercussions() != null && !story.getRepercussions().isEmpty()) {
+                repercussions.addAll(story.getRepercussions());
+            }
+
             OutcomeFork outcomeFork = story.getSelectedOption().getSelectedOutcomeFork();
             if (outcomeFork != null) {
                 story.getSelectedOption().getSelectedOutcomeFork().setRepercussions(repercussions);
@@ -1166,6 +1170,16 @@ public class CollaborativeTextHelper {
                 story.setCreatedAt(Timestamp.now());
                 if (storyLocation != null) {
                     story.setLocation(storyLocation);
+                }
+
+                if (submission.getAdditions() != null && !submission.getAdditions().isEmpty()) {
+                    List<Repercussion> submittedRepercussions = submission
+                            .getAdditions().stream()
+                            .map(TextAddition::getRepercussion)
+                            .toList();
+                    if (!submittedRepercussions.isEmpty()) {
+                        story.setRepercussions(submittedRepercussions);
+                    }
                 }
                 String clarifier = submission.getOutcomeTypeWithLabel().getClarifier();
                 if (clarifier != null && !clarifier.isEmpty()) {
