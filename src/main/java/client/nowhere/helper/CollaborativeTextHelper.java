@@ -800,7 +800,7 @@ public class CollaborativeTextHelper {
             if (roundNumber > 1) {
                 outcomeDisplay.add("All of us feel the impact of this");
             } else {
-                outcomeDisplay.add("If we encounter \"" + encounterLabel + "\" again, we must all rise to the challenge together.");
+                outcomeDisplay.add("If we encounter \"" + encounterLabel + "\" again, all players at that location must rise to the challenge together.");
             }
             if (story.getRepercussions() == null) {
                 story.setRepercussions(new ArrayList<>());
@@ -811,10 +811,17 @@ public class CollaborativeTextHelper {
             List<Player> nonStoryPlayers = allPlayers.stream()
                     .filter(p -> !storyPlayerIds.contains(p.getAuthorId()))
                     .toList();
+            List<Player> impactedPlayers = getPlayersAtStoryLocation(nonStoryPlayers, story);
             for (Trait trait : newTraits) {
-                updatedPlayerIds.addAll(applyTraitToPlayers(trait, nonStoryPlayers));
+                updatedPlayerIds.addAll(applyTraitToPlayers(trait, impactedPlayers));
+                String locationLabel = "";
+                if (story.getLocation() != null && story.getLocation().getId() != null && !story.getLocation().getId().isEmpty()) {
+                    locationLabel = " at " + story.getLocation().getLabel();
+                }
+
                 String typeWord = getTypeWord(trait);
-                outcomeDisplay.add("All players gained the " + typeWord + " \"" + trait.getTraitLabel() + "\"!");
+                outcomeDisplay.add("All players" + locationLabel + " gained the " + typeWord + " \"" + trait.getTraitLabel() + "\"!");
+
             }
         }
         return updatedPlayerIds;
@@ -1193,19 +1200,8 @@ public class CollaborativeTextHelper {
                                     .stream().map(Repercussion::getRepercussionType).toList();
                             if (!repercussionTypes.isEmpty()
                                     && repercussionTypes.stream().allMatch(t -> RepercussionType.ALL_PLAYERS.getName().equals(t))) {
-
-                                if (story.getLocation() != null && story.getLocation().getId() != null && !story.getLocation().getId().isEmpty()) {
-                                    List<String> playersAtLocation = gameSession.getPlayers()
-                                            .stream()
-                                            .filter(player -> player.getSelectedLocationId().equals(story.getLocation().getId()))
-                                            .map(Player::getAuthorId).toList();
-                                    story.setPlayerIds(playersAtLocation);
-                                } else {
-                                    List<String> allPlayers = gameSession.getPlayers()
-                                            .stream()
-                                            .map(Player::getAuthorId).toList();
-                                    story.setPlayerIds(allPlayers);
-                                }
+                                List<Player> impactedPlayers = getPlayersAtStoryLocation(gameSession.getPlayers(), story);
+                                story.setPlayerIds(impactedPlayers.stream().map(Player::getAuthorId).toList());
                             }
                         }
                     }
@@ -1266,6 +1262,17 @@ public class CollaborativeTextHelper {
             System.err.println("Failed to handle WHAT_HAPPENS_HERE (streamlined): " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private List<Player> getPlayersAtStoryLocation(List<Player> allPlayers, Story story) {
+        if (story.getLocation() == null || story.getLocation().getId() == null || story.getLocation().getId().isEmpty()) {
+            return allPlayers;
+        }
+
+        return allPlayers
+                .stream()
+                .filter(player -> player.getSelectedLocationId().equals(story.getLocation().getId()))
+                .toList();
     }
 
     private List<Story> getPreCannedStories(GameSession gameSession, List<TextSubmission> winningSubmissions) {
