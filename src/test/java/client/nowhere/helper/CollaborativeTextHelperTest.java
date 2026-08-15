@@ -1150,7 +1150,7 @@ public class CollaborativeTextHelperTest {
                         "a80ef30c-e3fb-4a6c-99fc-bc9a39684b05",
                         Map.of(),
                         Map.of(),
-                        List.of("If we encounter \"Time Travelers B\" again, we must all rise to the challenge together."),
+                        List.of("If we encounter \"Time Travelers B\" again, all players at that location must rise to the challenge together."),
                         true,
                         "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
                         new PlayerCoordinates(3, 0)
@@ -1254,6 +1254,23 @@ public class CollaborativeTextHelperTest {
                         ),
                         false,
                         "NAVIGATE_VOTING.json",
+                        new PlayerCoordinates(2, 0)
+                ),
+                Arguments.of(
+                        "Sausage D (2, 0) - All Player effect spreads Title trait to all players at the Farmlands",
+                        "6",
+                        "b2d6d6cc-5b17-426c-a434-ee2040c32a8a",
+                        Map.of(
+                                "e6e4b325-d91a-430f-a122-dfcde7747b49", List.of("zombie pal"),
+                                "d0d63d8f-5f82-43ab-ac42-c7592c3a717a", List.of("zombie pal")
+                        ),
+                        Map.of(),
+                        List.of(
+                                "You gained the title \"zombie pal\"!",
+                                "All players at Farmlands gained the title \"zombie pal\"!"
+                        ),
+                        false,
+                        "MAKE_PARTNER_CHOICE_VOTING.json",
                         new PlayerCoordinates(2, 0)
                 )
                 //        String scenarioName,
