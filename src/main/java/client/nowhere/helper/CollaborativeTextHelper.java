@@ -806,7 +806,7 @@ public class CollaborativeTextHelper {
                 story.setRepercussions(new ArrayList<>());
             }
             List<Repercussion> repercussions = story.getSelectedOption().getSelectedOutcomeFork().getRepercussions();
-            story.setRepercussions(repercussions);
+            story.getRepercussions().addAll(repercussions);
         } else {
             List<Player> nonStoryPlayers = allPlayers.stream()
                     .filter(p -> !storyPlayerIds.contains(p.getAuthorId()))
@@ -1193,7 +1193,19 @@ public class CollaborativeTextHelper {
                                     .stream().map(Repercussion::getRepercussionType).toList();
                             if (!repercussionTypes.isEmpty()
                                     && repercussionTypes.stream().allMatch(t -> RepercussionType.ALL_PLAYERS.getName().equals(t))) {
-                                story.setPlayerIds(gameSession.getPlayers().stream().map(Player::getAuthorId).toList());
+
+                                if (story.getLocation() != null && story.getLocation().getId() != null && !story.getLocation().getId().isEmpty()) {
+                                    List<String> playersAtLocation = gameSession.getPlayers()
+                                            .stream()
+                                            .filter(player -> player.getSelectedLocationId().equals(story.getLocation().getId()))
+                                            .map(Player::getAuthorId).toList();
+                                    story.setPlayerIds(playersAtLocation);
+                                } else {
+                                    List<String> allPlayers = gameSession.getPlayers()
+                                            .stream()
+                                            .map(Player::getAuthorId).toList();
+                                    story.setPlayerIds(allPlayers);
+                                }
                             }
                         }
                     }
