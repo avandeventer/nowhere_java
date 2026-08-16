@@ -1183,6 +1183,7 @@ public class CollaborativeTextHelper {
                             .getAdditions().stream()
                             .filter(Objects::nonNull)
                             .map(TextAddition::getRepercussion)
+                            .filter(Objects::nonNull)
                             .toList();
                     if (!submittedRepercussions.isEmpty()) {
                         story.setRepercussions(submittedRepercussions);
