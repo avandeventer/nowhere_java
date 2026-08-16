@@ -703,7 +703,7 @@ public class CollaborativeTextHelper {
 
         if (story != null) {
             if (story.getRepercussions() != null && !story.getRepercussions().isEmpty()) {
-                repercussions.addAll(story.getRepercussions());
+                repercussions.addAll(story.getRepercussions().stream().filter(Objects::nonNull).toList());
             }
 
             OutcomeFork outcomeFork = story.getSelectedOption().getSelectedOutcomeFork();
@@ -821,7 +821,6 @@ public class CollaborativeTextHelper {
 
                 String typeWord = getTypeWord(trait);
                 outcomeDisplay.add("All players" + locationLabel + " gained the " + typeWord + " \"" + trait.getTraitLabel() + "\"!");
-
             }
         }
         return updatedPlayerIds;
@@ -1182,6 +1181,7 @@ public class CollaborativeTextHelper {
                 if (submission.getAdditions() != null && !submission.getAdditions().isEmpty()) {
                     List<Repercussion> submittedRepercussions = submission
                             .getAdditions().stream()
+                            .filter(Objects::nonNull)
                             .map(TextAddition::getRepercussion)
                             .toList();
                     if (!submittedRepercussions.isEmpty()) {
