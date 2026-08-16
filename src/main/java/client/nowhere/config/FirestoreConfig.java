@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Profile;
 import java.io.IOException;
 
 @Configuration
-@Profile("!test")
+@Profile("!test & !integration")
 public class FirestoreConfig {
 
     @Bean

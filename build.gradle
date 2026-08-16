@@ -15,10 +15,19 @@ java {
 	}
 }
 
+sourceSets {
+	integrationTest {
+		compileClasspath += sourceSets.main.output + sourceSets.test.output
+		runtimeClasspath += sourceSets.main.output + sourceSets.test.output
+	}
+}
+
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
 	}
+	integrationTestImplementation.extendsFrom testImplementation
+	integrationTestRuntimeOnly.extendsFrom testRuntimeOnly
 }
 
 repositories {
@@ -52,6 +61,18 @@ dependencyManagement {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// Full-game HTTP integration tests against a real Firestore emulator.
+// Not part of `check`/`build` - start the emulator first (see src/integrationTest/README.md),
+// then run `./gradlew integrationTest`.
+tasks.register('integrationTest', Test) {
+	description = 'Runs full-game integration tests against the Firestore emulator.'
+	group = 'verification'
+	testClassesDirs = sourceSets.integrationTest.output.classesDirs
+	classpath = sourceSets.integrationTest.runtimeClasspath
+	useJUnitPlatform()
+	shouldRunAfter test
 }
 
 application {

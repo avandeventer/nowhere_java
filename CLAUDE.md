@@ -65,3 +65,10 @@ and which fields are actively used vs. legacy.
 - The `Ending` model has unused fields (`associatedLocationId`, `associatedRitualOption`,
   `didWeSucceed`) left over from a prior ending design. Before using them, confirm intent with
   the user — they may be repurposed for the new epilogue mechanic.
+- Whenever investigation (debugging, testing, reading code to answer a question) reveals that a
+  game mechanic actually behaves differently than `.OUTCOMES.md` / `.CLASSES.md` /
+  `.PLAYER_LIFECYCLE.md` describe — not only when you deliberately change that mechanic yourself —
+  update the relevant doc to match reality before finishing the task. Session-scoped notes (e.g.
+  `src/integrationTest/README.md`) are for tracking that session's work, not a substitute; durable
+  understanding of how the game actually works belongs in these three files so the next session
+  (or contributor) starts from the corrected picture instead of re-discovering it.

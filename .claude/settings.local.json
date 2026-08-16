@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(./gradlew test:*)",
-      "Bash(./gradlew clean test:*)"
+      "Bash(./gradlew clean test:*)",
+      "Read(//c/Users/vande/nowhere-storytelling-suite/nowhere-game-client/**)",
+      "Read(//c/Users/vande/nowhere-storytelling-suite/nowhere-player-client/**)"
     ]
   }
 }
