@@ -134,7 +134,7 @@ public class FullGameScenario {
 
     private void joinPlayers(String gameCode, int playerCount, String suffix, String startingLocationId) {
         for (int i = 0; i < playerCount; i++) {
-            Player player = client.joinPlayer(gameCode, "Player" + (i + 1) + "-" + suffix);
+            Player player = client.joinPlayer(gameCode, "Player" + (i + 1));
             String authorId = player.getAuthorId();
             playerAuthorIds.add(authorId);
 
