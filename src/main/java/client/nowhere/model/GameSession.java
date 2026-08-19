@@ -273,6 +273,19 @@ public class GameSession {
                 .toList().stream().findFirst().orElse(null);
     }
 
+    public Ending getEndingAtCurrentPlayerCoordinates() {
+        Encounter encounter = gameBoard.getEncounterAtPlayerCoordinates();
+        if (encounter == null || encounter.storyId == null || encounter.getEncounterType() != EncounterType.EPILOGUE
+                || endings == null) {
+            return null;
+        }
+
+        // For EPILOGUE encounters, storyId is overloaded to hold the associated playerId
+        return endings.stream()
+                .filter(ending -> encounter.storyId.equals(ending.getPlayerId()))
+                .findFirst().orElse(null);
+    }
+
     public boolean areAllPlayersDone() {
         return this.getPlayers().stream()
                 .allMatch(player -> Boolean.TRUE.equals(this.getActiveGameStateSession().getIsPlayerDone().get(player.getAuthorId())));

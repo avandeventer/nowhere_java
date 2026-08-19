@@ -86,7 +86,9 @@ public enum GameState {
         ACCEPT_PARTNER_CHOICE_VOTING,
         ACCEPT_PARTNER_CHOICE_WINNER,
         DEFINING_TRAITS_VOTING,
-        DEFINING_TRAITS_WINNER;
+        DEFINING_TRAITS_WINNER,
+        MAKE_EPILOGUE_CHOICE_VOTING,
+        NAVIGATE_EPILOGUES_WINNER, MAKE_EPILOGUE_CHOICE_WINNER;
 
     public GameState getNextGameState(GameMode gameMode, boolean locationVoting) {
             if (gameMode == GameMode.TOWN_MODE) {
@@ -182,11 +184,17 @@ public enum GameState {
             case WRITE_EPILOGUES -> {
                 return WRITE_EPILOGUES_WINNER;
             }
-            case WRITE_EPILOGUES_WINNER -> {
+            case WRITE_EPILOGUES_WINNER, MAKE_EPILOGUE_CHOICE_WINNER -> {
                 return ENDING;
             }
             case ENDING -> {
-                return FINALE;
+                return NAVIGATE_EPILOGUES_WINNER;
+            }
+            case NAVIGATE_EPILOGUES_WINNER -> {
+                return MAKE_EPILOGUE_CHOICE_VOTING;
+            }
+            case MAKE_EPILOGUE_CHOICE_VOTING -> {
+                return MAKE_EPILOGUE_CHOICE_WINNER;
             }
             default -> {
                 return GameState.INIT;

@@ -252,6 +252,10 @@ public class GameSessionHelper {
                         gameSession.setGameStateToNext(locationVoting);
                     }
                     break;
+                case MAKE_EPILOGUE_CHOICE_VOTING:
+                    if (collaborativeTextHelper.getEpilogueOutcomeForks(gameSession).size() < 2) {
+                        gameSession.setGameStateToNext(locationVoting);
+                    }
                 case MAKE_PARTNER_CHOICE_VOTING:
                     if (shouldSkipPartnerChoicePhases(gameSession, gameSession.getStoryAtCurrentPlayerCoordinates())) {
                         gameSession.setGameState(MAKE_CHOICE_VOTING);
@@ -290,7 +294,11 @@ public class GameSessionHelper {
                 case NAVIGATE_WINNER:
                     Story lastEncounterStory = gameSession.getStoryAtCurrentPlayerCoordinates();
                     if (lastEncounterStory != null && lastEncounterStory.getSelectedOption() != null) {
-                        Story nextEncounterStory = collaborativeTextHelper.navigateToNextCoordinate(gameSession);
+                        Encounter nextEncounter = collaborativeTextHelper.navigateToNextCoordinate(gameSession);
+                        Story nextEncounterStory = gameSession.getStories().stream()
+                                                .filter(story -> story.getStoryId().equals(nextEncounter.getStoryId()))
+                                                .toList().stream().findFirst().orElse(null);
+
                         if (nextEncounterStory != null) {
                             String lastLocationId = lastEncounterStory.getLocation().getId();
                             if (nextEncounterStory.getLocation().getId().equals(lastLocationId)) {
@@ -324,6 +332,20 @@ public class GameSessionHelper {
                         }
                     }
                     break;
+                case NAVIGATE_EPILOGUES_WINNER:
+                    Ending currentEnding = gameSession.getEndingAtCurrentPlayerCoordinates();
+                    if (currentEnding != null) {
+                        Encounter nextEncounter = collaborativeTextHelper.navigateToNextCoordinate(gameSession);
+                        Ending nextEncounterEnding = gameSession.getEndings().stream()
+                                .filter(ending -> ending.getPlayerId().equals(nextEncounter.getStoryId()))
+                                .toList().stream().findFirst().orElse(null);
+
+                        if (nextEncounterEnding != null) {
+                            gameSession.setGameStateToNext(locationVoting);
+                        } else {
+                            gameSession.setGameState(FINALE);
+                        }
+                    }
                 default:
                     break;
             }
