@@ -1170,6 +1170,7 @@ public class CollaborativeTextHelper {
                 // Create a new story with the encounterLabel and submission text
                 Story story = new Story();
                 story.setNewStoryId();
+                story.setRoundNumber(gameSession.getRoundNumber());
                 story.setPrompt(submission.getCurrentText());
                 story.setGameCode(gameCode);
                 story.setEncounterLabel(encounterLabel);
@@ -2112,6 +2113,8 @@ public class CollaborativeTextHelper {
                     yield "We talk long into the night...";
                 } else if (gameState == GameState.NAVIGATE_WINNER) {
                     yield "You've decided to visit";
+                } else if (gameState == GameState.ACCEPT_PARTNER_CHOICE_WINNER){
+                    yield "Your partnership has been decided";
                 } else {
                     yield "The player whose turn it is should read their story out loud!";
                 }

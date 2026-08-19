@@ -32,6 +32,9 @@ public class Story {
     private String selectedOptionId = "";
     private boolean playerSucceeded = false;
     private String prequelStoryPlayerId = "";
+    @Getter
+    @Setter
+    private Integer roundNumber = -1;
 
     @Getter
     @Setter
@@ -385,6 +388,7 @@ public class Story {
         if (this.getLocation() != null) {
             this.getLocation().setSelectedOptionId("");
         }
+        this.setRoundNumber(-1);
     }
 
     public void makeSequel(String storyId, boolean playerSucceeded, String selectedOptionId) {
@@ -407,5 +411,4 @@ public class Story {
                 ))
                 .anyMatch(outcomeStat -> outcomeStat.getPlayerStat().getStatType().isFavorType());
     }
-
 }
