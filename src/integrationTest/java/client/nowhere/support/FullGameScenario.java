@@ -64,10 +64,14 @@ public class FullGameScenario {
     private static final String COMBINED_TRAIT_LABEL = "Battle-Scarred";
     private static final String TITLE_LABEL = "Voice of the Vale";
     private static final String ALL_PLAYERS_REPERCUSSION_NAME = "All Players";
+    private static final String WHAT_HAPPENS_HERE_TRAIT_LABEL = "Watchful";
 
     private final GameFlowClient client;
     private final List<String> playerAuthorIds = new ArrayList<>();
     private final Map<String, String> classNameByAuthorId = new LinkedHashMap<>();
+    // userName (Player1, Player2, ...) instead of the raw authorId UUID in any text sent to the
+    // server, so live game data is readable by eye when debugging a failed run.
+    private final Map<String, String> userNameByAuthorId = new LinkedHashMap<>();
 
     // Round-1 HOW_DOES_THIS_RESOLVE bookkeeping, built once and read by the round-2 assertions.
     private final Map<String, ResolvedOption> rootByResolver = new LinkedHashMap<>();
@@ -79,6 +83,15 @@ public class FullGameScenario {
     private ScenarioTarget titleTarget;
     private boolean roundOneScenariosBuilt = false;
     private boolean roundOneEffectsAsserted = false;
+
+    // Round-1 WHAT_HAPPENS_HERE bookkeeping - see .CLASSES.md, "WHAT_HAPPENS_HERE-time
+    // repercussions stack with the winning fork's own". Fields below are authors, not resolvers,
+    // since no Story/storyId exists yet at WHAT_HAPPENS_HERE time (.PLAYER_LIFECYCLE.md, "WHAT_CAN_WE_TRY").
+    private final Map<String, String> whatHappensHereRootByAuthor = new LinkedHashMap<>();
+    private boolean whatHappensHereScenariosBuilt = false;
+    private String bardWhatHappensHereStackAuthorId;
+    private String scribeWhatHappensHereSoloAuthorId;
+    private ScenarioTarget bardStackTarget;
 
     // Opt-in alternate mode: instead of the 4-class scenario above, builds a single ALL_PLAYERS-
     // alone repercussion and splits round 2's LOCATION_VOTING so players end up at different
@@ -137,6 +150,7 @@ public class FullGameScenario {
             Player player = client.joinPlayer(gameCode, "Player" + (i + 1));
             String authorId = player.getAuthorId();
             playerAuthorIds.add(authorId);
+            userNameByAuthorId.put(authorId, player.getUserName());
 
             // Order matters here: Player.updatePlayer null-guards selectedLocationId (only
             // overwrites if the incoming body has one) but NOT playerClass (always overwrites,
@@ -234,6 +248,11 @@ public class FullGameScenario {
     }
 
     private void runPhaseActions(String gameCode, GameState gameState, int roundNumber) {
+        if (!sequelLocationScopeMode && gameState == GameState.WHAT_HAPPENS_HERE && roundNumber == 1) {
+            buildWhatHappensHereRepercussionScenarios(gameCode);
+            return;
+        }
+
         if (gameState == GameState.HOW_DOES_THIS_RESOLVE && roundNumber == 1) {
             if (sequelLocationScopeMode) {
                 buildSequelLocationScopeRepercussion(gameCode);
@@ -273,7 +292,7 @@ public class FullGameScenario {
             }
             OutcomeType parent = outcomeTypes.get(0);
             List<OutcomeType> subTypes = parent.getSubTypes();
-            String text = "Integration test submission for " + gameState + " by " + authorId;
+            String text = "Integration test submission for " + gameState + " by " + userNameByAuthorId.get(authorId);
             if (subTypes != null && !subTypes.isEmpty()) {
                 // Mirror the real player-client: keep the parent wrapper, narrow subTypes to the
                 // one chosen child, rather than flattening to the child alone (see
@@ -389,12 +408,23 @@ public class FullGameScenario {
 
         Set<String> usedTargets = new HashSet<>();
 
+        // Complete the WHAT_HAPPENS_HERE-time stack (see .CLASSES.md). Runs before the
+        // pickTarget-based scenarios below so this resolver gets reserved first and no other
+        // scenario also lands on it.
+        if (bardWhatHappensHereStackAuthorId != null && fabulistAuthorId != null) {
+            String resolverAuthorId = findResolverForStoryAuthoredBy(gameCode, bardWhatHappensHereStackAuthorId);
+            if (resolverAuthorId != null) {
+                usedTargets.add(resolverAuthorId);
+                bardStackTarget = attachCompanionScenario(gameCode, fabulistAuthorId, resolverAuthorId);
+            }
+        }
+
         // Fabulist grants COMPANION, single fork -> auto-select.
         if (fabulistAuthorId != null) {
             String targetAuthorId = pickTarget(fabulistAuthorId, usedTargets);
             if (targetAuthorId != null) {
                 usedTargets.add(targetAuthorId);
-                attachCompanionScenario(gameCode, fabulistAuthorId, targetAuthorId);
+                companionTarget = attachCompanionScenario(gameCode, fabulistAuthorId, targetAuthorId);
             }
         }
 
@@ -435,12 +465,10 @@ public class FullGameScenario {
 
     /**
      * sequelLocationScopeMode only: builds a single round-1 story whose winning fork's ONLY
-     * repercussion is ALL_PLAYERS (no accompanying TRAIT/TITLE/COMPANION) - the specific
-     * combination CollaborativeTextHelper.handleWhatHappensHereStreamlined's sequel-story branch
-     * checks for (hasNonSpreadRepercussions-style all-match on RepercussionType.ALL_PLAYERS.getName()).
-     * Deliberately does not build the other 4 class scenarios - this mode is only exercised
-     * together with runSplitLocationVote, which this file's other tests don't need and shouldn't
-     * risk being entangled with.
+     * repercussion is ALL_PLAYERS (no accompanying TRAIT/TITLE/COMPANION) - the prequel-eligibility
+     * combination described in .PLAYER_LIFECYCLE.md, "Prequel stories". Deliberately does not build
+     * the other 4 class scenarios - this mode is only exercised together with runSplitLocationVote,
+     * which this file's other tests don't need and shouldn't risk being entangled with.
      */
     private void buildSequelLocationScopeRepercussion(String gameCode) {
         if (roundOneScenariosBuilt) {
@@ -473,6 +501,98 @@ public class FullGameScenario {
     }
 
     /**
+     * Round-1 WHAT_HAPPENS_HERE: every player submits their own root encounter write-up as usual,
+     * then Bard attaches ALL_PLAYERS alone onto another author's encounter (completed into a real
+     * stacked effect later by buildRoundOneRepercussionScenarios) and Scribe attaches TRAIT alone
+     * onto a different author's - see .CLASSES.md, "WHAT_HAPPENS_HERE-time repercussions stack with
+     * the winning fork's own". Runs once; WHAT_HAPPENS_HERE only appears for round 1 with this shape
+     * (round 2 offers prequel stories too, which this scenario doesn't need).
+     */
+    private void buildWhatHappensHereRepercussionScenarios(String gameCode) {
+        if (whatHappensHereScenariosBuilt) {
+            return;
+        }
+        whatHappensHereScenariosBuilt = true;
+
+        submitDefaultWhatHappensHereRoots(gameCode);
+
+        String scribeAuthorId = classNameByAuthorId.entrySet().stream()
+                .filter(entry -> "Scribe".equals(entry.getValue())).map(Map.Entry::getKey).findFirst().orElse(null);
+        String bardAuthorId = classNameByAuthorId.entrySet().stream()
+                .filter(entry -> "Bard".equals(entry.getValue())).map(Map.Entry::getKey).findFirst().orElse(null);
+
+        Set<String> usedWhatHappensHereTargets = new HashSet<>();
+
+        if (bardAuthorId != null) {
+            String targetAuthorId = pickWhatHappensHereTarget(bardAuthorId, usedWhatHappensHereTargets);
+            if (targetAuthorId != null) {
+                usedWhatHappensHereTargets.add(targetAuthorId);
+                String allPlayersType = onlyRepercussionTypeName(gameCode, bardAuthorId);
+                String rootSubmissionId = whatHappensHereRootByAuthor.get(targetAuthorId);
+                CollaborativeTextPhase response = client.addToSubmission(gameCode, bardAuthorId, rootSubmissionId,
+                        "Bard weaves this telling so it echoes for everyone who hears it.",
+                        allPlayersType, ALL_PLAYERS_REPERCUSSION_NAME);
+                claimNewSubmissionId(response);
+                bardWhatHappensHereStackAuthorId = targetAuthorId;
+            }
+        }
+
+        if (scribeAuthorId != null) {
+            String targetAuthorId = pickWhatHappensHereTarget(scribeAuthorId, usedWhatHappensHereTargets, bardAuthorId);
+            if (targetAuthorId != null) {
+                usedWhatHappensHereTargets.add(targetAuthorId);
+                String traitType = onlyRepercussionTypeName(gameCode, scribeAuthorId);
+                String rootSubmissionId = whatHappensHereRootByAuthor.get(targetAuthorId);
+                CollaborativeTextPhase response = client.addToSubmission(gameCode, scribeAuthorId, rootSubmissionId,
+                        "Scribe notes something here worth remembering.", traitType, WHAT_HAPPENS_HERE_TRAIT_LABEL);
+                claimNewSubmissionId(response);
+                scribeWhatHappensHereSoloAuthorId = targetAuthorId;
+            }
+        }
+    }
+
+    /**
+     * Every player submits their own root WHAT_HAPPENS_HERE encounter write-up - the same default
+     * behavior runGenericSubmissionPhase would have produced - recording each author's submissionId
+     * so buildWhatHappensHereRepercussionScenarios can branch a repercussion onto a specific target.
+     */
+    private void submitDefaultWhatHappensHereRoots(String gameCode) {
+        for (String authorId : playerAuthorIds) {
+            List<OutcomeType> outcomeTypes = client.getOutcomeTypes(gameCode, authorId);
+            if (outcomeTypes.isEmpty()) {
+                continue;
+            }
+            OutcomeType parent = outcomeTypes.get(0);
+            List<OutcomeType> subTypes = parent.getSubTypes();
+            if (subTypes == null || subTypes.isEmpty()) {
+                continue;
+            }
+            OutcomeType chosenEncounter = subTypes.get(0);
+
+            CollaborativeTextPhase response = client.submitTextAddition(gameCode, authorId,
+                    narrowToChosenSubType(parent, chosenEncounter), "Encounter write-up by " + userNameByAuthorId.get(authorId), "", "");
+            String rootId = claimNewSubmissionId(response);
+            whatHappensHereRootByAuthor.put(authorId, rootId);
+        }
+    }
+
+    /** First author, in join order, with a known WHAT_HAPPENS_HERE root that isn't the granter and isn't already used. */
+    private String pickWhatHappensHereTarget(String granterAuthorId, Set<String> used, String... alsoExclude) {
+        Set<String> excluded = new HashSet<>(used);
+        excluded.add(granterAuthorId);
+        for (String exclude : alsoExclude) {
+            if (exclude != null) {
+                excluded.add(exclude);
+            }
+        }
+        return playerAuthorIds.stream()
+                .filter(whatHappensHereRootByAuthor::containsKey)
+                .filter(authorId -> !excluded.contains(authorId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
      * Every naturally-assigned player submits root resolution text for the first offered option on
      * their assigned story - the same default behavior runGenericSubmissionPhase would have
      * produced. Shared by both round-1 scenario builders; each layers its own repercussion
@@ -492,7 +612,7 @@ public class FullGameScenario {
             OutcomeType chosenOption = subTypes.get(0);
 
             CollaborativeTextPhase response = client.submitTextAddition(gameCode, authorId,
-                    narrowToChosenSubType(parent, chosenOption), "Root resolution by " + authorId, "", "");
+                    narrowToChosenSubType(parent, chosenOption), "Root resolution by " + userNameByAuthorId.get(authorId), "", "");
             String rootId = claimNewSubmissionId(response);
             rootByResolver.put(authorId, new ResolvedOption(parent.getId(), chosenOption.getId(), rootId));
         }
@@ -510,7 +630,7 @@ public class FullGameScenario {
                 .orElse(null);
     }
 
-    private void attachCompanionScenario(String gameCode, String fabulistAuthorId, String targetAuthorId) {
+    private ScenarioTarget attachCompanionScenario(String gameCode, String fabulistAuthorId, String targetAuthorId) {
         ResolvedOption target = rootByResolver.get(targetAuthorId);
         String repercussionType = onlyRepercussionTypeName(gameCode, fabulistAuthorId);
         // Real client behavior (collaborative-text.component.ts, onRepercussionChange): for a
@@ -523,7 +643,7 @@ public class FullGameScenario {
         CollaborativeTextPhase response = client.addToSubmission(gameCode, fabulistAuthorId, target.rootSubmissionId(),
                 "Fabulist recognizes a kindred spirit in this encounter.", repercussionType, encounterLabel);
         String forkId = claimNewSubmissionId(response);
-        companionTarget = new ScenarioTarget(target.storyId(), target.optionId(), forkId);
+        return new ScenarioTarget(target.storyId(), target.optionId(), forkId);
     }
 
     private String findEncounterLabel(String gameCode, String storyId) {
@@ -532,6 +652,27 @@ public class FullGameScenario {
             throw new IllegalStateException("Story " + storyId + " has no EncounterLabel to use for a Companion repercussion");
         }
         return story.getEncounterLabel().getEncounterLabel();
+    }
+
+    /**
+     * Finds whichever resolver rootByResolver ended up assigning to resolve the round-1 story a
+     * given player authored during WHAT_HAPPENS_HERE - author and resolver aren't necessarily the
+     * same player (.PLAYER_LIFECYCLE.md, "WHAT_CAN_WE_TRY"). Must be called after
+     * submitDefaultRootResolutions has populated rootByResolver. Returns null if the story can't be
+     * found yet or wasn't assigned to any of this game's resolvers (shouldn't happen at these player
+     * counts, but this scenario is skipped rather than failing hard if it ever does).
+     */
+    private String findResolverForStoryAuthoredBy(String gameCode, String storyAuthorId) {
+        List<Story> stories = client.getGame(gameCode).getStories();
+        Story authoredStory = findRoundOneStoryByAuthorId(stories, storyAuthorId);
+        if (authoredStory == null) {
+            return null;
+        }
+        return rootByResolver.entrySet().stream()
+                .filter(entry -> entry.getValue().storyId().equals(authoredStory.getStoryId()))
+                .map(Map.Entry::getKey)
+                .findFirst()
+                .orElse(null);
     }
 
     private void attachTraitAloneScenario(String gameCode, String scribeAuthorId, String targetAuthorId) {
@@ -602,7 +743,7 @@ public class FullGameScenario {
     private String onlyRepercussionTypeName(String gameCode, String authorId) {
         List<RepercussionTypeOption> types = client.getPlayerRepercussionTypes(gameCode, authorId);
         if (types.isEmpty()) {
-            throw new IllegalStateException("Player " + authorId + " has no repercission types available - is their PlayerClass set?");
+            throw new IllegalStateException("Player " + userNameByAuthorId.get(authorId) + " has no repercission types available - is their PlayerClass set?");
         }
         return types.get(0).getName();
     }
@@ -664,15 +805,9 @@ public class FullGameScenario {
 
         if (combinedTarget != null) {
             assertScenarioResolvedAsExpected(stories, combinedTarget, "Trait+All Players combined");
-            // ALL_PLAYERS spreads the trait beyond the chained story's own playerIds/partnerIds to
-            // every OTHER player at that story's own location (CollaborativeTextHelper.handleSpread
-            // -> getPlayersAtStoryLocation), not literally every player in the game. This test's
-            // players all vote for the same LOCATION_VOTING candidate (uniform voting, kept simple
-            // on purpose so the other 3 scenarios stay deterministic), so everyone happens to share
-            // the Combined story's location here and this assertion still holds - but it can't by
-            // itself distinguish the new location-scoped spread from the old game-wide one. That
-            // needs genuine location diversity in round 1 specifically (not round 2, like
-            // sequelLocationScopeMode's split), which isn't built here.
+            // ALL_PLAYERS spreads location-scoped, not game-wide (.CLASSES.md, "handleSpread"), but
+            // this test's uniform LOCATION_VOTING means everyone shares the location, so this
+            // assertion can't by itself distinguish the two - sequelLocationScopeMode's split does.
             assertPlayersHaveTrait(players, playerAuthorIds, COMBINED_TRAIT_LABEL, "Trait");
         }
 
@@ -702,11 +837,49 @@ public class FullGameScenario {
             }
         }
 
-        // Round-2 prequel-story mechanic: computed dynamically per story from its actual winning
-        // fork's repercussions (not hardcoded per scenario) - a story whose winning fork carries
-        // no repercussion other than possibly a lone ALL_PLAYERS should be re-offered to its
-        // author as a round-2 prequel; anything else should not. See CollaborativeTextHelper's
-        // WHAT_HAPPENS_HERE/roundNumber>1 branch and hasNonSpreadRepercussions.
+        if (bardStackTarget != null) {
+            Story story = assertScenarioResolvedAsExpected(stories, bardStackTarget,
+                    "Bard ALL_PLAYERS (WHAT_HAPPENS_HERE) + Fabulist COMPANION (HOW_DOES_THIS_RESOLVE) stacked");
+
+            List<Repercussion> whatHappensHereRepercussions = story.getRepercussions() == null
+                    ? List.of() : story.getRepercussions();
+            assertThat(whatHappensHereRepercussions)
+                    .as("story %s should still carry the ALL_PLAYERS repercussion Bard attached while "
+                            + "authoring it during WHAT_HAPPENS_HERE", story.getStoryId())
+                    .anyMatch(r -> RepercussionType.ALL_PLAYERS.getName().equals(r.getRepercussionType()));
+
+            String companionLabel = story.getEncounterLabel() == null ? null : story.getEncounterLabel().getEncounterLabel();
+            assertThat(companionLabel).as("stacked scenario's story should have an encounter label").isNotBlank();
+            // Companion should spread the same way, and with the same uniform-voting caveat, as the
+            // Combined scenario above - see .CLASSES.md for the stacking mechanic itself.
+            assertPlayersHaveTrait(players, playerAuthorIds, companionLabel, "Companion");
+        }
+
+        if (scribeWhatHappensHereSoloAuthorId != null) {
+            Story story = findRoundOneStoryByAuthorId(stories, scribeWhatHappensHereSoloAuthorId);
+            assertThat(story)
+                    .as("story authored by %s should exist (Scribe's WHAT_HAPPENS_HERE-time TRAIT target)",
+                            scribeWhatHappensHereSoloAuthorId)
+                    .isNotNull();
+            assertThat(story.getSelectedOptionId())
+                    .as("Scribe's WHAT_HAPPENS_HERE-solo story should still resolve normally through "
+                            + "MAKE_CHOICE_VOTING despite carrying a pre-attached repercussion")
+                    .isNotBlank();
+
+            List<Repercussion> whatHappensHereRepercussions = story.getRepercussions() == null
+                    ? List.of() : story.getRepercussions();
+            assertThat(whatHappensHereRepercussions)
+                    .as("story %s should carry the TRAIT repercussion Scribe attached while authoring "
+                            + "it during WHAT_HAPPENS_HERE", story.getStoryId())
+                    .anyMatch(r -> RepercussionType.TRAIT.getName().equals(r.getRepercussionType()));
+
+            // No repercussion was attached at this story's own HOW_DOES_THIS_RESOLVE resolution
+            // (entirely generic) - the trait below can only have come from WHAT_HAPPENS_HERE-time.
+            assertPlayersHaveTrait(players, allTargetPlayerIds(story), WHAT_HAPPENS_HERE_TRAIT_LABEL, "Trait");
+        }
+
+        // Round-2 prequel-story mechanic (.PLAYER_LIFECYCLE.md, "Prequel stories"): computed
+        // dynamically per story from its actual winning fork's repercussions, not hardcoded per scenario.
         for (ResolvedOption resolved : rootByResolver.values()) {
             Story story = findStoryById(stories, resolved.storyId());
             String storyAuthorId = story.getAuthorId();
@@ -753,18 +926,12 @@ public class FullGameScenario {
 
     /**
      * sequelLocationScopeMode only. Finds the round-2 "sequel" story that continues the
-     * ALL_PLAYERS-alone round-1 story (Story.prequelStoryId points back at it - see
-     * CollaborativeTextHelper.handleWhatHappensHereStreamlined's clarifier branch) and asserts its
-     * playerIds are scoped to players at the sequel's own location, not every player in the game.
-     *
-     * Doesn't assert exact equality: handleWhatHappensHereStreamlined unconditionally appends one
-     * more "distribution-assigned" player id to playerIds after the location-scoping branch runs
-     * (see ~line 1218 of that file), regardless of whether that player is at the sequel's location.
-     * So the true postcondition is "every same-location player is included, and playerIds is a
-     * proper subset of all players" - not "playerIds exactly equals the same-location players."
-     * runSplitLocationVote deliberately splits close to evenly (not 3-vs-1) so this assertion stays
-     * meaningful even in the worst case where that one extra appended id happens to be an
-     * off-location player.
+     * ALL_PLAYERS-alone round-1 story and asserts its playerIds are scoped to players at the
+     * sequel's own location, not every player in the game - see .PLAYER_LIFECYCLE.md,
+     * "WHAT_HAPPENS_HERE", for why this can't assert exact equality (the unconditional
+     * distribution-assigned player append). runSplitLocationVote deliberately splits close to
+     * evenly (not 3-vs-1) so this assertion stays meaningful even in the worst case where that one
+     * extra appended id happens to be an off-location player.
      */
     private void assertSequelLocationScopeEffects(String gameCode) {
         GameSession game = client.getGame(gameCode);
@@ -831,6 +998,19 @@ public class FullGameScenario {
 
     private static Story findStoryById(List<Story> stories, String storyId) {
         return stories.stream().filter(story -> storyId.equals(story.getStoryId())).findFirst().orElse(null);
+    }
+
+    /**
+     * Finds the round-1 story authored by a given player - must be scoped by Story.roundNumber, not
+     * authorId alone, since every player also has a round-0 tutorial story with the same authorId.
+     * See .CLASSES.md, "Test-authoring pitfall".
+     */
+    private static Story findRoundOneStoryByAuthorId(List<Story> stories, String authorId) {
+        return stories.stream()
+                .filter(story -> authorId.equals(story.getAuthorId()))
+                .filter(story -> story.getRoundNumber() != null && story.getRoundNumber() == 1)
+                .findFirst()
+                .orElse(null);
     }
 
     private static Player findPlayerById(List<Player> players, String authorId) {
