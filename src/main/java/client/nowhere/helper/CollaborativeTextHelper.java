@@ -2013,8 +2013,6 @@ public class CollaborativeTextHelper {
         PhaseBaseInfo baseInfo = gameState.getPhaseBaseInfo(entityName, gameSession.getRoundNumber(), gameSessionDisplay);
         PhaseType phaseType = determinePhaseType(gameState, baseInfo);
 
-        String phaseInstructions = getPhaseInstructionsForMode(gameState, phaseType, baseInfo);
-
         CollaborativePhaseTypeInstructions collaborativeModeInstructions = getCollaborativeModeInstructions(
             baseInfo.collaborativeMode(), 
             phaseType, 
@@ -2047,6 +2045,8 @@ public class CollaborativeTextHelper {
                     .filter(p -> locationId.equals(p.getSelectedLocationId()))
                     .collect(Collectors.toList());
         }
+
+        String phaseInstructions = getPhaseInstructionsForMode(gameState, phaseType, baseInfo, activePlayers);
 
         return new CollaborativeTextPhaseInfo(
             gameState.getPhaseId(),
@@ -2082,7 +2082,7 @@ public class CollaborativeTextHelper {
     /**
      * Gets phase instructions based on the phase type
      */
-    private String getPhaseInstructionsForMode(GameState gameState, PhaseType phaseType, PhaseBaseInfo baseInfo) {
+    private String getPhaseInstructionsForMode(GameState gameState, PhaseType phaseType, PhaseBaseInfo baseInfo, List<Player> activePlayers) {
         return switch (phaseType) {
             case SUBMISSION -> baseInfo.baseInstructions();
             case VOTING -> {
@@ -2111,12 +2111,14 @@ public class CollaborativeTextHelper {
                     yield "These things have become part of this world";
                 } else if (gameState == GameState.CAMPFIRE_WINNERS) {
                     yield "We talk long into the night...";
-                } else if (gameState == GameState.NAVIGATE_WINNER) {
-                    yield "You've decided to visit";
                 } else if (gameState == GameState.ACCEPT_PARTNER_CHOICE_WINNER){
                     yield "Your partnership has been decided";
                 } else {
-                    yield "The player whose turn it is should read their story out loud!";
+                    if (activePlayers != null && !activePlayers.isEmpty()) {
+                        yield activePlayers.getFirst().getDisplayName() + " should read the description below out loud!";
+                    } else {
+                        yield "The player whose turn it is should read their story out loud!";
+                    }
                 }
             }
         };
@@ -2141,9 +2143,7 @@ public class CollaborativeTextHelper {
             } else {
                 int maxCharacterLimit = gameState == WRITE_EPILOGUES ? 250 : 150;
                 String contributionPhaseInstruction =
-                        gameState == HOW_DOES_THIS_RESOLVE || gameState == HOW_DOES_THIS_RESOLVE_AGAIN ?
-                            "Players are adding to each other's submissions! Submit your writing to start using your player class ability on your friends' ideas!"
-                                : "Players are adding to each other's submissions! Submit your writing to start adding to your friends' ideas!";
+                            "Players are adding to each other's submissions! Submit your writing to start using your player class ability on your friends' ideas!";
                 // SHARE_TEXT mode
                 if (gameState == GameState.WHAT_WILL_BECOME_OF_US) {
                     return new CollaborativePhaseTypeInstructions(
