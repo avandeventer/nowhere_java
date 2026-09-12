@@ -976,7 +976,7 @@ public class CollaborativeTextHelperTest {
         }
         if (!expectedOutcomeDisplayMessages.isEmpty()) {
             ArgumentCaptor<ActivePlayerSession> captor = ArgumentCaptor.forClass(ActivePlayerSession.class);
-            verify(activeSessionDAO).updateActivePlayerSession(captor.capture());
+            verify(activeSessionDAO).updateActivePlayerSession(eq(gameSession.getGameCode()), captor.capture());
             List<String> actualDisplay = captor.getValue().getOutcomeDisplay();
             for (String expectedMsg : expectedOutcomeDisplayMessages) {
                 assertTrue(actualDisplay.contains(expectedMsg),
@@ -1100,7 +1100,7 @@ public class CollaborativeTextHelperTest {
         }
         if (!expectedOutcomeDisplayMessages.isEmpty()) {
             ArgumentCaptor<ActivePlayerSession> captor = ArgumentCaptor.forClass(ActivePlayerSession.class);
-            verify(activeSessionDAO).updateActivePlayerSession(captor.capture());
+            verify(activeSessionDAO).updateActivePlayerSession(eq(gameSession.getGameCode()), captor.capture());
             List<String> actualDisplay = captor.getValue().getOutcomeDisplay();
             for (String expectedMsg : expectedOutcomeDisplayMessages) {
                 assertTrue(actualDisplay.contains(expectedMsg),

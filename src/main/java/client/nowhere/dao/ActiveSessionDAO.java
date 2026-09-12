@@ -26,8 +26,8 @@ public class ActiveSessionDAO {
         this.db = db;
     }
 
-    public ActivePlayerSession updateActivePlayerSession(ActivePlayerSession activeSession) {
-        DocumentReference gameSessionRef = db.collection("gameSessions").document(activeSession.getGameCode());
+    public ActivePlayerSession updateActivePlayerSession(String gameCode, ActivePlayerSession activeSession) {
+        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
 
         ActivePlayerSession activeSessionToUpdate = new ActivePlayerSession();
         try {

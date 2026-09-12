@@ -25,7 +25,7 @@ public class ActiveSessionHelper {
         if (activeSession.isSetNextPlayerTurn() && !activeSession.getPlayerId().isEmpty()) {
             activeSession = nextPlayerTurn(activeSession.getGameCode(), activeSession.getPlayerId());
         }
-        return this.activeSessionDAO.updateActivePlayerSession(activeSession);
+        return this.activeSessionDAO.updateActivePlayerSession(activeSession.getGameCode(), activeSession);
     }
 
     public void update(String gameCode, GameState gamePhase, String authorId, boolean isDone) {
@@ -82,7 +82,7 @@ public class ActiveSessionHelper {
         activePlayerSession.setPlayerId(firstPlayerTurnId);
         activePlayerSession.setGameCode(gameCode);
         activePlayerSession.setSetNextPlayerTurn(false);
-        return activeSessionDAO.updateActivePlayerSession(activePlayerSession);
+        return activeSessionDAO.updateActivePlayerSession(gameCode, activePlayerSession);
     }
 
     private List<Player> getPlayersInCurrentTurnOrder(GameSession gameSession, String currentTurnPlayerId) {

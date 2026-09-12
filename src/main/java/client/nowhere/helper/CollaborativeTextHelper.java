@@ -785,7 +785,7 @@ public class CollaborativeTextHelper {
             ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
             activePlayerSession.setGameCode(gameSession.getGameCode());
             activePlayerSession.setOutcomeDisplay(outcomeDisplay);
-            activeSessionDAO.updateActivePlayerSession(activePlayerSession);
+            activeSessionDAO.updateActivePlayerSession(gameSession.getGameCode(), activePlayerSession);
         }
     }
 
@@ -1089,7 +1089,7 @@ public class CollaborativeTextHelper {
 
         if (!outcomeMessages.isEmpty()) {
             activePlayerSession.setOutcomeDisplay(outcomeMessages);
-            activeSessionDAO.updateActivePlayerSession(activePlayerSession);
+            activeSessionDAO.updateActivePlayerSession(activePlayerSession.getGameCode(), activePlayerSession);
         }
     }
 
@@ -1545,7 +1545,7 @@ public class CollaborativeTextHelper {
                 ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
                 activePlayerSession.setGameCode(gameSession.getGameCode());
                 activePlayerSession.setOutcomeDisplay(outcomeDisplay);
-                activeSessionDAO.updateActivePlayerSession(activePlayerSession);
+                activeSessionDAO.updateActivePlayerSession(activePlayerSession.getGameCode(), activePlayerSession);
             }
         } catch (Exception e) {
             System.err.println("Failed to handle LOCATION_OPTION_MAKE_CHOICE_VOTING: " + e.getMessage());

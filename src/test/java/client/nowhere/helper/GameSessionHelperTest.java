@@ -22,11 +22,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.argThat;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -712,7 +711,7 @@ public class GameSessionHelperTest {
         boolean expectContentUpdate = !expectedUpdatedPlayerIds.isEmpty() || !expectedOutcomeDisplay.isEmpty();
         ArgumentCaptor<ActivePlayerSession> activeSessionCaptor = ArgumentCaptor.forClass(ActivePlayerSession.class);
         verify(activeSessionDAO, times(expectContentUpdate ? 2 : 1))
-                .updateActivePlayerSession(activeSessionCaptor.capture());
+                .updateActivePlayerSession(eq(gameSession.getGameCode()), activeSessionCaptor.capture());
 
         // Assert - Verify outcome display
         if (!expectedOutcomeDisplay.isEmpty()) {

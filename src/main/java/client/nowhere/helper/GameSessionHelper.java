@@ -109,7 +109,7 @@ public class GameSessionHelper {
     public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
         GameSession existingSession = gameSessionDAO.getGame(gameSession.getGameCode());
         existingSession.getActivePlayerSession().setNextGameStateLoading(true);
-        activeSessionDAO.updateActivePlayerSession(existingSession.getActivePlayerSession());
+        activeSessionDAO.updateActivePlayerSession(gameSession.getGameCode(), existingSession.getActivePlayerSession());
 
         boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
 
