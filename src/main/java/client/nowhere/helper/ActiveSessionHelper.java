@@ -25,11 +25,11 @@ public class ActiveSessionHelper {
         if (activeSession.isSetNextPlayerTurn() && !activeSession.getPlayerId().isEmpty()) {
             activeSession = nextPlayerTurn(activeSession.getGameCode(), activeSession.getPlayerId());
         }
-        return this.activeSessionDAO.update(activeSession);
+        return this.activeSessionDAO.updateActivePlayerSession(activeSession);
     }
 
     public void update(String gameCode, GameState gamePhase, String authorId, boolean isDone) {
-        boolean gameProgressionNeeded = this.activeSessionDAO.update(gameCode, gamePhase, authorId, isDone);
+        boolean gameProgressionNeeded = this.activeSessionDAO.updateActiveGameStateSession(gameCode, gamePhase, authorId, isDone);
         
         if (gameProgressionNeeded && !gamePhase.equals(GameState.INIT)) {
             System.out.println("All players are done, progressing game state via GameSessionHelper");
@@ -82,7 +82,7 @@ public class ActiveSessionHelper {
         activePlayerSession.setPlayerId(firstPlayerTurnId);
         activePlayerSession.setGameCode(gameCode);
         activePlayerSession.setSetNextPlayerTurn(false);
-        return activeSessionDAO.update(activePlayerSession);
+        return activeSessionDAO.updateActivePlayerSession(activePlayerSession);
     }
 
     private List<Player> getPlayersInCurrentTurnOrder(GameSession gameSession, String currentTurnPlayerId) {

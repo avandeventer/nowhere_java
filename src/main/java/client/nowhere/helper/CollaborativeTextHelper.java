@@ -785,7 +785,7 @@ public class CollaborativeTextHelper {
             ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
             activePlayerSession.setGameCode(gameSession.getGameCode());
             activePlayerSession.setOutcomeDisplay(outcomeDisplay);
-            activeSessionDAO.update(activePlayerSession);
+            activeSessionDAO.updateActivePlayerSession(activePlayerSession);
         }
     }
 
@@ -1089,7 +1089,7 @@ public class CollaborativeTextHelper {
 
         if (!outcomeMessages.isEmpty()) {
             activePlayerSession.setOutcomeDisplay(outcomeMessages);
-            activeSessionDAO.update(activePlayerSession);
+            activeSessionDAO.updateActivePlayerSession(activePlayerSession);
         }
     }
 
@@ -1545,7 +1545,7 @@ public class CollaborativeTextHelper {
                 ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
                 activePlayerSession.setGameCode(gameSession.getGameCode());
                 activePlayerSession.setOutcomeDisplay(outcomeDisplay);
-                activeSessionDAO.update(activePlayerSession);
+                activeSessionDAO.updateActivePlayerSession(activePlayerSession);
             }
         } catch (Exception e) {
             System.err.println("Failed to handle LOCATION_OPTION_MAKE_CHOICE_VOTING: " + e.getMessage());
@@ -2119,7 +2119,7 @@ public class CollaborativeTextHelper {
                     yield "Your partnership has been decided";
                 } else {
                     if (activePlayers != null && !activePlayers.isEmpty()) {
-                        yield activePlayers.getFirst().getDisplayName() + " should read the description below out loud!";
+                        yield activePlayers.getFirst().getDisplayName() + " should read the description on screen out loud!";
                     } else {
                         yield "The player whose turn it is should read their story out loud!";
                     }

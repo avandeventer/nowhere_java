@@ -18,6 +18,7 @@ public class ActivePlayerSession {
     boolean startTimer;
     boolean writeTimerDone;
     boolean contributionPhaseActive;
+    boolean isNextGameStateLoading;
 
     public ActivePlayerSession() {
         this.isPlayerDoneWithTurn = new HashMap<>();
@@ -25,6 +26,7 @@ public class ActivePlayerSession {
         this.startTimer = false;
         this.writeTimerDone = false;
         this.contributionPhaseActive = false;
+        this.isNextGameStateLoading = false;
     }
 
     public String getPlayerId() {
@@ -56,6 +58,7 @@ public class ActivePlayerSession {
         this.startTimer = updatedSession.isStartTimer();
         this.writeTimerDone = updatedSession.isWriteTimerDone();
         this.contributionPhaseActive = updatedSession.isContributionPhaseActive();
+        this.isNextGameStateLoading = updatedSession.isNextGameStateLoading();
         if (
             updatedSession.getIsPlayerDoneWithTurn() != null
             && updatedSession.getIsPlayerDoneWithTurn().size() > 0
@@ -146,6 +149,7 @@ public class ActivePlayerSession {
         this.startTimer = false;
         this.writeTimerDone = false;
         this.contributionPhaseActive = false;
+        this.isNextGameStateLoading = false;
     }
 
     public void resetPlayerDoneWithTurn(List<Player> players) {
@@ -197,4 +201,13 @@ public class ActivePlayerSession {
     public void setContributionPhaseActive(boolean contributionPhaseActive) {
         this.contributionPhaseActive = contributionPhaseActive;
     }
+
+    public boolean isNextGameStateLoading() {
+        return isNextGameStateLoading;
+    }
+
+    public void setNextGameStateLoading(boolean nextGameStateLoading) {
+        isNextGameStateLoading = nextGameStateLoading;
+    }
+
 }

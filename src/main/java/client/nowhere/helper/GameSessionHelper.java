@@ -14,14 +14,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import client.nowhere.dao.*;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import client.nowhere.dao.AdventureMapDAO;
-import client.nowhere.dao.EndingDAO;
-import client.nowhere.dao.GameSessionDAO;
-import client.nowhere.dao.StoryDAO;
 import client.nowhere.exception.GameStateException;
 import client.nowhere.exception.ResourceException;
 import io.netty.util.internal.StringUtil;
@@ -38,6 +35,7 @@ public class GameSessionHelper {
     private final UserProfileHelper userProfileHelper;
     private final FeatureFlagHelper featureFlagHelper;
     private final CollaborativeTextHelper collaborativeTextHelper;
+    private final ActiveSessionDAO activeSessionDAO;
 
     @Autowired
     public GameSessionHelper(
@@ -47,7 +45,8 @@ public class GameSessionHelper {
             EndingDAO endingDAO,
             UserProfileHelper userProfileHelper,
             FeatureFlagHelper featureFlagHelper,
-            CollaborativeTextHelper collaborativeTextHelper
+            CollaborativeTextHelper collaborativeTextHelper,
+            ActiveSessionDAO activeSessionDAO
     ) {
         this.gameSessionDAO = gameSessionDAO;
         this.adventureMapDAO = adventureMapDAO;
@@ -56,6 +55,7 @@ public class GameSessionHelper {
         this.userProfileHelper = userProfileHelper;
         this.featureFlagHelper = featureFlagHelper;
         this.collaborativeTextHelper = collaborativeTextHelper;
+        this.activeSessionDAO = activeSessionDAO;
     }
 
     public GameSession createGameSession(String userProfileId, String adventureId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound, GameMode gameMode) {
@@ -108,6 +108,9 @@ public class GameSessionHelper {
 
     public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
         GameSession existingSession = gameSessionDAO.getGame(gameSession.getGameCode());
+        existingSession.getActivePlayerSession().setNextGameStateLoading(true);
+        activeSessionDAO.updateActivePlayerSession(existingSession.getActivePlayerSession());
+
         boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
 
         if(existingSession.getGameState().equals(gameSession.getGameState())) {

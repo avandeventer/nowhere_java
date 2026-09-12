@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
@@ -93,7 +94,8 @@ public class GameSessionHelperTest {
         // Construct GameSessionHelper with real CollaborativeTextHelper
         gameSessionHelper = new GameSessionHelper(
                 gameSessionDAO, adventureMapDAO, storyDAO, endingDAO,
-                userProfileHelper, featureFlagHelper, collaborativeTextHelper
+                userProfileHelper, featureFlagHelper, collaborativeTextHelper,
+                activeSessionDAO
         );
     }
 
@@ -349,6 +351,7 @@ public class GameSessionHelperTest {
         session.setGameCode("test123");
         session.setGameState(state);
         session.setPlayers(players);
+        session.setActivePlayerSession(new ActivePlayerSession());
         ActiveGameStateSession activeGameStateSession = new ActiveGameStateSession();
         players.forEach(player -> activeGameStateSession.getIsPlayerDone().put(player.getAuthorId(), true));
         session.setActiveGameStateSession(activeGameStateSession);
@@ -603,6 +606,7 @@ public class GameSessionHelperTest {
         copy.setPlayers(new ArrayList<>(session.getPlayers()));
         copy.setStories(session.getStories());
         copy.setActiveGameStateSession(session.getActiveGameStateSession());
+        copy.setActivePlayerSession(session.getActivePlayerSession());
         copy.setAdventureMap(session.getAdventureMap());
         copy.setUserProfileId(session.getUserProfileId());
 
@@ -698,14 +702,21 @@ public class GameSessionHelperTest {
             for (String playerId : expectedUpdatedPlayerIds) {
                 verify(gameSessionDAO).updatePlayer(argThat(p -> playerId.equals(p.getAuthorId())));
             }
-            verify(activeSessionDAO).update(any(ActivePlayerSession.class));
         }
+
+        // updateGameSession always makes one activeSessionDAO call up front to persist the
+        // nextGameStateLoading flag. Phase handlers that also produce repercussion/outcome-display
+        // content (i.e. anything asserted via expectedUpdatedPlayerIds or expectedOutcomeDisplay)
+        // make a second call afterwards with that content. The loading-flag call always happens
+        // first, so the captor's last value is the content-bearing one.
+        boolean expectContentUpdate = !expectedUpdatedPlayerIds.isEmpty() || !expectedOutcomeDisplay.isEmpty();
+        ArgumentCaptor<ActivePlayerSession> activeSessionCaptor = ArgumentCaptor.forClass(ActivePlayerSession.class);
+        verify(activeSessionDAO, times(expectContentUpdate ? 2 : 1))
+                .updateActivePlayerSession(activeSessionCaptor.capture());
 
         // Assert - Verify outcome display
         if (!expectedOutcomeDisplay.isEmpty()) {
-            ArgumentCaptor<ActivePlayerSession> outcomeCaptor = ArgumentCaptor.forClass(ActivePlayerSession.class);
-            verify(activeSessionDAO).update(outcomeCaptor.capture());
-            assertEquals(expectedOutcomeDisplay, outcomeCaptor.getValue().getOutcomeDisplay());
+            assertEquals(expectedOutcomeDisplay, activeSessionCaptor.getValue().getOutcomeDisplay());
         }
     }
 

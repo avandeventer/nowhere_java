@@ -26,7 +26,7 @@ public class ActiveSessionDAO {
         this.db = db;
     }
 
-    public ActivePlayerSession update(ActivePlayerSession activeSession) {
+    public ActivePlayerSession updateActivePlayerSession(ActivePlayerSession activeSession) {
         DocumentReference gameSessionRef = db.collection("gameSessions").document(activeSession.getGameCode());
 
         ActivePlayerSession activeSessionToUpdate = new ActivePlayerSession();
@@ -47,7 +47,7 @@ public class ActiveSessionDAO {
         return activeSessionToUpdate;
     }
 
-    public boolean update(String gameCode, GameState gamePhase, String authorId, boolean isDone) {
+    public boolean updateActiveGameStateSession(String gameCode, GameState gamePhase, String authorId, boolean isDone) {
         DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
 
         try {
