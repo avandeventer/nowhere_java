@@ -2089,7 +2089,11 @@ public class CollaborativeTextHelper {
                 if (gameState == GameState.LOCATION_VOTING) {
                     yield "Each of us must choose our own path. Choose which path you will take and maybe you will meet your friends along the way!";
                 } else if (gameState == GameState.MAKE_CHOICE_VOTING || gameState == LOCATION_OPTION_MAKE_CHOICE_VOTING) {
-                    yield "Your time has come. Choose the action you wish to take from your device.";
+                    if (activePlayers != null && !activePlayers.isEmpty()) {
+                        yield "Your time has come. " +  activePlayers.getFirst().getDisplayName() + " should read the text below out loud and then choose the action they wish to take from their device.";
+                    } else {
+                        yield "Your time has come. Choose the action you wish to take from your device.";
+                    }
                 } else if (gameState == MAKE_PARTNER_CHOICE_VOTING) {
                     yield "There are other players here! Decide if you trust them enough to partner with them.";
                 } else if (gameState == ACCEPT_PARTNER_CHOICE_VOTING) {
