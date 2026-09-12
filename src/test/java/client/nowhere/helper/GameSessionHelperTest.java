@@ -703,14 +703,17 @@ public class GameSessionHelperTest {
             }
         }
 
-        // updateGameSession always makes one activeSessionDAO call up front to persist the
-        // nextGameStateLoading flag. Phase handlers that also produce repercussion/outcome-display
-        // content (i.e. anything asserted via expectedUpdatedPlayerIds or expectedOutcomeDisplay)
-        // make a second call afterwards with that content. The loading-flag call always happens
-        // first, so the captor's last value is the content-bearing one.
+        // The nextGameStateLoading flag is now set via a dedicated blind write
+        // (activeSessionDAO.setNextGameStateLoading), not via updateActivePlayerSession, so it
+        // always fires exactly once and doesn't factor into the count below.
+        verify(activeSessionDAO).setNextGameStateLoading(gameCode, true);
+
+        // updateActivePlayerSession is only called when a phase handler produces repercussion/
+        // outcome-display content (i.e. anything asserted via expectedUpdatedPlayerIds or
+        // expectedOutcomeDisplay).
         boolean expectContentUpdate = !expectedUpdatedPlayerIds.isEmpty() || !expectedOutcomeDisplay.isEmpty();
         ArgumentCaptor<ActivePlayerSession> activeSessionCaptor = ArgumentCaptor.forClass(ActivePlayerSession.class);
-        verify(activeSessionDAO, times(expectContentUpdate ? 2 : 1))
+        verify(activeSessionDAO, times(expectContentUpdate ? 1 : 0))
                 .updateActivePlayerSession(eq(gameSession.getGameCode()), activeSessionCaptor.capture());
 
         // Assert - Verify outcome display

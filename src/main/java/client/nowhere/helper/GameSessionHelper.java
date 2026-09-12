@@ -94,7 +94,10 @@ public class GameSessionHelper {
     }
 
     public GameSession updateToNextGameState(String gameCode) {
+        activeSessionDAO.setNextGameStateLoading(gameCode, true);
+
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
+
         if (gameSession.getGameState().equals(INIT)) {
             if (!gameSession.areAllPlayersDone()) {
                 throw new GameStateException("Some players are still working on their character!");
@@ -108,8 +111,6 @@ public class GameSessionHelper {
 
     public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
         GameSession existingSession = gameSessionDAO.getGame(gameSession.getGameCode());
-        existingSession.getActivePlayerSession().setNextGameStateLoading(true);
-        activeSessionDAO.updateActivePlayerSession(gameSession.getGameCode(), existingSession.getActivePlayerSession());
 
         boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
 

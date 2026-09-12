@@ -7,10 +7,13 @@ import client.nowhere.model.GameSession;
 import client.nowhere.model.GameState;
 
 import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutureCallback;
+import com.google.api.core.ApiFutures;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.WriteResult;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +27,28 @@ public class ActiveSessionDAO {
     @Autowired
     public ActiveSessionDAO(Firestore db) {
         this.db = db;
+    }
+
+    /**
+     * Blind, fire-and-forget write of just the nextGameStateLoading flag. Unlike
+     * updateActivePlayerSession, this does not read the document first - it targets the
+     * nested field directly so the loading indicator can flip for clients without waiting
+     * on a full GameSession fetch/deserialize.
+     */
+    public void setNextGameStateLoading(String gameCode, boolean isLoading) {
+        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+        ApiFuture<WriteResult> result = gameSessionRef.update("activePlayerSession.nextGameStateLoading", isLoading);
+        ApiFutures.addCallback(result, new ApiFutureCallback<WriteResult>() {
+            @Override
+            public void onFailure(Throwable throwable) {
+                System.out.println("Failed to set nextGameStateLoading for game " + gameCode + ": " + throwable.getMessage());
+            }
+
+            @Override
+            public void onSuccess(WriteResult writeResult) {
+                // No-op: fire-and-forget, nothing downstream depends on this write completing.
+            }
+        }, MoreExecutors.directExecutor());
     }
 
     public ActivePlayerSession updateActivePlayerSession(String gameCode, ActivePlayerSession activeSession) {
