@@ -405,7 +405,7 @@ public enum GameState {
 
                 if (phaseId == ENDING_PREAMBLE) {
                     return new PhaseBaseInfo(
-                            "How will we handle our final encounter?",
+                            gameSessionDisplay.getGoalDescription(),
                             "We must now make our final selection. We'll soon understand how our journey has changed all of us.",
                             CollaborativeMode.INFORMATION,
                             ENDING_PREAMBLE,
