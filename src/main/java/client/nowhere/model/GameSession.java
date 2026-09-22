@@ -1,9 +1,8 @@
 package client.nowhere.model;
 
-import client.nowhere.helper.CollaborativeTextHelper;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class GameSession {
 
@@ -242,10 +241,7 @@ public class GameSession {
             return null;
         }
 
-        List<Player> sortedPlayers = players.stream()
-                .filter(player -> player.getJoinedAt() != null)
-                .sorted(Comparator.comparing(Player::getJoinedAt))
-                .toList();
+        List<Player> sortedPlayers = getPlayersSortedByJoinedAt();
 
         int playerIndex = -1;
         for (int i = 0; i < sortedPlayers.size(); i++) {
@@ -260,6 +256,13 @@ public class GameSession {
         }
 
         return new PlayerSortResult(sortedPlayers, playerIndex, new Player(), sortedPlayers.get(playerIndex));
+    }
+
+    public @NonNull List<Player> getPlayersSortedByJoinedAt() {
+        return players.stream()
+                .filter(player -> player.getJoinedAt() != null)
+                .sorted(Comparator.comparing(Player::getJoinedAt))
+                .toList();
     }
 
     public Story getStoryAtCurrentPlayerCoordinates() {

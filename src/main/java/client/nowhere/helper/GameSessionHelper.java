@@ -119,7 +119,7 @@ public class GameSessionHelper {
         }
 
         try {
-            PhaseBaseInfo phaseBaseInfo = gameSession.getGameState().getPhaseBaseInfo("", gameSession.getRoundNumber(), gameSession.getAdventureMap().getGameSessionDisplay());
+            PhaseBaseInfo phaseBaseInfo = gameSession.getGameState().getPhaseBaseInfo("", gameSession.getRoundNumber(), gameSession.getAdventureMap().getGameSessionDisplay(), gameSession.getPlayersSortedByJoinedAt());
 
             List<Player> players = existingSession.getPlayers();
             ActiveGameStateSession gameStateSession =
@@ -690,17 +690,19 @@ public class GameSessionHelper {
     }
 
     private boolean shouldSkipPartnerChoicePhases(GameSession gameSession, Story nextEncounterStory) {
-        if(gameSession.getRoundNumber() == 0) return true;
-        if (nextEncounterStory == null) return true;
-        if (!nextEncounterStory.getPartnerIds().isEmpty()) return true;
+        return true;
 
-        String storyPlayerId = nextEncounterStory.getPlayerId();
-        Player storyPlayer = gameSession.getPlayers().stream()
-                .filter(p -> p.getAuthorId().equals(storyPlayerId))
-                .findFirst().orElse(null);
-        if (storyPlayer == null || storyPlayer.getSelectedLocationId() == null) return true;
-
-        return getAvailablePartnersAtLocation(
-                gameSession, storyPlayer.getSelectedLocationId(), storyPlayerId).isEmpty();
+//        if(gameSession.getRoundNumber() == 0) return true;
+//        if (nextEncounterStory == null) return true;
+//        if (!nextEncounterStory.getPartnerIds().isEmpty()) return true;
+//
+//        String storyPlayerId = nextEncounterStory.getPlayerId();
+//        Player storyPlayer = gameSession.getPlayers().stream()
+//                .filter(p -> p.getAuthorId().equals(storyPlayerId))
+//                .findFirst().orElse(null);
+//        if (storyPlayer == null || storyPlayer.getSelectedLocationId() == null) return true;
+//
+//        return getAvailablePartnersAtLocation(
+//                gameSession, storyPlayer.getSelectedLocationId(), storyPlayerId).isEmpty();
     }
 }

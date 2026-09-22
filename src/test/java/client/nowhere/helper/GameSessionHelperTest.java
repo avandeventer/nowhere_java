@@ -886,7 +886,7 @@ public class GameSessionHelperTest {
                         0,
 
                         GameState.NAVIGATE_WINNER,
-                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        GameState.MAKE_CHOICE_VOTING,  //Forced, was MAKE_PARTNER_CHOICE_VOTING
                         0,
                         0,
                         "MAKE_PARTNER_CHOICE_VOTING.json",
@@ -910,7 +910,7 @@ public class GameSessionHelperTest {
                         "",
                         0,
                         GameState.NAVIGATE_WINNER,
-                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        GameState.MAKE_CHOICE_VOTING, //Forced, was MAKE_PARTNER_CHOICE_VOTING
                         1,
                         0,
                         "MAKE_PARTNER_CHOICE_VOTING_Not_Initialized.json",
@@ -922,7 +922,7 @@ public class GameSessionHelperTest {
                         "",
                         0,
                         GameState.MAKE_OUTCOME_CHOICE_WINNER,
-                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        GameState.MAKE_CHOICE_VOTING, //Forced, was MAKE_PARTNER_CHOICE_VOTING
                         1,
                         0,
                         "MAKE_PARTNER_CHOICE_VOTING_Not_Initialized.json",
@@ -970,7 +970,7 @@ public class GameSessionHelperTest {
                         "",
                         0,
                         GameState.MAKE_OUTCOME_CHOICE_WINNER,
-                        GameState.MAKE_PARTNER_CHOICE_VOTING,
+                        GameState.MAKE_CHOICE_VOTING, //Forced, was MAKE_PARTNER_CHOICE_VOTING
                         4,
                         0,
                         "MAKE_PARTNER_CHOICE_VOTING_Round2_FourPlayers.json",

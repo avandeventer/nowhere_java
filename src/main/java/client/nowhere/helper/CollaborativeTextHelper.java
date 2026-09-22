@@ -2010,7 +2010,7 @@ public class CollaborativeTextHelper {
             ? gameSessionDisplay.getEntity() 
             : "the Entity";
 
-        PhaseBaseInfo baseInfo = gameState.getPhaseBaseInfo(entityName, gameSession.getRoundNumber(), gameSessionDisplay);
+        PhaseBaseInfo baseInfo = gameState.getPhaseBaseInfo(entityName, gameSession.getRoundNumber(), gameSessionDisplay, gameSession.getPlayersSortedByJoinedAt());
         PhaseType phaseType = determinePhaseType(gameState, baseInfo);
 
         CollaborativePhaseTypeInstructions collaborativeModeInstructions = getCollaborativeModeInstructions(

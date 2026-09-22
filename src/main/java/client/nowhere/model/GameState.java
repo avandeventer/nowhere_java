@@ -1,5 +1,7 @@
 package client.nowhere.model;
 
+import java.util.List;
+
 public enum GameState {
         INIT,
         WHERE_ARE_WE,
@@ -361,11 +363,63 @@ public enum GameState {
         }
 
         /**
-         * Gets the base phase information for this game state.
+         * Gets the base phase information for this game state. When the resulting collaborative mode is
+         * INFORMATION, prepends an assigned-reader instruction (who should read the text aloud) onto
+         * baseInstructions, computed from the sorted player list and current round.
          * @param entityName The name of the entity (used in some phase instructions)
          * @return PhaseBaseInfo containing phase question, instructions, collaborative mode, and related game states
          */
-        public PhaseBaseInfo getPhaseBaseInfo(String entityName, int roundNumber, GameSessionDisplay gameSessionDisplay) {
+        public PhaseBaseInfo getPhaseBaseInfo(String entityName, int roundNumber, GameSessionDisplay gameSessionDisplay, List<Player> playerSortedByJoinedAt) {
+                PhaseBaseInfo baseInfo = getPhaseBaseInfoInternal(entityName, roundNumber, gameSessionDisplay);
+                if (baseInfo.collaborativeMode() != CollaborativeMode.INFORMATION) {
+                        return baseInfo;
+                }
+
+                String readerInstruction = getAssignedReaderInstruction(getPhaseId(), playerSortedByJoinedAt, roundNumber);
+                if (readerInstruction == null) {
+                        return baseInfo;
+                }
+
+                return new PhaseBaseInfo(
+                        baseInfo.phaseQuestion(),
+                        readerInstruction + "\n" + baseInfo.baseInstructions(),
+                        baseInfo.collaborativeMode(),
+                        baseInfo.collaboratingState(),
+                        baseInfo.votingState(),
+                        baseInfo.winningState(),
+                        baseInfo.showGameBoard()
+                );
+        }
+
+        /**
+         * Builds the "Have X read the story out loud!" instruction for INFORMATION-mode phases.
+         * PREAMBLE assigns the second joined player, ENDING_PREAMBLE assigns the middle player offset
+         * by roundNumber (wrapping safely regardless of player count), and every other phase defaults
+         * to the last joined player. Returns null if there's no player list to assign from.
+         */
+        private static String getAssignedReaderInstruction(GameState phaseId, List<Player> playerSortedByJoinedAt, int roundNumber) {
+                if (playerSortedByJoinedAt == null || playerSortedByJoinedAt.isEmpty()) {
+                        return null;
+                }
+
+                Player assignedReader;
+                if (phaseId == PREAMBLE && playerSortedByJoinedAt.size() > 1) {
+                        assignedReader = playerSortedByJoinedAt.get(1);
+                } else if (phaseId == ENDING_PREAMBLE) {
+                        int numPlayers = playerSortedByJoinedAt.size();
+                        int middleIndex = ((numPlayers / 2 + roundNumber) % numPlayers + numPlayers) % numPlayers;
+                        assignedReader = playerSortedByJoinedAt.get(middleIndex);
+                } else {
+                        assignedReader = playerSortedByJoinedAt.getLast();
+                }
+
+                if (assignedReader == null) {
+                        return null;
+                }
+                return "Have " + assignedReader.getDisplayName() + " read the story out loud!";
+        }
+
+        private PhaseBaseInfo getPhaseBaseInfoInternal(String entityName, int roundNumber, GameSessionDisplay gameSessionDisplay) {
                 // Determine which phase group this game state belongs to using getPhaseId()
                 GameState phaseId = getPhaseId();
 
