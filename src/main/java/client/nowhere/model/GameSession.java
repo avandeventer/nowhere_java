@@ -1,5 +1,6 @@
 package client.nowhere.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.*;
@@ -258,6 +259,7 @@ public class GameSession {
         return new PlayerSortResult(sortedPlayers, playerIndex, new Player(), sortedPlayers.get(playerIndex));
     }
 
+    @JsonIgnore
     public @NonNull List<Player> getPlayersSortedByJoinedAt() {
         return players.stream()
                 .filter(player -> player.getJoinedAt() != null)
