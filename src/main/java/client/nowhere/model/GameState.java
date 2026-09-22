@@ -382,7 +382,7 @@ public enum GameState {
 
                 return new PhaseBaseInfo(
                         baseInfo.phaseQuestion(),
-                        readerInstruction + "\n" + baseInfo.baseInstructions(),
+                        readerInstruction + "\n \n" + baseInfo.baseInstructions(),
                         baseInfo.collaborativeMode(),
                         baseInfo.collaboratingState(),
                         baseInfo.votingState(),
@@ -416,7 +416,7 @@ public enum GameState {
                 if (assignedReader == null) {
                         return null;
                 }
-                return "Have " + assignedReader.getDisplayName() + " read the story out loud!";
+                return "Have " + assignedReader.getDisplayName() + " read the text below out loud!";
         }
 
         private PhaseBaseInfo getPhaseBaseInfoInternal(String entityName, int roundNumber, GameSessionDisplay gameSessionDisplay) {
