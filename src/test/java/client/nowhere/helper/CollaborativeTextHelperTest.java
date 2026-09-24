@@ -1055,6 +1055,8 @@ public class CollaborativeTextHelperTest {
 
         Story storyVotedOn = gameSession.getStoryAtCurrentPlayerCoordinates();
         storyVotedOn.setSelectedOptionId(selectedOptionId);
+        List<String> originalPlayerIds = new ArrayList<>(storyVotedOn.getPlayerIds());
+        List<String> originalPartnerIds = new ArrayList<>(storyVotedOn.getPartnerIds());
 
         Option selectedOption = storyVotedOn.getSelectedOption();
         CollaborativeTextPhase makeOutcomePhase = gameSession.getCollaborativeTextPhases()
@@ -1117,6 +1119,52 @@ public class CollaborativeTextHelperTest {
         verify(storyDAO).updateStory(argThat(story ->
                 story.getSelectedOption().getSelectedForkId().equals(votedSubmissionId)
         ));
+        assertEquals(originalPlayerIds, storyVotedOn.getPlayerIds(),
+                "Resolving repercussions should not change the story's playerIds");
+        assertEquals(originalPartnerIds, storyVotedOn.getPartnerIds(),
+                "Resolving repercussions should not change the story's partnerIds");
+    }
+
+    @Test
+    void testHandleMakeOutcomeChoiceVoting_ExistingBestiesStillShareRepercussions() throws IOException {
+        String joeId = "e8852f24-cdc8-465c-b244-56ce08029584";
+        String kirstenId = "ddfc6892-16dd-4e38-9252-27a3688ae038";
+
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
+        gameSession.getGameBoard().setPlayerCoordinates(new PlayerCoordinates(0, 0));
+        gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_VOTING);
+        String gameCode = gameSession.getGameCode();
+
+        // Already besties, so no new relationship trait is added this time
+        String relationshipId = joeId.compareTo(kirstenId) < 0 ? joeId + kirstenId : kirstenId + joeId;
+        for (Player player : gameSession.getPlayers()) {
+            if (player.getAuthorId().equals(joeId)) {
+                player.getTraits().add(new Trait(relationshipId, "besties (Kirsten)", TraitType.RELATIONSHIP));
+            } else if (player.getAuthorId().equals(kirstenId)) {
+                player.getTraits().add(new Trait(relationshipId, "besties (Joe)", TraitType.RELATIONSHIP));
+            }
+        }
+
+        // Joe's story: team up with Kirsten, fork grants Bear Wrestler
+        Story storyVotedOn = gameSession.getStoryAtCurrentPlayerCoordinates();
+        storyVotedOn.setSelectedOptionId(kirstenId);
+        String votedSubmissionId = "6486b8c6-7b43-48c8-80c9-195492d73718";
+
+        CollaborativeTextPhase makeOutcomePhase = gameSession.getCollaborativeTextPhases()
+                .computeIfAbsent(GameState.MAKE_OUTCOME_CHOICE_VOTING.name(), k -> new CollaborativeTextPhase());
+        for (OutcomeFork fork : storyVotedOn.getSelectedOption().getOutcomeForks()) {
+            makeOutcomePhase.addSubmission(fork.getTextSubmission());
+        }
+        makeOutcomePhase.addPlayerVote(new PlayerVote("", "", votedSubmissionId, 1));
+
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+
+        collaborativeTextHelper.calculateWinningSubmission(gameCode);
+
+        verify(gameSessionDAO).updatePlayer(argThat(p ->
+                kirstenId.equals(p.getAuthorId())
+                        && p.getTraits().stream().anyMatch(t -> "Bear Wrestler".equals(t.getTraitLabel()))
+        ));
     }
 
     static Stream<Arguments> provideOutcomeChoiceScenarios() {
@@ -1154,6 +1202,38 @@ public class CollaborativeTextHelperTest {
                         true,
                         "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
                         new PlayerCoordinates(3, 0)
+                ),
+                // Team-up options: selectedOptionId is another player's authorId
+                Arguments.of(
+                        "FUN PEOPLE (1,0) - option Team up with Joe - no repercussions → Subodh and Joe become partners",
+                        "e8852f24-cdc8-465c-b244-56ce08029584", // Joe
+                        "08f7c5a9-8c4e-484f-8995-0ee5b2a6c5aa",
+                        Map.of(
+                                "63ca67f3-d11d-4cc8-a667-6b68a1bb432b", List.of("partner (Joe)"),   // Subodh (story player)
+                                "e8852f24-cdc8-465c-b244-56ce08029584", List.of("partner (Subodh)") // Joe (teamed up)
+                        ),
+                        Map.of(),
+                        List.of("Your relationship with Joe levelled up!"),
+                        false,
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
+                        new PlayerCoordinates(1, 0)
+                ),
+                Arguments.of(
+                        "Bears (0,0) - option Team up with Kirsten - Bear Wrestler trait → Joe and Kirsten, who become partners",
+                        "ddfc6892-16dd-4e38-9252-27a3688ae038", // Kirsten
+                        "6486b8c6-7b43-48c8-80c9-195492d73718",
+                        Map.of(
+                                "e8852f24-cdc8-465c-b244-56ce08029584", List.of("Bear Wrestler", "partner (Kirsten)"), // Joe (story player)
+                                "ddfc6892-16dd-4e38-9252-27a3688ae038", List.of("Bear Wrestler", "partner (Joe)")      // Kirsten (teamed up)
+                        ),
+                        Map.of(),
+                        List.of(
+                                "You both gained the trait \"Bear Wrestler\"!",
+                                "Your relationship with Kirsten levelled up!"
+                        ),
+                        false,
+                        "MAKE_CHOICE_VOTING_REPERCUSSIONS.json",
+                        new PlayerCoordinates(0, 0)
                 ),
                 // Option "8ff69655" (Travel forward A) forks
                 Arguments.of(
@@ -1285,6 +1365,54 @@ public class CollaborativeTextHelperTest {
         );
     }
 
+    @Test
+    void testHandleMakeOutcomeChoiceVoting_RepeatTeamUpInEitherDirectionBecomesBesties() throws IOException {
+        String joeId = "e8852f24-cdc8-465c-b244-56ce08029584";
+        String subodhId = "63ca67f3-d11d-4cc8-a667-6b68a1bb432b";
+
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
+        gameSession.getGameBoard().setPlayerCoordinates(new PlayerCoordinates(1, 0));
+        gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_VOTING);
+        String gameCode = gameSession.getGameCode();
+
+        // Seed the relationship as if Subodh had previously teamed up on Joe's story (reverse direction)
+        String relationshipId = subodhId.compareTo(joeId) < 0 ? subodhId + joeId : joeId + subodhId;
+        for (Player player : gameSession.getPlayers()) {
+            if (player.getAuthorId().equals(joeId)) {
+                player.getTraits().add(new Trait(relationshipId, "partner (Subodh)", TraitType.RELATIONSHIP));
+            } else if (player.getAuthorId().equals(subodhId)) {
+                player.getTraits().add(new Trait(relationshipId, "partner (Joe)", TraitType.RELATIONSHIP));
+            }
+        }
+
+        // Subodh's story: team up with Joe
+        Story storyVotedOn = gameSession.getStoryAtCurrentPlayerCoordinates();
+        storyVotedOn.setSelectedOptionId(joeId);
+        String votedSubmissionId = "08f7c5a9-8c4e-484f-8995-0ee5b2a6c5aa";
+
+        CollaborativeTextPhase makeOutcomePhase = gameSession.getCollaborativeTextPhases()
+                .computeIfAbsent(GameState.MAKE_OUTCOME_CHOICE_VOTING.name(), k -> new CollaborativeTextPhase());
+        for (OutcomeFork fork : storyVotedOn.getSelectedOption().getOutcomeForks()) {
+            makeOutcomePhase.addSubmission(fork.getTextSubmission());
+        }
+        makeOutcomePhase.addPlayerVote(new PlayerVote("", "", votedSubmissionId, 1));
+
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+
+        collaborativeTextHelper.calculateWinningSubmission(gameCode);
+
+        verify(gameSessionDAO).updatePlayer(argThat(p ->
+                subodhId.equals(p.getAuthorId())
+                        && p.getTraits().stream().anyMatch(t -> "besties (Joe)".equals(t.getTraitLabel())
+                                && relationshipId.equals(t.getTraitId()))
+        ));
+        verify(gameSessionDAO).updatePlayer(argThat(p ->
+                joeId.equals(p.getAuthorId())
+                        && p.getTraits().stream().anyMatch(t -> "besties (Subodh)".equals(t.getTraitLabel())
+                                && relationshipId.equals(t.getTraitId()))
+        ));
+    }
+
     // ===== GET OUTCOME TYPES DISTRIBUTION TESTS =====
 
     /**
@@ -1396,6 +1524,40 @@ public class CollaborativeTextHelperTest {
                 }
             }
         }
+    }
+
+    @Test
+    void testGetOutcomeTypes_HowDoesThisResolve_TeamUpOptionsAreOtherPlayersAtStoryOwnersLocation() throws IOException {
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_AGAIN_TRAITS.json");
+        gameSession.setGameState(HOW_DOES_THIS_RESOLVE);
+        String gameCode = gameSession.getGameCode();
+
+        String andyId = "80569dbf-52d4-4169-b51f-d2977d2e94b0";
+        // Andy (writer) is assigned Kirsten's story (Snailz); Subodh is elsewhere
+        for (Player player : gameSession.getPlayers()) {
+            player.setSelectedLocationId(player.getUserName().equals("Subodh") ? "other-location" : "shared-location");
+        }
+
+        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(false);
+        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name()))
+                .thenReturn(gameSession.getCollaborativeTextPhases().get(GameState.WHAT_CAN_WE_TRY.name()));
+
+        List<OutcomeType> outcomeTypes = collaborativeTextHelper.getOutcomeTypes(gameCode, andyId);
+
+        assertEquals("0e60c788-3b6f-4b94-a1a7-9d395fdca8f8", outcomeTypes.getFirst().getId());
+        List<String> teamUpLabels = outcomeTypes.getFirst().getSubTypes().stream()
+                .map(OutcomeType::getLabel)
+                .filter(label -> label != null && label.startsWith("Team up with "))
+                .toList();
+
+        assertTrue(teamUpLabels.stream().anyMatch(l -> l.startsWith("Team up with Joe")), "Actual: " + teamUpLabels);
+        assertTrue(teamUpLabels.stream().anyMatch(l -> l.startsWith("Team up with Andy")),
+                "The writer can be teamed up with if they share the story owner's location. Actual: " + teamUpLabels);
+        assertTrue(teamUpLabels.stream().noneMatch(l -> l.startsWith("Team up with Kirsten")),
+                "The story owner should not be offered a team-up with themselves. Actual: " + teamUpLabels);
+        assertTrue(teamUpLabels.stream().noneMatch(l -> l.startsWith("Team up with Subodh")),
+                "Players at other locations should not be offered. Actual: " + teamUpLabels);
     }
 
     private void assertAllOutcomeTypesArePreCanned(List<OutcomeType> outcomeTypes, String playerName) {

@@ -21,6 +21,10 @@ public class OutcomeType {
 
     @Getter
     @Setter
+    String assignedPlayerId;
+
+    @Getter
+    @Setter
     List<OutcomeType> subTypes;
 
     List<Header> headers;

@@ -2,6 +2,7 @@ package client.nowhere.helper;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import client.nowhere.dao.*;
 import client.nowhere.exception.GameStateException;
@@ -709,7 +710,7 @@ public class CollaborativeTextHelper {
             OutcomeFork outcomeFork = story.getSelectedOption().getSelectedOutcomeFork();
             if (outcomeFork != null) {
                 story.getSelectedOption().getSelectedOutcomeFork().setRepercussions(repercussions);
-                if (!repercussions.isEmpty()) {
+                if (!repercussions.isEmpty() || getTeamedUpPlayer(gameSession, story).isPresent()) {
                     handleRepercussions(gameSession, story, repercussions);
                 }
                 storyDAO.updateStory(story);
@@ -717,20 +718,30 @@ public class CollaborativeTextHelper {
         }
     }
 
+    private Optional<Player> getTeamedUpPlayer(GameSession gameSession, Story story) {
+        return gameSession.getPlayers().stream()
+                .filter(p -> p.getAuthorId().equals(story.getSelectedOptionId()))
+                .findFirst();
+    }
+
     private void handleRepercussions(GameSession gameSession, Story story, List<Repercussion> repercussions) {
-        // Resolve which players are at this story vs all players
-        List<String> storyPlayerIds = (story.getPlayerIds() != null)
-                ? story.getPlayerIds() : List.of();
-        List<String> partnerPlayerIds = (story.getPartnerIds() != null)
-                ? story.getPartnerIds() : List.of();
-        storyPlayerIds.addAll(partnerPlayerIds);
+        List<String> outcomeDisplay = new ArrayList<>();
+        Set<String> updatedPlayerIds = new HashSet<>(
+                handlePartnerRelationship(gameSession, story, outcomeDisplay)
+        );
+
+        // Resolve which players are at this story vs all players. Copied so the story's own
+        // playerIds/partnerIds aren't mutated and persisted by storyDAO.updateStory.
+        List<String> storyPlayerIds = new ArrayList<>(story.getPlayerIds());
+        storyPlayerIds.addAll(story.getPartnerIds());
+        getTeamedUpPlayer(gameSession, story).ifPresent(p -> storyPlayerIds.add(p.getAuthorId()));
+
         List<Player> allPlayers = gameSession.getPlayers();
         List<Player> storyPlayers = allPlayers.stream()
                 .filter(p -> storyPlayerIds.contains(p.getAuthorId()))
                 .toList();
 
         AdventureMap adventureMap = gameSession.getAdventureMap();
-        List<String> outcomeDisplay = new ArrayList<>();
 
         List<Trait> newTraits = new ArrayList<>(repercussions.stream()
                 .filter(a -> (
@@ -746,8 +757,6 @@ public class CollaborativeTextHelper {
                     a -> RepercussionType.COMPANION.getName().equals(a.getRepercussionType()))) {
             newTraits.add(new Trait(story.getEncounterLabel().getEncounterLabel(), TraitType.COMPANION));
         }
-
-        Set<String> updatedPlayerIds = new HashSet<>();
 
         if (!newTraits.isEmpty()) {
             updatedPlayerIds.addAll(
@@ -787,6 +796,45 @@ public class CollaborativeTextHelper {
             activePlayerSession.setOutcomeDisplay(outcomeDisplay);
             activeSessionDAO.updateActivePlayerSession(gameSession.getGameCode(), activePlayerSession);
         }
+    }
+
+    private @NonNull Set<String> handlePartnerRelationship(GameSession gameSession, Story story, List<String> outcomeDisplay) {
+        Optional<Player> player = gameSession.getPlayers().stream()
+                .filter(p -> p.getAuthorId().equals(story.getPlayerId()))
+                .findFirst();
+        if (player.isEmpty()) {
+            return Set.of();
+        }
+
+        Optional<Player> partneredPlayer = getTeamedUpPlayer(gameSession, story);
+        if (partneredPlayer.isEmpty()) {
+            return Set.of();
+        }
+
+        return handleNewRelationshipTraits(partneredPlayer.get(), player.get(), outcomeDisplay);
+    }
+
+    private @NonNull Set<String> handleNewRelationshipTraits(Player teamedUpPlayer, Player storyPlayer, List<String> outcomeDisplay) {
+        // Sorted so the pair shares one id regardless of whose story it is
+        String partnerId = Stream.of(teamedUpPlayer.getAuthorId(), storyPlayer.getAuthorId())
+                .sorted()
+                .collect(Collectors.joining());
+
+        String relationshipLabel = "partner ";
+        if (storyPlayer.getTraits() != null
+                && storyPlayer.getTraits().stream().anyMatch(t -> partnerId.equals(t.getTraitId()))) {
+            relationshipLabel = "besties ";
+        }
+
+        Set<String> updatedPlayerIds = new HashSet<>();
+        updatedPlayerIds.addAll(
+                applyTraitToPlayers(new Trait(partnerId, relationshipLabel + "(" + storyPlayer.getUserName() + ")",  TraitType.RELATIONSHIP), List.of(teamedUpPlayer))
+        );
+        updatedPlayerIds.addAll(
+                applyTraitToPlayers(new Trait(partnerId, relationshipLabel + "(" + teamedUpPlayer.getUserName() + ")",  TraitType.RELATIONSHIP), List.of(storyPlayer))
+        );
+        outcomeDisplay.add("Your relationship with " + teamedUpPlayer.getDisplayName() + " levelled up!");
+        return updatedPlayerIds;
     }
 
     private Set<String> handleSpread(List<Trait> newTraits, Story story, List<String> outcomeDisplay, List<Player> allPlayers, List<String> storyPlayerIds, int roundNumber) {
@@ -1341,7 +1389,22 @@ public class CollaborativeTextHelper {
                         "Smart People, Ugh",
                         "Your Parents!",
                         "A Crystal of Pure Fear",
-                        "A Treasure Chest"
+                        "A Treasure Chest",
+                        "A pile of buttons",
+                        "Abnormally large mice",
+                        "The Sing Song Man",
+                        "Scissor Face",
+                        "A Woman spouting poetry",
+                        "Ugnub the Wise",
+                        "A pool of deep water",
+                        "Gnats!",
+                        "Zebra frog babies",
+                        "The Tall Far Bear",
+                        "A nest of eggs",
+                        "Snowmen",
+                        "Snowomen",
+                        "A Gnarled Mercenary",
+                        "Goesa, Queen of the Fae"
                 )
         );
     }
@@ -2314,9 +2377,17 @@ public class CollaborativeTextHelper {
                         .sorted(Comparator.comparing(TextSubmission::getCreatedAt))
                         .toList();
 
+                // Team-up options are for the story's owner (who resolves it), not the player writing them
+                String storyOwnerId = storyContext.sortedStories().stream()
+                        .filter(s -> s.getStoryId().equals(assignedStoryId))
+                        .map(Story::getPlayerId)
+                        .findFirst().orElse(null);
+                List<OutcomeType> teamUpPlayers = getPlayerAtTheSameLocationOutcomeTypes(storyOwnerId, gameSession);
+
                 if (relatedSubmissions.isEmpty()) {
                     List<OutcomeType> preCanned = createPreCannedOptions(assignedStoryId, storyPrompt);
                     preCanned.getFirst().getSubTypes().addAll(traitSubTypes);
+                    preCanned.getFirst().getSubTypes().addAll(teamUpPlayers);
                     preCanned.getFirst().setHeaders(assignedStoryOutcomeType.getHeaders());
                     return preCanned;
                 }
@@ -2434,6 +2505,28 @@ public class CollaborativeTextHelper {
             System.err.println("Failed to get outcome types: " + e.getMessage());
             return new ArrayList<>();
         }
+    }
+
+    private static List<OutcomeType> getPlayerAtTheSameLocationOutcomeTypes(String storyOwnerId, GameSession gameSession) {
+        Player player = gameSession.getPlayers().stream()
+                .filter(owner -> owner.getAuthorId().equals(storyOwnerId)).toList().stream().findFirst().orElse(null);
+        if (player != null && player.getSelectedLocationId() != null) {
+            List<Player> playersAtTheSameLocation = gameSession.getPlayers().stream()
+                    .filter(otherPlayer -> !otherPlayer.getAuthorId().equals(storyOwnerId)
+                            && otherPlayer.getSelectedLocationId() != null
+                            && otherPlayer.getSelectedLocationId().equals(player.getSelectedLocationId()))
+                    .toList();
+            if (!playersAtTheSameLocation.isEmpty()) {
+                return playersAtTheSameLocation.stream()
+                        .map(playerAtTheSameLocation ->
+                                new OutcomeType(
+                                    playerAtTheSameLocation.getAuthorId(),
+                                    "Team up with " + playerAtTheSameLocation.getDisplayName()
+                                )
+                        ).toList();
+            }
+        }
+        return new ArrayList<>();
     }
 
     private static @NonNull List<EncounterLabel> getUnusedAssignedEncounterLabels(List<EncounterLabel> assignedPlayerEncounterLabels, List<Story> existingStories) {
