@@ -2400,6 +2400,7 @@ public class CollaborativeTextHelper {
                         ))
                         .toList());
                 allSubTypes.addAll(traitSubTypes);
+                allSubTypes.addAll(teamUpPlayers);
 
                 assignedStoryOutcomeType.setSubTypes(allSubTypes);
                 return List.of(assignedStoryOutcomeType);
