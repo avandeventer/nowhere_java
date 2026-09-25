@@ -2394,6 +2394,11 @@ public class CollaborativeTextHelper {
                     List<OutcomeType> preCanned = createPreCannedOptions(assignedStoryId, storyPrompt);
                     preCanned.getFirst().getSubTypes().addAll(traitSubTypes);
                     preCanned.getFirst().getSubTypes().addAll(teamUpPlayers);
+
+                    OutcomeType assignedStory = storyContext.assignedStories().getFirst();
+                    if (assignedStory != null && assignedStory.getAssignedPlayerId() != null) {
+                        preCanned.getFirst().setAssignedPlayerId(assignedStory.getAssignedPlayerId());
+                    }
                     preCanned.getFirst().setHeaders(assignedStoryOutcomeType.getHeaders());
                     return preCanned;
                 }
