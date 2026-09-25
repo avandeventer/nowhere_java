@@ -2089,7 +2089,13 @@ public class CollaborativeTextHelper {
             CollaborativeTextPhase locationPhase = collaborativeTextDAO.getCollaborativeTextPhase(
                     gameCode, GameState.LOCATION_VOTING.name());
             if (locationPhase != null) {
-                locationVotingSubmissions = locationPhase.getSubmissions();
+                int total = locationPhase.getSubmissions().size();
+                int firstHalfSize = (total + 1) / 2;
+                if (gameSession.getRoundNumber() < 2) {
+                    locationVotingSubmissions = locationPhase.getSubmissions().subList(0, firstHalfSize);
+                } else {
+                    locationVotingSubmissions = locationPhase.getSubmissions().subList(firstHalfSize, total);
+                }
             }
         }
 
