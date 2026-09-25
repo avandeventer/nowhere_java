@@ -37,9 +37,9 @@ public enum RepercussionType {
     ),
     COMPANION(
             "Companion",
-            "",
+            "Add companion",
             "Encountered entity joins you",
-            "Describe why the player will receive Companion: ",
+            "Player will receive this companion",
             "#E60000"
     ),
     DESTINY(

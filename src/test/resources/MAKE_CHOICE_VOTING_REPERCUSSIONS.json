@@ -616,8 +616,8 @@
           "selectedForkId": ""
         },
         {
-          "optionId": "2",
-          "optionText": "use trait: Strong",
+          "optionId": "ddfc6892-16dd-4e38-9252-27a3688ae038",
+          "optionText": "Team up with Kirsten",
           "attemptText": "",
           "statRequirement": null,
           "statDC": 0,
@@ -667,7 +667,11 @@
                     "submissionId": "84e137cf-0791-46be-a400-8ceeda6a33ed",
                     "outcomeType": null,
                     "outcomeTypeWithLabel": null,
-                    "repercussion": null
+                    "repercussion": {
+                      "repercussionType": "Trait",
+                      "repercussionSubmission": "Bear Wrestler",
+                      "color": "#0288d1"
+                    }
                   }
                 ],
                 "totalVotes": 0,
@@ -750,9 +754,9 @@
       "saveGameStory": false,
       "options": [
         {
-          "optionId": "6",
-          "optionText": "use trait: Undead",
-          "attemptText": "use trait: Undead",
+          "optionId": "e8852f24-cdc8-465c-b244-56ce08029584",
+          "optionText": "Team up with Joe",
+          "attemptText": "Team up with Joe",
           "statRequirement": null,
           "statDC": 0,
           "playerStatDCs": [],

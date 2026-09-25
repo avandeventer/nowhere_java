@@ -25,6 +25,10 @@ public class OutcomeTypeHelper {
         for (Story assignedStory : assignedStories) {
             OutcomeType outcomeType = new OutcomeType(assignedStory.getStoryId(), assignedStory.getPrompt());
             String prequelStoryId = assignedStory.getPrequelStoryId();
+
+            if (assignedStory.getPlayerId() != null && !assignedStory.getPlayerId().isEmpty()) {
+                outcomeType.setAssignedPlayerId(assignedStory.getPlayerId());
+            }
             if (prequelStoryId != null && !prequelStoryId.isEmpty()) {
                 outcomeType.setClarifier(prequelStoryId);
             }
