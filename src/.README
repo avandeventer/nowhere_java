@@ -169,6 +169,26 @@ index so no one writes about their own content.
 | `DEFINING_TRAITS_VOTING` | Each player selects from their own traits (no offset) |
 | `WRITE_EPILOGUES` | Player writes about the character at `index - offset` |
 
+Offsets come from `GameState.getOutcomeTypeOffset(playerCount)`. For a story written by player `a`
+in `WHAT_HAPPENS_HERE`:
+
+| Role | Who | Offset |
+|---|---|---|
+| Story owner (`Story.playerId`, plays it) | `a + 1` | `WHAT_HAPPENS_HERE` = 1 at every player count |
+| Owner lookup in `handleWhatHappensHere` | same player | `MAKE_CHOICE_VOTING` = −`WHAT_HAPPENS_HERE` |
+| `WHAT_CAN_WE_TRY` option writers | `a - 1`, and `a - 2` (>4 players) or `a` (≤4) | 1, and 2 or 0 |
+| `HOW_DOES_THIS_RESOLVE` outcome writer | `a - 3` (>4), `a - 2` (4), `a - 1` (3) | 3 / 2 / 1 |
+
+Two rules:
+- `MAKE_CHOICE_VOTING` must stay the negation of `WHAT_HAPPENS_HERE`. Otherwise stories go to a
+  different player than the one whose location they were written for, which is what happened in
+  5-player games before Aug 2026.
+- No writer may land on a story they own. With `WHAT_HAPPENS_HERE` at 2 for >4 players, every
+  5-player `HOW_DOES_THIS_RESOLVE` writer got their own story. With 3 players there is no free
+  seat, so the outcome writer doubles as the first option writer.
+
+`GameStateOffsetTest` checks both rules for 3–8 players; run it after changing any offset.
+
 ### Encounter Generation
 
 - `SET_ENCOUNTERS_WINNERS`: Submissions ranked by addition count. Top N become `EncounterLabel[]`

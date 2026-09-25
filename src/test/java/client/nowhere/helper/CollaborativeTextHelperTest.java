@@ -361,28 +361,22 @@ public class CollaborativeTextHelperTest {
 
     private static Stream<Arguments> provideWhatHappensHereLocationVotingPlayerCounts() {
         return Stream.of(
-                // At 4 players, WHAT_HAPPENS_HERE's forward offset (1) and the hardcoded
-                // MAKE_CHOICE_VOTING offset used for the reverse lookup (-1) happen to be correct
-                // inverses of each other (-1 mod 4 == 3 == the inverse of +1), which is exactly why
-                // every existing <=4-player WHAT_HAPPENS_HERE fixture in this file passes today.
+                // Forward assignment (writer -> location of player at +WHAT_HAPPENS_HERE offset) and the
+                // reverse lookup that sets story.playerId (MAKE_CHOICE_VOTING offset, defined as the
+                // negation of WHAT_HAPPENS_HERE's) must be inverses at every player count. Found by
+                // auditing FINISHED_GAME.json, where a 5-player game used +2 forward and -1 reverse, so
+                // stories landed one join-order slot away from whoever selected that location.
+                Arguments.of("Three players - story assigned to correct player", 3, 1),
                 Arguments.of("Four players - story assigned to correct player", 4, 1),
-                // Reproduces a bug found by auditing FINISHED_GAME.json: forward assignment uses
-                // WHAT_HAPPENS_HERE.getOutcomeTypeOffset(playerCount), which is 2 for playerCount > 4,
-                // but the reverse lookup used to figure out story.playerId from the submission's
-                // writer (CollaborativeTextHelper.java ~line 1129) is hardcoded to MAKE_CHOICE_VOTING's
-                // offset (a constant -1), not WHAT_HAPPENS_HERE's offset. Those two offsets only agree
-                // when playerCount <= 4. At 5 players they diverge, and the story gets attached to the
-                // wrong player - one join-order slot away from whoever actually selected that location.
-                Arguments.of("Five players - story assigned to WRONG player (known bug)", 5, 2)
+                Arguments.of("Five players - story assigned to correct player", 5, 1),
+                Arguments.of("Six players - story assigned to correct player", 6, 1)
         );
     }
 
     /**
      * Verifies that in a locationVoting-enabled game, every Story created by
      * handleWhatHappensHereStreamlined is assigned to the player who actually selected that
-     * story's location - both for the <=4-player case (which must keep passing) and the >4-player
-     * case (which currently fails, documenting a known bug - see
-     * provideWhatHappensHereLocationVotingPlayerCounts for details).
+     * story's location, at every player count (see provideWhatHappensHereLocationVotingPlayerCounts).
      */
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideWhatHappensHereLocationVotingPlayerCounts")
@@ -1645,11 +1639,12 @@ public class CollaborativeTextHelperTest {
                         "HOW_DOES_THIS_RESOLVE_AGAIN_ROUND2.json",
                         WHAT_HAPPENS_HERE,
                         Map.of(
-                                "Andy", List.of("5006a27c-0709-4a09-b13d-aa75bbbf5e4d"), // encounter written by Goni?
-                                "Joe", List.of("76ac45b2-98e9-4918-ae69-9247abe74fca", "3111e23b-aaea-4ce2-965e-f31c6a02497e"), // Kirsten did not finish writing her encounters so Parker should get default ones
-                                "Byron", List.of(), // encounter written by Andy
-                                "Kirsten", List.of("5430f947-10e8-4c21-b551-4ba823cfdcca", "4a6cc022-58e0-4276-9302-9ce909a08d5e"),  // encounter written by Parker?
-                                "Subodh", List.of("8b3f0422-4b38-417f-88a5-56fb2e375d02", "8aa481ba-6a31-4b0b-943e-c76149b02606")  // encounter written by Parker?
+                                // WHAT_HAPPENS_HERE offset 1: each player gets labels written by the next player in join order
+                                "Andy", List.of("8b3f0422-4b38-417f-88a5-56fb2e375d02", "8aa481ba-6a31-4b0b-943e-c76149b02606"), // labels written by Joe
+                                "Joe", List.of("5006a27c-0709-4a09-b13d-aa75bbbf5e4d"), // labels written by Byron
+                                "Byron", List.of("76ac45b2-98e9-4918-ae69-9247abe74fca", "3111e23b-aaea-4ce2-965e-f31c6a02497e"), // labels written by Kirsten
+                                "Kirsten", List.of(), // labels written by Subodh
+                                "Subodh", List.of("5430f947-10e8-4c21-b551-4ba823cfdcca", "4a6cc022-58e0-4276-9302-9ce909a08d5e")  // labels written by Andy
                         ),
                         Map.of(),
                         false
@@ -1659,18 +1654,19 @@ public class CollaborativeTextHelperTest {
                         "WHAT_HAPPENS_HERE_LOCATION_VOTING.json",
                         WHAT_HAPPENS_HERE,
                         Map.of(
-                                "Andy", List.of("2a033cf6-af28-4d45-b925-edfc86c79866"), // location selected by Joe
-                                "Joe", List.of("247bf271-2656-4e1d-bf8d-7b59dc69cff7"),  // location selected by Byron
-                                "Byron", List.of("d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"), // location selected by Kirsten
-                                "Kirsten", List.of("247bf271-2656-4e1d-bf8d-7b59dc69cff7"), // location selected by Parker
-                                "Parker", List.of("d33cf081-da9d-4c84-ac04-9cf15f8f4e4e") // location selected by Andy
+                                // WHAT_HAPPENS_HERE offset 1: each player writes for the next player's location
+                                "Andy", List.of("d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"),    // location selected by Joe
+                                "Joe", List.of("2a033cf6-af28-4d45-b925-edfc86c79866"),     // location selected by Byron
+                                "Byron", List.of("247bf271-2656-4e1d-bf8d-7b59dc69cff7"),   // location selected by Kirsten
+                                "Kirsten", List.of("d33cf081-da9d-4c84-ac04-9cf15f8f4e4e"), // location selected by Parker
+                                "Parker", List.of("247bf271-2656-4e1d-bf8d-7b59dc69cff7")   // location selected by Andy
                         ),
                         Map.of(
-                                "Andy", List.of("Grompkin a Magic Guy D", "Holy Water in a Stein D", "Smoll Mon D"),
-                                "Joe", List.of("My Mom C", "Pearls for sale C", "Schmo, Your Old Bestie B", "Steely Dan A"),
-                                "Byron", List.of("Rimplestillstkon C", "Small Fry McMann E"),
-                                "Kirsten", List.of("Danny Steve A", "Pigs for sale C", "Sauce Boss A"),
-                                "Parker", List.of("Goats E", "Polyps R")
+                                "Andy", List.of("Rimplestillstkon C", "Small Fry McMann E"),
+                                "Joe", List.of("Grompkin a Magic Guy D", "Holy Water in a Stein D", "Smoll Mon D"),
+                                "Byron", List.of("My Mom C", "Pearls for sale C", "Schmo, Your Old Bestie B", "Steely Dan A"),
+                                "Kirsten", List.of("Goats E", "Polyps R"),
+                                "Parker", List.of("Danny Steve A", "Pigs for sale C", "Sauce Boss A")
                         ),
                         true
                 ),

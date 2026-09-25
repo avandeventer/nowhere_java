@@ -754,9 +754,13 @@ public enum GameState {
 
     public int getOutcomeTypeOffset(int playerCount) {
         return switch (this) {
-            case WHAT_HAPPENS_HERE -> playerCount > 4 ? 2 : 1;
+            // Must stay in sync with MAKE_CHOICE_VOTING (its negation): authors write for player +1, and that
+            // player becomes the story owner. HOW_DOES_THIS_RESOLVE and WHAT_CAN_WE_TRY are tuned around this.
+            case WHAT_HAPPENS_HERE -> 1;
             case WHAT_CAN_WE_TRY -> playerCount > 4 ? 2 : 0; //Also 1 for the other option
-            case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> playerCount > 4 ? 3 : 2;
+            // Never lands a writer on a story they own (owner = author + 1). With 3 players there is no
+            // free seat, so the outcome writer doubles as the WHAT_CAN_WE_TRY option writer.
+            case HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> playerCount > 4 ? 3 : (playerCount == 3 ? 1 : 2);
             case WRITE_EPILOGUES, MAKE_CHOICE_VOTING -> WHAT_HAPPENS_HERE.getOutcomeTypeOffset(playerCount) * -1;
             default -> 1;
         };
