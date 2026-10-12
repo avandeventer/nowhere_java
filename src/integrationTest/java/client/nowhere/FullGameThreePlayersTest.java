@@ -26,7 +26,11 @@ class FullGameThreePlayersTest {
     @Test
     void playsAFullGameToEnding() {
         GameFlowClient client = new GameFlowClient(LiveBackend.restTemplate());
-        FullGameScenario scenario = new FullGameScenario(LiveBackend.restTemplate());
+        FullGameScenario scenario = new FullGameScenario(LiveBackend.restTemplate())
+                .simulateClientTraffic()
+                .concurrentPlayers()
+                .logSessionSize()
+                .logLatency();
 
         GameSession finalState = scenario.play(3);
 

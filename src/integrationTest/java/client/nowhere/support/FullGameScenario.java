@@ -1,6 +1,7 @@
 package client.nowhere.support;
 
 import client.nowhere.model.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -11,6 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,13 +58,23 @@ public class FullGameScenario {
 
     private static final int MAX_ITERATIONS = 400;
 
+    // nowhere-player-client caps submission input at 150 characters - see realisticSubmissionText.
+    private static final int MAX_SUBMISSION_LENGTH = 150;
+    // Candidates to ask GET /collaborativeText/available for per extra addition - a bit above the
+    // real client's 2 so there's still something left after filtering out protected submissions.
+    private static final int AVAILABLE_SUBMISSIONS_REQUESTED = 4;
+    private static final String SUBMISSION_FILLER = "The lanterns gutter as the party presses on, "
+            + "boots sinking into wet moss while something ancient stirs beneath the stones and the "
+            + "wind carries a name none of them remember speaking aloud.";
+
     // Known-good, already-authored profile/adventure map with real starting locations/stories.
     private static final String LIVE_USER_PROFILE_ID = "c8d068ae-e180-44c9-940c-011ba632cba4";
     private static final String LIVE_ADVENTURE_ID = "b371256a-015a-4a72-8cc2-8f5ad6b40cd4";
 
     // One PlayerClass per player, in join order, up to however many of the four exist for the
     // requested player count. Player counts below 4 simply cover fewer classes; counts above 4
-    // leave the extra players class-less, which doubles as a "no repercussion" control case.
+    // leave the extra players class-less, which doubles as a "no repercussion" control case -
+    // unless cycleClasses() is set, which keeps cycling through this list instead.
     private static final List<String> CLASS_NAMES_IN_JOIN_ORDER = List.of("Scribe", "Bard", "Herald", "Fabulist");
 
     private static final String TRAIT_ALONE_LABEL = "Steadfast";
@@ -75,7 +92,8 @@ public class FullGameScenario {
 
     // Round-1 HOW_DOES_THIS_RESOLVE bookkeeping, built once and read by the round-2 assertions.
     private final Map<String, ResolvedOption> rootByResolver = new LinkedHashMap<>();
-    private final Set<String> knownSubmissionIds = new HashSet<>();
+    // Concurrent: with concurrentPlayers(), player threads claim/record submission ids in parallel.
+    private final Set<String> knownSubmissionIds = ConcurrentHashMap.newKeySet();
     private final Set<String> preferredWinningSubmissionIds = new HashSet<>();
     private ScenarioTarget companionTarget;
     private ScenarioTarget traitAloneTarget;
@@ -102,14 +120,133 @@ public class FullGameScenario {
     private ScenarioTarget allPlayersAloneTarget;
     private boolean sequelLocationScopeAsserted = false;
 
+    // Opt-in scale knobs (see the fluent setters below), used by the large-player-count tests to
+    // approximate a real, crowded game rather than the minimal one the 3/4/5-player tests play.
+    private boolean cycleClasses = false;
+    private boolean mixSequelEligibility = false;
+    private boolean realisticSubmissionText = false;
+    private int extraAdditionsPerPlayer = 0;
+    private SessionSizeLog sessionSizeLog;
+    private LatencyLog latencyLog;
+    private boolean simulateClientTraffic = false;
+    private boolean concurrentPlayers = false;
+    private ExecutorService playerExecutor;
+    private final Set<String> usedResolveTargets = new HashSet<>();
+
     /** A player's root HOW_DOES_THIS_RESOLVE submission for their naturally assigned story. */
     private record ResolvedOption(String storyId, String optionId, String rootSubmissionId) {}
 
     /** Where a repercussion scenario landed, and which fork it expects to have won. */
     private record ScenarioTarget(String storyId, String optionId, String preferredForkSubmissionId) {}
 
+    private final RestTemplate restTemplate;
+
     public FullGameScenario(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
         this.client = new GameFlowClient(restTemplate);
+    }
+
+    /**
+     * Assigns a PlayerClass to EVERY player by cycling Scribe/Bard/Herald/Fabulist, instead of
+     * leaving players past the 4th class-less. Each player beyond the first of their class also
+     * attaches their class's repercussion to an otherwise-untouched round-1 story (see
+     * attachExtraClassRepercussions), so repercussion/trait data grows with the player count the
+     * way it would in a real game.
+     */
+    public FullGameScenario cycleClasses() {
+        this.cycleClasses = true;
+        return this;
+    }
+
+    /**
+     * sequelLocationScopeMode only: also builds the full default-mode repercussion scenarios
+     * (Trait/Title/Companion/...), so round 2 has a real mix of round-1 stories that ARE re-offered
+     * as prequels (no repercussion, or ALL_PLAYERS alone) and ones that are NOT (anything that
+     * lands a trait/title/companion) - instead of sequelLocationScopeMode's default where every
+     * story but one is left untouched and therefore eligible.
+     */
+    public FullGameScenario mixSequelEligibility() {
+        this.mixSequelEligibility = true;
+        return this;
+    }
+
+    /**
+     * Pads every submission's text to the player-client's 150-character input limit instead of a
+     * short one-liner, so the GameSession document grows the way it does in a real game.
+     */
+    public FullGameScenario realisticSubmissionText() {
+        this.realisticSubmissionText = true;
+        return this;
+    }
+
+    /**
+     * In every SHARE_TEXT submission phase, after the usual root submissions (and any scenario
+     * branches), each player additionally adds to other players' submissions this many times -
+     * picked from GET /collaborativeText/available the same way the real player-client's
+     * onAddToSubmission does, rather than the one-root-per-player minimum the harness otherwise
+     * writes. Every extra addition is a plain-text branch (no repercussion) and never lands on a
+     * round-1 scenario's target submissions, so the deterministic scenarios and their assertions
+     * are unaffected - see addExtraBranches.
+     */
+    public FullGameScenario extraAdditionsPerPlayer(int additions) {
+        this.extraAdditionsPerPlayer = additions;
+        return this;
+    }
+
+    /**
+     * Logs the serialized GameSession size (total and per top-level field) plus wall-clock time
+     * spent in each phase, on every state transition, and prints a summary table when the game
+     * ends or fails - see SessionSizeLog.
+     */
+    public FullGameScenario logSessionSize() {
+        // Its own client/RestTemplate, so its measurement GETs stay out of LatencyLog's numbers.
+        this.sessionSizeLog = new SessionSizeLog(new GameFlowClient(LiveBackend.restTemplate()));
+        return this;
+    }
+
+    /**
+     * Times every HTTP call this scenario makes, tagged by phase, and prints per-endpoint and
+     * per-phase latency tables when the game ends or fails - see LatencyLog.
+     */
+    public FullGameScenario logLatency() {
+        this.latencyLog = new LatencyLog();
+        restTemplate.getInterceptors().add(latencyLog);
+        return this;
+    }
+
+    /**
+     * Also makes the HTTP calls the real clients make that the scenario itself doesn't need,
+     * so the backend sees (and LatencyLog measures) a real game's traffic:
+     * - TV (nowhere-game-client), on every phase: GET /player (player-progress), GET /display
+     *   (collaborative-text), GET /game-board when phaseInfo.showGameBoard, GET
+     *   /collaborativeText/winner in WINNING phases, and the timer writes on PUT
+     *   /activePlayerSession - startTimer+contributionPhaseActive when a SHARE_TEXT phase's write
+     *   timer ends, then writeTimerDone when its contribution timer (or any other writing phase's
+     *   timer) ends (game-state-manager onTimerComplete / onContributionPhaseTimerComplete).
+     * - Each player, in submission phases: GET /collaborativeText (loadCollaborativePhase), GET
+     *   /story for a chosen outcome type that carries a storyId clarifier, and in WRITE_EPILOGUES
+     *   GET /player/authorId for each epilogue player offered.
+     * Not simulated: the player-client's GET /display and GET /game-board (only fetched when a
+     * player taps "View Our World"), GET /victory (game-client only loads it in WRITE_ENDINGS,
+     * which DUNGEON_MODE never reaches), and GET /collaborativeText/outcomeType. Failures on these
+     * calls are logged and recorded by LatencyLog but don't fail the game, matching the clients,
+     * which just console.error them.
+     */
+    public FullGameScenario simulateClientTraffic() {
+        this.simulateClientTraffic = true;
+        return this;
+    }
+
+    /**
+     * Issues each phase's per-player calls (root submissions, extra additions, votes, client
+     * reads, marking INIT done) in parallel, one thread per player, like real phones - instead of
+     * one player at a time. Scripted scenario steps that depend on each other (the round-1
+     * repercussion scenarios' specific branches) still run in order afterwards. Joining players
+     * stays sequential, since join order decides class assignment.
+     */
+    public FullGameScenario concurrentPlayers() {
+        this.concurrentPlayers = true;
+        return this;
     }
 
     public GameSession play(int playerCount) {
@@ -117,6 +254,19 @@ public class FullGameScenario {
     }
 
     public GameSession play(int playerCount, boolean sequelLocationScopeMode) {
+        if (concurrentPlayers) {
+            playerExecutor = Executors.newFixedThreadPool(playerCount);
+        }
+        try {
+            return playGame(playerCount, sequelLocationScopeMode);
+        } finally {
+            if (playerExecutor != null) {
+                playerExecutor.shutdownNow();
+            }
+        }
+    }
+
+    private GameSession playGame(int playerCount, boolean sequelLocationScopeMode) {
         this.sequelLocationScopeMode = sequelLocationScopeMode;
         String suffix = UUID.randomUUID().toString().substring(0, 8);
 
@@ -132,9 +282,10 @@ public class FullGameScenario {
 
         joinPlayers(gameCode, playerCount, suffix, startingLocationId);
 
-        for (String authorId : playerAuthorIds) {
+        forEachPlayer(authorId -> {
             client.markPhaseDone(gameCode, "INIT", authorId);
-        }
+            return null;
+        });
 
         return runMainLoop(gameCode);
     }
@@ -160,8 +311,8 @@ public class FullGameScenario {
             // sets playerClass runs last and sticks, while location (guarded) survives either way.
             client.selectStartingLocation(gameCode, authorId, startingLocationId);
 
-            if (i < CLASS_NAMES_IN_JOIN_ORDER.size()) {
-                String desiredClassName = CLASS_NAMES_IN_JOIN_ORDER.get(i);
+            if (cycleClasses || i < CLASS_NAMES_IN_JOIN_ORDER.size()) {
+                String desiredClassName = CLASS_NAMES_IN_JOIN_ORDER.get(i % CLASS_NAMES_IN_JOIN_ORDER.size());
                 PlayerClassOption chosenClass = client.getPlayerClasses().stream()
                         .filter(playerClass -> desiredClassName.equals(playerClass.getName()))
                         .findFirst()
@@ -176,6 +327,19 @@ public class FullGameScenario {
     // ===== Main loop =====
 
     private GameSession runMainLoop(String gameCode) {
+        try {
+            return runMainLoopIterations(gameCode);
+        } finally {
+            if (sessionSizeLog != null) {
+                sessionSizeLog.printSummary(gameCode);
+            }
+            if (latencyLog != null) {
+                latencyLog.printSummary(gameCode);
+            }
+        }
+    }
+
+    private GameSession runMainLoopIterations(String gameCode) {
         GameSession finalState = null;
         GameSession lastSeenState = null;
         for (int iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
@@ -183,6 +347,12 @@ public class FullGameScenario {
             lastSeenState = game;
             GameState gameState = game.getGameState();
             int roundNumber = game.getRoundNumber() == null ? 0 : game.getRoundNumber();
+            if (sessionSizeLog != null) {
+                sessionSizeLog.record(gameCode, gameState, roundNumber);
+            }
+            if (latencyLog != null) {
+                latencyLog.setPhase(roundNumber, gameState);
+            }
             int xCoordinate = -1;
             int yCoordinate = -1;
             String encounterLabel = "none";
@@ -248,17 +418,50 @@ public class FullGameScenario {
     }
 
     private void runPhaseActions(String gameCode, GameState gameState, int roundNumber) {
-        if (!sequelLocationScopeMode && gameState == GameState.WHAT_HAPPENS_HERE && roundNumber == 1) {
-            buildWhatHappensHereRepercussionScenarios(gameCode);
+        boolean buildClassScenarios = !sequelLocationScopeMode || mixSequelEligibility;
+
+        CollaborativeTextPhaseInfo phaseInfo = client.getPhaseInfo(gameCode);
+        if (simulateClientTraffic) {
+            simulateTvPhaseReads(gameCode, phaseInfo);
+        }
+
+        if (buildClassScenarios && gameState == GameState.WHAT_HAPPENS_HERE && roundNumber == 1) {
+            if (whatHappensHereScenariosBuilt) {
+                return;
+            }
+            buildWhatHappensHereRepercussionScenarios(gameCode, gameState);
+            Set<String> untouchedRoots = new HashSet<>();
+            whatHappensHereRootByAuthor.forEach((authorId, rootId) -> {
+                if (!authorId.equals(bardWhatHappensHereStackAuthorId) && !authorId.equals(scribeWhatHappensHereSoloAuthorId)) {
+                    untouchedRoots.add(rootId);
+                }
+            });
+            finishSubmissionPhase(gameCode, gameState, phaseInfo, protectAllKnownExcept(untouchedRoots));
             return;
         }
 
         if (gameState == GameState.HOW_DOES_THIS_RESOLVE && roundNumber == 1) {
-            if (sequelLocationScopeMode) {
-                buildSequelLocationScopeRepercussion(gameCode);
-            } else {
+            if (roundOneScenariosBuilt) {
+                return;
+            }
+            roundOneScenariosBuilt = true;
+            submitDefaultRootResolutions(gameCode, gameState);
+            if (buildClassScenarios) {
                 buildRoundOneRepercussionScenarios(gameCode);
             }
+            if (sequelLocationScopeMode) {
+                buildSequelLocationScopeRepercussion(gameCode);
+            }
+            if (cycleClasses) {
+                attachExtraClassRepercussions(gameCode);
+            }
+            Set<String> untouchedRoots = new HashSet<>();
+            rootByResolver.forEach((resolverAuthorId, resolved) -> {
+                if (!usedResolveTargets.contains(resolverAuthorId)) {
+                    untouchedRoots.add(resolved.rootSubmissionId());
+                }
+            });
+            finishSubmissionPhase(gameCode, gameState, phaseInfo, protectAllKnownExcept(untouchedRoots));
             return;
         }
 
@@ -267,7 +470,6 @@ public class FullGameScenario {
             return;
         }
 
-        CollaborativeTextPhaseInfo phaseInfo = client.getPhaseInfo(gameCode);
         if (phaseInfo == null) {
             return; // no-op / display-only state (PREAMBLE, ENDING_PREAMBLE, ENDING, NAVIGATE_WINNER, ...)
         }
@@ -278,46 +480,235 @@ public class FullGameScenario {
         }
 
         switch (phaseType) {
-            case SUBMISSION -> runGenericSubmissionPhase(gameCode, gameState);
+            case SUBMISSION -> {
+                runGenericSubmissionPhase(gameCode, gameState);
+                finishSubmissionPhase(gameCode, gameState, phaseInfo, Set.of());
+            }
             case VOTING -> runVotingPhase(gameCode, gameState);
             case WINNING -> { /* computed server-side already, nothing to do */ }
         }
     }
 
     private void runGenericSubmissionPhase(String gameCode, GameState gameState) {
-        for (String authorId : playerAuthorIds) {
+        forEachPlayer(authorId -> {
             List<OutcomeType> outcomeTypes = client.getOutcomeTypes(gameCode, authorId);
             if (outcomeTypes.isEmpty()) {
-                continue;
+                return null;
             }
             OutcomeType parent = outcomeTypes.get(0);
             List<OutcomeType> subTypes = parent.getSubTypes();
-            String text = "Integration test submission for " + gameState + " by " + userNameByAuthorId.get(authorId);
-            if (subTypes != null && !subTypes.isEmpty()) {
-                // Mirror the real player-client: keep the parent wrapper, narrow subTypes to the
-                // one chosen child, rather than flattening to the child alone (see
-                // narrowToChosenSubType for why this matters).
-                client.submitTextAddition(gameCode, authorId, narrowToChosenSubType(parent, subTypes.get(0)), text, "", "");
-            } else {
-                client.submitTextAddition(gameCode, authorId, parent, text, "", "");
+            // Mirror the real player-client: keep the parent wrapper, narrow subTypes to the
+            // one chosen child, rather than flattening to the child alone (see
+            // narrowToChosenSubType for why this matters).
+            OutcomeType chosen = subTypes != null && !subTypes.isEmpty() ? narrowToChosenSubType(parent, subTypes.get(0)) : parent;
+            simulatePlayerSubmissionReads(gameCode, gameState, outcomeTypes, chosen);
+            String text = storyText("Integration test submission for " + gameState + " by " + userNameByAuthorId.get(authorId));
+            client.submitTextAddition(gameCode, authorId, chosen, text, "", "");
+            return null;
+        });
+    }
+
+    /**
+     * Everything after a submission phase's roots are in: for SHARE_TEXT phases, the TV's write
+     * timer ending (contribution phase starts) and then players' extra additions; for every
+     * writing phase, the TV's final writeTimerDone. The timer writes only happen with
+     * simulateClientTraffic - see its javadoc.
+     */
+    private void finishSubmissionPhase(String gameCode, GameState gameState, CollaborativeTextPhaseInfo phaseInfo,
+                                       Set<String> protectedSubmissionIds) {
+        boolean shareText = phaseInfo != null && phaseInfo.collaborativeMode() == CollaborativeMode.SHARE_TEXT;
+        if (shareText) {
+            if (simulateClientTraffic) {
+                bestEffort("PUT /activePlayerSession (contributionPhaseActive)", () -> client.setContributionPhaseActive(gameCode));
             }
+            addExtraBranches(gameCode, gameState, protectedSubmissionIds);
+        }
+        if (simulateClientTraffic) {
+            bestEffort("PUT /activePlayerSession (writeTimerDone)", () -> client.setWriteTimerDone(gameCode));
+        }
+    }
+
+    // ===== Client traffic simulation (simulateClientTraffic) =====
+
+    /** The TV's reads on entering a phase - see simulateClientTraffic. */
+    private void simulateTvPhaseReads(String gameCode, CollaborativeTextPhaseInfo phaseInfo) {
+        bestEffort("GET /player", () -> client.getPlayersRaw(gameCode));
+        if (phaseInfo == null) {
+            return;
+        }
+        bestEffort("GET /display", () -> client.getGameSessionDisplayRaw(gameCode));
+        if (Boolean.TRUE.equals(phaseInfo.showGameBoard())) {
+            bestEffort("GET /game-board", () -> client.getGameBoardRaw(gameCode));
+        }
+        if (phaseInfo.phaseType() == PhaseType.WINNING) {
+            bestEffort("GET /collaborativeText/winner", () -> client.getWinningSubmissionsRaw(gameCode));
+        }
+    }
+
+    /**
+     * One player's reads in a submission phase, alongside their own GET outcomeTypes - see
+     * simulateClientTraffic. Called from inside each player's (possibly concurrent) submission step.
+     */
+    private void simulatePlayerSubmissionReads(String gameCode, GameState gameState, List<OutcomeType> outcomeTypes, OutcomeType chosen) {
+        if (!simulateClientTraffic) {
+            return;
+        }
+        bestEffort("GET /collaborativeText", () -> client.getCollaborativeTextPhaseRaw(gameCode));
+        String storyId = storyClarifier(chosen);
+        if (storyId != null) {
+            bestEffort("GET /story", () -> client.getStoryRaw(gameCode, storyId));
+        }
+        if (gameState == GameState.WRITE_EPILOGUES) {
+            for (OutcomeType outcomeType : outcomeTypes) {
+                if (outcomeType.getId() != null) {
+                    bestEffort("GET /player/authorId", () -> client.getPlayerByAuthorIdRaw(gameCode, outcomeType.getId()));
+                }
+            }
+        }
+    }
+
+    /** The storyId the player-client would load a Story for when this outcome type is selected, if any. */
+    private static String storyClarifier(OutcomeType chosen) {
+        if (chosen == null) {
+            return null;
+        }
+        if (chosen.getSubTypes() != null && !chosen.getSubTypes().isEmpty()) {
+            String subTypeClarifier = chosen.getSubTypes().get(0).getClarifier();
+            if (subTypeClarifier != null && !subTypeClarifier.isEmpty()) {
+                return subTypeClarifier;
+            }
+        }
+        String clarifier = chosen.getClarifier();
+        return clarifier == null || clarifier.isEmpty() ? null : clarifier;
+    }
+
+    /** Runs a simulated client call, logging instead of failing the game - the clients just console.error these. */
+    private static void bestEffort(String description, Runnable call) {
+        try {
+            call.run();
+        } catch (RestClientException e) {
+            System.out.println("[FullGameScenario] simulated client call failed (ignored): " + description + ": " + e.getMessage());
+        }
+    }
+
+    // ===== Concurrency (concurrentPlayers) =====
+
+    /**
+     * Runs the action once per player - in parallel with concurrentPlayers(), otherwise one at a
+     * time in join order - and returns each player's result in join order either way, so callers
+     * record results deterministically. Waits for every player before rethrowing the first
+     * failure, so no player's call is still in flight when the phase moves on.
+     */
+    private <T> Map<String, T> forEachPlayer(Function<String, T> action) {
+        Map<String, T> results = new LinkedHashMap<>();
+        if (playerExecutor == null) {
+            for (String authorId : playerAuthorIds) {
+                results.put(authorId, action.apply(authorId));
+            }
+            return results;
+        }
+
+        Map<String, Future<T>> futures = new LinkedHashMap<>();
+        for (String authorId : playerAuthorIds) {
+            futures.put(authorId, playerExecutor.submit(() -> action.apply(authorId)));
+        }
+        Throwable failure = null;
+        for (Map.Entry<String, Future<T>> entry : futures.entrySet()) {
+            try {
+                results.put(entry.getKey(), entry.getValue().get());
+            } catch (ExecutionException e) {
+                if (failure == null) {
+                    failure = e.getCause();
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("Interrupted waiting for player " + userNameByAuthorId.get(entry.getKey()), e);
+            }
+        }
+        if (failure instanceof RuntimeException runtimeException) {
+            throw runtimeException;
+        }
+        if (failure instanceof Error error) {
+            throw error;
+        }
+        if (failure != null) {
+            throw new IllegalStateException(failure);
+        }
+        return results;
+    }
+
+    /** Every submission id claimed so far (scenario roots and branches), minus the given ones. */
+    private Set<String> protectAllKnownExcept(Set<String> unprotected) {
+        Set<String> protectedIds = new HashSet<>(knownSubmissionIds);
+        protectedIds.removeAll(unprotected);
+        return protectedIds;
+    }
+
+    /**
+     * extraAdditionsPerPlayer only: each player, extraAdditionsPerPlayer times, branches a
+     * plain-text addition off one of the submissions GET /collaborativeText/available offers them
+     * - skipping any in protectedSubmissionIds, which the round-1 scenario builders use to keep
+     * their target stories single-fork/controlled (branching onto a scenario's root or fork would
+     * add a competing fork and make the scenario's winner a coin flip). Only runs in SHARE_TEXT
+     * phases: the real player-client only shows "add to a submission" when
+     * phaseInfo.collaborativeMode is SHARE_TEXT (collaborative-text.component.ts,
+     * isCollaborativeMode).
+     */
+    private void addExtraBranches(String gameCode, GameState gameState, Set<String> protectedSubmissionIds) {
+        if (extraAdditionsPerPlayer <= 0) {
+            return;
+        }
+        // The real client only offers "add to a submission" once the phase actually has
+        // submissions to pick from (hasSubmitted && availableSubmissions.length > 0). Phases with
+        // no CollaborativeTextPhase of their own (e.g. INIT, where GameSession.stories is still
+        // null and GET /collaborativeText/available 500s) never get that far.
+        GameState phaseId = gameState.getPhaseId();
+        Map<String, CollaborativeTextPhase> phases = client.getGame(gameCode).getCollaborativeTextPhases();
+        CollaborativeTextPhase currentPhase = phaseId == null || phases == null ? null : phases.get(phaseId.name());
+        if (currentPhase == null || currentPhase.getSubmissions() == null || currentPhase.getSubmissions().isEmpty()) {
+            return;
+        }
+
+        for (int pass = 0; pass < extraAdditionsPerPlayer; pass++) {
+            int passIndex = pass;
+            forEachPlayer(authorId -> {
+                List<TextSubmission> available = client.getAvailableSubmissions(gameCode, authorId,
+                                AVAILABLE_SUBMISSIONS_REQUESTED, true).stream()
+                        .filter(submission -> submission.getSubmissionId() != null)
+                        .filter(submission -> !protectedSubmissionIds.contains(submission.getSubmissionId()))
+                        .toList();
+                if (available.isEmpty()) {
+                    return null;
+                }
+                TextSubmission parent = available.get(passIndex % available.size());
+                CollaborativeTextPhase response = client.addToSubmission(gameCode, authorId, parent.getSubmissionId(),
+                        storyText("Extra " + gameState + " addition " + (passIndex + 1) + " by " + userNameByAuthorId.get(authorId)),
+                        "", "");
+                // Keep claimNewSubmissionId's "exactly one new id" diff accurate for anything that
+                // runs later in this same phase.
+                response.getSubmissions().stream()
+                        .map(TextSubmission::getSubmissionId)
+                        .filter(id -> id != null)
+                        .forEach(knownSubmissionIds::add);
+                return null;
+            });
         }
     }
 
     private void runVotingPhase(String gameCode, GameState gameState) {
         boolean choosingFromOwnTraits = gameState == GameState.DEFINING_TRAITS_VOTING;
-        for (String authorId : playerAuthorIds) {
+        forEachPlayer(authorId -> {
             String submissionId;
             if (choosingFromOwnTraits) {
                 List<OutcomeType> outcomeTypes = client.getOutcomeTypes(gameCode, authorId);
                 if (outcomeTypes.isEmpty()) {
-                    continue;
+                    return null;
                 }
                 submissionId = outcomeTypes.get(0).getId();
             } else {
                 List<TextSubmission> candidates = client.getVotingCandidates(gameCode, authorId);
                 if (candidates.isEmpty()) {
-                    continue;
+                    return null;
                 }
                 // Vote for whichever candidate we deliberately built a scenario around, if any -
                 // otherwise fall back to the first candidate, same as before. This is what makes
@@ -331,10 +722,11 @@ public class FullGameScenario {
                         .orElseGet(() -> candidates.get(0).getSubmissionId());
             }
             if (submissionId == null || submissionId.isEmpty()) {
-                continue;
+                return null;
             }
             client.submitVote(gameCode, authorId, submissionId);
-        }
+            return null;
+        });
     }
 
     /**
@@ -347,16 +739,16 @@ public class FullGameScenario {
      * location-scoped playerIds behavior apart from the old game-wide one.
      */
     private void runSplitLocationVote(String gameCode) {
-        for (int i = 0; i < playerAuthorIds.size(); i++) {
-            String authorId = playerAuthorIds.get(i);
+        forEachPlayer(authorId -> {
             List<TextSubmission> candidates = client.getVotingCandidates(gameCode, authorId);
             if (candidates.isEmpty()) {
-                continue;
+                return null;
             }
-            boolean firstHalf = i < playerAuthorIds.size() / 2;
+            boolean firstHalf = playerAuthorIds.indexOf(authorId) < playerAuthorIds.size() / 2;
             int candidateIndex = (firstHalf || candidates.size() < 2) ? 0 : 1;
             client.submitVote(gameCode, authorId, candidates.get(candidateIndex).getSubmissionId());
-        }
+            return null;
+        });
     }
 
     /**
@@ -381,22 +773,13 @@ public class FullGameScenario {
     // ===== Round 1 HOW_DOES_THIS_RESOLVE: repercussion scenarios =====
 
     /**
-     * Step 1: every naturally-assigned player submits root resolution text for the first offered
-     * option on their assigned story - the same default behavior runGenericSubmissionPhase would
-     * have produced. Step 2: layer real, deterministic repercussion scenarios on top, one per
-     * available PlayerClass, each targeting a DIFFERENT player's story via GameFlowClient's
-     * addToSubmission (real branching - see class javadoc). Runs once; HOW_DOES_THIS_RESOLVE only
-     * ever appears for round 1 (round 2 uses the differently-named HOW_DOES_THIS_RESOLVE_AGAIN),
-     * so no re-entry guard is needed.
+     * Runs after submitDefaultRootResolutions (see runPhaseActions): layers real, deterministic
+     * repercussion scenarios on top of those roots, one per available PlayerClass, each targeting
+     * a DIFFERENT player's story via GameFlowClient's addToSubmission (real branching - see class
+     * javadoc). Every target it takes is recorded in usedResolveTargets so later builders
+     * (sequelLocationScopeMode's ALL_PLAYERS-alone scenario, cycleClasses's extras) don't reuse it.
      */
     private void buildRoundOneRepercussionScenarios(String gameCode) {
-        if (roundOneScenariosBuilt) {
-            return;
-        }
-        roundOneScenariosBuilt = true;
-
-        submitDefaultRootResolutions(gameCode);
-
         String scribeAuthorId = classNameByAuthorId.entrySet().stream()
                 .filter(entry -> "Scribe".equals(entry.getValue())).map(Map.Entry::getKey).findFirst().orElse(null);
         String bardAuthorId = classNameByAuthorId.entrySet().stream()
@@ -406,7 +789,7 @@ public class FullGameScenario {
         String fabulistAuthorId = classNameByAuthorId.entrySet().stream()
                 .filter(entry -> "Fabulist".equals(entry.getValue())).map(Map.Entry::getKey).findFirst().orElse(null);
 
-        Set<String> usedTargets = new HashSet<>();
+        Set<String> usedTargets = usedResolveTargets;
 
         // Complete the WHAT_HAPPENS_HERE-time stack (see .CLASSES.md). Runs before the
         // pickTarget-based scenarios below so this resolver gets reserved first and no other
@@ -466,28 +849,24 @@ public class FullGameScenario {
     /**
      * sequelLocationScopeMode only: builds a single round-1 story whose winning fork's ONLY
      * repercussion is ALL_PLAYERS (no accompanying TRAIT/TITLE/COMPANION) - the prequel-eligibility
-     * combination described in .PLAYER_LIFECYCLE.md, "Prequel stories". Deliberately does not build
+     * combination described in .PLAYER_LIFECYCLE.md, "Prequel stories". By default does not build
      * the other 4 class scenarios - this mode is only exercised together with runSplitLocationVote,
-     * which this file's other tests don't need and shouldn't risk being entangled with.
+     * which this file's other tests don't need and shouldn't risk being entangled with. With
+     * mixSequelEligibility it runs after buildRoundOneRepercussionScenarios and just takes the next
+     * unused target story.
      */
     private void buildSequelLocationScopeRepercussion(String gameCode) {
-        if (roundOneScenariosBuilt) {
-            return;
-        }
-        roundOneScenariosBuilt = true;
-
-        submitDefaultRootResolutions(gameCode);
-
         String bardAuthorId = classNameByAuthorId.entrySet().stream()
                 .filter(entry -> "Bard".equals(entry.getValue())).map(Map.Entry::getKey).findFirst().orElse(null);
         if (bardAuthorId == null) {
             throw new IllegalStateException("sequelLocationScopeMode requires a Bard player to grant ALL_PLAYERS");
         }
 
-        String targetAuthorId = pickTarget(bardAuthorId, new HashSet<>());
+        String targetAuthorId = pickTarget(bardAuthorId, usedResolveTargets);
         if (targetAuthorId == null) {
             throw new IllegalStateException("No available target story for the ALL_PLAYERS-alone scenario");
         }
+        usedResolveTargets.add(targetAuthorId);
         ResolvedOption target = rootByResolver.get(targetAuthorId);
         String allPlayersType = onlyRepercussionTypeName(gameCode, bardAuthorId);
 
@@ -495,9 +874,65 @@ public class FullGameScenario {
         // about fork voting, just about what happens to this ALL_PLAYERS-alone story's round-2
         // continuation.
         CollaborativeTextPhase response = client.addToSubmission(gameCode, bardAuthorId, target.rootSubmissionId(),
-                "Bard senses this will echo for everyone who was here.", allPlayersType, ALL_PLAYERS_REPERCUSSION_NAME);
+                storyText("Bard senses this will echo for everyone who was here."), allPlayersType, ALL_PLAYERS_REPERCUSSION_NAME);
         String forkId = claimNewSubmissionId(response);
         allPlayersAloneTarget = new ScenarioTarget(target.storyId(), target.optionId(), forkId);
+    }
+
+    /**
+     * cycleClasses only: every classed player who isn't the first of their class (and so wasn't
+     * already used as a granter by the scenario builders, which always pick the first) attaches
+     * their class's repercussion onto a still-untouched round-1 story, one story each, until the
+     * untouched stories run out. Single branch per story -> single fork -> auto-select, so each
+     * lands deterministically. Not asserted individually: assertRoundOneEffects's prequel check
+     * is computed per story from its actual winning fork, so it already covers whichever of these
+     * (TRAIT/TITLE/COMPANION: not re-offered; ALL_PLAYERS alone: re-offered) end up applied.
+     */
+    private void attachExtraClassRepercussions(String gameCode) {
+        Set<String> firstOfEachClass = new HashSet<>();
+        Set<String> seenClasses = new HashSet<>();
+        for (Map.Entry<String, String> entry : classNameByAuthorId.entrySet()) {
+            if (seenClasses.add(entry.getValue())) {
+                firstOfEachClass.add(entry.getKey());
+            }
+        }
+
+        for (Map.Entry<String, String> entry : classNameByAuthorId.entrySet()) {
+            String granterAuthorId = entry.getKey();
+            if (firstOfEachClass.contains(granterAuthorId)) {
+                continue;
+            }
+            String targetAuthorId = pickTarget(granterAuthorId, usedResolveTargets);
+            if (targetAuthorId == null) {
+                return;
+            }
+            usedResolveTargets.add(targetAuthorId);
+            ResolvedOption target = rootByResolver.get(targetAuthorId);
+            String className = entry.getValue();
+            String granterName = userNameByAuthorId.get(granterAuthorId);
+            String repercussionSubmission = switch (className) {
+                case "Fabulist" -> findEncounterLabel(gameCode, target.storyId());
+                case "Bard" -> ALL_PLAYERS_REPERCUSSION_NAME;
+                case "Herald" -> "Herald of " + granterName;
+                default -> "Marked by " + granterName;
+            };
+            CollaborativeTextPhase response = client.addToSubmission(gameCode, granterAuthorId, target.rootSubmissionId(),
+                    storyText(className + " " + granterName + " leaves their mark on this story."),
+                    onlyRepercussionTypeName(gameCode, granterAuthorId), repercussionSubmission);
+            claimNewSubmissionId(response);
+        }
+    }
+
+    /**
+     * Returns the text as-is, or (with realisticSubmissionText) padded with filler prose up to the
+     * player-client's 150-character submission limit.
+     */
+    private String storyText(String text) {
+        if (!realisticSubmissionText || text.length() >= MAX_SUBMISSION_LENGTH) {
+            return text;
+        }
+        String padded = text + " " + SUBMISSION_FILLER;
+        return padded.substring(0, MAX_SUBMISSION_LENGTH);
     }
 
     /**
@@ -508,13 +943,13 @@ public class FullGameScenario {
      * the winning fork's own". Runs once; WHAT_HAPPENS_HERE only appears for round 1 with this shape
      * (round 2 offers prequel stories too, which this scenario doesn't need).
      */
-    private void buildWhatHappensHereRepercussionScenarios(String gameCode) {
+    private void buildWhatHappensHereRepercussionScenarios(String gameCode, GameState gameState) {
         if (whatHappensHereScenariosBuilt) {
             return;
         }
         whatHappensHereScenariosBuilt = true;
 
-        submitDefaultWhatHappensHereRoots(gameCode);
+        submitDefaultWhatHappensHereRoots(gameCode, gameState);
 
         String scribeAuthorId = classNameByAuthorId.entrySet().stream()
                 .filter(entry -> "Scribe".equals(entry.getValue())).map(Map.Entry::getKey).findFirst().orElse(null);
@@ -530,7 +965,7 @@ public class FullGameScenario {
                 String allPlayersType = onlyRepercussionTypeName(gameCode, bardAuthorId);
                 String rootSubmissionId = whatHappensHereRootByAuthor.get(targetAuthorId);
                 CollaborativeTextPhase response = client.addToSubmission(gameCode, bardAuthorId, rootSubmissionId,
-                        "Bard weaves this telling so it echoes for everyone who hears it.",
+                        storyText("Bard weaves this telling so it echoes for everyone who hears it."),
                         allPlayersType, ALL_PLAYERS_REPERCUSSION_NAME);
                 claimNewSubmissionId(response);
                 bardWhatHappensHereStackAuthorId = targetAuthorId;
@@ -544,7 +979,7 @@ public class FullGameScenario {
                 String traitType = onlyRepercussionTypeName(gameCode, scribeAuthorId);
                 String rootSubmissionId = whatHappensHereRootByAuthor.get(targetAuthorId);
                 CollaborativeTextPhase response = client.addToSubmission(gameCode, scribeAuthorId, rootSubmissionId,
-                        "Scribe notes something here worth remembering.", traitType, WHAT_HAPPENS_HERE_TRAIT_LABEL);
+                        storyText("Scribe notes something here worth remembering."), traitType, WHAT_HAPPENS_HERE_TRAIT_LABEL);
                 claimNewSubmissionId(response);
                 scribeWhatHappensHereSoloAuthorId = targetAuthorId;
             }
@@ -556,24 +991,29 @@ public class FullGameScenario {
      * behavior runGenericSubmissionPhase would have produced - recording each author's submissionId
      * so buildWhatHappensHereRepercussionScenarios can branch a repercussion onto a specific target.
      */
-    private void submitDefaultWhatHappensHereRoots(String gameCode) {
-        for (String authorId : playerAuthorIds) {
+    private void submitDefaultWhatHappensHereRoots(String gameCode, GameState gameState) {
+        Map<String, String> rootIdByAuthor = forEachPlayer(authorId -> {
             List<OutcomeType> outcomeTypes = client.getOutcomeTypes(gameCode, authorId);
             if (outcomeTypes.isEmpty()) {
-                continue;
+                return null;
             }
             OutcomeType parent = outcomeTypes.get(0);
             List<OutcomeType> subTypes = parent.getSubTypes();
             if (subTypes == null || subTypes.isEmpty()) {
-                continue;
+                return null;
             }
-            OutcomeType chosenEncounter = subTypes.get(0);
+            OutcomeType chosenEncounter = narrowToChosenSubType(parent, subTypes.get(0));
+            simulatePlayerSubmissionReads(gameCode, gameState, outcomeTypes, chosenEncounter);
 
             CollaborativeTextPhase response = client.submitTextAddition(gameCode, authorId,
-                    narrowToChosenSubType(parent, chosenEncounter), "Encounter write-up by " + userNameByAuthorId.get(authorId), "", "");
-            String rootId = claimNewSubmissionId(response);
-            whatHappensHereRootByAuthor.put(authorId, rootId);
-        }
+                    chosenEncounter, storyText("Encounter write-up by " + userNameByAuthorId.get(authorId)), "", "");
+            return claimOwnNewSubmissionId(response, authorId);
+        });
+        rootIdByAuthor.forEach((authorId, rootId) -> {
+            if (rootId != null) {
+                whatHappensHereRootByAuthor.put(authorId, rootId);
+            }
+        });
     }
 
     /** First author, in join order, with a known WHAT_HAPPENS_HERE root that isn't the granter and isn't already used. */
@@ -598,24 +1038,31 @@ public class FullGameScenario {
      * produced. Shared by both round-1 scenario builders; each layers its own repercussion
      * scenario(s) on top of these roots.
      */
-    private void submitDefaultRootResolutions(String gameCode) {
-        for (String authorId : playerAuthorIds) {
+    private void submitDefaultRootResolutions(String gameCode, GameState gameState) {
+        Map<String, ResolvedOption> resolvedByAuthor = forEachPlayer(authorId -> {
             List<OutcomeType> outcomeTypes = client.getOutcomeTypes(gameCode, authorId);
             if (outcomeTypes.isEmpty()) {
-                continue;
+                return null;
             }
             OutcomeType parent = outcomeTypes.get(0);
             List<OutcomeType> subTypes = parent.getSubTypes();
             if (subTypes == null || subTypes.isEmpty()) {
-                continue;
+                return null;
             }
             OutcomeType chosenOption = subTypes.get(0);
+            OutcomeType narrowed = narrowToChosenSubType(parent, chosenOption);
+            simulatePlayerSubmissionReads(gameCode, gameState, outcomeTypes, narrowed);
 
             CollaborativeTextPhase response = client.submitTextAddition(gameCode, authorId,
-                    narrowToChosenSubType(parent, chosenOption), "Root resolution by " + userNameByAuthorId.get(authorId), "", "");
-            String rootId = claimNewSubmissionId(response);
-            rootByResolver.put(authorId, new ResolvedOption(parent.getId(), chosenOption.getId(), rootId));
-        }
+                    narrowed, storyText("Root resolution by " + userNameByAuthorId.get(authorId)), "", "");
+            String rootId = claimOwnNewSubmissionId(response, authorId);
+            return new ResolvedOption(parent.getId(), chosenOption.getId(), rootId);
+        });
+        resolvedByAuthor.forEach((authorId, resolved) -> {
+            if (resolved != null) {
+                rootByResolver.put(authorId, resolved);
+            }
+        });
     }
 
     /** First resolved story's author, in join order, that isn't the granter and isn't already used. */
@@ -641,7 +1088,7 @@ public class FullGameScenario {
         // so handleRepercussions's COMPANION branch never ran and no trait was ever granted.
         String encounterLabel = findEncounterLabel(gameCode, target.storyId());
         CollaborativeTextPhase response = client.addToSubmission(gameCode, fabulistAuthorId, target.rootSubmissionId(),
-                "Fabulist recognizes a kindred spirit in this encounter.", repercussionType, encounterLabel);
+                storyText("Fabulist recognizes a kindred spirit in this encounter."), repercussionType, encounterLabel);
         String forkId = claimNewSubmissionId(response);
         return new ScenarioTarget(target.storyId(), target.optionId(), forkId);
     }
@@ -679,7 +1126,7 @@ public class FullGameScenario {
         ResolvedOption target = rootByResolver.get(targetAuthorId);
         String repercussionType = onlyRepercussionTypeName(gameCode, scribeAuthorId);
         CollaborativeTextPhase response = client.addToSubmission(gameCode, scribeAuthorId, target.rootSubmissionId(),
-                "Scribe notes their steadfast resolve.", repercussionType, TRAIT_ALONE_LABEL);
+                storyText("Scribe notes their steadfast resolve."), repercussionType, TRAIT_ALONE_LABEL);
         String forkId = claimNewSubmissionId(response);
         traitAloneTarget = new ScenarioTarget(target.storyId(), target.optionId(), forkId);
     }
@@ -690,7 +1137,7 @@ public class FullGameScenario {
         String allPlayersType = onlyRepercussionTypeName(gameCode, bardAuthorId);
 
         CollaborativeTextPhase traitResponse = client.addToSubmission(gameCode, scribeAuthorId, target.rootSubmissionId(),
-                "Scribe records their courage for history.", traitType, COMBINED_TRAIT_LABEL);
+                storyText("Scribe records their courage for history."), traitType, COMBINED_TRAIT_LABEL);
         String chainMid = claimNewSubmissionId(traitResponse);
 
         // ALL_PLAYERS has no real text input in the UI (RepercussionType.ALL_PLAYERS.label is ""),
@@ -700,7 +1147,7 @@ public class FullGameScenario {
         // exists purely to satisfy that harness-side guard - the server doesn't read
         // repercissionSubmission for ALL_PLAYERS's effect, only repercussionType.
         CollaborativeTextPhase spreadResponse = client.addToSubmission(gameCode, bardAuthorId, chainMid,
-                "Bard makes sure the whole party hears of it.", allPlayersType, ALL_PLAYERS_REPERCUSSION_NAME);
+                storyText("Bard makes sure the whole party hears of it."), allPlayersType, ALL_PLAYERS_REPERCUSSION_NAME);
         String chainFinal = claimNewSubmissionId(spreadResponse);
 
         combinedTarget = new ScenarioTarget(target.storyId(), target.optionId(), chainFinal);
@@ -711,7 +1158,7 @@ public class FullGameScenario {
         String titleType = onlyRepercussionTypeName(gameCode, heraldAuthorId);
 
         CollaborativeTextPhase titleResponse = client.addToSubmission(gameCode, heraldAuthorId, target.rootSubmissionId(),
-                "Herald names them for this deed.", titleType, TITLE_LABEL);
+                storyText("Herald names them for this deed."), titleType, TITLE_LABEL);
         String titleForkId = claimNewSubmissionId(titleResponse);
         preferredWinningSubmissionIds.add(titleForkId);
 
@@ -719,7 +1166,7 @@ public class FullGameScenario {
             // A second, real sibling branch off the SAME root (not chained onto the Title fork)
             // -> a second real OutcomeFork, forcing a real MAKE_OUTCOME_CHOICE_VOTING vote.
             CollaborativeTextPhase decoyForkResponse = client.addToSubmission(gameCode, decoyAuthorId, target.rootSubmissionId(),
-                    "A quieter account of the same events.", "", "");
+                    storyText("A quieter account of the same events."), "", "");
             claimNewSubmissionId(decoyForkResponse);
         }
 
@@ -732,7 +1179,7 @@ public class FullGameScenario {
             OutcomeType decoyOption = targetSubTypes.get(1);
             CollaborativeTextPhase decoyOptionResponse = client.submitTextAddition(gameCode, targetAuthorId,
                     narrowToChosenSubType(targetOutcomeTypes.get(0), decoyOption),
-                    "A second, less compelling course of action.", "", "");
+                    storyText("A second, less compelling course of action."), "", "");
             claimNewSubmissionId(decoyOptionResponse);
         }
         preferredWinningSubmissionIds.add(target.optionId());
@@ -746,6 +1193,28 @@ public class FullGameScenario {
             throw new IllegalStateException("Player " + userNameByAuthorId.get(authorId) + " has no repercission types available - is their PlayerClass set?");
         }
         return types.get(0).getName();
+    }
+
+    /**
+     * Like claimNewSubmissionId, but only considers submissions authored by this player - safe
+     * when other players are submitting at the same moment (concurrentPlayers), where the same
+     * response can also contain their brand-new, not-yet-claimed submissions. A root submission's
+     * authorId is its submitter (CollaborativeTextHelper.createNewSubmission).
+     */
+    private String claimOwnNewSubmissionId(CollaborativeTextPhase phaseResponse, String authorId) {
+        List<String> newIds = phaseResponse.getSubmissions().stream()
+                .filter(submission -> authorId.equals(submission.getAuthorId()))
+                .map(TextSubmission::getSubmissionId)
+                .filter(id -> id != null && !knownSubmissionIds.contains(id))
+                .distinct()
+                .toList();
+        if (newIds.size() != 1) {
+            throw new IllegalStateException("Expected exactly one new submission by " + userNameByAuthorId.get(authorId)
+                    + ", found " + newIds);
+        }
+        String newId = newIds.get(0);
+        knownSubmissionIds.add(newId);
+        return newId;
     }
 
     /** Diffs a submission-phase response against everything seen so far and remembers the new id. */

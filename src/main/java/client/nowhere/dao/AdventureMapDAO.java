@@ -60,17 +60,9 @@ public class AdventureMapDAO {
     public void updateGameSessionDisplay(String gameCode, GameSessionDisplay display) {
         DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
         try {
-            // Get the current game session
-            GameSession gameSession = FirestoreDAOUtil.mapGameSession(FirestoreDAOUtil.getGameSession(gameSessionRef));
-            
-            // Update the GameSessionDisplay in the AdventureMap
-            if (gameSession.getAdventureMap() == null) {
-                gameSession.setAdventureMap(new AdventureMap());
-            }
-            gameSession.getAdventureMap().setGameSessionDisplay(display);
-            
-            // Update the game session in Firestore
-            ApiFuture<WriteResult> result = gameSessionRef.set(gameSession);
+            // Targeted field update: no read, and no full-document set() that would rewrite (and
+            // clobber concurrent writes to) players, stories, collaborativeTextPhases, etc.
+            ApiFuture<WriteResult> result = gameSessionRef.update("adventureMap.gameSessionDisplay", display);
             result.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -195,15 +187,13 @@ public class AdventureMapDAO {
         }
     }
 
-    public AdventureMap updateSessionAdventureMap(String gameCode, AdventureMap updatedAdventureMap) {
+    public void updateSessionAdventureMap(String gameCode, AdventureMap updatedAdventureMap) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            GameSession gameSession = FirestoreDAOUtil.mapDatabaseObject(gameSessionRef, GameSession.class);
-            gameSession.setAdventureMap(updatedAdventureMap);
-            ApiFuture<WriteResult> result = gameSessionRef.set(gameSession);
+            // Targeted field update: no read, and no full-document set() of the whole GameSession.
+            ApiFuture<WriteResult> result = gameSessionRef.update("adventureMap", updatedAdventureMap);
             WriteResult asyncResponse = result.get();
             System.out.println("Update time : " + result.get().toString());
-            return updatedAdventureMap;
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue creating the game session", e);
