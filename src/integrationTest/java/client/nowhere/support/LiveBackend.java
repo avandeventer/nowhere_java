@@ -7,6 +7,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -18,6 +19,8 @@ import java.util.List;
 public final class LiveBackend {
 
     public static final String BASE_URL = "https://nowhere-java-556057816518.us-east4.run.app";
+    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration READ_TIMEOUT = Duration.ofSeconds(60);
 
     private LiveBackend() { }
 
@@ -31,7 +34,14 @@ public final class LiveBackend {
                 .registerModule(new TimestampModule())
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter(objectMapper);
-        RestTemplate restTemplate = new RestTemplateBuilder().rootUri(BASE_URL).build();
+        // Without a read timeout, a request that stalls in the network (never reaching Cloud Run)
+        // hung a run for ~37 minutes until the connection reset. 60s is well above the slowest
+        // real call LatencyLog has seen (~16s PUT /game/next near the Firestore size limit).
+        RestTemplate restTemplate = new RestTemplateBuilder()
+                .rootUri(BASE_URL)
+                .setConnectTimeout(CONNECT_TIMEOUT)
+                .setReadTimeout(READ_TIMEOUT)
+                .build();
         List<HttpMessageConverter<?>> converters = restTemplate.getMessageConverters();
         converters.replaceAll(converter -> converter instanceof MappingJackson2HttpMessageConverter ? jsonConverter : converter);
         return restTemplate;

@@ -365,6 +365,84 @@ same sibling-fork shape (Herald's `TITLE` fork + the decoy fork, both branched o
 root — see the scenario table above) but no longer asserts on `additions` content specifically;
 easy to re-add there if the risk is still worth standing guard on.
 
+## 10-player sequel load test (`FullGameTenPlayersSequelTest`, 2026-09-29)
+
+Added to reproduce the `gameSessions/{gameCode}` document outgrowing Firestore's 1 MiB limit in
+large games. It turns on four opt-in `FullGameScenario` knobs:
+
+- `cycleClasses()`: every player gets a class. Every class holder after the first of each class
+  also attaches a repercussion to another untouched round-1 story.
+- `mixSequelEligibility()`: with `sequelLocationScopeMode`, it also builds the full class
+  scenarios. Round 2 then gets both kinds of round-1 story: ones re-offered as sequels and ones
+  that aren't. `assertRoundOneEffects` checks each one.
+- `realisticSubmissionText()`: pads every submission to the player-client's 150-character limit.
+- `logSessionSize()`: `SessionSizeLog` samples the size of the GET /game JSON (total and per
+  top-level field) and the time spent in each phase. It prints a table at the end, including
+  when the run fails. The JSON size is a proxy for the Firestore document size, not the exact
+  byte count Firestore enforces.
+
+**First run (game SCKE82): passed and reached ENDING in about 13 minutes. It did NOT hit the
+limit.** The peak was about 726 KB (about 71% of 1 MiB), at a round-2 `MAKE_OUTCOME_CHOICE_WINNER`.
+`collaborativeTextPhases` is the largest field (about 380 KB at peak), then `stories` (about
+233 KB). `adventureMap` is about 60 KB. The biggest jumps come at `HOW_DOES_THIS_RESOLVE_AGAIN`
+and at the first `NAVIGATE_WINNER` of each round. Size drops after the first `MAKE_CHOICE_VOTING`
+of each round, which looks like phase cleanup. The harness writes one addition per player per
+phase plus the scenario branches. Real players write many more additions and branches, which
+is probably why the real 10-player game crashed and this one didn't.
+
+**`extraAdditionsPerPlayer(n)` added; with n=3 the crash reproduces.** In every `SHARE_TEXT`
+phase that already has submissions, each player makes `n` plain-text additions to submissions from
+`GET /collaborativeText/available`, the same way the real client's `onAddToSubmission` works. In
+round 1 it skips the scripted scenarios' roots and forks, so their outcomes and assertions don't
+change. It checks that the phase has submissions first because `GET /collaborativeText/available`
+throws a 500 in `INIT`: `getAvailableSubmissionsForPlayer` calls `gameSession.getStories().stream()`
+while `stories` is still null. That's a real but harmless backend fragility, since the client never
+calls it there, and it's left unfixed.
+
+Game EZFWSS failed at round-1 `HOW_DOES_THIS_RESOLVE_AGAIN` (`POST /collaborativeText` returned 500),
+after about 4.5 minutes. Cloud Run log: `INVALID_ARGUMENT: Document '.../gameSessions/EZFWSS' cannot
+be written because its size (1,050,513 bytes) exceeds the maximum allowed size of 1,048,576 bytes.`
+`SessionSizeLog` read about 949 KB at that point, so its JSON measurement undercounts Firestore's by
+about 10%. `collaborativeTextPhases` made up about 696 KB of that, with `stories` at about 140 KB. The
+jump came at round 1 `WHAT_HAPPENS_HERE` → `WHAT_CAN_WE_TRY`: `collaborativeTextPhases` grew from
+82 KB to 448 KB in that one phase.
+
+**Latency logging, client-traffic simulation and concurrent players added (2026-09-29).**
+`FullGameTenPlayersSequelTest` also turns on three more switches:
+
+- `logLatency()`: `LatencyLog` is a RestTemplate interceptor that times every call, tags it with
+  the current round and gameState, and prints two tables: one per endpoint (calls, errors,
+  avg/p50/p95/max) and one per phase and endpoint. The endpoints the user asked about are marked
+  with `*` and always listed, even when never called.
+- `simulateClientTraffic()`: makes the calls the real clients make that the scenario doesn't need
+  itself. From the TV: `GET /player`, `/display`, `/game-board`, `/collaborativeText/winner`, and
+  the `PUT /activePlayerSession` timer writes. From each player: `GET /collaborativeText`, `/story`,
+  and `/player/authorId`. Calls that only happen when a user taps something are not simulated. See
+  that method's javadoc for the full list and its reasons.
+- `concurrentPlayers()`: each phase's per-player calls run in parallel, one thread per player.
+  Round-1 root submissions now identify the player's own new submission by `authorId`
+  (`claimOwnNewSubmissionId`) instead of diffing the whole response.
+
+`GET /collaborativeText/outcomeType` (singular) is still never called. It was left out on purpose.
+
+**First concurrent run (game Y833DT) failed at round-1 `MAKE_CHOICE_VOTING` after about 6.5
+minutes.** `PUT /game/next` returned 500 with the Firestore size error at 1,048,977 bytes. What the
+latency tables show:
+
+- `PUT /game/next` takes 1–2 s early in the game, then 10.9 s at round-1 `HOW_DOES_THIS_RESOLVE`
+  and 16.4 s at `HOW_DOES_THIS_RESOLVE_AGAIN`.
+- `POST /collaborativeText/votes` averages about 4 s, with a p95 around 11 s.
+- `GET /collaborativeText/available` averages about 3.4 s. `POST /collaborativeText` averages about
+  2.3 s, with a p95 around 10 s by `HOW_DOES_THIS_RESOLVE_AGAIN`.
+
+The simulated client calls also found two real backend behaviours, both left unfixed:
+
+- `GET /collaborativeText` returns 500 ("Collaborative text phase not found. Please submit text
+  first.") whenever it's called before anyone has submitted in the phase. The player client calls
+  it from `ngOnInit`, so real phones hit this every phase.
+- `GET /collaborativeText/winner` returns 500 in `NAVIGATE_WINNER` ("Collaborative text phase not
+  found for game state"). The TV calls it in every WINNING-type phase.
+
 ## False leads from this session (corrected, for context)
 
 Chased two "production bug" theories against the local emulator that turned out to be wrong —

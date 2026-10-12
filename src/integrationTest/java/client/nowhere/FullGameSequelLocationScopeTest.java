@@ -25,7 +25,11 @@ class FullGameSequelLocationScopeTest {
     @Test
     void sequelStoryPlayerIdsAreScopedToItsOwnLocation() {
         GameFlowClient client = new GameFlowClient(LiveBackend.restTemplate());
-        FullGameScenario scenario = new FullGameScenario(LiveBackend.restTemplate());
+        FullGameScenario scenario = new FullGameScenario(LiveBackend.restTemplate())
+                .simulateClientTraffic()
+                .concurrentPlayers()
+                .logSessionSize()
+                .logLatency();
 
         GameSession finalState = scenario.play(4, true);
 

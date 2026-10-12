@@ -63,16 +63,7 @@ public class AdventureMapHelper {
     }
 
     public GameSessionDisplay getGameSessionDisplay(String gameCode) {
-        GameSessionDisplay gameSessionDisplay = this.adventureMapDAO.getGameSessionDisplay(gameCode);
-        if (gameSessionDisplay.getEntity() == null || gameSessionDisplay.getEntity().isEmpty()) {
-            GameSession gameSession = gameSessionDAO.getGame(gameCode);
-            if (gameSession.getAdventureMap() != null) {
-                Optional<StatType> favorStatOpt = gameSession.getAdventureMap().getStatTypes().stream().filter(StatType::isFavorType).findAny();
-                favorStatOpt.ifPresent(statType -> gameSessionDisplay.setEntity(statType.getFavorEntity()));
-                adventureMapDAO.updateGameSessionDisplay(gameCode, gameSessionDisplay);
-            }
-        }
-        return gameSessionDisplay;
+        return this.adventureMapDAO.getGameSessionDisplay(gameCode);
     }
 
     //Global Adventure Map Functions
