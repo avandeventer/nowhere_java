@@ -1,5 +1,6 @@
 package client.nowhere.helper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
 
+import client.nowhere.util.InMemoryCollaborativeTextDAO;
 import client.nowhere.util.TestJsonLoader;
 
 import static client.nowhere.model.GameState.GENERATE_OCCUPATION_AUTHORS;
@@ -61,8 +63,7 @@ public class GameSessionHelperTest {
     @Mock
     private AdventureMapDAO adventureMapDAO;
 
-    @Mock
-    private CollaborativeTextDAO collaborativeTextDAO;
+    private InMemoryCollaborativeTextDAO collaborativeTextDAO;
 
     @Mock
     private FeatureFlagHelper featureFlagHelper;
@@ -84,6 +85,7 @@ public class GameSessionHelperTest {
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
+        collaborativeTextDAO = new InMemoryCollaborativeTextDAO();
         // Construct real CollaborativeTextHelper with mocked DAOs
         collaborativeTextHelper = new CollaborativeTextHelper(
                 gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
@@ -96,6 +98,15 @@ public class GameSessionHelperTest {
                 userProfileHelper, featureFlagHelper, collaborativeTextHelper,
                 activeSessionDAO
         );
+    }
+
+    /**
+     * Loads a captured game session fixture and seeds the phases embedded in it into the in-memory DAO.
+     */
+    private GameSession loadGame(String fileName) throws IOException {
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(fileName);
+        collaborativeTextDAO.seedFromFixture(gameSession, fileName);
+        return gameSession;
     }
 
     @ParameterizedTest(name = "{3}")
@@ -642,7 +653,7 @@ public class GameSessionHelperTest {
             List<String> expectedOutcomeDisplay
     ) throws Exception {
         // Arrange - Load test data from JSON
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
+        GameSession gameSession = loadGame(testFileName);
         gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
         gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
         gameSession.setGameState(startingGameState);
@@ -653,11 +664,8 @@ public class GameSessionHelperTest {
         assertNotNull(currentStory, "Story at current coordinates should exist");
 
         if(!selectedOptionId.isEmpty()) {
-            gameSession.getCollaborativeTextPhase(
-                    String.valueOf(startingGameState.getPhaseId())).addPlayerVote(
-                    new PlayerVote("", "", selectedOptionId, 1
-                    )
-            );
+            collaborativeTextDAO.putVotes(gameCode, PhaseKeys.phaseKey(gameSession, startingGameState.getPhaseId()),
+                    PhaseKeys.voteScope(gameSession), "", List.of(new PlayerVote("", "", selectedOptionId, 1)));
         }
 
         // Mock the dependencies
@@ -742,7 +750,7 @@ public class GameSessionHelperTest {
             String testFileName
     ) throws Exception {
         // Arrange - Load test data from JSON
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
+        GameSession gameSession = loadGame(testFileName);
         gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
         gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
         gameSession.setGameState(startingGameState);
@@ -1020,7 +1028,7 @@ public class GameSessionHelperTest {
             GameState expectedFinalState
     ) throws Exception {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(testFileName);
+        GameSession gameSession = loadGame(testFileName);
         gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_WINNER);
         String gameCode = gameSession.getGameCode();
 

@@ -69,16 +69,23 @@ public class CollaborativeTextHelper {
         if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
-        String phaseId = phaseIdState.name();
+        String phaseKey = PhaseKeys.phaseKey(gameSession, phaseIdState);
 
         TextSubmission newSubmission;
         if (textAddition.getSubmissionId() != null && !textAddition.getSubmissionId().trim().isEmpty()) {
-            newSubmission = createBranchedSubmission(gameSession, textAddition, phaseId);
+            newSubmission = createBranchedSubmission(gameSession, textAddition, phaseKey);
         } else {
             newSubmission = createNewSubmission(textAddition, gameSession);
         }
 
-        return collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, newSubmission);
+        collaborativeTextDAO.createSubmission(gameCode, phaseKey, newSubmission);
+
+        // The player client only reads phaseId and whether this player has submitted, so return just
+        // this player's submissions instead of the whole phase.
+        CollaborativeTextPhase response = new CollaborativeTextPhase();
+        response.setPhaseId(phaseIdState.name());
+        response.setSubmissions(collaborativeTextDAO.getSubmissionsByAuthor(gameCode, phaseKey, textAddition.getAuthorId()));
+        return response;
     }
 
     public CollaborativeTextPhase getCollaborativeTextPhase(String gameCode) {
@@ -87,15 +94,36 @@ public class CollaborativeTextHelper {
         if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
-        String phaseId = phaseIdState.name();
 
-        // Get phase from DAO
-        CollaborativeTextPhase phase = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId);
-        if (phase == null) {
-            throw new ValidationException("Collaborative text phase not found. Please submit text first.");
-        }
+        // Empty (not an error) when nobody has submitted yet - the player client calls this on load.
+        return loadPhase(gameSession, phaseIdState);
+    }
 
-        return phase;
+    /**
+     * Loads a phase's submissions plus the votes for the current vote (see PhaseKeys).
+     * Never null: a phase nobody has written to yet comes back empty.
+     */
+    public CollaborativeTextPhase loadPhase(GameSession gameSession, GameState phaseId) {
+        return collaborativeTextDAO.loadPhase(
+                gameSession.getGameCode(),
+                PhaseKeys.phaseKey(gameSession, phaseId),
+                phaseId.name(),
+                PhaseKeys.voteScope(gameSession));
+    }
+
+    private List<TextSubmission> getPhaseSubmissions(GameSession gameSession, GameState phaseId) {
+        return collaborativeTextDAO.getSubmissions(gameSession.getGameCode(), PhaseKeys.phaseKey(gameSession, phaseId));
+    }
+
+    private Map<String, List<PlayerVote>> getPhaseVotes(GameSession gameSession, GameState phaseId) {
+        return collaborativeTextDAO.getVotes(
+                gameSession.getGameCode(),
+                PhaseKeys.phaseKey(gameSession, phaseId),
+                PhaseKeys.voteScope(gameSession));
+    }
+
+    private void putPhaseSubmissions(GameSession gameSession, GameState phaseId, List<TextSubmission> submissions) {
+        collaborativeTextDAO.putSubmissions(gameSession.getGameCode(), PhaseKeys.phaseKey(gameSession, phaseId), submissions);
     }
 
     public List<TextSubmission> calculateWinningSubmission(String gameCode) {
@@ -109,13 +137,8 @@ public class CollaborativeTextHelper {
         if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
-        String phaseId = phaseIdState.name();
 
-        CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhase(phaseId);
-        if (phase == null) {
-            throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
-        }
-
+        CollaborativeTextPhase phase = loadPhase(gameSession, phaseIdState);
         return getWinningSubmissions(phaseIdState, phase, gameSession);
     }
 
@@ -124,13 +147,8 @@ public class CollaborativeTextHelper {
         if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
-        String phaseId = phaseIdState.name();
 
-        CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhase(phaseId);
-        if (phase == null) {
-            throw new ValidationException("Collaborative text phase not found for game state: " + gameSession.getGameState());
-        }
-
+        CollaborativeTextPhase phase = loadPhase(gameSession, phaseIdState);
         List<TextSubmission> winningSubmissions = getWinningSubmissions(phaseIdState, phase, gameSession);
 
         // Store the winning submissions in GameSessionDisplay
@@ -166,7 +184,7 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
 
-        String phaseId = phaseIdState.name();
+        String phaseKey = PhaseKeys.phaseKey(gameSession, phaseIdState);
 
         List<String> excludeOutcomeTypeIds = gameSession.getStories().stream()
                 .filter(story -> playerId.equals(story.getPlayerId()))
@@ -174,7 +192,37 @@ public class CollaborativeTextHelper {
                 .collect(Collectors.toList());
         excludeOutcomeTypeIds.add(playerId);
 
-        return collaborativeTextDAO.getAvailableSubmissionsForPlayerAtomically(gameCode, phaseId, playerId, requestedCount, excludeOutcomeTypeIds, showNewSubmissions);
+        CollaborativeTextPhase phase = collaborativeTextDAO.loadPhaseWithViews(gameCode, phaseKey, phaseIdState.name());
+        if (phase.getSubmissions().isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Clear all existing views for this player before recording new ones
+        if (!showNewSubmissions) {
+            phase.clearViewsForPlayer(playerId);
+        }
+
+        List<TextSubmission> availableSubmissions = phase.getAvailableSubmissionsForPlayer(playerId, excludeOutcomeTypeIds).stream()
+                .sorted(Comparator
+                        .comparingInt((TextSubmission s) ->
+                                phase.getSubmissionViews().getOrDefault(s.getSubmissionId(), new ArrayList<>()).size())
+                        .thenComparing(TextSubmission::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+                .limit(requestedCount)
+                .toList();
+
+        for (TextSubmission submission : availableSubmissions) {
+            phase.recordSubmissionView(submission.getSubmissionId(), playerId);
+        }
+
+        // Only this player's views doc is written, so players never contend with each other here.
+        // The 2-viewer limit is soft: two players asking at the same instant can both get a submission.
+        List<String> playerViews = phase.getSubmissionViews().entrySet().stream()
+                .filter(entry -> entry.getValue().contains(playerId))
+                .map(Map.Entry::getKey)
+                .toList();
+        collaborativeTextDAO.putViews(gameCode, phaseKey, playerId, playerViews);
+
+        return availableSubmissions;
     }
 
 
@@ -237,15 +285,9 @@ public class CollaborativeTextHelper {
      * Creates a new submission that branches from an existing parent submission
      * The new submission contains the parent's current text plus the new addition
      */
-    private TextSubmission createBranchedSubmission(GameSession gameSession, TextAddition textAddition, String phaseId) {
-        // Get the current phase to find the parent submission
-        CollaborativeTextPhase currentPhase = collaborativeTextDAO.getCollaborativeTextPhase(gameSession.getGameCode(), phaseId);
-        if (currentPhase == null) {
-            throw new ValidationException("Collaborative text phase not found. Cannot branch from non-existent phase.");
-        }
-
-        // Find the parent submission and validate it exists
-        TextSubmission parentSubmission = currentPhase.getSubmissionById(textAddition.getSubmissionId());
+    private TextSubmission createBranchedSubmission(GameSession gameSession, TextAddition textAddition, String phaseKey) {
+        // Point read of just the parent submission
+        TextSubmission parentSubmission = collaborativeTextDAO.getSubmission(gameSession.getGameCode(), phaseKey, textAddition.getSubmissionId());
         if (parentSubmission == null) {
             throw new ValidationException("Parent submission not found: " + textAddition.getSubmissionId());
         }
@@ -977,16 +1019,13 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            String phaseId = GameState.LOCATION_VOTING.name();
-            CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhases().get(phaseId);
+            // Round 0 and round 1 each start from an empty phase (PhaseKeys); round 2 reuses round 1's
+            // locations and votes on the second half of them.
+            List<TextSubmission> existingSubmissions = getPhaseSubmissions(gameSession, LOCATION_VOTING);
             List<Location> selectedLocations = new ArrayList<>();
             boolean isRoundZero = gameSession.getRoundNumber() == 0;
-            if (gameSession.getRoundNumber() == 1) {
-                collaborativeTextDAO.clearPhase(gameCode, GameState.LOCATION_VOTING.name(), true);
-                phase.resetAll();
-            }
 
-            if (phase == null || phase.getSubmissions().isEmpty()) {
+            if (existingSubmissions.isEmpty()) {
                 List<Player> players = gameSession.getPlayers();
                 int playerCount = players != null ? players.size() : 0;
                 if (playerCount == 0) return;
@@ -997,6 +1036,7 @@ public class CollaborativeTextHelper {
                 Collections.shuffle(candidateLocations);
                 selectedLocations = candidateLocations.subList(0, Math.min(playerCount, candidateLocations.size()));
 
+                List<TextSubmission> locationSubmissions = new ArrayList<>();
                 for (Location location : selectedLocations) {
                     TextSubmission submission = new TextSubmission();
                     submission.setSubmissionId(location.getId());
@@ -1005,10 +1045,11 @@ public class CollaborativeTextHelper {
                     submission.setOutcomeType(location.getIconDirectory());
                     submission.setCreatedAt(Timestamp.now());
                     submission.setLastModified(Timestamp.now());
-                    collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
+                    locationSubmissions.add(submission);
                 }
+                putPhaseSubmissions(gameSession, LOCATION_VOTING, locationSubmissions);
             } else {
-                Set<String> existingIds = phase.getSubmissions().stream()
+                Set<String> existingIds = existingSubmissions.stream()
                         .map(TextSubmission::getSubmissionId)
                         .collect(Collectors.toSet());
                 selectedLocations = adventureMap.getLocations().stream()
@@ -1016,32 +1057,29 @@ public class CollaborativeTextHelper {
                         .collect(Collectors.toList());
             }
 
-            initializeLocationOptionMakeChoiceVoting(gameCode, gameSession, selectedLocations);
+            initializeLocationOptionMakeChoiceVoting(gameSession, selectedLocations);
         } catch (Exception e) {
             System.err.println("Failed to initialize LOCATION_VOTING phase: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void initializeLocationOptionMakeChoiceVoting(String gameCode, GameSession gameSession, List<Location> selectedLocations) {
-        String locationOptionPhaseId = GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING.name();
-        CollaborativeTextPhase optionPhase = gameSession.getCollaborativeTextPhase(locationOptionPhaseId);
-        Set<String> existingOptionIds = (optionPhase != null && optionPhase.getSubmissions() != null)
-                ? optionPhase.getSubmissions().stream().map(TextSubmission::getSubmissionId).collect(Collectors.toSet())
-                : Collections.emptySet();
+    private void initializeLocationOptionMakeChoiceVoting(GameSession gameSession, List<Location> selectedLocations) {
+        // Option IDs are the document IDs, so re-writing an option that already exists just overwrites it.
+        List<TextSubmission> optionSubmissions = new ArrayList<>();
         for (Location location : selectedLocations) {
             if (location.getOptions() == null) continue;
             for (Option option : location.getOptions()) {
-                if (existingOptionIds.contains(option.getOptionId())) continue;
                 TextSubmission submission = new TextSubmission();
                 submission.setSubmissionId(option.getOptionId());
                 submission.setCurrentText(option.getOptionText());
                 submission.setOutcomeType(location.getId());
                 submission.setCreatedAt(Timestamp.now());
                 submission.setLastModified(Timestamp.now());
-                collaborativeTextDAO.addSubmissionAtomically(gameCode, locationOptionPhaseId, submission);
+                optionSubmissions.add(submission);
             }
         }
+        putPhaseSubmissions(gameSession, LOCATION_OPTION_MAKE_CHOICE_VOTING, optionSubmissions);
     }
 
     /**
@@ -1051,10 +1089,9 @@ public class CollaborativeTextHelper {
     private void handleLocationVoting(GameSession gameSession) {
         try {
             String gameCode = gameSession.getGameCode();
-            CollaborativeTextPhase phase = gameSession.getCollaborativeTextPhase(LOCATION_VOTING.name());
-            if (phase == null || phase.getPlayerVotes() == null) return;
+            Map<String, List<PlayerVote>> playerVotes = getPhaseVotes(gameSession, LOCATION_VOTING);
 
-            for (Map.Entry<String, List<PlayerVote>> entry : phase.getPlayerVotes().entrySet()) {
+            for (Map.Entry<String, List<PlayerVote>> entry : playerVotes.entrySet()) {
                 String playerId = entry.getKey();
                 List<PlayerVote> votes = entry.getValue();
                 if (votes == null || votes.isEmpty()) continue;
@@ -1429,8 +1466,8 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            // Get WHAT_CAN_WE_TRY phase to remove submissions
-            CollaborativeTextPhase whatCanWeTryPhase = gameSession.getCollaborativeTextPhase(WHAT_CAN_WE_TRY.name());
+            // WHAT_CAN_WE_TRY submissions to remove (one per resolved option), deleted in one batch below
+            Set<String> resolvedWhatCanWeTryIds = new LinkedHashSet<>();
 
             // Process each winning submission
             for (TextSubmission winner : winningSubmissions) {
@@ -1501,18 +1538,14 @@ public class CollaborativeTextHelper {
                                 storyDAO.updateStory(matchingStory);
 
                                 // Remove the submission from WHAT_CAN_WE_TRY phase that matches subType.id
-                                if (whatCanWeTryPhase != null) {
-                                    boolean removed = whatCanWeTryPhase.removeSubmissionById(optionId);
-                                    if (removed) {
-                                        // Update the phase in Firestore
-                                        collaborativeTextDAO.updateCollaborativeTextPhaseAtomically(gameCode, WHAT_CAN_WE_TRY.name(), whatCanWeTryPhase);
-                                    }
-                                }
+                                resolvedWhatCanWeTryIds.add(optionId);
                             }
                         }
                     }
                 }
             }
+
+            collaborativeTextDAO.deleteSubmissions(gameCode, PhaseKeys.phaseKey(gameSession, WHAT_CAN_WE_TRY), resolvedWhatCanWeTryIds);
 
             if (gameSession.getGameState() == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
                 removeEncountersWithNoOptions(gameSession, stories, gameCode);
@@ -1680,7 +1713,7 @@ public class CollaborativeTextHelper {
             PlayerCoordinates newCoordinates = new PlayerCoordinates(newX, newY);
 
             gameSessionDAO.updatePlayerCoordinates(gameSession.getGameCode(), newCoordinates);
-            clearStoryWritingPhases(gameSession.getGameCode());
+            // No phase clearing needed: the next encounter's phases and votes get new keys (PhaseKeys).
 
             Encounter encounter = gameBoard.getEncounter(newX, newY);
             if(encounter == null) {
@@ -1744,33 +1777,8 @@ public class CollaborativeTextHelper {
             // Update player coordinates via DAO
             gameSessionDAO.updatePlayerCoordinates(gameCode, newCoordinates);
 
-            // Clear CollaborativeTextPhase objects for all story writing phases
-            clearStoryWritingPhases(gameCode);
         } catch (Exception e) {
             System.err.println("Failed to handle NAVIGATE_VOTING: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Clears submissions and player votes from all story writing phases
-     * Called after navigation to reset phases for the next encounter
-     */
-    private void clearStoryWritingPhases(String gameCode) {
-        try {
-            // Clear all story writing phases
-            collaborativeTextDAO.clearPhase(gameCode, GameState.WHAT_HAPPENS_HERE.name(), true);
-            collaborativeTextDAO.clearPhase(gameCode, WHAT_CAN_WE_TRY.name(), true);
-            collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE.name(), true);
-            collaborativeTextDAO.clearPhase(gameCode, GameState.LOCATION_VOTING.name(), false);
-            collaborativeTextDAO.clearPhase(gameCode, MAKE_PARTNER_CHOICE_VOTING.name(), false);
-            collaborativeTextDAO.clearPhase(gameCode, ACCEPT_PARTNER_CHOICE_VOTING.name(), true);
-            collaborativeTextDAO.clearPhase(gameCode, GameState.HOW_DOES_THIS_RESOLVE_AGAIN.name(), true);
-            collaborativeTextDAO.clearPhase(gameCode, GameState.MAKE_CHOICE_VOTING.name(), false);
-            collaborativeTextDAO.clearPhase(gameCode, GameState.NAVIGATE_VOTING.name(), false);
-            collaborativeTextDAO.clearPhase(gameCode, GameState.CAMPFIRE.name(), true);
-        } catch (Exception e) {
-            System.err.println("Failed to clear story writing phases: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -1786,14 +1794,7 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            String phaseId = GameState.MAKE_CHOICE_VOTING.name();
-
-//            if (gameSession.getCollaborativeTextPhases().get(phaseId) != null
-//                    && gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions() != null
-//                    && !gameSession.getCollaborativeTextPhases().get(phaseId).getSubmissions().isEmpty()) {
-//                collaborativeTextDAO.clearPhase(gameSession.getGameCode(), phaseId, true);
-//            }
-
+            List<TextSubmission> optionSubmissions = new ArrayList<>();
             for (TextSubmission winningSubmission : winningSubmissions) {
                 if (winningSubmission.getOutcomeType() == null || winningSubmission.getOutcomeType().isEmpty()) {
                     continue;
@@ -1812,8 +1813,9 @@ public class CollaborativeTextHelper {
                     submission.setAdditions(new ArrayList<>(winningSubmission.getAdditions()));
                 }
 
-                collaborativeTextDAO.addSubmissionAtomically(gameSession.getGameCode(), phaseId, submission);
+                optionSubmissions.add(submission);
             }
+            putPhaseSubmissions(gameSession, MAKE_CHOICE_VOTING, optionSubmissions);
         } catch (Exception e) {
             System.err.println("Failed to initialize MAKE_CHOICE_VOTING phase: " + e.getMessage());
             e.printStackTrace();
@@ -1833,11 +1835,8 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            String phaseId = GameState.MAKE_OUTCOME_CHOICE_VOTING.name();
-
-            for (OutcomeFork outcomeFork : selectedOption.getOutcomeForks()) {
-                collaborativeTextDAO.addSubmissionAtomically(gameSession.getGameCode(), phaseId, outcomeFork.getTextSubmission());
-            }
+            putPhaseSubmissions(gameSession, MAKE_OUTCOME_CHOICE_VOTING,
+                    selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList());
         } catch (Exception e) {
             System.err.println("Failed to initialize MAKE_OUTCOME_CHOICE_VOTING phase: " + e.getMessage());
             e.printStackTrace();
@@ -1850,23 +1849,18 @@ public class CollaborativeTextHelper {
             List<Player> players = gameSession.getPlayers();
             if (players == null || players.isEmpty()) return;
 
-            String phaseId = GameState.MAKE_PARTNER_CHOICE_VOTING.name();
-
-            CollaborativeTextPhase partnerPhase = gameSession.getCollaborativeTextPhases().get(phaseId);
-
-            if (partnerPhase == null
-                    || partnerPhase.getSubmissions() == null
-                    || partnerPhase.getSubmissions().isEmpty()) {
-                for (Player player : players) {
-                    TextSubmission submission = new TextSubmission();
-                    submission.setSubmissionId(player.getAuthorId());
-                    submission.setCurrentText(player.getDisplayName());
-                    submission.setAuthorId(player.getAuthorId());
-                    submission.setCreatedAt(Timestamp.now());
-                    submission.setLastModified(Timestamp.now());
-                    collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
-                }
+            // One submission per player, keyed by player ID, in this encounter's phase (PhaseKeys).
+            List<TextSubmission> playerSubmissions = new ArrayList<>();
+            for (Player player : players) {
+                TextSubmission submission = new TextSubmission();
+                submission.setSubmissionId(player.getAuthorId());
+                submission.setCurrentText(player.getDisplayName());
+                submission.setAuthorId(player.getAuthorId());
+                submission.setCreatedAt(Timestamp.now());
+                submission.setLastModified(Timestamp.now());
+                playerSubmissions.add(submission);
             }
+            putPhaseSubmissions(gameSession, MAKE_PARTNER_CHOICE_VOTING, playerSubmissions);
         } catch (Exception e) {
             System.err.println("Failed to initialize MAKE_PARTNER_CHOICE_VOTING phase: " + e.getMessage());
             e.printStackTrace();
@@ -1875,26 +1869,24 @@ public class CollaborativeTextHelper {
     }
 
     public void initializeAcceptPartnerChoiceVoting(GameSession gameSession) {
+        initializeAcceptPartnerChoiceVoting(gameSession, loadPhase(gameSession, MAKE_PARTNER_CHOICE_VOTING));
+    }
+
+    /**
+     * @param makePartnerPhase this encounter's MAKE_PARTNER_CHOICE_VOTING phase, already loaded with its votes
+     */
+    public void initializeAcceptPartnerChoiceVoting(GameSession gameSession, CollaborativeTextPhase makePartnerPhase) {
         try {
-            CollaborativeTextPhase makePartnerPhase = gameSession.getCollaborativeTextPhase(GameState.MAKE_PARTNER_CHOICE_VOTING.name());
-            if (makePartnerPhase == null || makePartnerPhase.getPlayerVotes() == null
-                    || makePartnerPhase.getSubmissions() == null) return;
 
             Set<String> votedForIds = makePartnerPhase.getPlayerVotes().values().stream()
                     .flatMap(List::stream)
                     .map(PlayerVote::getSubmissionId)
                     .collect(Collectors.toSet());
 
-            String phaseId = GameState.ACCEPT_PARTNER_CHOICE_VOTING.name();
-            CollaborativeTextPhase acceptPartnerPhase = gameSession.getCollaborativeTextPhase(phaseId);
-            if (acceptPartnerPhase != null && acceptPartnerPhase.getSubmissions() != null && !acceptPartnerPhase.getSubmissions().isEmpty()) return;
-
-            String gameCode = gameSession.getGameCode();
-            for (TextSubmission submission : makePartnerPhase.getSubmissions()) {
-                if (votedForIds.contains(submission.getSubmissionId())) {
-                    collaborativeTextDAO.addSubmissionAtomically(gameCode, phaseId, submission);
-                }
-            }
+            List<TextSubmission> votedForSubmissions = makePartnerPhase.getSubmissions().stream()
+                    .filter(submission -> votedForIds.contains(submission.getSubmissionId()))
+                    .toList();
+            putPhaseSubmissions(gameSession, ACCEPT_PARTNER_CHOICE_VOTING, votedForSubmissions);
         } catch (Exception e) {
             System.err.println("Failed to initialize ACCEPT_PARTNER_CHOICE_VOTING phase: " + e.getMessage());
             e.printStackTrace();
@@ -2086,15 +2078,14 @@ public class CollaborativeTextHelper {
 
         List<TextSubmission> locationVotingSubmissions = null;
         if (gameState == GameState.LOCATION_VOTING || gameState == GameState.LOCATION_WINNING) {
-            CollaborativeTextPhase locationPhase = collaborativeTextDAO.getCollaborativeTextPhase(
-                    gameCode, GameState.LOCATION_VOTING.name());
-            if (locationPhase != null) {
-                int total = locationPhase.getSubmissions().size();
+            List<TextSubmission> locationSubmissions = getPhaseSubmissions(gameSession, LOCATION_VOTING);
+            if (!locationSubmissions.isEmpty()) {
+                int total = locationSubmissions.size();
                 int firstHalfSize = (total + 1) / 2;
                 if (gameSession.getRoundNumber() < 2) {
-                    locationVotingSubmissions = locationPhase.getSubmissions().subList(0, firstHalfSize);
+                    locationVotingSubmissions = locationSubmissions.subList(0, firstHalfSize);
                 } else {
-                    locationVotingSubmissions = locationPhase.getSubmissions().subList(firstHalfSize, total);
+                    locationVotingSubmissions = locationSubmissions.subList(firstHalfSize, total);
                 }
             }
         }
@@ -2129,7 +2120,8 @@ public class CollaborativeTextHelper {
             locationVotingSubmissions,
             activePlayers,
             playersAtLocation,
-            collaborativeModeInstructions
+            collaborativeModeInstructions,
+            PhaseKeys.phaseKey(gameSession, gameState.getPhaseId())
         );
     }
 
@@ -2275,9 +2267,8 @@ public class CollaborativeTextHelper {
             if (phaseId == GameState.SET_ENCOUNTERS) {
                 boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
                 if (!locationVoting) return new ArrayList<>();
-                CollaborativeTextPhase locationVotingPhase = gameSession.getCollaborativeTextPhase(LOCATION_VOTING.name());
-                if (locationVotingPhase == null || locationVotingPhase.getSubmissions() == null
-                        || locationVotingPhase.getSubmissions().isEmpty()) {
+                List<TextSubmission> submissions = getPhaseSubmissions(gameSession, LOCATION_VOTING);
+                if (submissions.isEmpty()) {
                     return new ArrayList<>();
                 }
                 List<Player> players = gameSession.getPlayers();
@@ -2289,7 +2280,6 @@ public class CollaborativeTextHelper {
                     }
                 }
                 if (playerIndex == -1) return new ArrayList<>();
-                List<TextSubmission> submissions = locationVotingPhase.getSubmissions();
                 TextSubmission assigned = submissions.get((playerIndex + 1) % submissions.size());
                 return Collections.singletonList(new OutcomeType(assigned.getSubmissionId(), assigned.getCurrentText()));
             } else if (phaseId == GameState.WHAT_HAPPENS_HERE) {
@@ -2366,10 +2356,7 @@ public class CollaborativeTextHelper {
                 List<OutcomeType> traitSubTypes = buildTraitSubTypes(storyContext, assignedStoryId, gameSession);
 
                 // Get WHAT_CAN_WE_TRY submissions to count related submissions per story
-                CollaborativeTextPhase whatCanWeTry = collaborativeTextDAO.getCollaborativeTextPhase(gameCode, WHAT_CAN_WE_TRY.name());
-                List<TextSubmission> whatCanWeTrySubmissions = (whatCanWeTry != null && whatCanWeTry.getSubmissions() != null)
-                        ? whatCanWeTry.getSubmissions()
-                        : new ArrayList<>();
+                List<TextSubmission> whatCanWeTrySubmissions = getPhaseSubmissions(gameSession, WHAT_CAN_WE_TRY);
 
                 // Get submissions related to the assigned story
                 List<TextSubmission> relatedSubmissions = whatCanWeTrySubmissions.stream()

@@ -160,8 +160,9 @@ public class GameSessionDAO {
     public void deleteGame(String gameCode) {
         try {
             DocumentReference gameSessionRef = getGameRef(gameCode);
-            ApiFuture<WriteResult> result = gameSessionRef.delete();
-            result.get();
+            // Recursive so the game's phases/ subcollections (CollaborativeTextDAO) go with it;
+            // deleting a document alone leaves its subcollections behind.
+            db.recursiveDelete(gameSessionRef).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue deleting the game session", e);

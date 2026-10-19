@@ -14,6 +14,8 @@ public record CollaborativeTextPhaseInfo(
     List<TextSubmission> locationVotingSubmissions,
     List<Player> activePlayers,
     List<Player> playersAtLocation,
-    CollaborativePhaseTypeInstructions collaborativePhaseTypeInstructions
+    CollaborativePhaseTypeInstructions collaborativePhaseTypeInstructions,
+    // Firestore phase document for this phase (see PhaseKeys); the player client listens to its submissions
+    String phaseKey
 ) {}
 

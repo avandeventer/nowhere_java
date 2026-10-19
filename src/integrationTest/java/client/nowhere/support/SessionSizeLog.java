@@ -13,8 +13,9 @@ import java.util.Map;
 
 /**
  * Tracks how big the GameSession gets as a game progresses, for comparing runs before/after
- * changes aimed at Firestore's 1 MiB per-document limit (players, stories, collaborativeTextPhases,
- * etc. all live on the one gameSessions/{gameCode} document - see GameFlowClient.deleteGame).
+ * changes aimed at Firestore's 1 MiB per-document limit (players, stories, adventureMap, etc. all
+ * live on the one gameSessions/{gameCode} document - see GameFlowClient.deleteGame). Collaborative
+ * text phases moved to their own documents (CollaborativeTextDAO) and aren't part of this size.
  *
  * Measured from GET /game's JSON body, which is a close proxy for - not an exact match of - the
  * stored Firestore document size: Firestore counts field names/values in its own encoding, and
@@ -32,7 +33,7 @@ public class SessionSizeLog {
 
     private static final long FIRESTORE_DOCUMENT_LIMIT_BYTES = 1_048_576;
     private static final List<String> TRACKED_FIELDS = List.of(
-            "stories", "players", "collaborativeTextPhases", "adventureMap", "gameBoard", "endings", "rituals");
+            "stories", "players", "adventureMap", "gameBoard", "endings", "rituals");
 
     private record Sample(int roundNumber, String gameState, long totalBytes, Map<String, Long> fieldBytes,
                           long startedAtMillis, Long phaseMillis) {}
@@ -78,7 +79,7 @@ public class SessionSizeLog {
         table.append("\n[SessionSizeLog] ===== GameSession size by phase, gameCode=").append(gameCode).append(" =====\n");
         table.append(String.format("%-5s %-34s %10s %8s %10s", "round", "gameState", "phase ms", "% limit", "total"));
         for (String field : TRACKED_FIELDS) {
-            table.append(String.format(" %12s", abbreviate(field)));
+            table.append(String.format(" %12s", field));
         }
         table.append('\n');
 
@@ -145,9 +146,6 @@ public class SessionSizeLog {
         return out.append('}').toString();
     }
 
-    private static String abbreviate(String field) {
-        return field.equals("collaborativeTextPhases") ? "collabPhases" : field;
-    }
 
     private static String formatKb(long bytes) {
         return String.format("%.1fKB", bytes / 1024.0);

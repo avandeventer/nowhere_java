@@ -17,6 +17,7 @@ public class TextSubmission {
     private int totalVotes;
     private double averageRanking;
     private String outcomeType; // "success", "neutral", or "failure" - used for WHAT_WILL_BECOME_OF_US phase
+    private long insertOrder; // Set by CollaborativeTextDAO; keeps a phase's submissions in the order they were added
 
     private OutcomeType outcomeTypeWithLabel;
 
@@ -73,6 +74,10 @@ public class TextSubmission {
 
     public double getAverageRanking() { return averageRanking; }
     public void setAverageRanking(double averageRanking) { this.averageRanking = averageRanking; }
+
+    @JsonIgnore
+    public long getInsertOrder() { return insertOrder; }
+    public void setInsertOrder(long insertOrder) { this.insertOrder = insertOrder; }
 
     public String getOutcomeType() { return outcomeType; }
     public void setOutcomeType(String outcomeType) { this.outcomeType = outcomeType; }

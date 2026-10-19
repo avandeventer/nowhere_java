@@ -191,7 +191,8 @@ public class CollaborativeTextPhase {
     /**
      * Filters out submissions that have been iterated on (parent submissions).
      * A submission is considered a parent if it is referenced in any other submission's additions.
-     * This method modifies the submissions list in place.
+     * Returns a new list; the phase's submissions are left unchanged. Needs every submission in the
+     * phase loaded, since a parent is only identifiable from its children's additions.
      */
     public List<TextSubmission> getSubmissionsWithoutParentSubmissions() {
         // Collect all submissionIds that are referenced in other submissions' additions

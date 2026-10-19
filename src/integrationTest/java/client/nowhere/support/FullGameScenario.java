@@ -660,11 +660,12 @@ public class FullGameScenario {
         }
         // The real client only offers "add to a submission" once the phase actually has
         // submissions to pick from (hasSubmitted && availableSubmissions.length > 0). Phases with
-        // no CollaborativeTextPhase of their own (e.g. INIT, where GameSession.stories is still
-        // null and GET /collaborativeText/available 500s) never get that far.
-        GameState phaseId = gameState.getPhaseId();
-        Map<String, CollaborativeTextPhase> phases = client.getGame(gameCode).getCollaborativeTextPhases();
-        CollaborativeTextPhase currentPhase = phaseId == null || phases == null ? null : phases.get(phaseId.name());
+        // no submissions of their own (e.g. INIT, where GameSession.stories is still null and
+        // GET /collaborativeText/available 500s) never get that far.
+        if (gameState.getPhaseId() == null) {
+            return;
+        }
+        CollaborativeTextPhase currentPhase = client.getCollaborativeTextPhase(gameCode);
         if (currentPhase == null || currentPhase.getSubmissions() == null || currentPhase.getSubmissions().isEmpty()) {
             return;
         }

@@ -169,6 +169,11 @@ public class GameFlowClient {
     // Bodies are read as raw Strings: these exist so the traffic (and its latency - see LatencyLog)
     // matches a real game, not for their content, so there's no point deserializing them.
 
+    /** The current phase's submissions (and votes for the current vote); empty if nobody has submitted. */
+    public CollaborativeTextPhase getCollaborativeTextPhase(String gameCode) {
+        return restTemplate.getForObject("/collaborativeText?gameCode={gameCode}", CollaborativeTextPhase.class, gameCode);
+    }
+
     /** Player-client collaborative-text.component loadCollaborativePhase. */
     public String getCollaborativeTextPhaseRaw(String gameCode) {
         return restTemplate.getForObject("/collaborativeText?gameCode={gameCode}", String.class, gameCode);
@@ -225,9 +230,9 @@ public class GameFlowClient {
 
     /**
      * Deletes the entire gameSessions/{gameCode} Firestore document (players, stories, endings,
-     * collaborativeTextPhases, etc. all live as fields on that one document - see
-     * AdminController.deleteGame / GameSessionDAO.deleteGame). Intended as end-of-test cleanup so
-     * repeated runs don't leave junk games in the live deployment.
+     * etc. all live as fields on that one document) and, recursively, its phases/ subcollections
+     * - see AdminController.deleteGame / GameSessionDAO.deleteGame. Intended as end-of-test cleanup
+     * so repeated runs don't leave junk games in the live deployment.
      */
     public void deleteGame(String gameCode) {
         restTemplate.delete("/admin/game?gameCode={gameCode}", gameCode);
