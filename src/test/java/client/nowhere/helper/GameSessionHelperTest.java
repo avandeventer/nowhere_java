@@ -664,8 +664,8 @@ public class GameSessionHelperTest {
         assertNotNull(currentStory, "Story at current coordinates should exist");
 
         if(!selectedOptionId.isEmpty()) {
-            collaborativeTextDAO.putVotes(gameCode, PhaseKeys.phaseKey(gameSession, startingGameState.getPhaseId()),
-                    PhaseKeys.voteScope(gameSession), "", List.of(new PlayerVote("", "", selectedOptionId, 1)));
+            collaborativeTextDAO.putVotes(PhasePaths.phasePath(gameSession, startingGameState.getPhaseId()),
+                    PhasePaths.voteScope(gameSession), "", List.of(new PlayerVote("", "", selectedOptionId, 1)));
         }
 
         // Mock the dependencies

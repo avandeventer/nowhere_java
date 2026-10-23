@@ -28,7 +28,7 @@ public class GameSession {
     GameBoard gameBoard = new GameBoard();
 
     // Collaborative text phases are not stored here: see CollaborativeTextDAO
-    // (gameSessions/{code}/phases/{phaseKey}/...) and PhaseKeys.
+    // (gameSessions/{code}/rounds/{round}/...) and PhasePaths.
 
     public GameSession() {
         if(this.activeGameStateSession == null) {

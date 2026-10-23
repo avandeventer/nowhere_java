@@ -445,7 +445,7 @@ The simulated client calls also found two real backend behaviours, both left unf
 
 **Phases moved out of the GameSession document (2026-10-13, branch
 `split-collaborative-text-phases`).** Submissions, votes and views are now one Firestore document
-each under `gameSessions/{code}/phases/{phaseKey}/` (see `src/docs/.OUTCOMES.md`, "Where phase data
+each under `gameSessions/{code}/rounds/{round}/[encounters/{xy}/]phases/{phaseId}/` (see `src/docs/.OUTCOMES.md`, "Where phase data
 lives"). Harness changes that came with it:
 - `addExtraBranches` reads the current phase from `GET /collaborativeText` instead of
   `GET /game`'s `collaborativeTextPhases`, which no longer exists.

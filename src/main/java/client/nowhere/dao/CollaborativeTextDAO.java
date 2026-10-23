@@ -14,15 +14,17 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Stores collaborative text phases outside the GameSession document:
+ * Stores collaborative text phases outside the GameSession document, under a phase document whose
+ * path comes from PhasePaths (e.g. gameSessions/{code}/rounds/{round}/phases/{phaseId}):
  *
- * gameSessions/{code}/phases/{phaseKey}/submissions/{submissionId}  one TextSubmission each
- * gameSessions/{code}/phases/{phaseKey}/votes/{voteScope}_{playerId} one PlayerBallot each
- * gameSessions/{code}/phases/{phaseKey}/views/{playerId}             { playerId, submissionIds }
+ * {phasePath}/submissions/{submissionId}       one TextSubmission each
+ * {phasePath}/votes/{voteScope}_{playerId}     one PlayerBallot each
+ * {phasePath}/views/{playerId}                 { playerId, submissionIds }
  *
  * Every document is written by exactly one request (a player's own submission, ballot or views, or
- * a phase initializer's batch), so nothing here needs a transaction. phaseKey and voteScope come
- * from PhaseKeys. No parent phase document is written: Firestore subcollections don't need one.
+ * a phase initializer's batch), so nothing here needs a transaction. voteScope also comes from
+ * PhasePaths. No round, encounter or phase document is written: Firestore subcollections don't
+ * need their parent document to exist.
  */
 @Component
 public class CollaborativeTextDAO {
@@ -41,9 +43,9 @@ public class CollaborativeTextDAO {
      * CollaborativeTextPhase so the model's winner/filter methods work unchanged.
      * Returns an empty phase (never null) when nothing has been written yet.
      */
-    public CollaborativeTextPhase loadPhase(String gameCode, String phaseKey, String phaseId, String voteScope) {
-        ApiFuture<QuerySnapshot> submissionsFuture = submissions(gameCode, phaseKey).orderBy("insertOrder").get();
-        ApiFuture<QuerySnapshot> votesFuture = votes(gameCode, phaseKey).whereEqualTo("voteScope", voteScope).get();
+    public CollaborativeTextPhase loadPhase(String phasePath, String phaseId, String voteScope) {
+        ApiFuture<QuerySnapshot> submissionsFuture = submissions(phasePath).orderBy("insertOrder").get();
+        ApiFuture<QuerySnapshot> votesFuture = votes(phasePath).whereEqualTo("voteScope", voteScope).get();
 
         CollaborativeTextPhase phase = emptyPhase(phaseId);
         phase.setSubmissions(toSubmissions(await(submissionsFuture)));
@@ -56,9 +58,9 @@ public class CollaborativeTextDAO {
     /**
      * Loads a phase's submissions and every player's current views, for /available.
      */
-    public CollaborativeTextPhase loadPhaseWithViews(String gameCode, String phaseKey, String phaseId) {
-        ApiFuture<QuerySnapshot> submissionsFuture = submissions(gameCode, phaseKey).orderBy("insertOrder").get();
-        ApiFuture<QuerySnapshot> viewsFuture = views(gameCode, phaseKey).get();
+    public CollaborativeTextPhase loadPhaseWithViews(String phasePath, String phaseId) {
+        ApiFuture<QuerySnapshot> submissionsFuture = submissions(phasePath).orderBy("insertOrder").get();
+        ApiFuture<QuerySnapshot> viewsFuture = views(phasePath).get();
 
         CollaborativeTextPhase phase = emptyPhase(phaseId);
         phase.setSubmissions(toSubmissions(await(submissionsFuture)));
@@ -67,26 +69,26 @@ public class CollaborativeTextDAO {
         return phase;
     }
 
-    public List<TextSubmission> getSubmissions(String gameCode, String phaseKey) {
-        return toSubmissions(await(submissions(gameCode, phaseKey).orderBy("insertOrder").get()));
+    public List<TextSubmission> getSubmissions(String phasePath) {
+        return toSubmissions(await(submissions(phasePath).orderBy("insertOrder").get()));
     }
 
-    public TextSubmission getSubmission(String gameCode, String phaseKey, String submissionId) {
-        DocumentSnapshot snapshot = await(submissions(gameCode, phaseKey).document(submissionId).get());
+    public TextSubmission getSubmission(String phasePath, String submissionId) {
+        DocumentSnapshot snapshot = await(submissions(phasePath).document(submissionId).get());
         return snapshot.exists() ? snapshot.toObject(TextSubmission.class) : null;
     }
 
-    public List<TextSubmission> getSubmissionsByAuthor(String gameCode, String phaseKey, String authorId) {
+    public List<TextSubmission> getSubmissionsByAuthor(String phasePath, String authorId) {
         // Sorted in memory: whereEqualTo + orderBy on different fields would need a composite index.
         List<TextSubmission> authorSubmissions = new ArrayList<>(
-                toSubmissions(await(submissions(gameCode, phaseKey).whereEqualTo("authorId", authorId).get())));
+                toSubmissions(await(submissions(phasePath).whereEqualTo("authorId", authorId).get())));
         authorSubmissions.sort(Comparator.comparingLong(TextSubmission::getInsertOrder));
         return authorSubmissions;
     }
 
-    public TextSubmission createSubmission(String gameCode, String phaseKey, TextSubmission submission) {
+    public TextSubmission createSubmission(String phasePath, TextSubmission submission) {
         submission.setInsertOrder(nextInsertOrder());
-        await(submissions(gameCode, phaseKey).document(submission.getSubmissionId()).set(submission));
+        await(submissions(phasePath).document(submission.getSubmissionId()).set(submission));
         return submission;
     }
 
@@ -94,12 +96,12 @@ public class CollaborativeTextDAO {
      * Writes submissions in as few batched commits as possible, keeping list order. Submissions
      * with an existing ID are overwritten, so phase initializers are safe to re-run.
      */
-    public void putSubmissions(String gameCode, String phaseKey, List<TextSubmission> submissionsToPut) {
+    public void putSubmissions(String phasePath, List<TextSubmission> submissionsToPut) {
         if (submissionsToPut == null || submissionsToPut.isEmpty()) {
             return;
         }
         long baseOrder = nextInsertOrder();
-        CollectionReference submissionsRef = submissions(gameCode, phaseKey);
+        CollectionReference submissionsRef = submissions(phasePath);
         List<WriteBatch> batches = new ArrayList<>();
         for (int i = 0; i < submissionsToPut.size(); i++) {
             if (i % MAX_BATCH_WRITES == 0) {
@@ -112,11 +114,11 @@ public class CollaborativeTextDAO {
         commitAll(batches);
     }
 
-    public void deleteSubmissions(String gameCode, String phaseKey, Collection<String> submissionIds) {
+    public void deleteSubmissions(String phasePath, Collection<String> submissionIds) {
         if (submissionIds == null || submissionIds.isEmpty()) {
             return;
         }
-        CollectionReference submissionsRef = submissions(gameCode, phaseKey);
+        CollectionReference submissionsRef = submissions(phasePath);
         List<WriteBatch> batches = new ArrayList<>();
         int i = 0;
         for (String submissionId : submissionIds) {
@@ -131,42 +133,38 @@ public class CollaborativeTextDAO {
     /**
      * Replaces a player's ballot for one vote. One blind write, no read.
      */
-    public void putVotes(String gameCode, String phaseKey, String voteScope, String playerId, List<PlayerVote> playerVotes) {
+    public void putVotes(String phasePath, String voteScope, String playerId, List<PlayerVote> playerVotes) {
         PlayerBallot ballot = new PlayerBallot(playerId, voteScope, new ArrayList<>(playerVotes));
-        await(votes(gameCode, phaseKey).document(voteScope + "_" + playerId).set(ballot));
+        await(votes(phasePath).document(voteScope + "_" + playerId).set(ballot));
     }
 
     /**
      * @return playerId -> that player's votes, for one vote
      */
-    public Map<String, List<PlayerVote>> getVotes(String gameCode, String phaseKey, String voteScope) {
-        return toVotesByPlayer(await(votes(gameCode, phaseKey).whereEqualTo("voteScope", voteScope).get()));
+    public Map<String, List<PlayerVote>> getVotes(String phasePath, String voteScope) {
+        return toVotesByPlayer(await(votes(phasePath).whereEqualTo("voteScope", voteScope).get()));
     }
 
     /**
      * Replaces the list of submissions a player is currently viewing. One blind write, no read.
      */
-    public void putViews(String gameCode, String phaseKey, String playerId, List<String> submissionIds) {
+    public void putViews(String phasePath, String playerId, List<String> submissionIds) {
         Map<String, Object> viewsDocument = new HashMap<>();
         viewsDocument.put("playerId", playerId);
         viewsDocument.put("submissionIds", new ArrayList<>(submissionIds));
-        await(views(gameCode, phaseKey).document(playerId).set(viewsDocument));
+        await(views(phasePath).document(playerId).set(viewsDocument));
     }
 
-    private CollectionReference phases(String gameCode) {
-        return db.collection("gameSessions").document(gameCode).collection("phases");
+    private CollectionReference submissions(String phasePath) {
+        return db.document(phasePath).collection("submissions");
     }
 
-    private CollectionReference submissions(String gameCode, String phaseKey) {
-        return phases(gameCode).document(phaseKey).collection("submissions");
+    private CollectionReference votes(String phasePath) {
+        return db.document(phasePath).collection("votes");
     }
 
-    private CollectionReference votes(String gameCode, String phaseKey) {
-        return phases(gameCode).document(phaseKey).collection("votes");
-    }
-
-    private CollectionReference views(String gameCode, String phaseKey) {
-        return phases(gameCode).document(phaseKey).collection("views");
+    private CollectionReference views(String phasePath) {
+        return db.document(phasePath).collection("views");
     }
 
     private static CollaborativeTextPhase emptyPhase(String phaseId) {

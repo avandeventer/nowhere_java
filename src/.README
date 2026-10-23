@@ -67,7 +67,7 @@ src/main/java/client/nowhere/
 | `OutcomeType` / `OutcomeTypeWithLabel` | Describes what a player is assigned to write about in a given phase |
 | `Player` | A participant: `displayName`, `authorId`, `joinedAt`, `traits`, `playerCoordinates` |
 | `Repercussion` / `RepercussionType` | Stat changes that result from story outcomes |
-| `CollaborativeTextPhase` | In-memory view of one phase: its `TextSubmission[]` plus the votes for the current vote. Not stored as one object: `CollaborativeTextDAO` keeps each submission, ballot (`PlayerBallot`) and player's views in its own document under `gameSessions/{gameCode}/phases/{phaseKey}/`, keyed by round/encounter via `PhaseKeys`. See `src/docs/.OUTCOMES.md`, "Where phase data lives" |
+| `CollaborativeTextPhase` | In-memory view of one phase: its `TextSubmission[]` plus the votes for the current vote. Not stored as one object: `CollaborativeTextDAO` keeps each submission, ballot (`PlayerBallot`) and player's views in its own document under `gameSessions/{gameCode}/rounds/{round}/...phases/{phaseId}/`, by round (and encounter, for per-encounter votes) via `PhasePaths`. See `src/docs/.OUTCOMES.md`, "Where phase data lives" |
 | `CollaborativePhaseTypeInstructions` | Per-phase writing config: `phaseModeInstructions`, `contributionPhaseInstructions`, `characterLimit` |
 
 ---

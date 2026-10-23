@@ -98,15 +98,15 @@ public class CollaborativeTextHelperTest {
     }
 
     private void addSubmission(GameSession gameSession, GameState phaseId, TextSubmission submission) {
-        collaborativeTextDAO.putSubmissions(gameSession.getGameCode(), PhaseKeys.phaseKey(gameSession, phaseId), List.of(submission));
+        collaborativeTextDAO.putSubmissions(PhasePaths.phasePath(gameSession, phaseId), List.of(submission));
     }
 
     /** Appends a vote to the voter's existing ballot, like CollaborativeTextPhase.addPlayerVote. */
     private void addVote(GameSession gameSession, GameState phaseId, PlayerVote vote) {
         List<PlayerVote> ballot = new ArrayList<>(collaborativeTextDAO.allVotes(phaseId).getOrDefault(vote.getPlayerId(), List.of()));
         ballot.add(vote);
-        collaborativeTextDAO.putVotes(gameSession.getGameCode(), PhaseKeys.phaseKey(gameSession, phaseId),
-                PhaseKeys.voteScope(gameSession), vote.getPlayerId(), ballot);
+        collaborativeTextDAO.putVotes(PhasePaths.phasePath(gameSession, phaseId),
+                PhasePaths.voteScope(gameSession), vote.getPlayerId(), ballot);
     }
 
     // ===== HOW_DOES_THIS_RESOLVE TESTS =====

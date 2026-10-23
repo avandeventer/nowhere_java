@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * One player's ranked votes for one vote (see PhaseKeys.voteScope), stored as its own document at
- * gameSessions/{code}/phases/{phaseKey}/votes/{voteScope}_{playerId}. Each player only ever writes
+ * One player's ranked votes for one vote (see PhasePaths.voteScope), stored as its own document at
+ * {phasePath}/votes/{voteScope}_{playerId}. Each player only ever writes
  * their own ballot, so votes need no transaction.
  */
 public class PlayerBallot {

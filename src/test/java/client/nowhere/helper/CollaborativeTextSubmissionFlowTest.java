@@ -139,6 +139,48 @@ class CollaborativeTextSubmissionFlowTest {
     }
 
     @Test
+    void roundTwoLocationVotingCopiesTheSecondHalfOfRoundOnesPool() {
+        InMemoryCollaborativeTextDAO scopedDAO = InMemoryCollaborativeTextDAO.scoped();
+        OutcomeTypeHelper outcomeTypeHelper = new OutcomeTypeHelper();
+        CollaborativeTextHelper scopedHelper = new CollaborativeTextHelper(gameSessionDAO, scopedDAO, adventureMapDAO,
+                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO, endingDAO);
+        VotingHelper scopedVoting = new VotingHelper(gameSessionDAO, scopedDAO, activeSessionHelper, outcomeTypeHelper, storyDAO);
+
+        AdventureMap adventureMap = new AdventureMap();
+        adventureMap.setLocations(new ArrayList<>(List.of(
+                new Location("loc-1", "One"), new Location("loc-2", "Two"),
+                new Location("loc-3", "Three"), new Location("loc-4", "Four"))));
+        gameSession.setAdventureMap(adventureMap);
+        List<Player> players = new ArrayList<>();
+        for (String playerId : List.of(ALICE, BOB, CARA, DEV)) {
+            Player player = new Player(GAME_CODE, playerId);
+            player.setAuthorId(playerId);
+            players.add(player);
+        }
+        gameSession.setPlayers(players);
+        gameSession.setGameState(GameState.LOCATION_VOTING);
+
+        gameSession.setRoundNumber(1);
+        scopedHelper.initializeLocationVoting(GAME_CODE);
+        List<String> roundOnePool = scopedDAO.getSubmissions(PhasePaths.phasePath(gameSession, GameState.LOCATION_VOTING))
+                .stream().map(TextSubmission::getSubmissionId).toList();
+        assertEquals(4, roundOnePool.size());
+        assertEquals(roundOnePool.subList(0, 2), submissionIds(scopedVoting.getVotingSubmissionsForPlayer(GAME_CODE, ALICE)));
+
+        gameSession.setRoundNumber(2);
+        scopedHelper.initializeLocationVoting(GAME_CODE);
+        assertEquals(roundOnePool.subList(2, 4), submissionIds(scopedVoting.getVotingSubmissionsForPlayer(GAME_CODE, ALICE)));
+        // Round 1's pool is left alone, and re-running round 2's initializer doesn't copy again
+        scopedHelper.initializeLocationVoting(GAME_CODE);
+        assertEquals(roundOnePool.subList(2, 4), submissionIds(scopedVoting.getVotingSubmissionsForPlayer(GAME_CODE, ALICE)));
+        assertEquals(4, scopedDAO.getSubmissions(PhasePaths.phasePath(gameSession, GameState.LOCATION_VOTING, 1)).size());
+    }
+
+    private static List<String> submissionIds(List<TextSubmission> submissions) {
+        return submissions.stream().map(TextSubmission::getSubmissionId).toList();
+    }
+
+    @Test
     void votesWithoutAPlayerIdAreRejected() {
         gameSession.setGameState(GameState.LOCATION_VOTING);
         assertThrows(RuntimeException.class,

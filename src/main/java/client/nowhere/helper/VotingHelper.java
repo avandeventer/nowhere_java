@@ -49,26 +49,20 @@ public class VotingHelper {
         if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
         }
-        String phaseKey = PhaseKeys.phaseKey(gameSession, phaseIdState);
+        String phasePath = PhasePaths.phasePath(gameSession, phaseIdState);
 
         switch (phaseIdState) {
             case LOCATION_VOTING: {
-                List<TextSubmission> submissions = collaborativeTextDAO.getSubmissions(gameCode, phaseKey);
+                List<TextSubmission> submissions = collaborativeTextDAO.getSubmissions(phasePath);
                 if (submissions.isEmpty()) {
                     throw new ValidationException("LOCATION_VOTING phase not found for game: " + gameCode);
                 }
-                int total = submissions.size();
-
-                if (gameSession.getRoundNumber() == 0) {
-                    return submissions;
+                // Round 1's pool covers rounds 1 and 2, so round 1 votes on its first half. Round 2's
+                // phase holds only the second half (copied by initializeLocationVoting).
+                if (gameSession.getRoundNumber() == 1) {
+                    return submissions.subList(0, (submissions.size() + 1) / 2);
                 }
-
-                int firstHalfSize = (total + 1) / 2;
-                if (gameSession.getRoundNumber() < 2) {
-                    return submissions.subList(0, firstHalfSize);
-                } else {
-                    return submissions.subList(firstHalfSize, total);
-                }
+                return submissions;
             }
             case MAKE_PARTNER_CHOICE_VOTING: {
                 Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
@@ -93,7 +87,7 @@ public class VotingHelper {
                     activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
                     return new ArrayList<>();
                 }
-                return collaborativeTextDAO.getSubmissions(gameCode, phaseKey).stream()
+                return collaborativeTextDAO.getSubmissions(phasePath).stream()
                         .filter(s -> sharedLocationPlayerIds.contains(s.getSubmissionId()))
                         .toList();
             }
@@ -104,16 +98,15 @@ public class VotingHelper {
                     return new ArrayList<>();
                 }
                 String locationId = currentStory.getLocation() != null ? currentStory.getLocation().getId() : null;
-                return collaborativeTextDAO.getSubmissions(gameCode, phaseKey).stream()
+                return collaborativeTextDAO.getSubmissions(phasePath).stream()
                         .filter(s -> locationId != null && locationId.equals(s.getOutcomeType()))
                         .toList();
             }
             case ACCEPT_PARTNER_CHOICE_VOTING: {
                 CollaborativeTextPhase makePartnerPhase = collaborativeTextDAO.loadPhase(
-                        gameCode,
-                        PhaseKeys.phaseKey(gameSession, GameState.MAKE_PARTNER_CHOICE_VOTING),
+                        PhasePaths.phasePath(gameSession, GameState.MAKE_PARTNER_CHOICE_VOTING),
                         GameState.MAKE_PARTNER_CHOICE_VOTING.name(),
-                        PhaseKeys.voteScope(gameSession));
+                        PhasePaths.voteScope(gameSession));
                 boolean wasVotedFor = makePartnerPhase.getPlayerVotes().values().stream()
                         .flatMap(List::stream)
                         .anyMatch(v -> playerId.equals(v.getSubmissionId()));
@@ -151,7 +144,7 @@ public class VotingHelper {
                 return selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
             }
             default: {
-                List<TextSubmission> submissions = collaborativeTextDAO.getSubmissions(gameCode, phaseKey);
+                List<TextSubmission> submissions = collaborativeTextDAO.getSubmissions(phasePath);
                 List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameSession, playerId);
 
                 OutcomeType outcomeType = outcomeTypes.isEmpty() ? null : outcomeTypes.getFirst();
@@ -266,14 +259,14 @@ public class VotingHelper {
         if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support voting: " + gameSession.getGameState());
         }
-        String phaseKey = PhaseKeys.phaseKey(gameSession, phaseIdState);
-        String voteScope = PhaseKeys.voteScope(gameSession);
+        String phasePath = PhasePaths.phasePath(gameSession, phaseIdState);
+        String voteScope = PhasePaths.voteScope(gameSession);
 
         // One blind write of each voter's whole ballot (normally a single player per request)
         Map<String, List<PlayerVote>> votesByPlayer = playerVotes.stream()
                 .collect(Collectors.groupingBy(PlayerVote::getPlayerId, LinkedHashMap::new, Collectors.toList()));
         votesByPlayer.forEach((votingPlayerId, ballot) ->
-                collaborativeTextDAO.putVotes(gameCode, phaseKey, voteScope, votingPlayerId, ballot));
+                collaborativeTextDAO.putVotes(phasePath, voteScope, votingPlayerId, ballot));
 
         if (phaseIdState == GameState.LOCATION_VOTING) {
             String votingPlayerId = playerVotes.getFirst().getPlayerId();
