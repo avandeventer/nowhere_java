@@ -101,7 +101,8 @@ jobs:
             --image $SANDBOX_IMAGE \
             --platform managed \
             --region ${{ secrets.GCP_REGION }} \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --update-env-vars=GCP_OBSERVABILITY_ENABLED=true
 
       - name: Print sandbox URL
         run: |
