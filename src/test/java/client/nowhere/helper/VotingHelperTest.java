@@ -8,6 +8,7 @@ import client.nowhere.dao.CollaborativeTextDAO;
 import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
 import client.nowhere.model.*;
+import client.nowhere.util.InMemoryCollaborativeTextDAO;
 import client.nowhere.util.TestJsonLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,8 +34,7 @@ public class VotingHelperTest {
     @Mock
     private GameSessionDAO gameSessionDAO;
 
-    @Mock
-    private CollaborativeTextDAO collaborativeTextDAO;
+    private InMemoryCollaborativeTextDAO collaborativeTextDAO;
 
     @Mock
     private ActiveSessionHelper activeSessionHelper;
@@ -50,6 +50,7 @@ public class VotingHelperTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        collaborativeTextDAO = new InMemoryCollaborativeTextDAO();
         // Manually construct VotingHelper with real OutcomeTypeHelper
         votingHelper = new VotingHelper(
                 gameSessionDAO,
@@ -58,6 +59,15 @@ public class VotingHelperTest {
                 outcomeTypeHelper,
                 storyDAO
         );
+    }
+
+    /**
+     * Loads a captured game session fixture and seeds the phases embedded in it into the in-memory DAO.
+     */
+    private GameSession loadGame(String fileName) throws IOException {
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(fileName);
+        collaborativeTextDAO.seedFromFixture(gameSession, fileName);
+        return gameSession;
     }
 
     // ===== MAKE_CHOICE_VOTING TESTS =====
@@ -77,7 +87,7 @@ public class VotingHelperTest {
             String selectedOptionId
     ) throws IOException {
         // Arrange - Load test data
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(gameSessionFileName);
+        GameSession gameSession = loadGame(gameSessionFileName);
         gameSession.setGameState(gameState);
         String gameCode = gameSession.getGameCode();
 
@@ -166,7 +176,7 @@ public class VotingHelperTest {
     @Test
     void testGetVotingSubmissionsForPlayer_MAKE_CHOICE_VOTING_AllPlayersIteration() throws IOException {
         // Arrange - Load test data
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        GameSession gameSession = loadGame("MAKE_CHOICE_VOTING_START.json");
         String gameCode = gameSession.getGameCode();
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
@@ -212,7 +222,7 @@ public class VotingHelperTest {
     @Test
     void testGetVotingSubmissionsForPlayer_MAKE_CHOICE_VOTING_VerifySubmissionContent() throws IOException {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        GameSession gameSession = loadGame("MAKE_CHOICE_VOTING_START.json");
         String gameCode = gameSession.getGameCode();
         String phaseId = GameState.MAKE_CHOICE_VOTING.name();
 
@@ -248,7 +258,7 @@ public class VotingHelperTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("provideMakeChoiceVotingScenarios")
     void testNonActivePlayersSetToDone() throws IOException {
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_START.json");
+        GameSession gameSession = loadGame("MAKE_CHOICE_VOTING_START.json");
         String gameCode = gameSession.getGameCode();
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
         String phaseId = gameSession.getGameState().getPhaseId().name();
@@ -261,11 +271,8 @@ public class VotingHelperTest {
         Story activeStory = gameSession.getStoryAtCurrentPlayerCoordinates();
         assertEquals(List.of("24fca1a7-efc5-4813-8530-448f0e5c29d1"), activeStory.getPlayerIds());
 
-        verify(collaborativeTextDAO, times(1)).addVoteAtomically(
-                eq(gameCode),
-                eq(phaseId),
-                eq(playerVote)
-        );
+        assertEquals(List.of(playerVote),
+                collaborativeTextDAO.allVotes(GameState.valueOf(phaseId)).get(playerVote.getPlayerId()));
 
         for(Player player : gameSession.getPlayers()) {
             if (!activeStory.getPlayerIds().contains(player.getAuthorId())) {
@@ -284,7 +291,7 @@ public class VotingHelperTest {
 
         @Test
     void testPlayerIdsSetOnMakeOutcomeChoiceVote() throws IOException {
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_OUTCOME_CHOICE_VOTING_START.json");
+        GameSession gameSession = loadGame("MAKE_OUTCOME_CHOICE_VOTING_START.json");
         String gameCode = gameSession.getGameCode();
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
         PlayerVote playerVoteRank1 = new PlayerVote("", "f1805f47-b2c5-49a8-9cf1-c8a61845ad7b", "7d19c18e-d8c8-4189-8c22-87167321d840", 1);

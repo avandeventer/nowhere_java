@@ -264,11 +264,11 @@ public class GameSessionHelper {
                     }
                     break;
                 case MAKE_PARTNER_CHOICE_WINNER:
-                    CollaborativeTextPhase makePartnerPhase = gameSession.getCollaborativeTextPhase(MAKE_PARTNER_CHOICE_VOTING.name());
-                    if (makePartnerPhase == null || makePartnerPhase.getPlayerVotes() == null || makePartnerPhase.getPlayerVotes().isEmpty()) {
+                    CollaborativeTextPhase makePartnerPhase = collaborativeTextHelper.loadPhase(gameSession, MAKE_PARTNER_CHOICE_VOTING);
+                    if (makePartnerPhase.getPlayerVotes().isEmpty()) {
                         gameSession.setGameState(MAKE_CHOICE_VOTING);
                     } else {
-                        collaborativeTextHelper.initializeAcceptPartnerChoiceVoting(gameSession);
+                        collaborativeTextHelper.initializeAcceptPartnerChoiceVoting(gameSession, makePartnerPhase);
                         gameSession.setGameState(ACCEPT_PARTNER_CHOICE_VOTING);
                     }
                     break;

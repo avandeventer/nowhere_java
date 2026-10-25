@@ -443,6 +443,22 @@ The simulated client calls also found two real backend behaviours, both left unf
 - `GET /collaborativeText/winner` returns 500 in `NAVIGATE_WINNER` ("Collaborative text phase not
   found for game state"). The TV calls it in every WINNING-type phase.
 
+**Phases moved out of the GameSession document (2026-10-13, branch
+`split-collaborative-text-phases`).** Submissions, votes and views are now one Firestore document
+each under `gameSessions/{code}/rounds/{round}/[encounters/{xy}/]phases/{phaseId}/` (see `src/docs/.OUTCOMES.md`, "Where phase data
+lives"). Harness changes that came with it:
+- `addExtraBranches` reads the current phase from `GET /collaborativeText` instead of
+  `GET /game`'s `collaborativeTextPhases`, which no longer exists.
+- `SessionSizeLog` no longer tracks `collaborativeTextPhases`.
+- `POST /collaborativeText` now returns only the submitting player's submissions.
+  `claimOwnNewSubmissionId` / `claimNewSubmissionId` still work, because the author's new submission
+  is still the only unknown ID in the response.
+- `deleteGame` cleanup now deletes the game recursively (`GameSessionDAO.deleteGame`), so phase
+  subcollections don't pile up in the live deployment.
+- Both 500s above should now be empty responses. Not yet confirmed against the live backend.
+
+Compare the next `FullGameTenPlayersSequelTest` run's `LatencyLog` tables against Y833DT above.
+
 ## False leads from this session (corrected, for context)
 
 Chased two "production bug" theories against the local emulator that turned out to be wrong —

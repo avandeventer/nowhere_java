@@ -1,6 +1,7 @@
 package client.nowhere.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.cloud.firestore.annotation.Exclude;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.*;
@@ -26,14 +27,13 @@ public class GameSession {
     GameMode gameMode = GameMode.TOWN_MODE;
     GameBoard gameBoard = new GameBoard();
 
-    // Collaborative text phases for world-building
-    Map<String, CollaborativeTextPhase> collaborativeTextPhases;
+    // Collaborative text phases are not stored here: see CollaborativeTextDAO
+    // (gameSessions/{code}/rounds/{round}/...) and PhasePaths.
 
     public GameSession() {
         if(this.activeGameStateSession == null) {
             this.activeGameStateSession = new ActiveGameStateSession(this.gameCode);
         }
-        this.collaborativeTextPhases = new HashMap<>();
         this.saveGameId = "";
     }
 
@@ -44,7 +44,6 @@ public class GameSession {
         this.activeGameStateSession = new ActiveGameStateSession(gameCode);
         this.adventureMap = new AdventureMap();
         this.rituals = new ArrayList<>();
-        this.collaborativeTextPhases = new HashMap<>();
         this.gameBoard = new GameBoard();
     }
 
@@ -188,22 +187,6 @@ public class GameSession {
         this.totalPointsTowardsVictory = totalPointsTowardsVictory;
     }
 
-    public Map<String, CollaborativeTextPhase> getCollaborativeTextPhases() {
-        return collaborativeTextPhases;
-    }
-
-    public void setCollaborativeTextPhases(Map<String, CollaborativeTextPhase> collaborativeTextPhases) {
-        this.collaborativeTextPhases = collaborativeTextPhases;
-    }
-
-    public CollaborativeTextPhase getCollaborativeTextPhase(String phaseId) {
-        return collaborativeTextPhases.get(phaseId);
-    }
-
-    public void addCollaborativeTextPhase(CollaborativeTextPhase phase) {
-        this.collaborativeTextPhases.put(phase.getPhaseId(), phase);
-    }
-
     public void skipAdventureMapCreateMode() {
         this.gameState = GameState.PREAMBLE;
     }
@@ -260,6 +243,7 @@ public class GameSession {
     }
 
     @JsonIgnore
+    @Exclude
     public @NonNull List<Player> getPlayersSortedByJoinedAt() {
         return players.stream()
                 .filter(player -> player.getJoinedAt() != null)
@@ -267,6 +251,8 @@ public class GameSession {
                 .toList();
     }
 
+    // Derived from stories + gameBoard; excluded so Firestore doesn't persist a stale copy of a story.
+    @Exclude
     public Story getStoryAtCurrentPlayerCoordinates() {
         Encounter encounter = gameBoard.getEncounterAtPlayerCoordinates();
         if (encounter == null || encounter.storyId == null || stories == null) {

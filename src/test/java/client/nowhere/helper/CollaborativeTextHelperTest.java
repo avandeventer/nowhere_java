@@ -10,6 +10,7 @@ import static org.mockito.Mockito.*;
 
 import client.nowhere.dao.*;
 import client.nowhere.model.*;
+import client.nowhere.util.InMemoryCollaborativeTextDAO;
 import client.nowhere.util.TestJsonLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,8 +38,7 @@ public class CollaborativeTextHelperTest {
     @Mock
     private GameSessionDAO gameSessionDAO;
 
-    @Mock
-    private CollaborativeTextDAO collaborativeTextDAO;
+    private InMemoryCollaborativeTextDAO collaborativeTextDAO;
 
     @Mock
     private AdventureMapDAO adventureMapDAO;
@@ -66,6 +66,7 @@ public class CollaborativeTextHelperTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        collaborativeTextDAO = new InMemoryCollaborativeTextDAO();
         // Manually construct with real OutcomeTypeHelper
         collaborativeTextHelper = new CollaborativeTextHelper(
                 gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
@@ -77,13 +78,35 @@ public class CollaborativeTextHelperTest {
     // ===== HELPER METHODS FOR LOADING TEST DATA =====
 
     /**
-     * Loads a CollaborativeTextPhase from the GameSession's collaborativeTextPhases map.
-     * @param gameSession The GameSession containing the phases
+     * Loads a captured game session fixture and seeds the phases embedded in it into the in-memory DAO.
+     */
+    private GameSession loadGame(String fileName) throws IOException {
+        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(fileName);
+        collaborativeTextDAO.seedFromFixture(gameSession, fileName);
+        return gameSession;
+    }
+
+    /**
+     * Loads a CollaborativeTextPhase from the in-memory DAO.
+     * @param gameSession The GameSession the phase belongs to
      * @param phaseId The phase ID (e.g., "HOW_DOES_THIS_RESOLVE", "WHAT_HAPPENS_HERE")
-     * @return The CollaborativeTextPhase for the given phase ID
+     * @return The CollaborativeTextPhase for the given phase ID, or null if nothing was stored for it
      */
     private CollaborativeTextPhase getPhaseFromGameSession(GameSession gameSession, String phaseId) {
-        return gameSession.getCollaborativeTextPhases().get(phaseId);
+        CollaborativeTextPhase phase = collaborativeTextDAO.phase(gameSession, GameState.valueOf(phaseId));
+        return phase.getSubmissions().isEmpty() && phase.getPlayerVotes().isEmpty() ? null : phase;
+    }
+
+    private void addSubmission(GameSession gameSession, GameState phaseId, TextSubmission submission) {
+        collaborativeTextDAO.putSubmissions(PhasePaths.phasePath(gameSession, phaseId), List.of(submission));
+    }
+
+    /** Appends a vote to the voter's existing ballot, like CollaborativeTextPhase.addPlayerVote. */
+    private void addVote(GameSession gameSession, GameState phaseId, PlayerVote vote) {
+        List<PlayerVote> ballot = new ArrayList<>(collaborativeTextDAO.allVotes(phaseId).getOrDefault(vote.getPlayerId(), List.of()));
+        ballot.add(vote);
+        collaborativeTextDAO.putVotes(PhasePaths.phasePath(gameSession, phaseId),
+                PhasePaths.voteScope(gameSession), vote.getPlayerId(), ballot);
     }
 
     // ===== HOW_DOES_THIS_RESOLVE TESTS =====
@@ -91,7 +114,7 @@ public class CollaborativeTextHelperTest {
     @Test
     void testCalculateWinningSubmission_HOW_DOES_THIS_RESOLVE_ReturnsSubmissionsWithoutParents() throws IOException {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
+        GameSession gameSession = loadGame("HOW_DOES_THIS_RESOLVE_START.json");
         String gameCode = gameSession.getGameCode();
         String phaseId = HOW_DOES_THIS_RESOLVE.name();
 
@@ -100,7 +123,6 @@ public class CollaborativeTextHelperTest {
 
         // Mock the dependencies
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
-        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -135,14 +157,13 @@ public class CollaborativeTextHelperTest {
     @Test
     void testCalculateWinningSubmission_HOW_DOES_THIS_RESOLVE_GroupsByOutcomeType() throws IOException {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
+        GameSession gameSession = loadGame("HOW_DOES_THIS_RESOLVE_START.json");
         String gameCode = gameSession.getGameCode();
         String phaseId = HOW_DOES_THIS_RESOLVE.name();
 
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
-        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -183,7 +204,7 @@ public class CollaborativeTextHelperTest {
             Map<String, List<String>> expectedStoryPlayerIds
     ) throws IOException {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
+        GameSession gameSession = loadGame(jsonFileName);
         gameSession.setGameState(GameState.WHAT_HAPPENS_HERE_WINNER);
 
         String gameCode = gameSession.getGameCode();
@@ -196,7 +217,6 @@ public class CollaborativeTextHelperTest {
         }
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
-        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -436,10 +456,9 @@ public class CollaborativeTextHelperTest {
 
         CollaborativeTextPhase phase = new CollaborativeTextPhase(WHAT_HAPPENS_HERE.name(), "", PhaseType.SUBMISSION);
         phase.setSubmissions(submissions);
-        gameSession.setCollaborativeTextPhases(Map.of(WHAT_HAPPENS_HERE.name(), phase));
+        collaborativeTextDAO.seedPhase(gameSession, WHAT_HAPPENS_HERE, phase);
 
         when(gameSessionDAO.getGame("TESTCODE")).thenReturn(gameSession);
-        when(collaborativeTextDAO.getCollaborativeTextPhase("TESTCODE", WHAT_HAPPENS_HERE.name())).thenReturn(phase);
         when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(true);
 
         // Act
@@ -481,7 +500,7 @@ public class CollaborativeTextHelperTest {
             Map<String, List<String>> expectedNewLocationTraitLabels
     ) throws IOException {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
+        GameSession gameSession = loadGame(jsonFileName);
         gameSession.setGameState(GameState.LOCATION_WINNING);
 
         String gameCode = gameSession.getGameCode();
@@ -497,7 +516,6 @@ public class CollaborativeTextHelperTest {
                 .collect(Collectors.toMap(Player::getAuthorId, p -> p.getTraits() == null ? 0 : p.getTraits().size()));
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
-        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
 
         // Act
         collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -596,7 +614,7 @@ public class CollaborativeTextHelperTest {
             int expectedWinningSubmissionCount
     ) throws IOException {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
+        GameSession gameSession = loadGame(jsonFileName);
         gameSession.setGameState(gameState);
 
         String gameCode = gameSession.getGameCode();
@@ -608,7 +626,6 @@ public class CollaborativeTextHelperTest {
         }
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
-        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -676,7 +693,7 @@ public class CollaborativeTextHelperTest {
             GameState expectedGameState
     ) throws IOException {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
+        GameSession gameSession = loadGame(jsonFileName);
         gameSession.setGameState(expectedGameState);
         String gameCode = gameSession.getGameCode();
         String phaseId = expectedGameState.name();
@@ -685,7 +702,6 @@ public class CollaborativeTextHelperTest {
         List<Story> stories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
-        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -819,14 +835,13 @@ public class CollaborativeTextHelperTest {
     @Test
     void testWinningSubmissions_HaveValidOutcomeTypeSubTypes() throws IOException {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_START.json");
+        GameSession gameSession = loadGame("HOW_DOES_THIS_RESOLVE_START.json");
         String gameCode = gameSession.getGameCode();
         String phaseId = HOW_DOES_THIS_RESOLVE.name();
 
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
-        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -867,7 +882,7 @@ public class CollaborativeTextHelperTest {
             List<ExpectedEnding> expectedEndings
     ) throws IOException {
         // Arrange
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
+        GameSession gameSession = loadGame(jsonFileName);
         gameSession.setGameState(GameState.WRITE_EPILOGUES);
         String gameCode = gameSession.getGameCode();
         String phaseId = GameState.WRITE_EPILOGUES.name();
@@ -875,7 +890,6 @@ public class CollaborativeTextHelperTest {
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
-        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, phaseId)).thenReturn(phase);
         when(storyDAO.getAuthorStoriesByStoryId(anyString(), anyString())).thenReturn(List.of());
 
         // Act
@@ -931,13 +945,12 @@ public class CollaborativeTextHelperTest {
             List<String> expectedOutcomeDisplayMessages,
             String gameFile
     ) throws IOException {
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(gameFile);
+        GameSession gameSession = loadGame(gameFile);
         gameSession.getGameBoard().getPlayerCoordinates().setxCoordinate(xCoordinate);
         gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(0);
         String gameCode = gameSession.getGameCode();
 
-        gameSession.getCollaborativeTextPhase(GameState.MAKE_CHOICE_VOTING.name())
-                .addPlayerVote(new PlayerVote("", "", votedOptionId, 1));
+        addVote(gameSession, GameState.MAKE_CHOICE_VOTING, new PlayerVote("", "", votedOptionId, 1));
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
 
@@ -1042,7 +1055,7 @@ public class CollaborativeTextHelperTest {
             String fileName,
             PlayerCoordinates playerCoordinates
     ) throws IOException {
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(fileName);
+        GameSession gameSession = loadGame(fileName);
         gameSession.getGameBoard().setPlayerCoordinates(playerCoordinates);
         gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_VOTING);
         String gameCode = gameSession.getGameCode();
@@ -1053,14 +1066,12 @@ public class CollaborativeTextHelperTest {
         List<String> originalPartnerIds = new ArrayList<>(storyVotedOn.getPartnerIds());
 
         Option selectedOption = storyVotedOn.getSelectedOption();
-        CollaborativeTextPhase makeOutcomePhase = gameSession.getCollaborativeTextPhases()
-                .computeIfAbsent(GameState.MAKE_OUTCOME_CHOICE_VOTING.name(), k -> new CollaborativeTextPhase());
         for (OutcomeFork fork : selectedOption.getOutcomeForks()) {
-            makeOutcomePhase.addSubmission(fork.getTextSubmission());
+            addSubmission(gameSession, GameState.MAKE_OUTCOME_CHOICE_VOTING, fork.getTextSubmission());
         }
 
         if (!votedSubmissionId.isEmpty()) {
-            makeOutcomePhase.addPlayerVote(new PlayerVote("", "", votedSubmissionId, 1));
+            addVote(gameSession, GameState.MAKE_OUTCOME_CHOICE_VOTING, new PlayerVote("", "", votedSubmissionId, 1));
         }
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
@@ -1124,7 +1135,7 @@ public class CollaborativeTextHelperTest {
         String joeId = "e8852f24-cdc8-465c-b244-56ce08029584";
         String kirstenId = "ddfc6892-16dd-4e38-9252-27a3688ae038";
 
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
+        GameSession gameSession = loadGame("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
         gameSession.getGameBoard().setPlayerCoordinates(new PlayerCoordinates(0, 0));
         gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_VOTING);
         String gameCode = gameSession.getGameCode();
@@ -1144,12 +1155,10 @@ public class CollaborativeTextHelperTest {
         storyVotedOn.setSelectedOptionId(kirstenId);
         String votedSubmissionId = "6486b8c6-7b43-48c8-80c9-195492d73718";
 
-        CollaborativeTextPhase makeOutcomePhase = gameSession.getCollaborativeTextPhases()
-                .computeIfAbsent(GameState.MAKE_OUTCOME_CHOICE_VOTING.name(), k -> new CollaborativeTextPhase());
         for (OutcomeFork fork : storyVotedOn.getSelectedOption().getOutcomeForks()) {
-            makeOutcomePhase.addSubmission(fork.getTextSubmission());
+            addSubmission(gameSession, GameState.MAKE_OUTCOME_CHOICE_VOTING, fork.getTextSubmission());
         }
-        makeOutcomePhase.addPlayerVote(new PlayerVote("", "", votedSubmissionId, 1));
+        addVote(gameSession, GameState.MAKE_OUTCOME_CHOICE_VOTING, new PlayerVote("", "", votedSubmissionId, 1));
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
 
@@ -1364,7 +1373,7 @@ public class CollaborativeTextHelperTest {
         String joeId = "e8852f24-cdc8-465c-b244-56ce08029584";
         String subodhId = "63ca67f3-d11d-4cc8-a667-6b68a1bb432b";
 
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
+        GameSession gameSession = loadGame("MAKE_CHOICE_VOTING_REPERCUSSIONS.json");
         gameSession.getGameBoard().setPlayerCoordinates(new PlayerCoordinates(1, 0));
         gameSession.setGameState(GameState.MAKE_OUTCOME_CHOICE_VOTING);
         String gameCode = gameSession.getGameCode();
@@ -1384,12 +1393,10 @@ public class CollaborativeTextHelperTest {
         storyVotedOn.setSelectedOptionId(joeId);
         String votedSubmissionId = "08f7c5a9-8c4e-484f-8995-0ee5b2a6c5aa";
 
-        CollaborativeTextPhase makeOutcomePhase = gameSession.getCollaborativeTextPhases()
-                .computeIfAbsent(GameState.MAKE_OUTCOME_CHOICE_VOTING.name(), k -> new CollaborativeTextPhase());
         for (OutcomeFork fork : storyVotedOn.getSelectedOption().getOutcomeForks()) {
-            makeOutcomePhase.addSubmission(fork.getTextSubmission());
+            addSubmission(gameSession, GameState.MAKE_OUTCOME_CHOICE_VOTING, fork.getTextSubmission());
         }
-        makeOutcomePhase.addPlayerVote(new PlayerVote("", "", votedSubmissionId, 1));
+        addVote(gameSession, GameState.MAKE_OUTCOME_CHOICE_VOTING, new PlayerVote("", "", votedSubmissionId, 1));
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
 
@@ -1427,20 +1434,13 @@ public class CollaborativeTextHelperTest {
             boolean locationVoting
     ) throws IOException {
         // Arrange - Load test data
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson(jsonFileName);
+        GameSession gameSession = loadGame(jsonFileName);
         gameSession.setGameState(gameState);
         String gameCode = gameSession.getGameCode();
 
         // Mock dependencies
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
         when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(locationVoting);
-
-        // For HOW_DOES_THIS_RESOLVE, we need to mock the WHAT_CAN_WE_TRY phase
-        if (gameState == HOW_DOES_THIS_RESOLVE || gameState == HOW_DOES_THIS_RESOLVE_AGAIN) {
-            CollaborativeTextPhase whatCanWeTryPhase = gameSession.getCollaborativeTextPhases().get(GameState.WHAT_CAN_WE_TRY.name());
-            when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name()))
-                    .thenReturn(whatCanWeTryPhase);
-        }
 
         System.out.println("=== " + scenarioName + " ===");
         System.out.println("Game State: " + gameState);
@@ -1522,7 +1522,7 @@ public class CollaborativeTextHelperTest {
 
     @Test
     void testGetOutcomeTypes_HowDoesThisResolve_TeamUpOptionsAreOtherPlayersAtStoryOwnersLocation() throws IOException {
-        GameSession gameSession = TestJsonLoader.loadGameSessionFromJson("HOW_DOES_THIS_RESOLVE_AGAIN_TRAITS.json");
+        GameSession gameSession = loadGame("HOW_DOES_THIS_RESOLVE_AGAIN_TRAITS.json");
         gameSession.setGameState(HOW_DOES_THIS_RESOLVE);
         String gameCode = gameSession.getGameCode();
 
@@ -1534,8 +1534,6 @@ public class CollaborativeTextHelperTest {
 
         when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
         when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(false);
-        when(collaborativeTextDAO.getCollaborativeTextPhase(gameCode, GameState.WHAT_CAN_WE_TRY.name()))
-                .thenReturn(gameSession.getCollaborativeTextPhases().get(GameState.WHAT_CAN_WE_TRY.name()));
 
         List<OutcomeType> outcomeTypes = collaborativeTextHelper.getOutcomeTypes(gameCode, andyId);
 

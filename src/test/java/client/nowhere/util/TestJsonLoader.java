@@ -1,7 +1,9 @@
 package client.nowhere.util;
 
+import client.nowhere.model.CollaborativeTextPhase;
 import client.nowhere.model.GameSession;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonDeserializer;
@@ -12,6 +14,8 @@ import com.google.cloud.Timestamp;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Utility class for loading test data from JSON files in test resources.
@@ -52,5 +56,19 @@ public class TestJsonLoader {
     public static GameSession loadGameSessionFromJson(String fileName) throws IOException {
         File jsonFile = new File("src/test/resources/" + fileName);
         return objectMapper.readValue(jsonFile, GameSession.class);
+    }
+
+    /**
+     * Loads the collaborativeTextPhases map embedded in a captured game session fixture. Phases are no
+     * longer part of GameSession (see CollaborativeTextDAO); InMemoryCollaborativeTextDAO.seedFromFixture
+     * uses this to put them where the helpers now read them.
+     * @return phaseId -> phase, empty if the fixture has none
+     */
+    public static Map<String, CollaborativeTextPhase> loadPhasesFromJson(String fileName) throws IOException {
+        JsonNode phasesNode = objectMapper.readTree(new File("src/test/resources/" + fileName)).get("collaborativeTextPhases");
+        if (phasesNode == null || phasesNode.isNull()) {
+            return new LinkedHashMap<>();
+        }
+        return objectMapper.convertValue(phasesNode, new TypeReference<LinkedHashMap<String, CollaborativeTextPhase>>() {});
     }
 }

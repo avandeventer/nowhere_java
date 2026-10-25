@@ -1,5 +1,7 @@
 package client.nowhere.helper;
 
+import client.nowhere.util.InMemoryCollaborativeTextDAO;
+
 import client.nowhere.dao.*;
 import client.nowhere.model.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,8 +25,7 @@ public class DigidestinedBugReproTest {
 
     @Mock
     private GameSessionDAO gameSessionDAO;
-    @Mock
-    private CollaborativeTextDAO collaborativeTextDAO;
+    private InMemoryCollaborativeTextDAO collaborativeTextDAO;
     @Mock
     private AdventureMapDAO adventureMapDAO;
     @Mock
@@ -44,6 +45,7 @@ public class DigidestinedBugReproTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        collaborativeTextDAO = new InMemoryCollaborativeTextDAO();
         collaborativeTextHelper = new CollaborativeTextHelper(
                 gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
                 adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO,
