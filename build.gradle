@@ -42,10 +42,17 @@ ext {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+	implementation 'io.micrometer:micrometer-registry-stackdriver'
+	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+	// 0.27.0 is built against OpenTelemetry 1.31.0, the version Spring Boot 3.2 manages
+	implementation 'com.google.cloud.opentelemetry:exporter-trace:0.27.0'
 	implementation 'com.google.cloud:spring-cloud-gcp-starter-storage'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.opentelemetry:opentelemetry-sdk-testing'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	compileOnly 'com.google.firebase:firebase-admin:1.32.0'
 	implementation 'com.google.firebase:firebase-admin:6.3.0'
