@@ -6,6 +6,9 @@ integration suite, 3/4/5-player scenarios covering `GameState.getOutcomeTypeOffs
 `playerCount > 4` branch). **The approach described there has since pivoted** — see "Architecture
 pivot" below. This file is the up-to-date source of truth for where things actually stand.
 
+> **Latest work (2026-10-25): backend latency.** See "Latency work (in progress)" below for where
+> things stand, the measurements so far, and next steps. The rest of this section is from 2026-08-10.
+
 ## Current state (as of pausing this session, 2026-08-10)
 
 `FullGameScenario` is now a single, self-contained engine (no more separate scenario-hook class) —
@@ -455,9 +458,151 @@ lives"). Harness changes that came with it:
   is still the only unknown ID in the response.
 - `deleteGame` cleanup now deletes the game recursively (`GameSessionDAO.deleteGame`), so phase
   subcollections don't pile up in the live deployment.
-- Both 500s above should now be empty responses. Not yet confirmed against the live backend.
+- Both 500s above are gone, confirmed live: `FullGameFivePlayersTest` run WXB7TT had 0 errors on
+  every endpoint (W9Z4RS, before the split, had 35 `GET /collaborativeText` + 3
+  `GET /collaborativeText/winner` 500s). Same pair of runs: peak GameSession size
+  337.6KB -> 181.5KB, summed phase time 326s -> 174s.
+- `FullGameTenPlayersSequelTest` now **passes** (run MZPSAZ, 2026-10-25): peak 342.6KB (33.5% of
+  1 MiB), down from failing at the 1 MiB limit. `stories` (~233KB) and `adventureMap` (~60KB) are
+  now the biggest fields.
 
-Compare the next `FullGameTenPlayersSequelTest` run's `LatencyLog` tables against Y833DT above.
+## Latency work (in progress, last updated 2026-10-25)
+
+**Where things stand:** the phase split (PR #10) is merged and deployed as Cloud Run revision
+`nowhere-java-00422-nnr` (2026-10-25 22:33Z). The next fix, for `POST /collaborativeText/votes` and
+`GET /collaborativeText/voting`, is written and unit-tested but **uncommitted on local `master`**
+and **not deployed or measured yet**. Next action: move it to a branch, deploy to sandbox, re-run
+`FullGameTenPlayersSequelTest`, and compare against the numbers below.
+
+### How the numbers were gathered (repeatable from this machine)
+
+`gcloud` is signed in to project `nowhere-af065`. The backend service is `nowhere-java`
+(us-east4; 1 vCPU, 512Mi, containerConcurrency 80, maxScale 3). Pick the test run's time window, then:
+- Per-request latency: `gcloud logging read 'resource.type="cloud_run_revision" AND
+  resource.labels.service_name="nowhere-java" AND httpRequest.requestUrl:* AND timestamp>=... AND
+  timestamp<=...' --format=json`, grouped by method + path and `resource.labels.revision_name`.
+- Where the time goes inside a request: Cloud Trace (`cloudtrace.googleapis.com/v1/projects/
+  nowhere-af065/traces?view=COMPLETE`). Each `Recv.http ...` root span has the
+  `FirestoreTimingAspect` DAO spans (`<Dao>.<method>`) nested under it.
+- CPU / memory / concurrency: Cloud Monitoring `run.googleapis.com/container/{cpu,memory}/utilizations`
+  and `max_request_concurrencies`.
+- Deploy times: `gcloud run revisions list --service nowhere-java --region us-east4`.
+
+### Measurements, 2026-10-25 22:08-22:55Z (full integration suite, before and after the deploy)
+
+Server-side latency from Cloud Run request logs, all tests in the window combined (ms):
+
+| Endpoint | 00421 (before) avg / p95 | 00422 (after) avg / p95 |
+|---|---|---|
+| `POST /collaborativeText/votes` | 3162 / 7523 | 1836 / 4949 |
+| `GET /collaborativeText/voting` | 1274 / 4513 | 1264 / 3904 (unchanged) |
+| `PUT /game/next` | 1736 / 3339 | 901 / 2039 |
+| `PUT /activeGameStateSession` | 720 / 1573 | 659 / 1286 |
+| `POST /collaborativeText` | 1371 / 3844 | 240 / 656 |
+| `GET /collaborativeText` | 385 / 1356 | 265 / 748 |
+| `GET /collaborativeText/outcomeTypes` | 215 / 789 | 323 / 788 (max 16.9s, see stalls) |
+| `GET /collaborativeText/available` | 3534 / 7142 | not called after the deploy, so the new version is untested live |
+
+Errors: 176 500s before (the empty-phase errors), 0 after.
+
+Client-side, 10-player run MZPSAZ (`LatencyLog`): `/votes` avg 3000 / p95 6079 / max 12630,
+`/voting` avg 1952 / p95 4362, `PUT /game/next` avg 1335 / p95 4042.
+
+### Diagnosis (Cloud Trace, revision 00422)
+
+| Endpoint | avg | time in `ActiveSessionDAO.updateActiveGameStateSession` | calls per request |
+|---|---|---|---|
+| `POST /votes` | 1826ms | 1455ms | 3.0 |
+| `GET /voting` | 1262ms | 952ms | 0.7 |
+
+`updateActiveGameStateSession` sets one player's "done" flag inside a transaction that read and
+deserialized the **whole** GameSession document (~340KB at 10 players). Every player runs it at
+about the same time, so the transactions queue on that one document. `/votes` ran it once per
+player being marked done. `GET /voting` ran it on every poll, even for players already done.
+
+Other findings from the same data:
+- **`updatePlayer` / `updateStory` loops.** `GameSessionDAO.updatePlayer` and
+  `StoryDAO.updateStory` each read the full document, change one array element, and write the
+  whole `players` / `stories` array back, with no transaction (so concurrent requests can overwrite
+  each other's changes). Phase transitions call them sequentially: up to 20 `updatePlayer` in one
+  `/votes` request (the last voter's request runs the phase transition), and up to 10
+  `updateStory` in `PUT /game/next` (one slow trace spent 5.1s in them).
+- **Container memory sits near the 512Mi limit under load, but the Java heap never fills.**
+  Cloud Run's memory metric counts the whole process. Under load it ran at 86-92% median and up to
+  94-100%; idle is about 60-66%. The same pattern shows on 2026-09-25 (93-97% during that load
+  test), so it predates both the phase split and the observability commits (those raised idle by
+  roughly 5-10 points). **One OOM kill:** `Memory limit of 512 MiB exceeded with 512 MiB used` on
+  revision 00422 at 22:58:14Z, about 8 minutes after the test's last request (22:50:31Z), so no
+  request failed. It's the only one in 60 days of logs. Memory kept climbing after traffic stopped,
+  which fits native memory the JVM never returns to the OS. (An earlier version of this note said
+  there were none; that check missed it.) JVM metrics
+  (`custom.googleapis.com/jvm/*`, exported by Micrometer) for the same window:
+  - The container runs `java -jar` with no flags on 1 vCPU, so the JVM picks the **Serial GC** and
+    a max heap of 25% of the container: about **124MB**. Heap used peaked at 107MB.
+  - Non-heap (metaspace ~70-80MB, JIT code cache growing 10 -> 26MB under load, class space ~9MB)
+    peaked at ~121MB, direct buffers (gRPC/Netty) at ~20MB, and threads grew from 41 to 61 under load.
+  - That's ~250MB the JVM accounts for. The rest, up to ~230MB at peak, is native memory the JVM
+    doesn't report here (thread stacks, GC/JIT internals, malloc arenas). Measuring it would need
+    `-XX:NativeMemoryTracking=summary` on sandbox.
+  - **GC churn is the real cost.** One instance did 2710 young and 116 full GCs in about 25
+    minutes (a full GC every ~13s), all stop-the-world on the single vCPU. GC overhead peaked at
+    7%. The worst young-gen pause was 2.9s, which is abnormal for a 34MB eden and suggests CPU or
+    memory starvation. The cause is the allocation rate: every request deserializes the ~340KB
+    GameSession document, often more than once, for 10 concurrent players.
+  - Around 22:44-22:46Z the metrics exporter logged `DEADLINE_EXCEEDED` to
+    `monitoring.googleapis.com` (one call waited 16.7s for a connection, one DNS lookup took 9.3s),
+    in the same minutes as MZPSAZ's 16-17s outliers in round 2 `HOW_DOES_THIS_RESOLVE_AGAIN`.
+    That fits the process stalling, though which stall (GC vs CPU throttling) isn't proven.
+  - **Applied 2026-10-26:** 1Gi on both services (prod revision `nowhere-java-00423-dzn`, sandbox
+    `nowhere-java-sandbox-00002-qzf`), plus `--memory 1Gi` in both deploy steps of
+    `.github/workflows/deploy.yml`, since the sandbox is recreated with defaults for every PR.
+    Monitoring added the same day: memory/GC/OOM tiles on both "Nowhere Health" dashboards, the
+    log-based metric `nowhere_out_of_memory` (container kills + `java.lang.OutOfMemoryError`), and
+    the alert policy "Nowhere: out of memory", which emails the account owner.
+  - Other options, not applied:
+    `JAVA_TOOL_OPTIONS=-XX:MaxRAMPercentage=...` (raising it at 512Mi risks OOM, since non-heap
+    already takes ~250-300MB). The lasting fix is allocating less per request, i.e. not reading the
+    whole GameSession on every call (the done-flag change below is one step).
+- **Empty-ID bug from the split (fixed in the uncommitted change).** 26 `IllegalArgumentException:
+  'path' must be a non-empty String` errors in `initializeMakeOutcomeChoiceVotingPhase`. A lone
+  `OutcomeFork` (every round-0 option) has a `TextSubmission` with no `submissionId`. Harmless,
+  because that phase is skipped with fewer than 2 forks, but the error was logged on every such
+  choice.
+
+### The uncommitted change (local `master`, on top of 381197b)
+
+- `ActiveSessionDAO.updateActiveGameStateSession`: new overload taking a `Collection` of author
+  IDs, so one transaction marks several players done. The transaction reads only `gameState`,
+  `players` and `activeGameStateSession` (`Transaction.getAll(..., FieldMask)`), and skips the
+  write when nothing changed. The single-player overload delegates to it.
+- `ActiveSessionHelper.update`: matching `Collection` overload; no-op for an empty list.
+- `VotingHelper.markPlayersDone`: every "mark done" in `/voting` and `/votes` goes through it.
+  At most one transaction per request, and none for players the request's already-loaded
+  GameSession shows as done.
+  **Behavior change:** a `GET /voting` poll from a player who's already done no longer runs the
+  transaction, so it can't start a second `updateToNextGameState` while the first is still
+  running. Progression now comes only from the request that marks the last player done.
+- `CollaborativeTextHelper.initializeMakeOutcomeChoiceVotingPhase`: returns early when there are
+  fewer than 2 forks (documented in `src/docs/.OUTCOMES.md`, `MAKE_OUTCOME_CHOICE_VOTING`).
+- `VotingHelperTest`: verifications switched to the batched overload; players a fixture already
+  marks done are now expected to be skipped.
+
+Verified: all unit tests pass. **Not verified:** the `FieldMask` transaction read. The DAO is
+mocked in unit tests, so it only runs against real Firestore.
+
+### Next steps, in order
+
+1. Commit the change on a branch, deploy to sandbox, run `FullGameTenPlayersSequelTest`, and compare
+   `/votes`, `/voting` and `PUT /activeGameStateSession` against the tables above. Also check the
+   logs for any new errors from `updateActiveGameStateSession`.
+2. Memory is now 1Gi (see above). Check the dashboard's GC tiles during the next 10-player run: GC
+   count per minute should roughly halve, and the 16-17s outliers should go away. Note that the
+   pre-1Gi tables above were measured at 512Mi, so a sandbox run now changes two things at once.
+3. Batch `updatePlayer` / `updateStory`: one read and one write per request instead of one per
+   player or story (and close the lost-update race while doing it). Longer term, `players` and
+   `stories` could move out of the GameSession document the same way the phases did.
+4. `GET /voting` still does a full `getGame` (~240ms avg) on every poll; worth trimming after 1-3.
+5. Exercise `GET /collaborativeText/available` live; it hasn't been called since the deploy.
 
 ## False leads from this session (corrected, for context)
 
