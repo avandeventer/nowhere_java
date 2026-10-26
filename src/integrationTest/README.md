@@ -466,13 +466,13 @@ lives"). Harness changes that came with it:
   1 MiB), down from failing at the 1 MiB limit. `stories` (~233KB) and `adventureMap` (~60KB) are
   now the biggest fields.
 
-## Latency work (in progress, last updated 2026-10-25)
+## Latency work (in progress, last updated 2026-10-26)
 
 **Where things stand:** the phase split (PR #10) is merged and deployed as Cloud Run revision
-`nowhere-java-00422-nnr` (2026-10-25 22:33Z). The next fix, for `POST /collaborativeText/votes` and
-`GET /collaborativeText/voting`, is written and unit-tested but **uncommitted on local `master`**
-and **not deployed or measured yet**. Next action: move it to a branch, deploy to sandbox, re-run
-`FullGameTenPlayersSequelTest`, and compare against the numbers below.
+`nowhere-java-00422-nnr` (2026-10-25 22:33Z). The done-flag fix for `POST /collaborativeText/votes`
+and `GET /collaborativeText/voting` is committed as `612cbb9` on branch `split-stories-fix-voting`
+and was measured on sandbox at 1Gi (run 6A7W46, see "Sandbox run 6A7W46" below). Not merged to
+master yet.
 
 ### How the numbers were gathered (repeatable from this machine)
 
@@ -569,7 +569,7 @@ Other findings from the same data:
   because that phase is skipped with fewer than 2 forks, but the error was logged on every such
   choice.
 
-### The uncommitted change (local `master`, on top of 381197b)
+### The done-flag change (commit `612cbb9`, branch `split-stories-fix-voting`)
 
 - `ActiveSessionDAO.updateActiveGameStateSession`: new overload taking a `Collection` of author
   IDs, so one transaction marks several players done. The transaction reads only `gameState`,
@@ -590,19 +590,101 @@ Other findings from the same data:
 Verified: all unit tests pass. **Not verified:** the `FieldMask` transaction read. The DAO is
 mocked in unit tests, so it only runs against real Firestore.
 
+### Sandbox run 6A7W46 (2026-10-26 18:32-18:43Z, `612cbb9` + 1Gi)
+
+**MZPSAZ was not a like-for-like baseline.** It ran at 22:37Z on 10-25 from a local checkout still
+at `819154b`, which was before PR #10 reached local master (the fast-forward happened at 23:55Z). That
+pre-split harness looked for the current phase in `GameSession.collaborativeTextPhases`, which no
+longer exists after the split, so `addExtraBranches` silently skipped every extra addition: 0
+`GET /collaborativeText/available` calls, and 12 vs 42 `POST /collaborativeText` in round-1
+`WHAT_HAPPENS_HERE`. So 6A7W46 is the first 10-player run where extras actually ran **and** the
+game got as far as `assertRoundOneEffects`. Before the split, the same run died at 1 MiB first.
+
+**The failure is a latent harness bug, not a backend regression.**
+- `Companion scenario's Option should have won MAKE_CHOICE_VOTING`: story `ec080f56` (x16y0,
+  player Player5) had 2 Options. One was the target `21734e5a` (1 fork). The other was the
+  pre-canned "Use your feet" `997b03f1` (8 forks), because HOW_DOES_THIS_RESOLVE_AGAIN offers a
+  pre-canned option once the WHAT_CAN_WE_TRY option is resolved (see `.OUTCOMES.md`).
+- 13 extra additions piled onto that pre-canned chain. `/available` hands out the least-viewed,
+  newest submissions, so concurrent players all branch off the same newest one.
+- Player5 was the only voter. They voted for `997b03f1`, and `selectedOptionId` matches that vote,
+  so the backend tallied correctly.
+- The harness voted that way because only the Title scenario put its Option in
+  `preferredWinningSubmissionIds`. The others assumed "single fork -> auto-select", which holds for
+  forks but not for Options, so it fell back to the first candidate (most additions).
+- Fix (uncommitted): `FullGameScenario.preferredTarget` registers each scenario target's Option
+  and fork as preferred.
+
+**Memory / GC** (busiest instance; Cloud Monitoring):
+
+| | MZPSAZ, prod 512Mi | 6A7W46, sandbox 1Gi |
+|---|---|---|
+| Container memory, p99 | 94% (~480MB) | 45-47% (~470MB) |
+| Max heap / heap used peak | 124MB / 107MB | 248MB / 108MB |
+| Young GCs per minute | ~145 | ~37 |
+| Full GCs per minute | ~6.8 | ~1.3 |
+| Worst young / full pause | 1999ms / 219ms | 140ms / 245ms |
+| GC overhead peak | 5.3% | 3.2% |
+
+Absolute memory is unchanged: the JVM simply has headroom now. The one 1.7s young pause in 6A7W46
+was on an instance that did 1 GC all run (startup).
+
+**Latency, client-side (`LatencyLog`) avg / p95 ms, MZPSAZ -> 6A7W46:**
+- `GET /voting`, MAKE_CHOICE_VOTING: round 0 1592/3661 -> 1411/2411; round 1 2466/4482 -> 1299/2343.
+- `POST /votes`, MAKE_CHOICE_VOTING: round 0 3087/3946 -> 1369/3012; round 1 4329/6079 -> 1882/4258.
+- `POST /votes`, MAKE_OUTCOME_CHOICE_VOTING: 1585 -> 546.
+- Whole run: `/voting` 1952 -> 1173 and `/votes` 3000 -> 1428, even with 6A7W46 doing more work.
+- Not improved: `POST /votes` in LOCATION_VOTING. The last voter took 10.1s / 6.0s / 11.9s in
+  rounds 0 / 1 / 2 (MZPSAZ 6.3s / 7.0s). Traces: about 6s in one `updateActiveGameStateSession`
+  (10 voters' transactions queue on the one GameSession document), then the transition's 20
+  sequential `updatePlayer` (2.2-4.7s).
+- Not comparable: `PUT /game/next` in HOW_DOES_THIS_RESOLVE_AGAIN, 4.1s -> 8.5s. 6A7W46 had 37
+  submissions there vs 10. `POST /game` at 8.4s was the first request on an instance that had been
+  idle since the deploy (warm-up).
+- First live data for `GET /collaborativeText/available`: avg 859 ms, but max 13.0s in round-1
+  WHAT_HAPPENS_HERE.
+
+### Prod vs sandbox, same harness (2026-10-26 19:14-19:34Z, both 1Gi)
+
+Run with the `preferredTarget` fix: `-PbaseUrl=` picks the target (`LiveBackend` defaults to prod).
+- Prod `EBTTB4` ran master `381197b`; sandbox `3JDVBQ` ran `612cbb9`.
+- **Both games reached ENDING, and every gameplay assertion passed.** Both then failed only in
+  cleanup, `DELETE /admin/game` (see below).
+- Peak GameSession size was 590KB / 551KB (57.6% / 53.8% of 1 MiB), up from 343KB now that extras
+  really run.
+
+Client-side avg / p95 ms, prod (master) -> sandbox (branch):
+- `POST /votes`, whole run: 2203/4783 -> 1177/3246. In MAKE_CHOICE_VOTING 3749 -> 1445; in
+  MAKE_OUTCOME_CHOICE_VOTING 1256 -> 715.
+- `GET /voting`, whole run: 1696/4135 -> 1315/2793. In MAKE_CHOICE_VOTING 2079/5385 -> 1543/3598.
+- LOCATION_VOTING `POST /votes`: about the same, 2105 (max 9.3s) -> 1919 (max 8.5s). The
+  contention is still there.
+- Unrelated endpoints ran 20-40ms slower on sandbox: environment noise, since the code is the same.
+
+**`DELETE /admin/game` hangs on a full extras game.**
+- Prod returned 504 after Cloud Run's 300s limit, with nothing logged in between. The harness gave
+  up after its 60s read timeout.
+- `recursiveDelete` removed everything except the root document and the last-sorted docs:
+  `rounds/2/phases/WRITE_EPILOGUES/views/*` (9 on prod, 7 on sandbox).
+- Every earlier delete took under 1s (MZPSAZ 0.7s), but none of those games had `views` docs.
+- Retrying the sandbox delete with only those leftovers took 0.9s.
+- Not yet known whether the trigger is `views` docs or the size of a full game.
+- Prod `EBTTB4` is still partially there.
+
 ### Next steps, in order
 
-1. Commit the change on a branch, deploy to sandbox, run `FullGameTenPlayersSequelTest`, and compare
-   `/votes`, `/voting` and `PUT /activeGameStateSession` against the tables above. Also check the
-   logs for any new errors from `updateActiveGameStateSession`.
-2. Memory is now 1Gi (see above). Check the dashboard's GC tiles during the next 10-player run: GC
-   count per minute should roughly halve, and the 16-17s outliers should go away. Note that the
-   pre-1Gi tables above were measured at 512Mi, so a sandbox run now changes two things at once.
+1. Re-run `FullGameTenPlayersSequelTest` on sandbox with the `preferredTarget` harness fix. It has
+   never passed with extra additions actually running, so later assertions (round 2, ENDING) may
+   surface new failures.
+2. LOCATION_VOTING's done-flag contention: every voter's transaction queues on one document. Option:
+   a blind field update (`activeGameStateSession.isPlayerDone.<id>`), then one masked read, with a
+   transaction only to claim the progression.
 3. Batch `updatePlayer` / `updateStory`: one read and one write per request instead of one per
    player or story (and close the lost-update race while doing it). Longer term, `players` and
    `stories` could move out of the GameSession document the same way the phases did.
 4. `GET /voting` still does a full `getGame` (~240ms avg) on every poll; worth trimming after 1-3.
-5. Exercise `GET /collaborativeText/available` live; it hasn't been called since the deploy.
+5. `GET /collaborativeText/available`: now exercised live (6A7W46). Look into its 13s max in
+   round-1 WHAT_HAPPENS_HERE (30 concurrent calls, each reading the whole phase plus views).
 
 ## False leads from this session (corrected, for context)
 
