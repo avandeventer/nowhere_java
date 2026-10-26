@@ -1849,6 +1849,12 @@ public class CollaborativeTextHelper {
                 System.err.println("No forks found for selectedOption in MAKE_OUTCOME_CHOICE_VOTING initialization");
                 return;
             }
+            // GameSessionHelper skips MAKE_OUTCOME_CHOICE_VOTING unless there are 2+ forks. A lone fork
+            // (e.g. every round-0 option) can have a TextSubmission with no submissionId, which can't
+            // be a Firestore document ID.
+            if (selectedOption.getOutcomeForks().size() < 2) {
+                return;
+            }
 
             putPhaseSubmissions(gameSession, MAKE_OUTCOME_CHOICE_VOTING,
                     selectedOption.getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList());
