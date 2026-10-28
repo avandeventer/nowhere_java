@@ -1344,6 +1344,7 @@ public class CollaborativeTextHelper {
                 String playerId = playersAssignedForDistribution.get(preCannedStory.getAuthorId()).getPlayer().getAuthorId();
                 preCannedStory.setPlayerId(playerId);
                 preCannedStory.getPlayerIds().add(playerId);
+                preCannedStory.setRoundNumber(gameSession.getRoundNumber());
 
                 storyDAO.createStory(preCannedStory);
 
@@ -2952,6 +2953,7 @@ public class CollaborativeTextHelper {
                     }
                 }
 
+                story.setRoundNumber(gameSession.getRoundNumber());
                 storyDAO.createStory(story);
 
                 Encounter encounter = new Encounter(

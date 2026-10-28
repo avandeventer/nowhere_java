@@ -95,10 +95,14 @@ public class GameSession {
         this.activePlayerSession = activePlayerSession;
     }
 
+    // Stories are stored one document each under rounds/{round}/stories (StoryDAO), not on the
+    // game document. GameSessionDAO.getGame fills this list; Jackson still sends it to clients.
+    @Exclude
     public List<Story> getStories() {
         return stories;
     }
 
+    @Exclude
     public void setStories(List<Story> stories) {
         this.stories = stories;
     }

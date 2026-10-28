@@ -55,18 +55,20 @@ public class StoryDAOTest {
 
             ObjectMapper objectMapper = new ObjectMapper();
             Firestore mockDb = mock(Firestore.class);
-            StoryDAO storyDAO = new StoryDAO(mockDb, objectMapper);
+            StoryDAO storyDAO = new StoryDAO(mockDb);
 
-            DocumentReference mockGameSessionRef = setupFirestoreStoryMocks(
+            Transaction mockTransaction = setupFirestoreStoryMocks(
                     mockDb,
                     objectMapper,
                     gameCode,
+                    storyIdToUpdate,
                     "src/test/resources/ROUND1_stories.json");
 
             // Create a story object to update
             Story storyToUpdate = new Story();
             storyToUpdate.setGameCode(gameCode);
             storyToUpdate.setStoryId(storyIdToUpdate);
+            storyToUpdate.setRoundNumber(STORY_ROUND);
             storyToUpdate.setPlayerSucceeded(true);
             storyToUpdate.setSelectedOptionId(selectedOptionId);
 
@@ -80,12 +82,8 @@ public class StoryDAOTest {
                 assertEquals(true, updatedStory.isPlayerSucceeded());
                 assertEquals(selectedOptionId, updatedStory.getSelectedOptionId());
 
-                File rawUpdatedStories = new File("src/test/resources/ROUND1_stories_updated.json");
-                List<Story> expectedStories = objectMapper.readValue(
-                        rawUpdatedStories,
-                        objectMapper.getTypeFactory().constructCollectionType(List.class, Story.class)
-                );
-                verify(mockGameSessionRef, times(1)).update(eq("stories"), eq(expectedStories));
+                Story expectedStory = storyFromFixture(objectMapper, "src/test/resources/ROUND1_stories_updated.json", storyIdToUpdate);
+                verify(mockTransaction, times(1)).set(any(DocumentReference.class), eq(expectedStory));
             } catch (IOException e) {
                 System.out.println("File failed to process" + e.getMessage());
             }
@@ -100,12 +98,13 @@ public class StoryDAOTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         Firestore mockDb = mock(Firestore.class);
-        StoryDAO storyDAO = new StoryDAO(mockDb, objectMapper);
+        StoryDAO storyDAO = new StoryDAO(mockDb);
 
-        DocumentReference mockGameSessionRef = setupFirestoreStoryMocks(
+        Transaction mockTransaction = setupFirestoreStoryMocks(
                 mockDb,
                 objectMapper,
                 gameCode,
+                storyIdToUpdate,
                 "src/test/resources/WRITE_OPTIONS_AGAIN_stories.json"
         );
 
@@ -113,6 +112,7 @@ public class StoryDAOTest {
         Story storyToUpdate = new Story();
         storyToUpdate.setGameCode(gameCode);
         storyToUpdate.setStoryId(storyIdToUpdate);
+        storyToUpdate.setRoundNumber(STORY_ROUND);
 
         Location townLocale = DefaultLocation.valueOf("APOTHECARY").getLocation();
 
@@ -146,54 +146,57 @@ public class StoryDAOTest {
 
             assertEquals("a80ef30c-e3fb-4a6c-99fc-bc9a39684b05", updatedStory.getSelectedOption().getSelectedOutcomeFork().getTextSubmission().getSubmissionId());
 
-            File rawUpdatedStories = new File("src/test/resources/WRITE_OPTIONS_AGAIN_stories_updated.json");
-            List<Story> expectedStories = objectMapper.readValue(
-                    rawUpdatedStories,
-                    objectMapper.getTypeFactory().constructCollectionType(List.class, Story.class)
-            );
-            verify(mockGameSessionRef, times(1)).update(eq("stories"), eq(expectedStories));
+            Story expectedStory = storyFromFixture(objectMapper, "src/test/resources/WRITE_OPTIONS_AGAIN_stories_updated.json", storyIdToUpdate);
+            verify(mockTransaction, times(1)).set(any(DocumentReference.class), eq(expectedStory));
         } catch (IOException e) {
             System.out.println("File failed to process" + e.getMessage());
         }
     }
 
-    private DocumentReference setupFirestoreStoryMocks(
+    private static final int STORY_ROUND = 1;
+
+    /**
+     * Mocks the story's own document at gameSessions/{gameCode}/rounds/1/stories/{storyId}, holding
+     * that story from the fixture, and runs StoryDAO's transaction against a mock Transaction.
+     */
+    private Transaction setupFirestoreStoryMocks(
             Firestore mockDb,
             ObjectMapper objectMapper,
             String gameCode,
+            String storyId,
             String filePath
     ) {
-            // Mock Firestore and related components
-            DocumentSnapshot mockGameSessionSnapshot = mock(DocumentSnapshot.class);
-            DocumentReference mockGameSessionRef = mock(DocumentReference.class);
-            CollectionReference mockCollectionRef = mock(CollectionReference.class);
+        CollectionReference mockStoriesRef = mock(CollectionReference.class);
+        DocumentReference mockStoryRef = mock(DocumentReference.class);
+        DocumentSnapshot mockStorySnapshot = mock(DocumentSnapshot.class);
+        Transaction mockTransaction = mock(Transaction.class);
 
+        when(mockDb.collection("gameSessions/" + gameCode + "/rounds/" + STORY_ROUND + "/stories")).thenReturn(mockStoriesRef);
+        when(mockStoriesRef.document(storyId)).thenReturn(mockStoryRef);
+        when(mockTransaction.get(mockStoryRef)).thenReturn(ApiFutures.immediateFuture(mockStorySnapshot));
 
-            // Mock Firestore reference and behavior
-            when(mockDb.collection("gameSessions")).thenReturn(mockCollectionRef);
-            when(mockCollectionRef.document(gameCode)).thenReturn(mockGameSessionRef);
-            when(mockGameSessionRef.get()).thenReturn(ApiFutures.immediateFuture(mockGameSessionSnapshot));
-            when(mockGameSessionSnapshot.exists()).thenReturn(true);
-
-            // Load game session JSON and set it as the return for the mock snapshot
-            File jsonFile = new File(filePath);
-
-            try {
-                Object rawStories = objectMapper.readValue(
-                        jsonFile,
-                        Object.class
-                );
-
-                when(mockGameSessionSnapshot.get("stories")).thenReturn(rawStories);
-                ApiFuture<WriteResult> mockApiFuture = mock(ApiFuture.class);
-                WriteResult writeResult = mock(WriteResult.class);
-                when(mockGameSessionRef.update(eq("stories"), any())).thenReturn(mockApiFuture);
-                when(mockApiFuture.get()).thenReturn(writeResult);
-                when(writeResult.toString()).thenReturn("Now");
-            } catch (IOException | ExecutionException | InterruptedException exception) {
-                throw new ResourceException("There was an issue setting up the DAO mocks", exception);
-            }
-
-            return mockGameSessionRef;
+        try {
+            Story storedStory = storyFromFixture(objectMapper, filePath, storyId);
+            when(mockStorySnapshot.toObject(Story.class)).thenReturn(storedStory);
+        } catch (IOException exception) {
+            throw new ResourceException("There was an issue setting up the DAO mocks", exception);
         }
+
+        when(mockDb.runTransaction(any())).thenAnswer(invocation -> {
+            Transaction.Function<?> function = invocation.getArgument(0);
+            return ApiFutures.immediateFuture(function.updateCallback(mockTransaction));
+        });
+        return mockTransaction;
+    }
+
+    private static Story storyFromFixture(ObjectMapper objectMapper, String filePath, String storyId) throws IOException {
+        List<Story> stories = objectMapper.readValue(
+                new File(filePath),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, Story.class)
+        );
+        return stories.stream()
+                .filter(story -> story.getStoryId().equals(storyId))
+                .findFirst()
+                .orElseThrow();
+    }
 }

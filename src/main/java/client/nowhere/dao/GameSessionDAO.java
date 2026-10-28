@@ -16,10 +16,12 @@ import java.util.concurrent.ExecutionException;
 public class GameSessionDAO {
 
     private final Firestore db;
+    private final StoryDAO storyDAO;
 
     @Autowired
-    public GameSessionDAO(Firestore db) {
+    public GameSessionDAO(Firestore db, StoryDAO storyDAO) {
         this.db = db;
+        this.storyDAO = storyDAO;
     }
 
     public GameSession createGameSession(
@@ -59,11 +61,14 @@ public class GameSessionDAO {
         DocumentReference docRef = db.collection("gameSessions").document(gameSession.getGameCode());
 
         try {
+            // GameSession.stories is @Exclude'd from the game document; they get their own documents
             ApiFuture<WriteResult> result = docRef.set(gameSession);
             WriteResult asyncResponse = result.get();
+            if (gameSession.getStories() != null && !gameSession.getStories().isEmpty()) {
+                storyDAO.createStories(gameSession.getGameCode(), gameSession.getStories(), roundNumber(gameSession));
+            }
 
-            DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getDocumentSnapshot(docRef);
-            gameSession = FirestoreDAOUtil.mapGameSession(gameSessionSnapshot);
+            gameSession = getGame(gameSession.getGameCode());
 
             System.out.println("Update time : " + result.get().toString());
             System.out.println("Object " + result.get().toString());
@@ -123,10 +128,15 @@ public class GameSessionDAO {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             gameSession = FirestoreDAOUtil.mapGameSession(gameSessionSnapshot);
+            gameSession.setStories(storyDAO.loadStories(gameCode, roundNumber(gameSession)));
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("There was an issue retrieving the game session " + e.getMessage());
         }
         return gameSession;
+    }
+
+    private static int roundNumber(GameSession gameSession) {
+        return gameSession.getRoundNumber() == null ? 0 : gameSession.getRoundNumber();
     }
 
     public Player updatePlayer(Player player) {
@@ -176,15 +186,18 @@ public class GameSessionDAO {
             if (!snapshot.exists()) {
                 throw new ResourceException("GameSession " + gameCode + " not found");
             }
-            return snapshot.toObject(GameSession.class);
+            GameSession gameSession = snapshot.toObject(GameSession.class);
+            gameSession.setStories(storyDAO.loadStoriesInTransaction(txn, gameCode, roundNumber(gameSession)));
+            return gameSession;
         } catch (Exception e) {
             throw new RuntimeException("Failed to get GameSession in transaction", e);
         }
     }
 
-    public void updateStoriesInTransaction(String gameCode, List<Story> stories, Transaction txn) {
-        DocumentReference ref = getGameRef(gameCode);
-        txn.update(ref, "stories", stories);
+    /** Adds one story inside a transaction that read the game with getGameInTransaction. */
+    public void addStoryInTransaction(GameSession gameSession, Story story, Transaction txn) {
+        story.setGameCode(gameSession.getGameCode());
+        storyDAO.createStoryInTransaction(txn, story, roundNumber(gameSession));
     }
 
     public <T> T runInTransaction(Transaction.Function<T> txnLogic) {

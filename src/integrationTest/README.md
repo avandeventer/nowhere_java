@@ -673,18 +673,40 @@ Client-side avg / p95 ms, prod (master) -> sandbox (branch):
 
 ### Next steps, in order
 
-1. Re-run `FullGameTenPlayersSequelTest` on sandbox with the `preferredTarget` harness fix. It has
-   never passed with extra additions actually running, so later assertions (round 2, ENDING) may
-   surface new failures.
-2. LOCATION_VOTING's done-flag contention: every voter's transaction queues on one document. Option:
-   a blind field update (`activeGameStateSession.isPlayerDone.<id>`), then one masked read, with a
-   transaction only to claim the progression.
-3. Batch `updatePlayer` / `updateStory`: one read and one write per request instead of one per
-   player or story (and close the lost-update race while doing it). Longer term, `players` and
-   `stories` could move out of the GameSession document the same way the phases did.
-4. `GET /voting` still does a full `getGame` (~240ms avg) on every poll; worth trimming after 1-3.
-5. `GET /collaborativeText/available`: now exercised live (6A7W46). Look into its 13s max in
-   round-1 WHAT_HAPPENS_HERE (30 concurrent calls, each reading the whole phase plus views).
+Agreed plan, 2026-10-26 (each step gets its own plan when we start it):
+
+1. **Stories split (in progress, uncommitted on `split-stories-fix-voting`).** One document per
+   story at `gameSessions/{code}/rounds/{round}/stories/{storyId}` (`StoryDAO`).
+   - `GameSessionDAO.getGame` still fills `GameSession.stories`, so helpers and `GET /game` are
+     unchanged.
+   - `updateStory` is now a transaction on one small story document.
+   - The player client no longer reads `stories` from the game document.
+   - No migration: games in progress at deploy time won't load their stories.
+   - Unit tests pass (175). Not yet run live: deploy to sandbox, run the 3/4/5/10-player tests,
+     check the stories in Firestore, compare root size and `PUT /game/next`.
+   - `SessionSizeLog` now leaves `stories` out of the total.
+   - Watch the `DELETE /admin/game` hang (above): this adds more subcollection documents.
+2. **Move `adventureMap` off the root** (~44-59KB) to a document next to `/rounds`.
+   - Both clients read it from the root `docData` today, so both need a second listener, plus a
+     Firestore security rule for that path.
+3. **Batch `updatePlayer` / `updateStory`.** One read and one write per request instead of one per
+   player or story (up to 20 `updatePlayer` in the last voter's `/votes`, 10 `updateStory` in
+   `PUT /game/next`), closing the lost-update race. Longer term, `players` out to per-player
+   documents.
+4. **Asynchronous phase transition from `/votes`.**
+   - Mark the player done and respond. Run `updateToNextGameState` in the background, claimed
+     exactly once via a compare-and-set flag (e.g. `nextGameStateLoading`).
+   - Also fix LOCATION_VOTING's done-flag contention: blind field update of
+     `activeGameStateSession.isPlayerDone.<id>`, then a masked read, with a transaction only to
+     claim the transition.
+   - Cloud Run throttles CPU after the response under request-based billing. So this needs
+     `--no-cpu-throttling` (costs more) or Cloud Tasks / Pub/Sub calling an internal endpoint.
+     Decide when we get there.
+
+Smaller items, not scheduled:
+- `GET /voting` still does a full `getGame` (~240ms avg) on every poll.
+- `GET /collaborativeText/available`: 13s max in round-1 WHAT_HAPPENS_HERE in 6A7W46 (30
+  concurrent calls, each reading the whole phase plus views).
 
 ## False leads from this session (corrected, for context)
 

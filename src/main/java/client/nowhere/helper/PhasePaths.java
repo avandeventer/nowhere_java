@@ -20,6 +20,9 @@ import static client.nowhere.model.GameState.*;
  *
  * phaseId is always GameState.getPhaseId(), so a new round or encounter starts from an empty phase.
  *
+ * A round's stories live next to its phases: gameSessions/{code}/rounds/{round}/stories/{storyId}
+ * (see storiesPath and StoryDAO).
+ *
  * MAKE_CHOICE_VOTING's submissions are written once per round (every encounter's options), but each
  * encounter is its own vote, so ballots carry a voteScope of the encounter: x{X}y{Y}.
  */
@@ -41,11 +44,20 @@ public final class PhasePaths {
 
     /** The phase's path in a specific round, e.g. to read an earlier round's phase. */
     public static String phasePath(GameSession gameSession, GameState phaseId, int roundNumber) {
-        String roundPath = "gameSessions/" + gameSession.getGameCode() + "/rounds/" + roundNumber;
+        String roundPath = roundPath(gameSession.getGameCode(), roundNumber);
         if (ENCOUNTER_SCOPED.contains(phaseId)) {
             return roundPath + "/encounters/" + encounterId(gameSession) + "/phases/" + phaseId.name();
         }
         return roundPath + "/phases/" + phaseId.name();
+    }
+
+    /** A round's stories, one document per story: gameSessions/{code}/rounds/{round}/stories/{storyId} */
+    public static String storiesPath(String gameCode, int roundNumber) {
+        return roundPath(gameCode, roundNumber) + "/stories";
+    }
+
+    private static String roundPath(String gameCode, int roundNumber) {
+        return "gameSessions/" + gameCode + "/rounds/" + roundNumber;
     }
 
     public static String voteScope(GameSession gameSession) {

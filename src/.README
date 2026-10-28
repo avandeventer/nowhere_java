@@ -61,7 +61,7 @@ src/main/java/client/nowhere/
 | `AdventureMap` | Holds `EncounterLabel[]` — the named locations players create in world setup |
 | `GameBoard` | `DungeonGrid`: a `Map<"x,y", Encounter>` representing the dungeon |
 | `Encounter` | A single cell on the grid; links to a `Story` and an `EncounterLabel` |
-| `Story` | A written scene: `prompt`, `authorId`, `selectedOptionId`, `Option[]`, `repercussions` |
+| `Story` | A written scene: `prompt`, `authorId`, `selectedOptionId`, `Option[]`, `repercussions`. Stored one document each at `gameSessions/{gameCode}/rounds/{round}/stories/{storyId}` (`StoryDAO`), not on the GameSession document; `GameSessionDAO.getGame` loads every round's stories into `GameSession.stories` in creation order |
 | `Option` | A proposed action: `optionText`, `successText`, `OutcomeFork[]` |
 | `TextSubmission` | A player's submission in a collaborative phase; has a `currentText` and `additions[]` |
 | `OutcomeType` / `OutcomeTypeWithLabel` | Describes what a player is assigned to write about in a given phase |
