@@ -57,7 +57,8 @@ jobs:
             --image ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_ARTIFACT_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:latest \
             --platform managed \
             --region ${{ secrets.GCP_REGION }} \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --memory 1Gi
 
   deploy-sandbox:
     if: github.event_name == 'pull_request' && github.event.action != 'closed'
@@ -102,6 +103,7 @@ jobs:
             --platform managed \
             --region ${{ secrets.GCP_REGION }} \
             --allow-unauthenticated \
+            --memory 1Gi \
             --update-env-vars=GCP_OBSERVABILITY_ENABLED=true
 
       - name: Print sandbox URL

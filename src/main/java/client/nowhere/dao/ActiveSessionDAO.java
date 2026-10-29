@@ -11,12 +11,15 @@ import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.FieldMask;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.WriteResult;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -73,44 +76,53 @@ public class ActiveSessionDAO {
     }
 
     public boolean updateActiveGameStateSession(String gameCode, GameState gamePhase, String authorId, boolean isDone) {
+        return updateActiveGameStateSession(gameCode, gamePhase, List.of(authorId), isDone);
+    }
+
+    /**
+     * Marks every player in authorIds done for gamePhase in one transaction, and returns true if
+     * every player is now done (the caller then progresses the game). Players already done are
+     * left alone. Returns false without writing if the game has already moved past gamePhase.
+     *
+     * The transaction reads only the fields it needs: the whole GameSession document is several
+     * hundred KB once stories pile up, and every player in a phase runs this at about the same
+     * time, so reading and deserializing all of it on every attempt made this the slowest call in
+     * POST /collaborativeText/votes and GET /collaborativeText/voting.
+     */
+    public boolean updateActiveGameStateSession(String gameCode, GameState gamePhase, Collection<String> authorIds, boolean isDone) {
         DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+        FieldMask doneCheckFields = FieldMask.of("gameState", "players", "activeGameStateSession");
 
         try {
             // Use Firestore transaction to ensure atomicity and prevent race conditions
             return db.runTransaction(transaction -> {
-                DocumentSnapshot gameSession = transaction.get(gameSessionRef).get();
+                DocumentSnapshot gameSession = transaction.getAll(new DocumentReference[]{gameSessionRef}, doneCheckFields).get().getFirst();
                 GameSession game = FirestoreDAOUtil.mapGameSession(gameSession);
                 ActiveGameStateSession activeSessionToUpdate = game.getActiveGameStateSession();
-                
-                // Early return if player is already done (idempotency check)
-                Boolean currentDoneStatus = activeSessionToUpdate.getIsPlayerDone().get(authorId);
-                if ((currentDoneStatus != null && currentDoneStatus) || !gamePhase.equals(game.getGameState())) {
-                    // Player already done or game phase has changed, return false (no progression needed)
-                    if (currentDoneStatus != null && currentDoneStatus) {
-                        System.out.println("Player " + authorId + " already marked as done, skipping duplicate update");
-                        return game.areAllPlayersDone();
-                    } else {
-                        System.out.println("Player " + authorId + " update skipped - game phase mismatch. Expected: " + gamePhase + ", Current: " + game.getGameState());
-                    }
+
+                if (!gamePhase.equals(game.getGameState())) {
+                    System.out.println("Players " + authorIds + " update skipped - game phase mismatch. Expected: " + gamePhase + ", Current: " + game.getGameState());
                     return false; // No progression needed
                 }
-                
-                // Process the update only if player is not already done
-                if (isDone) {
-                    activeSessionToUpdate.getIsPlayerDone().put(authorId, true);
-                    System.out.println("Player " + authorId + " marked as done");
-                    
-                    // Check if all players are done - if so, we'll need to progress the game
-                    if (game.areAllPlayersDone()) {
-                        System.out.println("All players are done - game progression needed");
-                        // Don't progress here - just mark that progression is needed
-                        // The helper layer will handle the actual progression
+
+                boolean changed = false;
+                for (String authorId : authorIds) {
+                    // Idempotency: players already done are skipped
+                    if (Boolean.TRUE.equals(activeSessionToUpdate.getIsPlayerDone().get(authorId))) {
+                        System.out.println("Player " + authorId + " already marked as done, skipping duplicate update");
+                    } else if (isDone) {
+                        activeSessionToUpdate.getIsPlayerDone().put(authorId, true);
+                        System.out.println("Player " + authorId + " marked as done");
+                        changed = true;
                     }
                 }
-                
+
                 // Update only the active game state session
-                transaction.update(gameSessionRef, "activeGameStateSession", activeSessionToUpdate);
-                return game.areAllPlayersDone(); // Return true if progression needed, false otherwise
+                if (changed) {
+                    transaction.update(gameSessionRef, "activeGameStateSession", activeSessionToUpdate);
+                }
+                // Don't progress here - the helper layer progresses the game when this is true
+                return game.areAllPlayersDone();
             }).get();
             
         } catch (InterruptedException | ExecutionException e) {

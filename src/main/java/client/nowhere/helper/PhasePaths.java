@@ -6,6 +6,7 @@ import client.nowhere.model.GameState;
 import client.nowhere.model.PlayerCoordinates;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import static client.nowhere.model.GameState.*;
@@ -20,6 +21,13 @@ import static client.nowhere.model.GameState.*;
  *
  * phaseId is always GameState.getPhaseId(), so a new round or encounter starts from an empty phase.
  *
+ * A round's stories live next to its phases: gameSessions/{code}/rounds/{round}/stories/{storyId}
+ * (see storiesPath and StoryDAO).
+ *
+ * Only the leaf documents (stories, submissions, votes, views) are ever written; round, encounter
+ * and phase documents exist only as parents of their subcollections. The collection names below
+ * are the whole layout, so GameSessionDAO.deleteGame can walk it.
+ *
  * MAKE_CHOICE_VOTING's submissions are written once per round (every encounter's options), but each
  * encounter is its own vote, so ballots carry a voteScope of the encounter: x{X}y{Y}.
  */
@@ -32,6 +40,18 @@ public final class PhasePaths {
             NAVIGATE_VOTING
     );
 
+    // gameSessions/{code}/ROUNDS/{round}
+    public static final String ROUNDS = "rounds";
+    // .../rounds/{round}/PHASES | ENCOUNTERS | STORIES
+    public static final String PHASES = "phases";
+    public static final String ENCOUNTERS = "encounters";
+    public static final String STORIES = "stories";
+    // {phasePath}/SUBMISSIONS | VOTES | VIEWS (CollaborativeTextDAO)
+    public static final String SUBMISSIONS = "submissions";
+    public static final String VOTES = "votes";
+    public static final String VIEWS = "views";
+    public static final List<String> PHASE_COLLECTIONS = List.of(SUBMISSIONS, VOTES, VIEWS);
+
     private PhasePaths() {
     }
 
@@ -41,11 +61,25 @@ public final class PhasePaths {
 
     /** The phase's path in a specific round, e.g. to read an earlier round's phase. */
     public static String phasePath(GameSession gameSession, GameState phaseId, int roundNumber) {
-        String roundPath = "gameSessions/" + gameSession.getGameCode() + "/rounds/" + roundNumber;
+        String roundPath = roundPath(gameSession.getGameCode(), roundNumber);
         if (ENCOUNTER_SCOPED.contains(phaseId)) {
-            return roundPath + "/encounters/" + encounterId(gameSession) + "/phases/" + phaseId.name();
+            return roundPath + "/" + ENCOUNTERS + "/" + encounterId(gameSession) + "/" + PHASES + "/" + phaseId.name();
         }
-        return roundPath + "/phases/" + phaseId.name();
+        return roundPath + "/" + PHASES + "/" + phaseId.name();
+    }
+
+    /** A round's stories, one document per story: gameSessions/{code}/rounds/{round}/stories/{storyId} */
+    public static String storiesPath(String gameCode, int roundNumber) {
+        return roundPath(gameCode, roundNumber) + "/" + STORIES;
+    }
+
+    /** Every round of a game: gameSessions/{code}/rounds */
+    public static String roundsPath(String gameCode) {
+        return "gameSessions/" + gameCode + "/" + ROUNDS;
+    }
+
+    private static String roundPath(String gameCode, int roundNumber) {
+        return roundsPath(gameCode) + "/" + roundNumber;
     }
 
     public static String voteScope(GameSession gameSession) {
