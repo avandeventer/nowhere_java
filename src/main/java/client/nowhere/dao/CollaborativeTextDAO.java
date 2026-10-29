@@ -1,6 +1,7 @@
 package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
+import client.nowhere.helper.PhasePaths;
 import client.nowhere.model.CollaborativeTextPhase;
 import client.nowhere.model.PlayerBallot;
 import client.nowhere.model.PlayerVote;
@@ -156,15 +157,15 @@ public class CollaborativeTextDAO {
     }
 
     private CollectionReference submissions(String phasePath) {
-        return db.document(phasePath).collection("submissions");
+        return db.document(phasePath).collection(PhasePaths.SUBMISSIONS);
     }
 
     private CollectionReference votes(String phasePath) {
-        return db.document(phasePath).collection("votes");
+        return db.document(phasePath).collection(PhasePaths.VOTES);
     }
 
     private CollectionReference views(String phasePath) {
-        return db.document(phasePath).collection("views");
+        return db.document(phasePath).collection(PhasePaths.VIEWS);
     }
 
     private static CollaborativeTextPhase emptyPhase(String phaseId) {

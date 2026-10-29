@@ -661,15 +661,30 @@ Client-side avg / p95 ms, prod (master) -> sandbox (branch):
   contention is still there.
 - Unrelated endpoints ran 20-40ms slower on sandbox: environment noise, since the code is the same.
 
-**`DELETE /admin/game` hangs on a full extras game.**
+**`DELETE /admin/game` is too slow on a full extras game** (it was first read as a hang; corrected
+2026-10-28).
 - Prod returned 504 after Cloud Run's 300s limit, with nothing logged in between. The harness gave
   up after its 60s read timeout.
 - `recursiveDelete` removed everything except the root document and the last-sorted docs:
   `rounds/2/phases/WRITE_EPILOGUES/views/*` (9 on prod, 7 on sandbox).
 - Every earlier delete took under 1s (MZPSAZ 0.7s), but none of those games had `views` docs.
 - Retrying the sandbox delete with only those leftovers took 0.9s.
-- Not yet known whether the trigger is `views` docs or the size of a full game.
-- Prod `EBTTB4` is still partially there.
+- Correction: it wasn't hung. Sandbox 3JDVBQ's delete finished with a 200 after **255s**, after
+  the harness had given up at 60s. A manual retry on BMN2M6's leftovers took 11s.
+  `recursiveDelete` was deleting about one document per second, in path order. Whatever a 504
+  leaves is the tail of that order, plus the game document, which is deleted last.
+- After the stories split, sandbox PW8HV2 also hit 300s: about 30 more documents per game.
+- The SDK (3.21.4) is configured for 500 operations/s, so the cause sits inside the SDK and is
+  unproven. Most likely retries with backoff, which it logs below Cloud Logging's level.
+- **Fix (2026-10-28, uncommitted):** `GameSessionDAO.deleteGame` no longer uses
+  `recursiveDelete`.
+  - It walks the `PhasePaths` layout: `listCollections()`/`listDocuments()` on the never-written
+    round, encounter and phase parents; ID-only queries on stories, submissions, votes and views;
+    parallel 500-document batches; the game document last.
+  - Unknown subcollections are logged (`WARNING deleteGame: leaving unknown collection ...`) and
+    left alone.
+  - It's safe to re-run on a game whose document is already gone (PW8HV2). Unit-tested
+    (`GameSessionDAOTest`), not yet run live.
 
 ### Next steps, in order
 
@@ -685,7 +700,7 @@ Agreed plan, 2026-10-26 (each step gets its own plan when we start it):
    - Unit tests pass (175). Not yet run live: deploy to sandbox, run the 3/4/5/10-player tests,
      check the stories in Firestore, compare root size and `PUT /game/next`.
    - `SessionSizeLog` now leaves `stories` out of the total.
-   - Watch the `DELETE /admin/game` hang (above): this adds more subcollection documents.
+   - `DELETE /admin/game` is now a `PhasePaths` walk instead of `recursiveDelete` (above).
 2. **Move `adventureMap` off the root** (~44-59KB) to a document next to `/rounds`.
    - Both clients read it from the root `docData` today, so both need a second listener, plus a
      Firestore security rule for that path.
