@@ -58,7 +58,7 @@ src/main/java/client/nowhere/
 | `GameState` | Enum driving the full state machine (see Phase Reference below) |
 | `ActiveGameStateSession` | Per-game server-side phase state; holds `TextSubmission[]` for the current phase |
 | `ActivePlayerSession` | Per-player live state: `startTimer`, `contributionPhaseActive`, `writeTimerDone` |
-| `AdventureMap` | Holds `EncounterLabel[]` — the named locations players create in world setup |
+| `AdventureMap` | Holds `EncounterLabel[]` — the named locations players create in world setup. A game's copy is its own document at `gameSessions/{gameCode}/adventureMap/map` (`AdventureMapDAO`, `PhasePaths.adventureMapPath`), not on the GameSession document; `GameSessionDAO.getGame` loads it into `GameSession.adventureMap`. Clients don't read it from Firestore: each loads `GET /display` once at startup (the display text plus `adventureMapName`, which isn't stored) for the start screen's map name and the phone's "View Our World" drawer; preamble/ending text reaches the TV through the phase info's `phaseQuestion` |
 | `GameBoard` | `DungeonGrid`: a `Map<"x,y", Encounter>` representing the dungeon |
 | `Encounter` | A single cell on the grid; links to a `Story` and an `EncounterLabel` |
 | `Story` | A written scene: `prompt`, `authorId`, `selectedOptionId`, `Option[]`, `repercussions`. Stored one document each at `gameSessions/{gameCode}/rounds/{round}/stories/{storyId}` (`StoryDAO`), not on the GameSession document; `GameSessionDAO.getGame` loads every round's stories into `GameSession.stories` in creation order |

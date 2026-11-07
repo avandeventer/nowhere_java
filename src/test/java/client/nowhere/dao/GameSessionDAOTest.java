@@ -51,12 +51,16 @@ class GameSessionDAOTest {
                 parentDocument(leafCollection("votes", encounterVote)));
         CollectionReference encounters = parentCollection("encounters", parentDocument(encounterPhases));
         CollectionReference rounds = parentCollection("rounds", parentDocument(stories, phases, encounters));
+        // adventureMap/map
+        DocumentReference adventureMap = mock(DocumentReference.class);
+        CollectionReference adventureMapCollection = leafCollection("adventureMap", adventureMap);
         // Not part of the layout: logged, not deleted
-        CollectionReference unknown = leafCollection("adventureMap", unknownDocument);
-        when(gameSessionRef.listCollections()).thenReturn(List.of(rounds, unknown));
+        CollectionReference unknown = leafCollection("somethingNew", unknownDocument);
+        when(gameSessionRef.listCollections()).thenReturn(List.of(rounds, adventureMapCollection, unknown));
 
         new GameSessionDAO(db, mock(StoryDAO.class)).deleteGame(GAME_CODE);
 
+        verify(batch).delete(adventureMap);
         verify(batch).delete(story);
         verify(batch).delete(submission);
         verify(batch).delete(encounterVote);

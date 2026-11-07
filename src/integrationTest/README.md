@@ -701,9 +701,28 @@ Agreed plan, 2026-10-26 (each step gets its own plan when we start it):
      check the stories in Firestore, compare root size and `PUT /game/next`.
    - `SessionSizeLog` now leaves `stories` out of the total.
    - `DELETE /admin/game` is now a `PhasePaths` walk instead of `recursiveDelete` (above).
-2. **Move `adventureMap` off the root** (~44-59KB) to a document next to `/rounds`.
-   - Both clients read it from the root `docData` today, so both need a second listener, plus a
-     Firestore security rule for that path.
+2. **Move `adventureMap` off the root (code done 2026-10-28, uncommitted, not run live).**
+   - One document at `gameSessions/{code}/adventureMap/map` (`PhasePaths.adventureMapPath`).
+     `getGame` loads it in parallel with the stories, so helpers and `GET /game` are unchanged.
+   - `AdventureMapDAO` reads and writes the map document; `initializeDungeonGrid` batches
+     `gameBoard` + `encounterLabels`; `deleteGame` knows the new collection.
+   - Clients no longer read the map from Firestore. Analysis: of the whole map they used only
+     `name`, the favor stat and `gameSessionDisplay`; `locations` and `encounterLabels` (the bulk)
+     were never read, and the TV's `setCurrentLocation()` was dead code (removed).
+   - Follow-up audit (2026-11-07): the clients' display reads were mostly fallbacks for the
+     phase info's `phaseQuestion`/`phaseInstructions` (which the backend builds from the display),
+     and `entity`/the favor stat only fed unreachable fallback text. So no summary endpoint:
+     `GET /display` now also returns `adventureMapName` (filled from the map, `@Exclude`d so it
+     isn't stored). Each client loads it once at startup, for the start screen's map name and the
+     phone's "View Our World" drawer (which no longer fetches on every open).
+   - Removed: the TV's preamble fallback strings and `favorStat`, the TV collaborative-text's
+     unused display fetch, phone voting's unused display input, and phone collaborative-text's
+     `entity` lookup (labels now say "the Entity"). The TV's older-mode screens (not reachable in
+     DUNGEON_MODE) still read the startup copy.
+   - No migration: games in progress at deploy time lose their map.
+   - Unit tests pass (180). Both clients build. To verify live: run the 3/4/5/10-player tests on
+     sandbox, check `adventureMap/map` exists and the root has no `adventureMap`, and check the TV
+     and phones show the map name and entity text.
 3. **Batch `updatePlayer` / `updateStory`.** One read and one write per request instead of one per
    player or story (up to 20 `updatePlayer` in the last voter's `/votes`, 10 `updateStory` in
    `PUT /game/next`), closing the lost-update race. Longer term, `players` out to per-player

@@ -51,10 +51,13 @@ public class GameSessionDAO {
         gameSession.setGameMode(gameMode);
 
         try {
-            ApiFuture<WriteResult> result = docRef.set(gameSession);
-            WriteResult asyncResponse = result.get();
-            System.out.println("Update time : " + result.get().toString());
-            System.out.println("Object " + result.get().toString());
+            // GameSession.adventureMap is @Exclude'd from the game document; it gets its own
+            WriteBatch batch = db.batch();
+            batch.set(docRef, gameSession);
+            if (adventureMap != null) {
+                batch.set(adventureMapRef(sessionCode), adventureMap);
+            }
+            batch.commit().get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue creating the game session", e);
@@ -66,17 +69,18 @@ public class GameSessionDAO {
         DocumentReference docRef = db.collection("gameSessions").document(gameSession.getGameCode());
 
         try {
-            // GameSession.stories is @Exclude'd from the game document; they get their own documents
-            ApiFuture<WriteResult> result = docRef.set(gameSession);
-            WriteResult asyncResponse = result.get();
+            // GameSession.stories and .adventureMap are @Exclude'd from the game document; they get their own documents
+            WriteBatch batch = db.batch();
+            batch.set(docRef, gameSession);
+            if (gameSession.getAdventureMap() != null) {
+                batch.set(adventureMapRef(gameSession.getGameCode()), gameSession.getAdventureMap());
+            }
+            batch.commit().get();
             if (gameSession.getStories() != null && !gameSession.getStories().isEmpty()) {
                 storyDAO.createStories(gameSession.getGameCode(), gameSession.getStories(), roundNumber(gameSession));
             }
 
             gameSession = getGame(gameSession.getGameCode());
-
-            System.out.println("Update time : " + result.get().toString());
-            System.out.println("Object " + result.get().toString());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue creating the game session", e);
@@ -133,11 +137,21 @@ public class GameSessionDAO {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
             DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
             gameSession = FirestoreDAOUtil.mapGameSession(gameSessionSnapshot);
+            ApiFuture<DocumentSnapshot> adventureMap = adventureMapRef(gameCode).get();
             gameSession.setStories(storyDAO.loadStories(gameCode, roundNumber(gameSession)));
+            gameSession.setAdventureMap(toAdventureMap(adventureMap.get()));
         } catch (InterruptedException | ExecutionException e) {
             System.out.println("There was an issue retrieving the game session " + e.getMessage());
         }
         return gameSession;
+    }
+
+    private DocumentReference adventureMapRef(String gameCode) {
+        return db.document(PhasePaths.adventureMapPath(gameCode));
+    }
+
+    private static AdventureMap toAdventureMap(DocumentSnapshot snapshot) {
+        return snapshot.exists() ? snapshot.toObject(AdventureMap.class) : null;
     }
 
     private static int roundNumber(GameSession gameSession) {
@@ -175,8 +189,9 @@ public class GameSessionDAO {
     /**
      * Deletes a game and everything under it, walking the layout PhasePaths describes:
      *
-     *   gameSessions/{code}/rounds/{round}/stories/{storyId}
-     *   gameSessions/{code}/rounds/{round}/phases/{phaseId}/{submissions|votes|views}/{id}
+     *   gameSessions/{code}/adventureMap/map
+ *   gameSessions/{code}/rounds/{round}/stories/{storyId}
+*   gameSessions/{code}/rounds/{round}/phases/{phaseId}/{submissions|votes|views}/{id}
      *   gameSessions/{code}/rounds/{round}/encounters/x{X}y{Y}/phases/{phaseId}/{submissions|votes|views}/{id}
      *
      * Round, encounter and phase documents are never written, so listCollections() on them finds
@@ -193,8 +208,12 @@ public class GameSessionDAO {
         DocumentReference gameSessionRef = getGameRef(gameCode);
         List<ApiFuture<QuerySnapshot>> leafQueries = new ArrayList<>();
 
-        for (CollectionReference rounds : knownCollections(gameSessionRef, Set.of(PhasePaths.ROUNDS))) {
-            for (DocumentReference round : rounds.listDocuments()) {
+        for (CollectionReference gameCollection : knownCollections(gameSessionRef, Set.of(PhasePaths.ROUNDS, PhasePaths.ADVENTURE_MAP))) {
+            if (gameCollection.getId().equals(PhasePaths.ADVENTURE_MAP)) {
+                leafQueries.add(documentIds(gameCollection));
+                continue;
+            }
+            for (DocumentReference round : gameCollection.listDocuments()) {
                 for (CollectionReference roundCollection : knownCollections(round, Set.of(PhasePaths.STORIES, PhasePaths.PHASES, PhasePaths.ENCOUNTERS))) {
                     switch (roundCollection.getId()) {
                         case PhasePaths.STORIES -> leafQueries.add(documentIds(roundCollection));
@@ -275,6 +294,7 @@ public class GameSessionDAO {
                 throw new ResourceException("GameSession " + gameCode + " not found");
             }
             GameSession gameSession = snapshot.toObject(GameSession.class);
+            gameSession.setAdventureMap(toAdventureMap(txn.get(adventureMapRef(gameCode)).get()));
             gameSession.setStories(storyDAO.loadStoriesInTransaction(txn, gameCode, roundNumber(gameSession)));
             return gameSession;
         } catch (Exception e) {
@@ -302,11 +322,10 @@ public class GameSessionDAO {
     public void initializeDungeonGrid(String gameCode, GameBoard gameBoard, List<EncounterLabel> encounterLabels) {
         try {
             DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            ApiFuture<WriteResult> result = gameSessionRef.update(
-                "gameBoard", gameBoard,
-                "adventureMap.encounterLabels", encounterLabels
-            );
-            result.get();
+            WriteBatch batch = db.batch();
+            batch.update(gameSessionRef, "gameBoard", gameBoard);
+            batch.set(adventureMapRef(gameCode), Map.of("encounterLabels", encounterLabels), SetOptions.merge());
+            batch.commit().get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue initializing the dungeon grid", e);

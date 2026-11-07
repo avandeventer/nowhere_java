@@ -32,7 +32,7 @@ public class GameSessionController {
                 @RequestParam(required = false, defaultValue = "d9cb0595-86fe-4aac-bfce-918e212a4508") String saveGameId,//"4b8a146a-ccf6-41cf-961a-65096d70bf82") String saveGameId,
                 @RequestParam(required = false, defaultValue = "1") Integer storiesToWritePerRound,
                 @RequestParam(required = false, defaultValue =  "1") Integer storiesToPlayPerRound,
-                @RequestParam(required = false, defaultValue = "TOWN_MODE") GameMode gameMode
+                @RequestParam(required = false, defaultValue = "DUNGEON_MODE") GameMode gameMode
     ) {
         return this.gameSessionHelper.createGameSession(userProfileId, adventureId, saveGameId, storiesToWritePerRound, storiesToPlayPerRound, gameMode);
     }

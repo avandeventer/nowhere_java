@@ -115,10 +115,14 @@ public class GameSession {
         this.activeGameStateSession = activeGameStateSession;
     }
 
+    // Stored as its own document (PhasePaths.adventureMapPath, AdventureMapDAO), not on the game
+    // document. GameSessionDAO.getGame fills it in; Jackson still sends it in GET /game.
+    @Exclude
     public AdventureMap getAdventureMap() {
         return adventureMap;
     }
 
+    @Exclude
     public void setAdventureMap(AdventureMap adventureMap) {
         this.adventureMap = adventureMap;
     }

@@ -22,7 +22,8 @@ import static client.nowhere.model.GameState.*;
  * phaseId is always GameState.getPhaseId(), so a new round or encounter starts from an empty phase.
  *
  * A round's stories live next to its phases: gameSessions/{code}/rounds/{round}/stories/{storyId}
- * (see storiesPath and StoryDAO).
+ * (see storiesPath and StoryDAO). The game's adventure map is one document next to the rounds:
+ * gameSessions/{code}/adventureMap/map (see adventureMapPath and AdventureMapDAO).
  *
  * Only the leaf documents (stories, submissions, votes, views) are ever written; round, encounter
  * and phase documents exist only as parents of their subcollections. The collection names below
@@ -42,6 +43,9 @@ public final class PhasePaths {
 
     // gameSessions/{code}/ROUNDS/{round}
     public static final String ROUNDS = "rounds";
+    // gameSessions/{code}/ADVENTURE_MAP/ADVENTURE_MAP_ID: a game has exactly one map
+    public static final String ADVENTURE_MAP = "adventureMap";
+    public static final String ADVENTURE_MAP_ID = "map";
     // .../rounds/{round}/PHASES | ENCOUNTERS | STORIES
     public static final String PHASES = "phases";
     public static final String ENCOUNTERS = "encounters";
@@ -71,6 +75,11 @@ public final class PhasePaths {
     /** A round's stories, one document per story: gameSessions/{code}/rounds/{round}/stories/{storyId} */
     public static String storiesPath(String gameCode, int roundNumber) {
         return roundPath(gameCode, roundNumber) + "/" + STORIES;
+    }
+
+    /** The game's adventure map: gameSessions/{code}/adventureMap/map */
+    public static String adventureMapPath(String gameCode) {
+        return "gameSessions/" + gameCode + "/" + ADVENTURE_MAP + "/" + ADVENTURE_MAP_ID;
     }
 
     /** Every round of a game: gameSessions/{code}/rounds */
