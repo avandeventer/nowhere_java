@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -137,10 +138,12 @@ public class VotingHelperTest {
         assertEquals(expectedActivePlayerIds, activePlayerIds, "Active player IDs should rotate for each coordinate");
 
         for(Player player : gameSession.getPlayers()) {
-            if (!expectedActivePlayerIds.contains(player.getAuthorId())) {
-                verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(gameSession.getGameState()), eq(player.getAuthorId()), eq(true));
+            boolean alreadyDone = Boolean.TRUE.equals(gameSession.getActiveGameStateSession().getIsPlayerDone().get(player.getAuthorId()));
+            if (!expectedActivePlayerIds.contains(player.getAuthorId()) && !alreadyDone) {
+                verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(gameSession.getGameState()), eq(List.of(player.getAuthorId())), eq(true));
             } else {
-                verify(activeSessionHelper, never()).update(eq(gameCode), eq(gameSession.getGameState()), eq(player.getAuthorId()), eq(true));
+                // Active players aren't marked done, and players already done are skipped without a transaction
+                verify(activeSessionHelper, never()).update(eq(gameCode), eq(gameSession.getGameState()), eq(List.of(player.getAuthorId())), eq(true));
             }
         }
     }
@@ -274,11 +277,12 @@ public class VotingHelperTest {
         assertEquals(List.of(playerVote),
                 collaborativeTextDAO.allVotes(GameState.valueOf(phaseId)).get(playerVote.getPlayerId()));
 
-        for(Player player : gameSession.getPlayers()) {
-            if (!activeStory.getPlayerIds().contains(player.getAuthorId())) {
-                verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_CHOICE_VOTING), eq(player.getAuthorId()), eq(true));
-            }
-        }
+        // Every player outside the active story is marked done, all in one call
+        List<String> inactivePlayerIds = gameSession.getPlayers().stream()
+                .map(Player::getAuthorId)
+                .filter(authorId -> !activeStory.getPlayerIds().contains(authorId))
+                .toList();
+        verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_CHOICE_VOTING), eq(inactivePlayerIds), eq(true));
     }
 
     static Stream<Arguments> provideMakeChoiceVotingScenarios() {
@@ -303,6 +307,7 @@ public class VotingHelperTest {
         );
 
         //Verify active player for the story is set to done instead of being allowed to vote on their own outcomes
-        verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_OUTCOME_CHOICE_VOTING), eq("eaa157ee-9d88-4d49-a728-4c8abca37119"), eq(true));
+        verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_OUTCOME_CHOICE_VOTING),
+                argThat((Collection<String> playerIds) -> playerIds.contains("eaa157ee-9d88-4d49-a728-4c8abca37119")), eq(true));
     }
 }

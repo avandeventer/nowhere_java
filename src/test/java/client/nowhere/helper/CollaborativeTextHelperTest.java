@@ -18,10 +18,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -252,11 +254,8 @@ public class CollaborativeTextHelperTest {
                     "additions size mismatch for submission " + submission.getSubmissionId());
         }
 
-        // Verify storyDAO.createStory was called for each winning submission
-        ArgumentCaptor<Story> storyCaptor = ArgumentCaptor.forClass(Story.class);
-        verify(storyDAO, times(gameSession.getPlayers().size())).createStory(storyCaptor.capture());
-
-        List<Story> createdStories = storyCaptor.getAllValues();
+        // Verify one story was created per player, in a single storyDAO.createStories call
+        List<Story> createdStories = createdStories();
         assertEquals(gameSession.getPlayers().size(), createdStories.size(),
                 "Should have " + gameSession.getPlayers().size() + " stories created via StoryDAO");
 
@@ -467,13 +466,13 @@ public class CollaborativeTextHelperTest {
         // Assert - every created Story's assigned player should actually have selected that
         // story's location. This is the exact invariant that broke in the real play test: Andy's
         // Beard's selectedLocationId didn't match the location of the story he was assigned.
-        ArgumentCaptor<Story> storyCaptor = ArgumentCaptor.forClass(Story.class);
-        verify(storyDAO, times(numPlayers)).createStory(storyCaptor.capture());
+        List<Story> createdStories = createdStories();
+        assertEquals(numPlayers, createdStories.size());
 
         Map<String, Player> playersById = players.stream()
                 .collect(Collectors.toMap(Player::getAuthorId, p -> p));
 
-        for (Story story : storyCaptor.getAllValues()) {
+        for (Story story : createdStories) {
             Player assignedPlayer = playersById.get(story.getPlayerId());
             assertNotNull(assignedPlayer, "Story assigned to unknown player id: " + story.getPlayerId());
 
@@ -520,13 +519,9 @@ public class CollaborativeTextHelperTest {
         // Act
         collaborativeTextHelper.calculateWinningSubmission(gameCode);
 
-        // Assert - verify updatePlayer was called for each voting player with the correct
-        // selectedLocationId. Players whose location grants a trait are updated twice (once for
-        // the selectedLocationId, once for the trait), so we only assert a lower bound here.
-        ArgumentCaptor<Player> playerCaptor = ArgumentCaptor.forClass(Player.class);
-        verify(gameSessionDAO, atLeast(expectedPlayerLocationIds.size())).updatePlayer(playerCaptor.capture());
-
-        List<Player> updatedPlayers = playerCaptor.getAllValues();
+        // Assert - every voting player is persisted (in one updatePlayers call, together with any
+        // location traits) with the correct selectedLocationId.
+        List<Player> updatedPlayers = persistedPlayers();
         Map<String, Player> actualPlayersById = updatedPlayers.stream()
                 .collect(Collectors.toMap(Player::getAuthorId, p -> p, (first, second) -> second));
         Map<String, String> actualPlayerLocationIds = actualPlayersById.entrySet().stream()
@@ -961,20 +956,20 @@ public class CollaborativeTextHelperTest {
         for (Map.Entry<String, String> entry : expectedTraitLabelByPlayerId.entrySet()) {
             String playerId = entry.getKey();
             String expectedLabel = entry.getValue();
-            verify(gameSessionDAO).updatePlayer(argThat(p ->
+            assertPlayerPersisted(p ->
                     playerId.equals(p.getAuthorId()) &&
                     p.getTraits() != null &&
                     p.getTraits().stream().anyMatch(t -> expectedLabel.equals(t.getTraitLabel()))
-            ));
+            );
         }
         for (Map.Entry<String, String> entry : expectedTitleLabelByPlayerId.entrySet()) {
             String playerId = entry.getKey();
             String expectedLabel = entry.getValue();
-            verify(gameSessionDAO).updatePlayer(argThat(p ->
+            assertPlayerPersisted(p ->
                     playerId.equals(p.getAuthorId()) &&
                         p.getTraits() != null &&
                         p.getTraits().stream().anyMatch(t -> expectedLabel.equals(t.getTraitLabel()))
-            ));
+            );
             Player updatedPlayer = gameSession.getPlayers().stream()
                     .filter(p -> playerId.equals(p.getAuthorId()))
                     .findFirst().orElseThrow();
@@ -1083,21 +1078,21 @@ public class CollaborativeTextHelperTest {
         for (Map.Entry<String, List<String>> entry : expectedTraitLabelByPlayerId.entrySet()) {
             String playerId = entry.getKey();
             for (String label : entry.getValue()) {
-                verify(gameSessionDAO).updatePlayer(argThat(p ->
+                assertPlayerPersisted(p ->
                         playerId.equals(p.getAuthorId()) &&
                         p.getTraits() != null &&
                         p.getTraits().stream().anyMatch(t -> label.equals(t.getTraitLabel()))
-                ));
+                );
             }
         }
         for (Map.Entry<String, List<String>> entry : expectedTitleLabelByPlayerId.entrySet()) {
             String playerId = entry.getKey();
             for (String label : entry.getValue()) {
-                verify(gameSessionDAO).updatePlayer(argThat(p ->
+                assertPlayerPersisted(p ->
                         playerId.equals(p.getAuthorId()) &&
                             p.getTraits() != null &&
                             p.getTraits().stream().anyMatch(t -> label.equals(t.getTraitLabel()))
-                ));
+                );
                 Player updatedPlayer = gameSession.getPlayers().stream()
                         .filter(p -> playerId.equals(p.getAuthorId()))
                         .findFirst().orElseThrow();
@@ -1164,10 +1159,10 @@ public class CollaborativeTextHelperTest {
 
         collaborativeTextHelper.calculateWinningSubmission(gameCode);
 
-        verify(gameSessionDAO).updatePlayer(argThat(p ->
+        assertPlayerPersisted(p ->
                 kirstenId.equals(p.getAuthorId())
                         && p.getTraits().stream().anyMatch(t -> "Bear Wrestler".equals(t.getTraitLabel()))
-        ));
+        );
     }
 
     static Stream<Arguments> provideOutcomeChoiceScenarios() {
@@ -1402,16 +1397,16 @@ public class CollaborativeTextHelperTest {
 
         collaborativeTextHelper.calculateWinningSubmission(gameCode);
 
-        verify(gameSessionDAO).updatePlayer(argThat(p ->
+        assertPlayerPersisted(p ->
                 subodhId.equals(p.getAuthorId())
                         && p.getTraits().stream().anyMatch(t -> "besties (Joe)".equals(t.getTraitLabel())
                                 && relationshipId.equals(t.getTraitId()))
-        ));
-        verify(gameSessionDAO).updatePlayer(argThat(p ->
+        );
+        assertPlayerPersisted(p ->
                 joeId.equals(p.getAuthorId())
                         && p.getTraits().stream().anyMatch(t -> "besties (Subodh)".equals(t.getTraitLabel())
                                 && relationshipId.equals(t.getTraitId()))
-        ));
+        );
     }
 
     // ===== GET OUTCOME TYPES DISTRIBUTION TESTS =====
@@ -1738,5 +1733,28 @@ public class CollaborativeTextHelperTest {
 //                        false
 //                )
         );
+    }
+
+    // Phase handlers persist the players they change in one gameSessionDAO.updatePlayers call; these
+    // collect every player passed to it (across calls) for assertions.
+    @SuppressWarnings("unchecked")
+    private List<Player> persistedPlayers() {
+        ArgumentCaptor<Collection<Player>> captor = ArgumentCaptor.forClass(Collection.class);
+        verify(gameSessionDAO, atLeast(0)).updatePlayers(anyString(), captor.capture());
+        return captor.getAllValues().stream().flatMap(Collection::stream).toList();
+    }
+
+    // New stories are written in one storyDAO.createStories call, never one createStory at a time
+    @SuppressWarnings("unchecked")
+    private List<Story> createdStories() {
+        ArgumentCaptor<List<Story>> captor = ArgumentCaptor.forClass(List.class);
+        verify(storyDAO, times(1)).createStories(anyString(), captor.capture(), anyInt());
+        verify(storyDAO, never()).createStory(any());
+        return captor.getValue();
+    }
+
+    private void assertPlayerPersisted(ArgumentMatcher<Player> matcher) {
+        assertTrue(persistedPlayers().stream().anyMatch(matcher::matches),
+                "Expected a player matching the assertion to be persisted via updatePlayers");
     }
 }

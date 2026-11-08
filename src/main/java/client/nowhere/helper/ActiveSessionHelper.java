@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,8 +30,16 @@ public class ActiveSessionHelper {
     }
 
     public void update(String gameCode, GameState gamePhase, String authorId, boolean isDone) {
-        boolean gameProgressionNeeded = this.activeSessionDAO.updateActiveGameStateSession(gameCode, gamePhase, authorId, isDone);
-        
+        update(gameCode, gamePhase, List.of(authorId), isDone);
+    }
+
+    /** Marks several players done in one transaction; progresses the game if that finishes the phase. */
+    public void update(String gameCode, GameState gamePhase, Collection<String> authorIds, boolean isDone) {
+        if (authorIds.isEmpty()) {
+            return;
+        }
+        boolean gameProgressionNeeded = this.activeSessionDAO.updateActiveGameStateSession(gameCode, gamePhase, authorIds, isDone);
+
         if (gameProgressionNeeded && !gamePhase.equals(GameState.INIT)) {
             System.out.println("All players are done, progressing game state via GameSessionHelper");
             this.gameSessionHelper.updateToNextGameState(gameCode);

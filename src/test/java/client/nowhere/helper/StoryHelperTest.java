@@ -85,9 +85,7 @@ class StoryHelperTest {
         assertEquals(gameCode, result.getGameCode());
         assertEquals(locationId, result.getLocation().getId());
 
-        List<Story> expectedUpdatedStories = mockGameSession.getStories();
-        expectedUpdatedStories.add(result);
-        verify(gameSessionDAO).updateStoriesInTransaction(eq(gameCode), eq(expectedUpdatedStories), any());
+        verify(gameSessionDAO).addStoryInTransaction(eq(mockGameSession), eq(result), any());
     }
 
     @ParameterizedTest
@@ -189,9 +187,7 @@ class StoryHelperTest {
             verify(userProfileDAO).getRegularSaveGameStories(mockGameSession, locationId);
         }
         assertEquals("1", result.getLocation().getId());
-        List<Story> expectedUpdatedStories = new ArrayList<>(gameSessionStories);
-        expectedUpdatedStories.add(result);
-        verify(gameSessionDAO).updateStoriesInTransaction(eq(gameCode), eq(expectedUpdatedStories), any());
+        verify(gameSessionDAO).addStoryInTransaction(eq(mockGameSession), eq(result), any());
     }
 
     static Stream<Arguments> provideSequelStoryScenarios() {

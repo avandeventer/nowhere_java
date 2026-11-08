@@ -877,7 +877,7 @@ public class FullGameScenario {
         CollaborativeTextPhase response = client.addToSubmission(gameCode, bardAuthorId, target.rootSubmissionId(),
                 storyText("Bard senses this will echo for everyone who was here."), allPlayersType, ALL_PLAYERS_REPERCUSSION_NAME);
         String forkId = claimNewSubmissionId(response);
-        allPlayersAloneTarget = new ScenarioTarget(target.storyId(), target.optionId(), forkId);
+        allPlayersAloneTarget = preferredTarget(target, forkId);
     }
 
     /**
@@ -1091,7 +1091,7 @@ public class FullGameScenario {
         CollaborativeTextPhase response = client.addToSubmission(gameCode, fabulistAuthorId, target.rootSubmissionId(),
                 storyText("Fabulist recognizes a kindred spirit in this encounter."), repercussionType, encounterLabel);
         String forkId = claimNewSubmissionId(response);
-        return new ScenarioTarget(target.storyId(), target.optionId(), forkId);
+        return preferredTarget(target, forkId);
     }
 
     private String findEncounterLabel(String gameCode, String storyId) {
@@ -1129,7 +1129,7 @@ public class FullGameScenario {
         CollaborativeTextPhase response = client.addToSubmission(gameCode, scribeAuthorId, target.rootSubmissionId(),
                 storyText("Scribe notes their steadfast resolve."), repercussionType, TRAIT_ALONE_LABEL);
         String forkId = claimNewSubmissionId(response);
-        traitAloneTarget = new ScenarioTarget(target.storyId(), target.optionId(), forkId);
+        traitAloneTarget = preferredTarget(target, forkId);
     }
 
     private void attachCombinedTraitAndAllPlayersScenario(String gameCode, String scribeAuthorId, String bardAuthorId, String targetAuthorId) {
@@ -1151,7 +1151,21 @@ public class FullGameScenario {
                 storyText("Bard makes sure the whole party hears of it."), allPlayersType, ALL_PLAYERS_REPERCUSSION_NAME);
         String chainFinal = claimNewSubmissionId(spreadResponse);
 
-        combinedTarget = new ScenarioTarget(target.storyId(), target.optionId(), chainFinal);
+        combinedTarget = preferredTarget(target, chainFinal);
+    }
+
+    /**
+     * A scenario target whose Option and fork the harness votes for. "Single fork -> auto-select"
+     * only holds at the fork level: HOW_DOES_THIS_RESOLVE_AGAIN's writer gets a pre-canned option
+     * once the story's WHAT_CAN_WE_TRY options are resolved (.OUTCOMES.md), so nearly every round-1
+     * story reaches MAKE_CHOICE_VOTING with 2+ Options. Without a preferred id, runVotingPhase
+     * votes for the first candidate - the one with the most additions - which extraAdditionsPerPlayer
+     * can easily make the competing option.
+     */
+    private ScenarioTarget preferredTarget(ResolvedOption target, String forkId) {
+        preferredWinningSubmissionIds.add(target.optionId());
+        preferredWinningSubmissionIds.add(forkId);
+        return new ScenarioTarget(target.storyId(), target.optionId(), forkId);
     }
 
     private void attachTitleScenario(String gameCode, String heraldAuthorId, String targetAuthorId, String decoyAuthorId) {
