@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -81,6 +84,41 @@ public class StoryDAO {
             applyUpdate(storyToUpdate, story);
             transaction.set(storyRef, storyToUpdate);
             return storyToUpdate;
+        }));
+    }
+
+    /**
+     * updateStory for several stories in one transaction: one getAll for every story document,
+     * then one write each. For phase handlers that change many stories (or the same story several
+     * times) in one request; a story passed twice is written once, with its last version.
+     */
+    public void updateStories(Collection<Story> stories) {
+        Map<String, Story> latestById = new LinkedHashMap<>();
+        stories.forEach(story -> latestById.put(story.getStoryId(), story));
+
+        List<DocumentReference> storyRefs = new ArrayList<>();
+        List<Story> updates = new ArrayList<>();
+        for (Story story : latestById.values()) {
+            DocumentReference storyRef = findStoryRef(story);
+            if (storyRef == null) {
+                System.out.println("Story " + story.getStoryId() + " not found in game " + story.getGameCode() + ", nothing updated");
+                continue;
+            }
+            storyRefs.add(storyRef);
+            updates.add(story);
+        }
+        if (storyRefs.isEmpty()) {
+            return;
+        }
+
+        await(db.runTransaction(transaction -> {
+            List<DocumentSnapshot> snapshots = transaction.getAll(storyRefs.toArray(new DocumentReference[0])).get();
+            for (int i = 0; i < storyRefs.size(); i++) {
+                Story storyToUpdate = snapshots.get(i).toObject(Story.class);
+                applyUpdate(storyToUpdate, updates.get(i));
+                transaction.set(storyRefs.get(i), storyToUpdate);
+            }
+            return null;
         }));
     }
 

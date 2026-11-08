@@ -1,5 +1,7 @@
 package client.nowhere.dao;
 
+import client.nowhere.model.GameSession;
+import client.nowhere.model.Player;
 import com.google.api.core.ApiFutures;
 import com.google.cloud.firestore.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class GameSessionDAOTest {
@@ -79,6 +83,52 @@ class GameSessionDAOTest {
 
         verify(batch, never()).delete(any(DocumentReference.class));
         verify(gameSessionRef).delete();
+    }
+
+    @Test
+    void updatePlayers_mergesEveryPlayerIntoTheStoredArrayInOneWrite() {
+        Player storedA = player("A", 1);
+        Player storedB = player("B", 1);
+        Player storedC = player("C", 1);
+        Transaction transaction = transactionReadingPlayers(List.of(storedA, storedB, storedC));
+
+        new GameSessionDAO(db, mock(StoryDAO.class)).updatePlayers(GAME_CODE, List.of(player("A", 5), player("C", 7)));
+
+        verify(transaction, times(1)).update(eq(gameSessionRef), eq("players"), argThat((List<Player> players) ->
+                players.size() == 3
+                        && players.get(0).getStrength() == 5
+                        && players.get(1).getStrength() == 1
+                        && players.get(2).getStrength() == 7));
+    }
+
+    @Test
+    void updatePlayers_withNoPlayers_doesNothing() {
+        new GameSessionDAO(db, mock(StoryDAO.class)).updatePlayers(GAME_CODE, List.of());
+
+        verify(db, never()).runTransaction(any());
+    }
+
+    private static Player player(String authorId, int strength) {
+        Player player = new Player();
+        player.setAuthorId(authorId);
+        player.setStrength(strength);
+        return player;
+    }
+
+    // Runs GameSessionDAO's transaction against a mock whose masked read returns these players
+    private Transaction transactionReadingPlayers(List<Player> storedPlayers) {
+        Transaction transaction = mock(Transaction.class);
+        DocumentSnapshot snapshot = mock(DocumentSnapshot.class);
+        GameSession stored = new GameSession();
+        stored.setPlayers(new ArrayList<>(storedPlayers));
+        when(snapshot.exists()).thenReturn(true);
+        when(snapshot.toObject(GameSession.class)).thenReturn(stored);
+        when(transaction.getAll(any(DocumentReference[].class), any(FieldMask.class))).thenReturn(ApiFutures.immediateFuture(List.of(snapshot)));
+        when(db.runTransaction(any())).thenAnswer(invocation -> {
+            Transaction.Function<?> function = invocation.getArgument(0);
+            return ApiFutures.immediateFuture(function.updateCallback(transaction));
+        });
+        return transaction;
     }
 
     // A never-written parent document (round, encounter, phase) with these subcollections

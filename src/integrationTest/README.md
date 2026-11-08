@@ -723,10 +723,22 @@ Agreed plan, 2026-10-26 (each step gets its own plan when we start it):
    - Unit tests pass (180). Both clients build. To verify live: run the 3/4/5/10-player tests on
      sandbox, check `adventureMap/map` exists and the root has no `adventureMap`, and check the TV
      and phones show the map name and entity text.
-3. **Batch `updatePlayer` / `updateStory`.** One read and one write per request instead of one per
-   player or story (up to 20 `updatePlayer` in the last voter's `/votes`, 10 `updateStory` in
-   `PUT /game/next`), closing the lost-update race. Longer term, `players` out to per-player
-   documents.
+3. **Batch `updatePlayer` / `updateStory` (code done 2026-11-07, uncommitted, not run live).**
+   - `GameSessionDAO.updatePlayers(gameCode, players)`: one transaction that reads only the
+     `players` field (masked read), merges each player with the existing `Player.updatePlayer`
+     rules and writes `players` once. `updatePlayer` delegates to it, so `PUT /player` is
+     transactional too, which closes the window where a concurrent write to another player was lost.
+   - `StoryDAO.updateStories(stories)`: one transaction, one `getAll` for every story document,
+     one write each; a story passed several times is written once with its last version.
+   - Batched call sites: LOCATION_VOTING (was 10 voter + 10 location-trait writes in the last
+     voter's `/votes`, now 1), story repercussions, ACCEPT_PARTNER_CHOICE (players and the two
+     partnered stories), DEFINING_TRAITS, HOW_DOES_THIS_RESOLVE's stories (in `PUT /game/next`),
+     and the older-mode author-assignment and occupation loops. `handleLocationTraits` now returns
+     who changed instead of persisting.
+   - Unit tests pass (183): helper tests now assert on players passed to `updatePlayers`;
+     new tests for both DAO methods. To verify live: the last voter's LOCATION_VOTING `/votes`
+     and HOW_DOES_THIS_RESOLVE(_AGAIN)'s `PUT /game/next`, against the prod/sandbox table above.
+   - Longer term, unchanged: `players` out to per-player documents.
 4. **Asynchronous phase transition from `/votes`.**
    - Mark the player done and respond. Run `updateToNextGameState` in the background, claimed
      exactly once via a compare-and-set flag (e.g. `nextGameStateLoading`).

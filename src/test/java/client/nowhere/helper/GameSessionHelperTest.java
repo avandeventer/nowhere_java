@@ -3,6 +3,7 @@ package client.nowhere.helper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,10 +25,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
@@ -707,7 +710,7 @@ public class GameSessionHelperTest {
         // Assert - Verify repercussion side effects
         if (!expectedUpdatedPlayerIds.isEmpty()) {
             for (String playerId : expectedUpdatedPlayerIds) {
-                verify(gameSessionDAO).updatePlayer(argThat(p -> playerId.equals(p.getAuthorId())));
+                assertPlayerPersisted(p -> playerId.equals(p.getAuthorId()));
             }
         }
 
@@ -1061,4 +1064,17 @@ public class GameSessionHelperTest {
         );
     }
 
+    // Phase handlers persist the players they change in one gameSessionDAO.updatePlayers call; these
+    // collect every player passed to it (across calls) for assertions.
+    @SuppressWarnings("unchecked")
+    private List<Player> persistedPlayers() {
+        ArgumentCaptor<Collection<Player>> captor = ArgumentCaptor.forClass(Collection.class);
+        verify(gameSessionDAO, atLeast(0)).updatePlayers(anyString(), captor.capture());
+        return captor.getAllValues().stream().flatMap(Collection::stream).toList();
+    }
+
+    private void assertPlayerPersisted(ArgumentMatcher<Player> matcher) {
+        assertTrue(persistedPlayers().stream().anyMatch(matcher::matches),
+                "Expected a player matching the assertion to be persisted via updatePlayers");
+    }
 }

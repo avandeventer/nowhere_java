@@ -821,13 +821,10 @@ public class CollaborativeTextHelper {
             outcomeDisplay.add(encounterLabel + "\" may return again next round.");
         }
 
-        // Persist affected players
-        for (Player player : allPlayers) {
-            if (updatedPlayerIds.contains(player.getAuthorId())) {
-                player.setGameCode(gameSession.getGameCode());
-                gameSessionDAO.updatePlayer(player);
-            }
-        }
+        // Persist affected players, in one write
+        gameSessionDAO.updatePlayers(gameSession.getGameCode(), allPlayers.stream()
+                .filter(player -> updatedPlayerIds.contains(player.getAuthorId()))
+                .toList());
 
         // Persist outcomeDisplay on the active player session
         if (!outcomeDisplay.isEmpty()) {
@@ -1105,6 +1102,7 @@ public class CollaborativeTextHelper {
         try {
             String gameCode = gameSession.getGameCode();
             Map<String, List<PlayerVote>> playerVotes = getPhaseVotes(gameSession, LOCATION_VOTING);
+            Set<String> updatedPlayerIds = new HashSet<>();
 
             for (Map.Entry<String, List<PlayerVote>> entry : playerVotes.entrySet()) {
                 String playerId = entry.getKey();
@@ -1119,21 +1117,26 @@ public class CollaborativeTextHelper {
                         .findFirst()
                         .ifPresent(player -> {
                             player.setSelectedLocationId(locationId);
-                            player.setGameCode(gameCode);
-                            gameSessionDAO.updatePlayer(player);
+                            updatedPlayerIds.add(playerId);
                         });
             }
 
-            handleLocationTraits(gameSession);
+            updatedPlayerIds.addAll(handleLocationTraits(gameSession));
+            // Every voter's location and any location traits, in one write
+            gameSessionDAO.updatePlayers(gameCode, gameSession.getPlayers().stream()
+                    .filter(player -> updatedPlayerIds.contains(player.getAuthorId()))
+                    .toList());
         } catch (Exception e) {
             System.err.println("Failed to handle LOCATION_VOTING: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void handleLocationTraits(GameSession gameSession) {
+    /** Grants each player their selected location's traits; returns who changed (the caller persists them). */
+    private Set<String> handleLocationTraits(GameSession gameSession) {
         String gameCode = gameSession.getGameCode();
-        List<Location> locations = gameSession.getAdventureMap() != null
+        Set<String> updatedPlayerIds = new HashSet<>();
+        List<Location> locations= gameSession.getAdventureMap() != null
                 ? gameSession.getAdventureMap().getLocations()
                 : adventureMapDAO.getLocations(gameCode);
 
@@ -1159,10 +1162,9 @@ public class CollaborativeTextHelper {
             for (Trait trait : newTraits) {
                 applyTraitToPlayers(trait, List.of(player));
             }
-
-            player.setGameCode(gameCode);
-            gameSessionDAO.updatePlayer(player);
+            updatedPlayerIds.add(player.getAuthorId());
         }
+        return updatedPlayerIds;
     }
 
     void setLocationTraitOutcomeDisplay(List<Player> players, Location playerLocation, ActivePlayerSession activePlayerSession) {
@@ -1484,6 +1486,8 @@ public class CollaborativeTextHelper {
 
             // WHAT_CAN_WE_TRY submissions to remove (one per resolved option), deleted in one batch below
             Set<String> resolvedWhatCanWeTryIds = new LinkedHashSet<>();
+            // Stories the winners add options/forks to, written once each in one transaction below
+            List<Story> updatedStories = new ArrayList<>();
 
             // Process each winning submission
             for (TextSubmission winner : winningSubmissions) {
@@ -1551,7 +1555,7 @@ public class CollaborativeTextHelper {
                                     }
                                 }
 
-                                storyDAO.updateStory(matchingStory);
+                                updatedStories.add(matchingStory);
 
                                 // Remove the submission from WHAT_CAN_WE_TRY phase that matches subType.id
                                 resolvedWhatCanWeTryIds.add(optionId);
@@ -1561,6 +1565,7 @@ public class CollaborativeTextHelper {
                 }
             }
 
+            storyDAO.updateStories(updatedStories);
             collaborativeTextDAO.deleteSubmissions(PhasePaths.phasePath(gameSession, WHAT_CAN_WE_TRY), resolvedWhatCanWeTryIds);
 
             if (gameSession.getGameState() == GameState.HOW_DOES_THIS_RESOLVE_AGAIN) {
@@ -1643,12 +1648,9 @@ public class CollaborativeTextHelper {
                     outcomeDisplay.add("Visiting " + location.getLabel() + " granted the trait \"" + trait.getTraitLabel() + "\"!");
                 }
 
-                for (Player player : storyPlayer) {
-                    if (updatedPlayerIds.contains(player.getAuthorId())) {
-                        player.setGameCode(gameSession.getGameCode());
-                        gameSessionDAO.updatePlayer(player);
-                    }
-                }
+                gameSessionDAO.updatePlayers(gameSession.getGameCode(), storyPlayer.stream()
+                        .filter(player -> updatedPlayerIds.contains(player.getAuthorId()))
+                        .toList());
             }
 
             storyDAO.updateStory(story);
@@ -1923,11 +1925,13 @@ public class CollaborativeTextHelper {
             Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
             if (story == null) return;
 
+            // Both partnered stories, written together below
+            List<Story> updatedStories = new ArrayList<>();
             List<String> partnerIds = story.getPartnerIds();
             if (!partnerIds.contains(winnerPlayerId)) {
                 partnerIds.add(winnerPlayerId);
                 story.setPartnerIds(partnerIds);
-                storyDAO.updateStory(story);
+                updatedStories.add(story);
             }
 
             // Also add story.playerId as a partner on the winner's story at the same location
@@ -1946,10 +1950,11 @@ public class CollaborativeTextHelper {
                             if (!partnerStoryPartnerIds.contains(storyPlayerId)) {
                                 partnerStoryPartnerIds.add(storyPlayerId);
                                 partnerStory.setPartnerIds(partnerStoryPartnerIds);
-                                storyDAO.updateStory(partnerStory);
+                                updatedStories.add(partnerStory);
                             }
                         });
             }
+            storyDAO.updateStories(updatedStories);
             addRelationshipTraitsToPlayers(gameSession, winnerPlayerId, storyPlayerId);
         } catch (Exception e) {
             System.err.println("Failed to handle ACCEPT_PARTNER_CHOICE_VOTING: " + e.getMessage());
@@ -1975,8 +1980,7 @@ public class CollaborativeTextHelper {
 
             applyTraitToPlayers(new Trait(partnerId, relationshipLabel + "(" + storyPlayer.getUserName() + ")",  TraitType.RELATIONSHIP), List.of(partneredPlayer));
             applyTraitToPlayers(new Trait(partnerId, relationshipLabel + "(" + partneredPlayer.getUserName() + ")",  TraitType.RELATIONSHIP), List.of(storyPlayer));
-            gameSessionDAO.updatePlayer(partneredPlayer);
-            gameSessionDAO.updatePlayer(storyPlayer);
+            gameSessionDAO.updatePlayers(gameSession.getGameCode(), List.of(partneredPlayer, storyPlayer));
         }
     }
 
@@ -2979,6 +2983,7 @@ public class CollaborativeTextHelper {
     }
 
     private void handleDefiningTraitsInternal(GameSession gameSession, List<TextSubmission> winningSubmissions) {
+        List<Player> updatedPlayers = new ArrayList<>();
         for (TextSubmission sub : winningSubmissions) {
             Player player = gameSession.getPlayers().stream()
                     .filter(p -> p.getAuthorId().equals(sub.getAuthorId()))
@@ -3013,9 +3018,9 @@ public class CollaborativeTextHelper {
             }
 
             player.setDefiningTraits(definingTraits);
-            player.setGameCode(gameSession.getGameCode());
-            gameSessionDAO.updatePlayer(player);
+            updatedPlayers.add(player);
         }
+        gameSessionDAO.updatePlayers(gameSession.getGameCode(), updatedPlayers);
     }
 
     public List<TextSubmission> getMakeChoiceVotingOutcomeForks(GameSession gameSession) {

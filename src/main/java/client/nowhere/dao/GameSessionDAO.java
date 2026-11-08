@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -159,22 +160,36 @@ public class GameSessionDAO {
     }
 
     public Player updatePlayer(Player player) {
-        try {
-            GameSession gameSession = getGame(player.getGameCode());
-            List<Player> players = gameSession.getPlayers();
-            players.stream()
-                    .filter(existingPlayer -> existingPlayer.getAuthorId().equals(player.getAuthorId()))
-                    .forEach(existingPlayer -> existingPlayer.updatePlayer(player));
-            DocumentReference gameSessionRef = db.collection("gameSessions").document(player.getGameCode());
-            ApiFuture<WriteResult> result = gameSessionRef.update("players", players);
-            WriteResult asyncResponse = result.get();
-            System.out.println("Update time : " + asyncResponse.toString());
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            throw new ResourceException("There was an issue updating the player", e);
-        }
-
+        updatePlayers(player.getGameCode(), List.of(player));
         return player;
+    }
+
+    /**
+     * Merges each player into the stored players array (Player.updatePlayer) and writes the array
+     * once, in a transaction that reads only the players field. Phase handlers collect every player
+     * they change and call this once: per-player calls each re-read the whole game document and
+     * rewrote the array, up to 20 times in one request, and without a transaction a concurrent
+     * write to another player could be lost.
+     */
+    public void updatePlayers(String gameCode, Collection<Player> players) {
+        if (players.isEmpty()) {
+            return;
+        }
+        DocumentReference gameSessionRef = getGameRef(gameCode);
+        await(db.runTransaction(transaction -> {
+            DocumentSnapshot snapshot = transaction.getAll(new DocumentReference[]{gameSessionRef}, FieldMask.of("players")).get().getFirst();
+            List<Player> storedPlayers = FirestoreDAOUtil.mapGameSession(snapshot).getPlayers();
+            if (storedPlayers == null) {
+                return null;
+            }
+            for (Player player : players) {
+                storedPlayers.stream()
+                        .filter(storedPlayer -> storedPlayer.getAuthorId().equals(player.getAuthorId()))
+                        .forEach(storedPlayer -> storedPlayer.updatePlayer(player));
+            }
+            transaction.update(gameSessionRef, "players", storedPlayers);
+            return null;
+        }));
     }
 
     public Player getPlayer(String gameCode, String authorId) {

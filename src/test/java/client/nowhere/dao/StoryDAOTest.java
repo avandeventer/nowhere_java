@@ -153,6 +153,48 @@ public class StoryDAOTest {
         }
     }
 
+    @Test
+    void updateStories_writesEachStoryOnceWithItsLatestVersionInOneTransaction() {
+        String gameCode = "GAME123";
+        Firestore mockDb = mock(Firestore.class);
+        CollectionReference mockStoriesRef = mock(CollectionReference.class);
+        DocumentReference firstRef = mock(DocumentReference.class);
+        DocumentReference secondRef = mock(DocumentReference.class);
+        when(mockDb.collection("gameSessions/" + gameCode + "/rounds/" + STORY_ROUND + "/stories")).thenReturn(mockStoriesRef);
+        when(mockStoriesRef.document("first")).thenReturn(firstRef);
+        when(mockStoriesRef.document("second")).thenReturn(secondRef);
+
+        DocumentSnapshot firstSnapshot = mock(DocumentSnapshot.class);
+        DocumentSnapshot secondSnapshot = mock(DocumentSnapshot.class);
+        when(firstSnapshot.toObject(Story.class)).thenReturn(story(gameCode, "first", ""));
+        when(secondSnapshot.toObject(Story.class)).thenReturn(story(gameCode, "second", ""));
+        Transaction mockTransaction = mock(Transaction.class);
+        when(mockTransaction.getAll(firstRef, secondRef)).thenReturn(ApiFutures.immediateFuture(List.of(firstSnapshot, secondSnapshot)));
+        when(mockDb.runTransaction(any())).thenAnswer(invocation -> {
+            Transaction.Function<?> function = invocation.getArgument(0);
+            return ApiFutures.immediateFuture(function.updateCallback(mockTransaction));
+        });
+
+        // "first" is changed twice in one request; only its last version is written
+        new StoryDAO(mockDb).updateStories(List.of(
+                story(gameCode, "first", "PLAYER_A"),
+                story(gameCode, "second", "PLAYER_B"),
+                story(gameCode, "first", "PLAYER_C")));
+
+        verify(mockDb, times(1)).runTransaction(any());
+        verify(mockTransaction, times(1)).set(eq(firstRef), argThat((Story s) -> "PLAYER_C".equals(s.getPlayerId())));
+        verify(mockTransaction, times(1)).set(eq(secondRef), argThat((Story s) -> "PLAYER_B".equals(s.getPlayerId())));
+    }
+
+    private static Story story(String gameCode, String storyId, String playerId) {
+        Story story = new Story();
+        story.setGameCode(gameCode);
+        story.setStoryId(storyId);
+        story.setRoundNumber(STORY_ROUND);
+        story.setPlayerId(playerId);
+        return story;
+    }
+
     private static final int STORY_ROUND = 1;
 
     /**
