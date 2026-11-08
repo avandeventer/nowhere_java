@@ -254,11 +254,8 @@ public class CollaborativeTextHelperTest {
                     "additions size mismatch for submission " + submission.getSubmissionId());
         }
 
-        // Verify storyDAO.createStory was called for each winning submission
-        ArgumentCaptor<Story> storyCaptor = ArgumentCaptor.forClass(Story.class);
-        verify(storyDAO, times(gameSession.getPlayers().size())).createStory(storyCaptor.capture());
-
-        List<Story> createdStories = storyCaptor.getAllValues();
+        // Verify one story was created per player, in a single storyDAO.createStories call
+        List<Story> createdStories = createdStories();
         assertEquals(gameSession.getPlayers().size(), createdStories.size(),
                 "Should have " + gameSession.getPlayers().size() + " stories created via StoryDAO");
 
@@ -469,13 +466,13 @@ public class CollaborativeTextHelperTest {
         // Assert - every created Story's assigned player should actually have selected that
         // story's location. This is the exact invariant that broke in the real play test: Andy's
         // Beard's selectedLocationId didn't match the location of the story he was assigned.
-        ArgumentCaptor<Story> storyCaptor = ArgumentCaptor.forClass(Story.class);
-        verify(storyDAO, times(numPlayers)).createStory(storyCaptor.capture());
+        List<Story> createdStories = createdStories();
+        assertEquals(numPlayers, createdStories.size());
 
         Map<String, Player> playersById = players.stream()
                 .collect(Collectors.toMap(Player::getAuthorId, p -> p));
 
-        for (Story story : storyCaptor.getAllValues()) {
+        for (Story story : createdStories) {
             Player assignedPlayer = playersById.get(story.getPlayerId());
             assertNotNull(assignedPlayer, "Story assigned to unknown player id: " + story.getPlayerId());
 
@@ -1745,6 +1742,15 @@ public class CollaborativeTextHelperTest {
         ArgumentCaptor<Collection<Player>> captor = ArgumentCaptor.forClass(Collection.class);
         verify(gameSessionDAO, atLeast(0)).updatePlayers(anyString(), captor.capture());
         return captor.getAllValues().stream().flatMap(Collection::stream).toList();
+    }
+
+    // New stories are written in one storyDAO.createStories call, never one createStory at a time
+    @SuppressWarnings("unchecked")
+    private List<Story> createdStories() {
+        ArgumentCaptor<List<Story>> captor = ArgumentCaptor.forClass(List.class);
+        verify(storyDAO, times(1)).createStories(anyString(), captor.capture(), anyInt());
+        verify(storyDAO, never()).createStory(any());
+        return captor.getValue();
     }
 
     private void assertPlayerPersisted(ArgumentMatcher<Player> matcher) {

@@ -1244,6 +1244,9 @@ public class CollaborativeTextHelper {
                 playersAssignedForDistribution.put(playerSortResult.getAssignedAuthor().getAuthorId(), playerSortResult);
             }
 
+            // Every new story (submitted and pre-canned), written together before the board
+            List<Story> newStories = new ArrayList<>();
+
             for (int i = 0; i < winningSubmissions.size(); i++) {
                 TextSubmission submission = winningSubmissions.get(i);
 
@@ -1324,7 +1327,7 @@ public class CollaborativeTextHelper {
                     story.getPlayerIds().add(playerId);
                 }
 
-                storyDAO.createStory(story);
+                newStories.add(story);
 
                 // Create encounter with the story
                 Encounter encounter = new Encounter(
@@ -1348,7 +1351,7 @@ public class CollaborativeTextHelper {
                 preCannedStory.getPlayerIds().add(playerId);
                 preCannedStory.setRoundNumber(gameSession.getRoundNumber());
 
-                storyDAO.createStory(preCannedStory);
+                newStories.add(preCannedStory);
 
                 Encounter encounter = new Encounter(
                     preCannedStory.getEncounterLabel(),
@@ -1360,6 +1363,8 @@ public class CollaborativeTextHelper {
                 int x = currentX + winningSubmissions.size() + i;
                 gameBoard.setEncounter(x, y, encounter);
             }
+
+            storyDAO.createStories(gameCode, newStories, gameSession.getRoundNumber());
 
             // Update the game board in Firestore
             gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
@@ -2891,6 +2896,8 @@ public class CollaborativeTextHelper {
 
             Map<String, Integer> locationPlayerCount = new HashMap<>();
             List<TextSubmission> storyOptionSubmissions = new ArrayList<>();
+            // One starting story per player, written together before the board
+            List<Story> newStories = new ArrayList<>();
 
             for (int i = 0; i < players.size(); i++) {
                 Player player = players.get(i);
@@ -2958,7 +2965,7 @@ public class CollaborativeTextHelper {
                 }
 
                 story.setRoundNumber(gameSession.getRoundNumber());
-                storyDAO.createStory(story);
+                newStories.add(story);
 
                 Encounter encounter = new Encounter(
                         encounterLabel,
@@ -2969,6 +2976,7 @@ public class CollaborativeTextHelper {
                 gameBoard.setEncounter(currentX + i, y, encounter);
             }
 
+            storyDAO.createStories(gameCode, newStories, gameSession.getRoundNumber());
             gameSessionDAO.updateDungeonGrid(gameCode, gameBoard);
             initializeMakeChoiceVotingPhase(gameSession, storyOptionSubmissions);
         } catch (Exception e) {

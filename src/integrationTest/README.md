@@ -735,6 +735,11 @@ Agreed plan, 2026-10-26 (each step gets its own plan when we start it):
      partnered stories), DEFINING_TRAITS, HOW_DOES_THIS_RESOLVE's stories (in `PUT /game/next`),
      and the older-mode author-assignment and occupation loops. `handleLocationTraits` now returns
      who changed instead of persisting.
+   - Story creation: WHAT_HAPPENS_HERE (streamlined, submitted plus pre-canned stories) and the
+     round-zero board collect their new stories and write them with the existing
+     `StoryDAO.createStories` (one `WriteBatch`, list order kept as `insertOrder`) before
+     `updateDungeonGrid`, instead of one `createStory` per player. No unit test covers the
+     round-zero board.
    - Unit tests pass (183): helper tests now assert on players passed to `updatePlayers`;
      new tests for both DAO methods. To verify live: the last voter's LOCATION_VOTING `/votes`
      and HOW_DOES_THIS_RESOLVE(_AGAIN)'s `PUT /game/next`, against the prod/sandbox table above.
