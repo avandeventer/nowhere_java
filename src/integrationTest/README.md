@@ -91,6 +91,9 @@ severity logs) + manual curl probing against `S9FU4D`/`64S7KT`/a fresh throwaway
   it calls `GameSessionHelper.updateToNextGameState()` itself, **inside the same
   `POST /collaborativeText/votes` request**. That single request chained
   `LOCATION_VOTING → LOCATION_WINNING → SET_ENCOUNTERS` and persisted it successfully — no crash.
+  *(Since step 4 of the latency work, 2026-11-08, that transition no longer runs inside the
+  request: the last done flag locks it and it runs in the background. `FullGameScenario.
+  advanceAfterActions` waits for it. See "Next steps" item 4.)*
 - `FullGameScenario`'s loop didn't know that happened. It **unconditionally** called
   `PUT /game/next` after every `runPhaseActions()`, regardless of whether the state had already
   moved. That redundant call tried to advance the *already-current* `SET_ENCOUNTERS` state to
@@ -744,15 +747,49 @@ Agreed plan, 2026-10-26 (each step gets its own plan when we start it):
      new tests for both DAO methods. To verify live: the last voter's LOCATION_VOTING `/votes`
      and HOW_DOES_THIS_RESOLVE(_AGAIN)'s `PUT /game/next`, against the prod/sandbox table above.
    - Longer term, unchanged: `players` out to per-player documents.
-4. **Asynchronous phase transition from `/votes`.**
-   - Mark the player done and respond. Run `updateToNextGameState` in the background, claimed
-     exactly once via a compare-and-set flag (e.g. `nextGameStateLoading`).
-   - Also fix LOCATION_VOTING's done-flag contention: blind field update of
-     `activeGameStateSession.isPlayerDone.<id>`, then a masked read, with a transaction only to
-     claim the transition.
-   - Cloud Run throttles CPU after the response under request-based billing. So this needs
-     `--no-cpu-throttling` (costs more) or Cloud Tasks / Pub/Sub calling an internal endpoint.
-     Decide when we get there.
+4. **Asynchronous game state transition (code done 2026-11-08; renamed 2026-11-14 to "game state" and "lock", uncommitted, not run live; Cloud Tasks
+   setup not done).** Decisions: Cloud Tasks (not `--no-cpu-throttling`); every done-flag path goes
+   to the background; `PUT /game/next` stays synchronous and returns the current game when a
+   transition is already running; done flags are blind writes stamped with their phase.
+   - Done flags (`ActiveSessionDAO.updateActiveGameStateSession`): masked read of `gameState`, a
+     blind write of `activeGameStateSession.isPlayerDone.<id>` (TV progress display) and
+     `activeGameStateSession.donePhase.<id> = <gameState>`, then a masked read. "Everyone done"
+     (`GameSession.areAllPlayersDoneInCurrentState`) counts only `donePhase` entries equal to the
+     current state, so a late write from the previous phase can't end the next one early.
+     `resetPlayerDoneStatus` clears `donePhase`.
+   - Exactly once: `GameSession.transitionLock` `{lockId, fromState, lockedAt, startedAt}`,
+     set by `ActiveSessionDAO.lockTransition` in a transaction (which also sets
+     `activePlayerSession.nextGameStateLoading`; the old separate blind write is gone). A lock is
+     live while `fromState` is the current state and it is under 2 minutes old
+     (`TRANSITION_LOCK_TTL`). `unlockTransition` removes it after the transition, success or failure.
+   - `GameStateTransitionHelper`: `nextGameState` (`PUT /game/next`: lock, run inline, unlock; if
+     already locked, return the current game), `allPlayersDone` (from `ActiveSessionHelper.update`:
+     lock, then queue), `runQueued` (`startTransition` marks the lock started so a redelivered
+     task does nothing, then run, unlock). If queueing fails it runs in the request instead.
+   - Without `TRANSITIONS_QUEUE`, locally the background transition runs on an in-process
+     executor (4 daemon threads); on Cloud Run it runs inside the request. With it, `CloudTasksTransitionQueue` creates a task
+     that calls `POST /internal/transitions?gameCode&lockId` with an OIDC token for
+     `TRANSITIONS_SERVICE_ACCOUNT`, audience `TRANSITIONS_TARGET_URL`; `GameStateTransitionController`
+     verifies it (403 otherwise; also 403 whenever no queue is configured) and always answers 200
+     once verified.
+   - Harness: `FullGameScenario.advanceAfterActions` calls `PUT /game/next` only when the state is
+     unchanged and there is no lock, then polls `GET /game` every 250ms (120s timeout) while a
+     lock for the old state is set, and logs how long it waited. Those polls show up in the
+     latency log as `GET /game`.
+   - Unit tests pass (202): `ActiveSessionDAOTest` (done flags, lock/start/unlock) and
+     `GameStateTransitionHelperTest`. The app starts locally and `/internal/transitions` returns 403
+     without a token.
+   - Still to do, needs the user's go-ahead (GCP changes): enable `cloudtasks.googleapis.com`;
+     create queues for prod and sandbox in us-east4; give the runtime service account
+     (`556057816518-compute@developer.gserviceaccount.com`) `roles/cloudtasks.enqueuer` and
+     `iam.serviceAccountUser` on itself (to mint the OIDC token); set `TRANSITIONS_QUEUE`,
+     `TRANSITIONS_TARGET_URL`, `TRANSITIONS_SERVICE_ACCOUNT` in `deploy.yml`. Until then a deploy
+     without those variables runs the transition inside the request, as before (on Cloud Run,
+     detected by `K_SERVICE`, there is no in-process executor because its CPU would be throttled);
+     only the done-flag and lock changes take effect.
+   - To verify live: the last voter's `/votes` (and the last `PUT /activeGameStateSession`) should
+     drop to roughly done-flag time; the transition itself shows as `POST /internal/transitions`
+     in the Cloud Run request logs.
 
 Smaller items, not scheduled:
 - `GET /voting` still does a full `getGame` (~240ms avg) on every poll.

@@ -1,6 +1,7 @@
 package client.nowhere.controller;
 
 import client.nowhere.helper.GameSessionHelper;
+import client.nowhere.helper.GameStateTransitionHelper;
 import client.nowhere.model.GameMode;
 import client.nowhere.model.GameSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,12 @@ import org.springframework.web.bind.annotation.*;
 public class GameSessionController {
 
     private final GameSessionHelper gameSessionHelper;
+    private final GameStateTransitionHelper phaseTransitionHelper;
 
     @Autowired
-    public GameSessionController(GameSessionHelper gameSessionHelper) {
+    public GameSessionController(GameSessionHelper gameSessionHelper, GameStateTransitionHelper phaseTransitionHelper) {
         this.gameSessionHelper = gameSessionHelper;
+        this.phaseTransitionHelper = phaseTransitionHelper;
     }
 
     @GetMapping("/game")
@@ -47,7 +50,8 @@ public class GameSessionController {
     @PutMapping(value = "/game/next", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public GameSession nextGameState(@RequestParam String gameCode) {
-        return this.gameSessionHelper.updateToNextGameState(gameCode);
+        // Returns the current game, unchanged, if a transition is already running
+        return this.phaseTransitionHelper.nextGameState(gameCode);
     }
 
 }

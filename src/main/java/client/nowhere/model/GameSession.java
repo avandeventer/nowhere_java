@@ -13,6 +13,8 @@ public class GameSession {
     GameState gameState;
     ActivePlayerSession activePlayerSession;
     ActiveGameStateSession activeGameStateSession;
+    // Set while a game state transition is running; see TransitionLock
+    TransitionLock transitionLock;
     List<Story> stories;
     AdventureMap adventureMap;
     boolean didWeSucceed = false;
@@ -113,6 +115,22 @@ public class GameSession {
 
     public void setActiveGameStateSession(ActiveGameStateSession activeGameStateSession) {
         this.activeGameStateSession = activeGameStateSession;
+    }
+
+    public TransitionLock getTransitionLock() {
+        return transitionLock;
+    }
+
+    public void setTransitionLock(TransitionLock transitionLock) {
+        this.transitionLock = transitionLock;
+    }
+
+    /** True once every player is marked done in the game's current state (see ActiveGameStateSession.donePhase). */
+    public boolean areAllPlayersDoneInCurrentState() {
+        Map<String, String> donePhase = this.getActiveGameStateSession() == null ? null : this.getActiveGameStateSession().getDonePhase();
+        return donePhase != null && this.getGameState() != null && this.getPlayers() != null
+                && this.getPlayers().stream()
+                        .allMatch(player -> this.getGameState().name().equals(donePhase.get(player.getAuthorId())));
     }
 
     // Stored as its own document (PhasePaths.adventureMapPath, AdventureMapDAO), not on the game
