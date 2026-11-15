@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * POST /game does for any real game.
  *
  * Round 1's HOW_DOES_THIS_RESOLVE is not left generic: every naturally-assigned player submits
- * their default root resolution (as every other phase does), and then real repercission scenarios
+ * their default root resolution (as every other phase does), and then real repercussion scenarios
  * are layered on top - one per available PlayerClass, each targeting a DIFFERENT player's story
  * (never a player's own) via GameFlowClient.addToSubmission, mirroring the real player-client's
  * onAddToSubmission (see nowhere-player-client's collaborative-text.component.ts). This is real
@@ -1174,7 +1174,7 @@ public class FullGameScenario {
         // non-empty repercussionSubmission to attach a repercussion at all (added to fix the
         // Companion scenario silently dropping its repercussion the same way), so this placeholder
         // exists purely to satisfy that harness-side guard - the server doesn't read
-        // repercissionSubmission for ALL_PLAYERS's effect, only repercussionType.
+        // repercussionSubmission for ALL_PLAYERS's effect, only repercussionType.
         CollaborativeTextPhase spreadResponse = client.addToSubmission(gameCode, bardAuthorId, chainMid,
                 storyText("Bard makes sure the whole party hears of it."), allPlayersType, ALL_PLAYERS_REPERCUSSION_NAME);
         String chainFinal = claimNewSubmissionId(spreadResponse);
@@ -1233,7 +1233,7 @@ public class FullGameScenario {
     private String onlyRepercussionTypeName(String gameCode, String authorId) {
         List<RepercussionTypeOption> types = client.getPlayerRepercussionTypes(gameCode, authorId);
         if (types.isEmpty()) {
-            throw new IllegalStateException("Player " + userNameByAuthorId.get(authorId) + " has no repercission types available - is their PlayerClass set?");
+            throw new IllegalStateException("Player " + userNameByAuthorId.get(authorId) + " has no repercussion types available - is their PlayerClass set?");
         }
         return types.get(0).getName();
     }

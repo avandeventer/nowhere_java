@@ -779,14 +779,20 @@ Agreed plan, 2026-10-26 (each step gets its own plan when we start it):
    - Unit tests pass (202): `ActiveSessionDAOTest` (done flags, lock/start/unlock) and
      `GameStateTransitionHelperTest`. The app starts locally and `/internal/transitions` returns 403
      without a token.
-   - Still to do, needs the user's go-ahead (GCP changes): enable `cloudtasks.googleapis.com`;
-     create queues for prod and sandbox in us-east4; give the runtime service account
-     (`556057816518-compute@developer.gserviceaccount.com`) `roles/cloudtasks.enqueuer` and
-     `iam.serviceAccountUser` on itself (to mint the OIDC token); set `TRANSITIONS_QUEUE`,
-     `TRANSITIONS_TARGET_URL`, `TRANSITIONS_SERVICE_ACCOUNT` in `deploy.yml`. Until then a deploy
-     without those variables runs the transition inside the request, as before (on Cloud Run,
-     detected by `K_SERVICE`, there is no in-process executor because its CPU would be throttled);
-     only the done-flag and lock changes take effect.
+   - GCP setup (done by the user 2026-11-15): `cloudtasks.googleapis.com` enabled; queues
+     `game-state-transitions` and `game-state-transitions-sandbox` in us-east4 (max 3 attempts);
+     the runtime service account (`556057816518-compute@developer.gserviceaccount.com`) has
+     `roles/cloudtasks.enqueuer` and `iam.serviceAccountUser` on itself (to mint the OIDC token).
+     `deploy.yml` sets `TRANSITIONS_QUEUE`, `TRANSITIONS_TARGET_URL`, `TRANSITIONS_SERVICE_ACCOUNT`
+     per service (`TRANSITIONS_ENV_VARS` in each job's `env`). Sandbox revision 00012 ran
+     transitions through Cloud Tasks on 2026-11-15 (`POST /internal/transitions` 200s, 0.6-1.3s
+     each). Prod gets the variables on its next deploy from master.
+   - Without those variables a deploy runs the transition inside the request, as before (on Cloud
+     Run, detected by `K_SERVICE`, there is no in-process executor because its CPU would be
+     throttled); only the done-flag and lock changes take effect. Setting `TRANSITIONS_QUEUE`
+     without the other two stops the app at startup (`CloudTasksTransitionQueue` throws), and Cloud
+     Run keeps serving the previous revision. In PowerShell, quote the whole `--update-env-vars`
+     value: unquoted commas are joined with spaces into one variable.
    - To verify live: the last voter's `/votes` (and the last `PUT /activeGameStateSession`) should
      drop to roughly done-flag time; the transition itself shows as `POST /internal/transitions`
      in the Cloud Run request logs.

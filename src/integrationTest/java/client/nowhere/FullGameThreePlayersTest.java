@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Plays a full DUNGEON_MODE game with 3 players against the real deployed backend, from world
  * setup through both writing rounds to ENDING. 3 players stays on the "else" branch of
  * GameState.getOutcomeTypeOffset (playerCount <= 4), and covers 3 of the 4 PlayerClass
- * repercission scenarios FullGameScenario builds during round 1 (Fabulist/Companion is skipped -
+ * repercussion scenarios FullGameScenario builds during round 1 (Fabulist/Companion is skipped -
  * there's no 4th player to hold that class; see FullGameFourPlayersTest for full coverage).
  *
  * Stops at ENDING rather than FINALE: ENDING currently misreports as a voting phase (see
