@@ -18,7 +18,7 @@ import java.util.List;
  */
 public final class LiveBackend {
 
-    public static final String BASE_URL = "https://nowhere-java-556057816518.us-east4.run.app";
+    public static final String BASE_URL = "https://nowhere-java-sandbox-556057816518.us-east4.run.app";
     private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(10);
     private static final Duration READ_TIMEOUT = Duration.ofSeconds(60);
 

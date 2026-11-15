@@ -155,12 +155,10 @@ public class GameSessionHelper {
                     gameSession.setGameStateToNext();
                     break;
                 case GENERATE_OCCUPATION_AUTHORS:
-                    players.forEach(player -> {
-                        player.setBasePlayerStats(
-                                gameSession.getAdventureMap().getStatTypes(), 4
-                        );
-                        gameSessionDAO.updatePlayer(player);
-                    });
+                    players.forEach(player -> player.setBasePlayerStats(
+                            gameSession.getAdventureMap().getStatTypes(), 4
+                    ));
+                    gameSessionDAO.updatePlayers(gameSession.getGameCode(), players);
                     gameSession.setPlayers(players);
                     assignLocationOptionAuthors(gameSession, players);
                     gameSession.setGameStateToNext();
@@ -425,6 +423,9 @@ public class GameSessionHelper {
                 .filter(story -> story.getOptions().stream().anyMatch(option -> option.getOutcomeAuthorId().isEmpty()))
                 .collect(Collectors.toSet());
         
+        // Stories given an outcome author, written together once every story is assigned
+        List<Story> assignedStories = new ArrayList<>();
+
         // Process stories ensuring fair distribution
         while (!remainingStories.isEmpty()) {
             boolean anyStoryAssigned = false;
@@ -482,7 +483,7 @@ public class GameSessionHelper {
                     options.forEach(option -> option.setOutcomeAuthorId(authorId));
                     outcomeAuthorCount.put(authorId, outcomeAuthorCount.get(authorId) + options.size());
                     
-                    storyDAO.updateStory(story);
+                    assignedStories.add(story);
                     remainingStories.remove(story);
                     anyStoryAssigned = true;
                 }
@@ -493,6 +494,7 @@ public class GameSessionHelper {
                 break;
             }
         }
+        storyDAO.updateStories(assignedStories);
     }
     
     private Optional<Player> findAuthorWithFewestAssignments(
@@ -543,6 +545,8 @@ public class GameSessionHelper {
             authorOutcomeCount.put(player.getAuthorId(), 0);
         }
 
+        // Stories given an author, written together once every story is assigned
+        List<Story> assignedStories = new ArrayList<>();
         while (!remainingUnwrittenStories.isEmpty()) {
             for (Story unwrittenStory : new ArrayList<>(remainingUnwrittenStories)) {
                 String playerId = unwrittenStory.getPlayerId();
@@ -577,11 +581,12 @@ public class GameSessionHelper {
                     unwrittenStory.getOptions().get(1).setOptionText(UUID.randomUUID().toString());
                 }
 
-                storyDAO.updateStory(unwrittenStory);
+                assignedStories.add(unwrittenStory);
                 authorStoryCount.put(selectedAuthor.getAuthorId(), authorStoryCount.get(selectedAuthor.getAuthorId()) + 1);
                 remainingUnwrittenStories.remove(unwrittenStory);
             }
         }
+        storyDAO.updateStories(assignedStories);
     }
 
     /**

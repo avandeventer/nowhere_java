@@ -36,6 +36,11 @@ public class Story {
     @Setter
     private Integer roundNumber = -1;
 
+    // Set by StoryDAO; keeps stories in the order they were created (the old stories array order)
+    @Getter
+    @Setter
+    private long insertOrder;
+
     @Getter
     @Setter
     private List<Repercussion> repercussions;

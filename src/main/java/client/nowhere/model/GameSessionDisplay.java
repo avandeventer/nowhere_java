@@ -1,5 +1,7 @@
 package client.nowhere.model;
 
+import com.google.cloud.firestore.annotation.Exclude;
+
 public class GameSessionDisplay {
     String mapDescription;
     String goalDescription;
@@ -11,6 +13,8 @@ public class GameSessionDisplay {
     String neutralText;
     String failureText;
     String entity;
+    // Not stored: GET /display fills it from the game's adventure map (AdventureMapDAO.getGameSessionDisplay)
+    String adventureMapName = "";
 
     // New TextSubmission fields for collaborative text phases
     TextSubmission whereAreWeSubmission;
@@ -137,6 +141,16 @@ public class GameSessionDisplay {
 
     public void setWhatIsOurGoalSubmission(TextSubmission whatIsOurGoalSubmission) {
         this.whatIsOurGoalSubmission = whatIsOurGoalSubmission;
+    }
+
+    @Exclude
+    public String getAdventureMapName() {
+        return adventureMapName;
+    }
+
+    @Exclude
+    public void setAdventureMapName(String adventureMapName) {
+        this.adventureMapName = adventureMapName;
     }
 
     public String getEntity() {

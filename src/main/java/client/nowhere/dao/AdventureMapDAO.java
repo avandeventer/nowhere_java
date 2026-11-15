@@ -1,12 +1,14 @@
 package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
+import client.nowhere.helper.PhasePaths;
 import client.nowhere.model.*;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.SetOptions;
 import com.google.cloud.firestore.WriteResult;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
@@ -34,35 +36,27 @@ public class AdventureMapDAO {
     }
 
     public List<Location> getLocations(String gameCode) {
-        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-        try {
-            GameSession gameSession = FirestoreDAOUtil.mapGameSession(FirestoreDAOUtil.getGameSession(gameSessionRef));
-            return gameSession.getAdventureMap().getLocations();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            throw new ResourceException("There was an issue reading the game session for locations", e);
-        }
+        AdventureMap adventureMap = get(gameCode);
+        return adventureMap == null ? new ArrayList<>() : adventureMap.getLocations();
     }
 
+    /** The game's display text, plus the map's name (adventureMapName, not stored) for the clients' start screens. */
     public GameSessionDisplay getGameSessionDisplay(String gameCode) {
-        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-        try {
-            GameSession gameSession = FirestoreDAOUtil.mapGameSession(FirestoreDAOUtil.getGameSession(gameSessionRef));
-            return gameSession.getAdventureMap() == null
-                    ? new GameSessionDisplay()
-                    : gameSession.getAdventureMap().getGameSessionDisplay();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            throw new ResourceException("There was an issue reading the game session for locations", e);
+        AdventureMap adventureMap = get(gameCode);
+        if (adventureMap == null) {
+            return new GameSessionDisplay();
         }
+        GameSessionDisplay display = adventureMap.getGameSessionDisplay() == null
+                ? new GameSessionDisplay()
+                : adventureMap.getGameSessionDisplay();
+        display.setAdventureMapName(adventureMap.getName() == null ? "" : adventureMap.getName());
+        return display;
     }
 
     public void updateGameSessionDisplay(String gameCode, GameSessionDisplay display) {
-        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
         try {
-            // Targeted field update: no read, and no full-document set() that would rewrite (and
-            // clobber concurrent writes to) players, stories, collaborativeTextPhases, etc.
-            ApiFuture<WriteResult> result = gameSessionRef.update("adventureMap.gameSessionDisplay", display);
+            // Targeted field update of the map document: no read, nothing else rewritten
+            ApiFuture<WriteResult> result = gameSessionMapRef(gameCode).set(Map.of("gameSessionDisplay", display), SetOptions.merge());
             result.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
@@ -150,12 +144,22 @@ public class AdventureMapDAO {
         return adventureMap;
     }
 
+    /**
+     * The game's own copy of its adventure map (gameSessions/{code}/adventureMap/map, see
+     * PhasePaths), or null for a game created without one.
+     */
     public AdventureMap get(String gameCode) {
-        DocumentReference gameSessionAdventureMapRef = db.collection("gameSessions").document(gameCode);
-        GameSession gameSession = FirestoreDAOUtil.mapDatabaseObject(gameSessionAdventureMapRef, GameSession.class);
-        AdventureMap adventureMap = gameSession.getAdventureMap();
-        System.out.println("Update time : " + adventureMap.toString());
-        return adventureMap;
+        try {
+            DocumentSnapshot snapshot = gameSessionMapRef(gameCode).get().get();
+            return snapshot.exists() ? snapshot.toObject(AdventureMap.class) : null;
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("There was an issue reading the game's adventure map", e);
+        }
+    }
+
+    public DocumentReference gameSessionMapRef(String gameCode) {
+        return db.document(PhasePaths.adventureMapPath(gameCode));
     }
 
     /**
@@ -189,9 +193,8 @@ public class AdventureMapDAO {
 
     public void updateSessionAdventureMap(String gameCode, AdventureMap updatedAdventureMap) {
         try {
-            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            // Targeted field update: no read, and no full-document set() of the whole GameSession.
-            ApiFuture<WriteResult> result = gameSessionRef.update("adventureMap", updatedAdventureMap);
+            // The map is its own document, so replacing it doesn't touch the game document
+            ApiFuture<WriteResult> result = gameSessionMapRef(gameCode).set(updatedAdventureMap);
             WriteResult asyncResponse = result.get();
             System.out.println("Update time : " + result.get().toString());
         } catch (InterruptedException | ExecutionException e) {
@@ -252,64 +255,44 @@ public class AdventureMapDAO {
     }
 
     public List<Location> addLocation(String gameCode, Location location) {
-        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-        GameSession gameSession = FirestoreDAOUtil.mapDatabaseObject(gameSessionRef, GameSession.class);
-        
-        if (gameSession.getAdventureMap().getLocations() != null 
-            && location.getLabel() != null
-            && !location.getLabel().isEmpty()
-            && gameSession.getAdventureMap().getLocations().stream()
-            .map(Location::getLabel).toList().contains(location.getLabel())
-        ) {
-            System.out.println("Location already exists: " + location.getLabel());
-            return gameSession.getAdventureMap().getLocations();
-        }
-
+        DocumentReference mapRef = gameSessionMapRef(gameCode);
         try {
-            // Use a transaction to safely update only the locations list
-            ApiFuture<Void> result = db.runTransaction(transaction -> {
-                DocumentSnapshot snapshot = transaction.get(gameSessionRef).get();
+            // Transaction on the map document: the duplicate check and the append see the same list
+            return db.runTransaction(transaction -> {
+                DocumentSnapshot snapshot = transaction.get(mapRef).get();
                 if (!snapshot.exists()) {
-                    throw new ResourceException("Game session does not exist");
+                    throw new ResourceException("Game " + gameCode + " has no adventure map");
                 }
-                GameSession currentGameSession = snapshot.toObject(GameSession.class);
-                
-                if (currentGameSession.getAdventureMap().getLocations() == null) {
-                    currentGameSession.getAdventureMap().setLocations(new ArrayList<>());
+                AdventureMap adventureMap = snapshot.toObject(AdventureMap.class);
+                if (adventureMap.getLocations() == null) {
+                    adventureMap.setLocations(new ArrayList<>());
                 }
-                currentGameSession.getAdventureMap().getLocations().add(location);
-                
-                // Update only the adventureMap.locations field
-                Map<String, Object> updates = new HashMap<>();
-                updates.put("adventureMap.locations", currentGameSession.getAdventureMap().getLocations());
-                transaction.update(gameSessionRef, updates);
-                
-                return null;
-            });
-            
-            result.get();
-            System.out.println("Location added successfully");
+
+                if (location.getLabel() != null
+                        && !location.getLabel().isEmpty()
+                        && adventureMap.getLocations().stream().map(Location::getLabel).toList().contains(location.getLabel())) {
+                    System.out.println("Location already exists: " + location.getLabel());
+                    return adventureMap.getLocations();
+                }
+
+                adventureMap.getLocations().add(location);
+                transaction.update(mapRef, "locations", adventureMap.getLocations());
+                return adventureMap.getLocations();
+            }).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue adding the location", e);
         }
-        return gameSession.getAdventureMap().getLocations();
     }
 
     public List<Location> getLocationByAuthor(String gameCode, String authorId) {
-        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-        GameSession gameSession = FirestoreDAOUtil.mapDatabaseObject(gameSessionRef, GameSession.class);
-        
-        return gameSession.getAdventureMap().getLocations().stream()
+        return getLocations(gameCode).stream()
                 .filter(location -> authorId.equals(location.getAuthorId()))
                 .collect(Collectors.toList());
     }
 
     public List<Location> getLocationByOutcomeAuthor(String gameCode, String outcomeAuthorId) {
-        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-        GameSession gameSession = FirestoreDAOUtil.mapDatabaseObject(gameSessionRef, GameSession.class);
-        
-        return gameSession.getAdventureMap().getLocations().stream()
+        return getLocations(gameCode).stream()
                 .filter(location -> location.getOptions() != null)
                 .filter(location -> location.getOptions().stream()
                         .anyMatch(option -> outcomeAuthorId.equals(option.getOutcomeAuthorId())))
@@ -318,9 +301,7 @@ public class AdventureMapDAO {
 
     public Location updateLocation(String gameCode, Location location) {
         try {
-            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            GameSession gameSession = FirestoreDAOUtil.mapDatabaseObject(gameSessionRef, GameSession.class);
-            List<Location> locations = gameSession.getAdventureMap().getLocations();
+            List<Location> locations = getLocations(gameCode);
 
             for (int i = 0; i < locations.size(); i++) {
                 Location locationToUpdate = locations.get(i);
@@ -390,10 +371,7 @@ public class AdventureMapDAO {
                 }
             }
 
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("adventureMap.locations", locations);
-            
-            ApiFuture<WriteResult> result = gameSessionRef.update(updates);
+            ApiFuture<WriteResult> result = gameSessionMapRef(gameCode).update("locations", locations);
             WriteResult asyncResponse = result.get();
             System.out.println("Location updated successfully: " + location.getLabel());
             return location;

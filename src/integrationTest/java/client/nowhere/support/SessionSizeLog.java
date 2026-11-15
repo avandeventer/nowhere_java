@@ -16,6 +16,9 @@ import java.util.Map;
  * changes aimed at Firestore's 1 MiB per-document limit (players, stories, adventureMap, etc. all
  * live on the one gameSessions/{gameCode} document - see GameFlowClient.deleteGame). Collaborative
  * text phases moved to their own documents (CollaborativeTextDAO) and aren't part of this size.
+ * Stories (StoryDAO, rounds/{round}/stories) and the adventure map (AdventureMapDAO, adventureMap/map)
+ * did too: GET /game still returns them, so their columns are still shown, but they're subtracted
+ * from the total and the "% limit".
  *
  * Measured from GET /game's JSON body, which is a close proxy for - not an exact match of - the
  * stored Firestore document size: Firestore counts field names/values in its own encoding, and
@@ -34,6 +37,8 @@ public class SessionSizeLog {
     private static final long FIRESTORE_DOCUMENT_LIMIT_BYTES = 1_048_576;
     private static final List<String> TRACKED_FIELDS = List.of(
             "stories", "players", "adventureMap", "gameBoard", "endings", "rituals");
+    // In GET /game's body but stored in their own documents, not on the game document
+    private static final List<String> STORED_ELSEWHERE = List.of("stories", "adventureMap");
 
     private record Sample(int roundNumber, String gameState, long totalBytes, Map<String, Long> fieldBytes,
                           long startedAtMillis, Long phaseMillis) {}
@@ -122,6 +127,9 @@ public class SessionSizeLog {
             } catch (Exception e) {
                 System.out.println("[SessionSizeLog] could not parse GET /game body for per-field sizes: " + e.getMessage());
             }
+        }
+        for (String field : STORED_ELSEWHERE) {
+            totalBytes -= fieldBytes.getOrDefault(field, 0L);
         }
 
         if (!samples.isEmpty()) {

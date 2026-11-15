@@ -52,7 +52,6 @@ public class StoryHelper {
         return gameSessionDAO.runInTransaction(txn -> {
             Story playerStory = null;
             GameSession gameSession = gameSessionDAO.getGameInTransaction(gameCode, txn);
-            List<Story> stories = gameSession.getStories() != null ? new ArrayList<>(gameSession.getStories()) : new ArrayList<>();
 
             List<Story> existingUnwrittenPlayerStories = gameSession.getStories() == null || gameSession.getStories().isEmpty()
                     ? new ArrayList<>()
@@ -73,8 +72,7 @@ public class StoryHelper {
 
             playerStory.setPlayerId(playerId);
             playerStory.setVisited(true);
-            stories.add(playerStory);
-            gameSessionDAO.updateStoriesInTransaction(gameCode, stories, txn);
+            gameSessionDAO.addStoryInTransaction(gameSession, playerStory, txn);
             return playerStory;
         });
     }

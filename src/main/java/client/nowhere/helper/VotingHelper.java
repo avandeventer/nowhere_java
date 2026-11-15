@@ -67,14 +67,14 @@ public class VotingHelper {
             case MAKE_PARTNER_CHOICE_VOTING: {
                 Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
                 if (currentStory == null || !playerId.equals(currentStory.getPlayerId())) {
-                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    markPlayersDone(gameSession, List.of(playerId));
                     return new ArrayList<>();
                 }
                 Player storyPlayer = gameSession.getPlayers().stream()
                         .filter(p -> p.getAuthorId().equals(playerId))
                         .findFirst().orElse(null);
                 if (storyPlayer == null || storyPlayer.getSelectedLocationId() == null) {
-                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    markPlayersDone(gameSession, List.of(playerId));
                     return new ArrayList<>();
                 }
                 String myLocationId = storyPlayer.getSelectedLocationId();
@@ -84,7 +84,7 @@ public class VotingHelper {
                         .map(Player::getAuthorId)
                         .toList();
                 if (sharedLocationPlayerIds.isEmpty()) {
-                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    markPlayersDone(gameSession, List.of(playerId));
                     return new ArrayList<>();
                 }
                 return collaborativeTextDAO.getSubmissions(phasePath).stream()
@@ -94,7 +94,7 @@ public class VotingHelper {
             case LOCATION_OPTION_MAKE_CHOICE_VOTING: {
                 Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
                 if (currentStory == null || !playerId.equals(currentStory.getPlayerId())) {
-                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    markPlayersDone(gameSession, List.of(playerId));
                     return new ArrayList<>();
                 }
                 String locationId = currentStory.getLocation() != null ? currentStory.getLocation().getId() : null;
@@ -111,7 +111,7 @@ public class VotingHelper {
                         .flatMap(List::stream)
                         .anyMatch(v -> playerId.equals(v.getSubmissionId()));
                 if (!wasVotedFor) {
-                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    markPlayersDone(gameSession, List.of(playerId));
                     return new ArrayList<>();
                 }
                 return makePartnerPhase.getSubmissions().stream()
@@ -131,7 +131,7 @@ public class VotingHelper {
                         ? !currentStory.getPlayerId().equals(playerId)
                         : currentStory.getPlayerIds().contains(playerId));
                 if (excludePlayerFromVote) {
-                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    markPlayersDone(gameSession, List.of(playerId));
                     return new ArrayList<>();
                 }
 
@@ -172,7 +172,7 @@ public class VotingHelper {
                         .toList();
 
                 if (submissionsPlayerCanVoteOn.isEmpty() && phaseIdState == GameState.MAKE_CHOICE_VOTING) {
-                    activeSessionHelper.update(gameCode, gameSession.getGameState(), playerId, true);
+                    markPlayersDone(gameSession, List.of(playerId));
                 }
 
                 return submissionsPlayerCanVoteOn;
@@ -271,17 +271,17 @@ public class VotingHelper {
         if (phaseIdState == GameState.LOCATION_VOTING) {
             String votingPlayerId = playerVotes.getFirst().getPlayerId();
             if (votingPlayerId != null && !votingPlayerId.isEmpty()) {
-                activeSessionHelper.update(gameCode, gameSession.getGameState(), votingPlayerId, true);
+                markPlayersDone(gameSession, List.of(votingPlayerId));
             }
         }
 
         switch (phaseIdState) {
             case ACCEPT_PARTNER_CHOICE_VOTING, MAKE_PARTNER_CHOICE_VOTING ->
-                setNonVotingPlayersToDone(gameSession, playerVotes);
+                markPlayersDone(gameSession, nonVotingPlayerIds(gameSession, playerVotes));
             case MAKE_CHOICE_VOTING ->
-                setNonActivePlayersToDone(gameSession);
+                markPlayersDone(gameSession, nonActivePlayerIds(gameSession));
             case MAKE_OUTCOME_CHOICE_VOTING ->
-                setActivePlayersToDone(gameSession);
+                markPlayersDone(gameSession, activePlayerIds(gameSession));
         }
 
         // The player client ignores this response, so don't re-read the phase to build it.
@@ -292,38 +292,42 @@ public class VotingHelper {
         return response;
     }
 
-    private void setNonVotingPlayersToDone(GameSession gameSession, List<PlayerVote> playerVotes) {
+    /**
+     * Marks players done in one ActiveSessionDAO transaction (which also progresses the game once
+     * everyone is done). Players this request's gameSession already shows as done are skipped, with
+     * no transaction at all if that leaves nobody: GET /voting hits that case on every poll, and
+     * re-running the transaction for a done player could start a second progression while the one
+     * triggered by the last player is still running.
+     */
+    private void markPlayersDone(GameSession gameSession, List<String> playerIds) {
+        Map<String, Boolean> isPlayerDone = gameSession.getActiveGameStateSession().getIsPlayerDone();
+        List<String> playersToUpdate = isPlayerDone == null
+                ? playerIds
+                : playerIds.stream().filter(playerId -> !Boolean.TRUE.equals(isPlayerDone.get(playerId))).toList();
+        activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), playersToUpdate, true);
+    }
+
+    private List<String> nonVotingPlayerIds(GameSession gameSession, List<PlayerVote> playerVotes) {
         String votingPlayerId = playerVotes.getFirst().getPlayerId();
-
-        for (Player player : gameSession.getPlayers()) {
-                if (!votingPlayerId.equals(player.getAuthorId())) {
-                    activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), player.getAuthorId(), true);
-                }
-        }
+        return gameSession.getPlayers().stream()
+                .map(Player::getAuthorId)
+                .filter(authorId -> !votingPlayerId.equals(authorId))
+                .toList();
     }
 
-    private void setNonActivePlayersToDone(GameSession gameSession) {
-        for (Player player : gameSession.getPlayers()) {
-            if (!gameSession.getActiveGameStateSession().getIsPlayerDone().get(player.getAuthorId())) {
-                List<OutcomeType> outcomeTypes = getMakeChoiceStoryOutcomes(gameSession, player.getAuthorId());
-
-                if (outcomeTypes.isEmpty()) {
-                    activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), player.getAuthorId(), true);
-                }
-            }
-        }
+    private List<String> nonActivePlayerIds(GameSession gameSession) {
+        return gameSession.getPlayers().stream()
+                .map(Player::getAuthorId)
+                .filter(authorId -> getMakeChoiceStoryOutcomes(gameSession, authorId).isEmpty())
+                .toList();
     }
 
-    private void setActivePlayersToDone(GameSession gameSession) {
-        for (Player player : gameSession.getPlayers()) {
-            if (!gameSession.getActiveGameStateSession().getIsPlayerDone().get(player.getAuthorId())) {
-                Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
-
-                if (story.getPlayerIds().contains(player.getAuthorId())) {
-                    activeSessionHelper.update(gameSession.getGameCode(), gameSession.getGameState(), player.getAuthorId(), true);
-                }
-            }
-        }
+    private List<String> activePlayerIds(GameSession gameSession) {
+        Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
+        return gameSession.getPlayers().stream()
+                .map(Player::getAuthorId)
+                .filter(authorId -> story.getPlayerIds().contains(authorId))
+                .toList();
     }
 
     public List<OutcomeType> getMakeChoiceStoryOutcomes(GameSession gameSession, String playerId) {
