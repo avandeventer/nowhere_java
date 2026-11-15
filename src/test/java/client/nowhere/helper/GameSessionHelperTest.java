@@ -714,11 +714,6 @@ public class GameSessionHelperTest {
             }
         }
 
-        // The nextGameStateLoading flag is now set via a dedicated blind write
-        // (activeSessionDAO.setNextGameStateLoading), not via updateActivePlayerSession, so it
-        // always fires exactly once and doesn't factor into the count below.
-        verify(activeSessionDAO).setNextGameStateLoading(gameCode, true);
-
         // updateActivePlayerSession is only called when a phase handler produces repercussion/
         // outcome-display content (i.e. anything asserted via expectedUpdatedPlayerIds or
         // expectedOutcomeDisplay).

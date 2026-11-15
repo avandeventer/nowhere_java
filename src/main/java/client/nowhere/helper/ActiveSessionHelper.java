@@ -15,11 +15,13 @@ public class ActiveSessionHelper {
 
     private final ActiveSessionDAO activeSessionDAO;
     private final GameSessionHelper gameSessionHelper;
+    private final GameStateTransitionHelper phaseTransitionHelper;
 
     @Autowired
-    public ActiveSessionHelper(ActiveSessionDAO activeSessionDAO, GameSessionHelper gameSessionHelper) {
+    public ActiveSessionHelper(ActiveSessionDAO activeSessionDAO, GameSessionHelper gameSessionHelper, GameStateTransitionHelper phaseTransitionHelper) {
         this.activeSessionDAO = activeSessionDAO;
         this.gameSessionHelper = gameSessionHelper;
+        this.phaseTransitionHelper = phaseTransitionHelper;
     }
 
     public ActivePlayerSession update(ActivePlayerSession activeSession) {
@@ -33,7 +35,10 @@ public class ActiveSessionHelper {
         update(gameCode, gamePhase, List.of(authorId), isDone);
     }
 
-    /** Marks several players done in one transaction; progresses the game if that finishes the phase. */
+    /**
+     * Marks several players done in one write. If that finishes the phase, starts the transition in
+     * the background (GameStateTransitionHelper) and returns without waiting for it.
+     */
     public void update(String gameCode, GameState gamePhase, Collection<String> authorIds, boolean isDone) {
         if (authorIds.isEmpty()) {
             return;
@@ -41,8 +46,7 @@ public class ActiveSessionHelper {
         boolean gameProgressionNeeded = this.activeSessionDAO.updateActiveGameStateSession(gameCode, gamePhase, authorIds, isDone);
 
         if (gameProgressionNeeded && !gamePhase.equals(GameState.INIT)) {
-            System.out.println("All players are done, progressing game state via GameSessionHelper");
-            this.gameSessionHelper.updateToNextGameState(gameCode);
+            this.phaseTransitionHelper.allPlayersDone(gameCode, gamePhase);
         }
     }
 

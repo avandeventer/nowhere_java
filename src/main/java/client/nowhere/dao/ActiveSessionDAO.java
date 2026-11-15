@@ -1,57 +1,43 @@
 package client.nowhere.dao;
 
 import client.nowhere.exception.ResourceException;
-import client.nowhere.model.ActiveGameStateSession;
 import client.nowhere.model.ActivePlayerSession;
 import client.nowhere.model.GameSession;
 import client.nowhere.model.GameState;
+import client.nowhere.model.TransitionLock;
 
 import com.google.api.core.ApiFuture;
-import com.google.api.core.ApiFutureCallback;
-import com.google.api.core.ApiFutures;
+import com.google.cloud.Timestamp;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.FieldMask;
+import com.google.cloud.firestore.FieldPath;
+import com.google.cloud.firestore.FieldValue;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.WriteResult;
-import com.google.common.util.concurrent.MoreExecutors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 @Component
 public class ActiveSessionDAO {
+
+    // A transition takes seconds; a lock older than this belongs to one that died mid-way
+    static final Duration TRANSITION_LOCK_TTL = Duration.ofMinutes(2);
 
     private final Firestore db;
 
     @Autowired
     public ActiveSessionDAO(Firestore db) {
         this.db = db;
-    }
-
-    /**
-     * Blind, fire-and-forget write of just the nextGameStateLoading flag. Unlike
-     * updateActivePlayerSession, this does not read the document first - it targets the
-     * nested field directly so the loading indicator can flip for clients without waiting
-     * on a full GameSession fetch/deserialize.
-     */
-    public void setNextGameStateLoading(String gameCode, boolean isLoading) {
-        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-        ApiFuture<WriteResult> result = gameSessionRef.update("activePlayerSession.nextGameStateLoading", isLoading);
-        ApiFutures.addCallback(result, new ApiFutureCallback<WriteResult>() {
-            @Override
-            public void onFailure(Throwable throwable) {
-                System.out.println("Failed to set nextGameStateLoading for game " + gameCode + ": " + throwable.getMessage());
-            }
-
-            @Override
-            public void onSuccess(WriteResult writeResult) {
-                // No-op: fire-and-forget, nothing downstream depends on this write completing.
-            }
-        }, MoreExecutors.directExecutor());
     }
 
     public ActivePlayerSession updateActivePlayerSession(String gameCode, ActivePlayerSession activeSession) {
@@ -80,53 +66,125 @@ public class ActiveSessionDAO {
     }
 
     /**
-     * Marks every player in authorIds done for gamePhase in one transaction, and returns true if
-     * every player is now done (the caller then progresses the game). Players already done are
-     * left alone. Returns false without writing if the game has already moved past gamePhase.
+     * Marks every player in authorIds done for gamePhase, and returns true if every player is now
+     * done in the game's current state (the caller then locks and starts the transition). Returns
+     * false without writing if the game has already moved past gamePhase.
      *
-     * The transaction reads only the fields it needs: the whole GameSession document is several
-     * hundred KB once stories pile up, and every player in a phase runs this at about the same
-     * time, so reading and deserializing all of it on every attempt made this the slowest call in
-     * POST /collaborativeText/votes and GET /collaborativeText/voting.
+     * No transaction: every player in a phase marks themselves done at about the same time, and a
+     * transaction on the one game document made them queue behind each other (~6s for the last
+     * LOCATION_VOTING voter). Instead each request blindly writes just its own players' fields, then
+     * reads the done flags back. Two requests can both see everyone done; lockTransition lets only
+     * one of them start the transition. A write that lands after the game moved on is ignored by the
+     * "everyone done" check because it is stamped with gamePhase (ActiveGameStateSession.donePhase).
      */
     public boolean updateActiveGameStateSession(String gameCode, GameState gamePhase, Collection<String> authorIds, boolean isDone) {
         DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-        FieldMask doneCheckFields = FieldMask.of("gameState", "players", "activeGameStateSession");
 
+        GameSession before = readFields(gameSessionRef, "gameState");
+        if (!gamePhase.equals(before.getGameState())) {
+            System.out.println("Players " + authorIds + " update skipped - game phase mismatch. Expected: " + gamePhase + ", Current: " + before.getGameState());
+            return false;
+        }
+
+        if (isDone && !authorIds.isEmpty()) {
+            List<Object> fieldsAndValues = new ArrayList<>();
+            for (String authorId : authorIds) {
+                fieldsAndValues.add(FieldPath.of("activeGameStateSession", "isPlayerDone", authorId));
+                fieldsAndValues.add(true);
+                fieldsAndValues.add(FieldPath.of("activeGameStateSession", "donePhase", authorId));
+                fieldsAndValues.add(gamePhase.name());
+            }
+            await(gameSessionRef.update((FieldPath) fieldsAndValues.get(0), fieldsAndValues.get(1),
+                    fieldsAndValues.subList(2, fieldsAndValues.size()).toArray()));
+            System.out.println("Players " + authorIds + " marked as done in " + gamePhase);
+        }
+
+        GameSession after = readFields(gameSessionRef, "gameState", "players", "activeGameStateSession");
+        return gamePhase.equals(after.getGameState()) && after.areAllPlayersDoneInCurrentState();
+    }
+
+    /**
+     * Locks the transition out of the game's current state, so only one request runs it. With
+     * expectedState set, locks only if the game is still in that state. Fails (empty) while
+     * another live lock for the current state exists. Also turns on the clients' loading indicator.
+     *
+     * started=true is for a caller that runs the transition itself right away (PUT /game/next);
+     * false for one handed to the background, which calls startTransition when it actually begins.
+     */
+    public Optional<String> lockTransition(String gameCode, GameState expectedState, boolean started) {
+        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+        return await(db.runTransaction(transaction -> {
+            DocumentSnapshot snapshot = transaction.getAll(new DocumentReference[]{gameSessionRef}, FieldMask.of("gameState", "transitionLock")).get().getFirst();
+            GameSession game = FirestoreDAOUtil.mapGameSession(snapshot);
+            if (game.getGameState() == null || (expectedState != null && !expectedState.equals(game.getGameState()))) {
+                return Optional.<String>empty();
+            }
+            if (isLiveLock(game.getTransitionLock(), game.getGameState())) {
+                System.out.println("Transition out of " + game.getGameState() + " in game " + gameCode + " is already locked (" + game.getTransitionLock().getLockId() + ")");
+                return Optional.<String>empty();
+            }
+            Timestamp now = Timestamp.now();
+            String lockId = UUID.randomUUID().toString();
+            TransitionLock lock = new TransitionLock(lockId, game.getGameState().name(), now, started ? now : null);
+            transaction.update(gameSessionRef,
+                    "transitionLock", lock,
+                    "activePlayerSession.nextGameStateLoading", true);
+            return Optional.of(lockId);
+        }));
+    }
+
+    /**
+     * Marks a background transition's lock as started. Returns false if the lock is gone (the
+     * transition failed and released it, or a later one replaced it) or already started (a
+     * redelivered Cloud Task), in which case the caller must not run the transition.
+     */
+    public boolean startTransition(String gameCode, String lockId) {
+        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+        return await(db.runTransaction(transaction -> {
+            DocumentSnapshot snapshot = transaction.getAll(new DocumentReference[]{gameSessionRef}, FieldMask.of("transitionLock")).get().getFirst();
+            TransitionLock lock = FirestoreDAOUtil.mapGameSession(snapshot).getTransitionLock();
+            if (lock == null || !lockId.equals(lock.getLockId()) || lock.getStartedAt() != null) {
+                return false;
+            }
+            transaction.update(gameSessionRef, "transitionLock.startedAt", Timestamp.now());
+            return true;
+        }));
+    }
+
+    /** Removes the lock once its transition has finished or failed, if it is still that lock. */
+    public void unlockTransition(String gameCode, String lockId) {
+        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+        await(db.runTransaction(transaction -> {
+            DocumentSnapshot snapshot = transaction.getAll(new DocumentReference[]{gameSessionRef}, FieldMask.of("transitionLock")).get().getFirst();
+            TransitionLock lock = FirestoreDAOUtil.mapGameSession(snapshot).getTransitionLock();
+            if (lock != null && lockId.equals(lock.getLockId())) {
+                transaction.update(gameSessionRef,
+                        "transitionLock", FieldValue.delete(),
+                        "activePlayerSession.nextGameStateLoading", false);
+            }
+            return null;
+        }));
+    }
+
+    static boolean isLiveLock(TransitionLock lock, GameState currentState) {
+        return lock != null
+                && currentState.name().equals(lock.getFromState())
+                && lock.getLockedAt() != null
+                && lock.getLockedAt().toDate().toInstant().plus(TRANSITION_LOCK_TTL).isAfter(Instant.now());
+    }
+
+    private GameSession readFields(DocumentReference gameSessionRef, String... fields) {
+        DocumentSnapshot snapshot = await(db.getAll(new DocumentReference[]{gameSessionRef}, FieldMask.of(fields))).getFirst();
+        return FirestoreDAOUtil.mapGameSession(snapshot);
+    }
+
+    private static <T> T await(ApiFuture<T> future) {
         try {
-            // Use Firestore transaction to ensure atomicity and prevent race conditions
-            return db.runTransaction(transaction -> {
-                DocumentSnapshot gameSession = transaction.getAll(new DocumentReference[]{gameSessionRef}, doneCheckFields).get().getFirst();
-                GameSession game = FirestoreDAOUtil.mapGameSession(gameSession);
-                ActiveGameStateSession activeSessionToUpdate = game.getActiveGameStateSession();
-
-                if (!gamePhase.equals(game.getGameState())) {
-                    System.out.println("Players " + authorIds + " update skipped - game phase mismatch. Expected: " + gamePhase + ", Current: " + game.getGameState());
-                    return false; // No progression needed
-                }
-
-                boolean changed = false;
-                for (String authorId : authorIds) {
-                    // Idempotency: players already done are skipped
-                    if (Boolean.TRUE.equals(activeSessionToUpdate.getIsPlayerDone().get(authorId))) {
-                        System.out.println("Player " + authorId + " already marked as done, skipping duplicate update");
-                    } else if (isDone) {
-                        activeSessionToUpdate.getIsPlayerDone().put(authorId, true);
-                        System.out.println("Player " + authorId + " marked as done");
-                        changed = true;
-                    }
-                }
-
-                // Update only the active game state session
-                if (changed) {
-                    transaction.update(gameSessionRef, "activeGameStateSession", activeSessionToUpdate);
-                }
-                // Don't progress here - the helper layer progresses the game when this is true
-                return game.areAllPlayersDone();
-            }).get();
-            
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            return future.get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ResourceException("Interrupted while updating the game state session", e);
+        } catch (ExecutionException e) {
             throw new ResourceException("Failed to update game state session", e);
         }
     }

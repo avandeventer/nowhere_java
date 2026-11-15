@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * POST /game does for any real game.
  *
  * Round 1's HOW_DOES_THIS_RESOLVE is not left generic: every naturally-assigned player submits
- * their default root resolution (as every other phase does), and then real repercission scenarios
+ * their default root resolution (as every other phase does), and then real repercussion scenarios
  * are layered on top - one per available PlayerClass, each targeting a DIFFERENT player's story
  * (never a player's own) via GameFlowClient.addToSubmission, mirroring the real player-client's
  * onAddToSubmission (see nowhere-player-client's collaborative-text.component.ts). This is real
@@ -393,15 +393,7 @@ public class FullGameScenario {
 
             try {
                 runPhaseActions(gameCode, gameState, roundNumber);
-                // The server can auto-advance gameState as a side effect of the last player's
-                // action (see ActiveSessionHelper.update(): when the final player is marked done,
-                // it calls GameSessionHelper.updateToNextGameState() itself, inside that same
-                // request). Calling PUT /game/next unconditionally after that would advance an
-                // already-advanced state a second time. Re-check before calling next().
-                GameState stateAfterActions = client.getGame(gameCode).getGameState();
-                if (gameState == stateAfterActions) {
-                    client.nextGameState(gameCode);
-                }
+                advanceAfterActions(gameCode, gameState);
             } catch (RuntimeException e) {
                 System.out.println("[FullGameScenario] FAILED gameCode=" + gameCode
                         + " at gameState=" + gameState + " iteration=" + iteration + ": " + e.getMessage());
@@ -416,6 +408,42 @@ public class FullGameScenario {
         }
         return finalState;
     }
+
+    /**
+     * Moves the game out of gameState after this iteration's actions. When the last player's action
+     * marked everyone done, the server already locked the transition and is running it in the
+     * background (GameStateTransitionHelper), so it may still be in progress here: GameSession.
+     * transitionLock is set until it finishes. Otherwise call PUT /game/next, which runs the
+     * transition inline (or, if a background one was locked in the meantime, returns at once).
+     */
+    private void advanceAfterActions(String gameCode, GameState gameState) {
+        GameSession game = client.getGame(gameCode);
+        if (game.getGameState() == gameState && game.getTransitionLock() == null) {
+            game = client.nextGameState(gameCode);
+        }
+        long startedAt = System.currentTimeMillis();
+        while (game.getGameState() == gameState && game.getTransitionLock() != null) {
+            if (System.currentTimeMillis() - startedAt > BACKGROUND_TRANSITION_TIMEOUT_MS) {
+                throw new IllegalStateException("Background transition out of " + gameState + " in game " + gameCode
+                        + " did not finish within " + BACKGROUND_TRANSITION_TIMEOUT_MS + "ms");
+            }
+            try {
+                Thread.sleep(BACKGROUND_TRANSITION_POLL_MS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("Interrupted waiting for the transition out of " + gameState, e);
+            }
+            game = client.getGame(gameCode);
+        }
+        long waitedMs = System.currentTimeMillis() - startedAt;
+        if (waitedMs > BACKGROUND_TRANSITION_POLL_MS) {
+            System.out.println("[FullGameScenario] gameCode=" + gameCode + " waited " + waitedMs
+                    + "ms for the background transition out of " + gameState);
+        }
+    }
+
+    private static final long BACKGROUND_TRANSITION_TIMEOUT_MS = 120_000;
+    private static final long BACKGROUND_TRANSITION_POLL_MS = 250;
 
     private void runPhaseActions(String gameCode, GameState gameState, int roundNumber) {
         boolean buildClassScenarios = !sequelLocationScopeMode || mixSequelEligibility;
@@ -1146,7 +1174,7 @@ public class FullGameScenario {
         // non-empty repercussionSubmission to attach a repercussion at all (added to fix the
         // Companion scenario silently dropping its repercussion the same way), so this placeholder
         // exists purely to satisfy that harness-side guard - the server doesn't read
-        // repercissionSubmission for ALL_PLAYERS's effect, only repercussionType.
+        // repercussionSubmission for ALL_PLAYERS's effect, only repercussionType.
         CollaborativeTextPhase spreadResponse = client.addToSubmission(gameCode, bardAuthorId, chainMid,
                 storyText("Bard makes sure the whole party hears of it."), allPlayersType, ALL_PLAYERS_REPERCUSSION_NAME);
         String chainFinal = claimNewSubmissionId(spreadResponse);
@@ -1205,7 +1233,7 @@ public class FullGameScenario {
     private String onlyRepercussionTypeName(String gameCode, String authorId) {
         List<RepercussionTypeOption> types = client.getPlayerRepercussionTypes(gameCode, authorId);
         if (types.isEmpty()) {
-            throw new IllegalStateException("Player " + userNameByAuthorId.get(authorId) + " has no repercission types available - is their PlayerClass set?");
+            throw new IllegalStateException("Player " + userNameByAuthorId.get(authorId) + " has no repercussion types available - is their PlayerClass set?");
         }
         return types.get(0).getName();
     }

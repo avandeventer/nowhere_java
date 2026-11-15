@@ -93,9 +93,11 @@ public class GameSessionHelper {
         return updateGameSession(newGameSession, false);
     }
 
+    /**
+     * Runs the transition out of the current state. Callers go through GameStateTransitionHelper, which
+     * locks the transition first (and turns on the clients' loading indicator) so it runs once.
+     */
     public GameSession updateToNextGameState(String gameCode) {
-        activeSessionDAO.setNextGameStateLoading(gameCode, true);
-
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
 
         if (gameSession.getGameState().equals(INIT)) {

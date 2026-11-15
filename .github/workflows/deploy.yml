@@ -13,6 +13,11 @@ jobs:
   deploy:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    env:
+      # Game state transitions run through Cloud Tasks, which calls back this service's
+      # /internal/transitions (see application.properties). The URL is the service's own and
+      # doesn't change; the tasks' tokens are for the service's runtime account.
+      TRANSITIONS_ENV_VARS: TRANSITIONS_QUEUE=game-state-transitions,TRANSITIONS_TARGET_URL=https://nowhere-java-u7c45lfbca-uk.a.run.app,TRANSITIONS_SERVICE_ACCOUNT=556057816518-compute@developer.gserviceaccount.com
 
     steps:
       - name: Checkout repository
@@ -58,7 +63,8 @@ jobs:
             --platform managed \
             --region ${{ secrets.GCP_REGION }} \
             --allow-unauthenticated \
-            --memory 1Gi
+            --memory 1Gi \
+            --update-env-vars="$TRANSITIONS_ENV_VARS"
 
   deploy-sandbox:
     if: github.event_name == 'pull_request' && github.event.action != 'closed'
@@ -66,6 +72,9 @@ jobs:
     env:
       SANDBOX_SERVICE: ${{ secrets.DOCKER_IMAGE_NAME }}-sandbox
       SANDBOX_IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_ARTIFACT_REPO }}/${{ secrets.DOCKER_IMAGE_NAME }}:sandbox
+      # As in deploy, with the sandbox's own queue. The URL survives teardown-sandbox: a recreated
+      # service with the same name gets the same URL.
+      TRANSITIONS_ENV_VARS: TRANSITIONS_QUEUE=game-state-transitions-sandbox,TRANSITIONS_TARGET_URL=https://nowhere-java-sandbox-u7c45lfbca-uk.a.run.app,TRANSITIONS_SERVICE_ACCOUNT=556057816518-compute@developer.gserviceaccount.com
 
     steps:
       - name: Checkout repository
@@ -104,7 +113,7 @@ jobs:
             --region ${{ secrets.GCP_REGION }} \
             --allow-unauthenticated \
             --memory 1Gi \
-            --update-env-vars=GCP_OBSERVABILITY_ENABLED=true
+            --update-env-vars="GCP_OBSERVABILITY_ENABLED=true,$TRANSITIONS_ENV_VARS"
 
       - name: Print sandbox URL
         run: |
