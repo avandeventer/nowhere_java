@@ -2,6 +2,7 @@ package client.nowhere.helper;
 
 import client.nowhere.dao.AdventureMapDAO;
 import client.nowhere.dao.GameSessionDAO;
+import client.nowhere.dao.StoryDAO;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,16 +16,19 @@ public class AdventureMapHelper {
     private final AdventureMapDAO adventureMapDAO;
     private final GameSessionDAO gameSessionDAO;
     private final StoryHelper storyHelper;
+    private final StoryDAO storyDAO;
 
     @Autowired
     public AdventureMapHelper(
             AdventureMapDAO adventureMapDAO,
             GameSessionDAO gameSessionDAO,
-            StoryHelper storyHelper
+            StoryHelper storyHelper,
+            StoryDAO storyDAO
     ) {
         this.adventureMapDAO = adventureMapDAO;
         this.gameSessionDAO = gameSessionDAO;
         this.storyHelper = storyHelper;
+        this.storyDAO = storyDAO;
     }
 
     public List<Location> getGameLocations(String gameCode) {
@@ -133,6 +137,7 @@ public class AdventureMapHelper {
 
     public List<Location> getLocationsByPlayerId(String gameCode, String playerId) {
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        gameSession.setStories(storyDAO.loadStories(gameCode, gameSession.getRoundNumber() == null ? 0 : gameSession.getRoundNumber()));
 
         List<Story> existingUnwrittenPlayerStories = gameSession.getStories() == null || gameSession.getStories().isEmpty()
         ? new ArrayList<>()

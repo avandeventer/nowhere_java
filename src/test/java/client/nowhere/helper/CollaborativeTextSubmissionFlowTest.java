@@ -3,6 +3,7 @@ package client.nowhere.helper;
 import client.nowhere.dao.*;
 import client.nowhere.model.*;
 import client.nowhere.util.InMemoryCollaborativeTextDAO;
+import client.nowhere.util.GameReads;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -47,12 +48,13 @@ class CollaborativeTextSubmissionFlowTest {
         collaborativeTextDAO = new InMemoryCollaborativeTextDAO();
         OutcomeTypeHelper outcomeTypeHelper = new OutcomeTypeHelper();
         collaborativeTextHelper = new CollaborativeTextHelper(gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
-                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO, endingDAO);
-        votingHelper = new VotingHelper(gameSessionDAO, collaborativeTextDAO, activeSessionHelper, outcomeTypeHelper, storyDAO);
+                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO, endingDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
+        votingHelper = new VotingHelper(gameSessionDAO, collaborativeTextDAO, activeSessionHelper, outcomeTypeHelper, storyDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
 
         gameSession = new GameSession(GAME_CODE, GameState.HOW_DOES_THIS_RESOLVE);
         gameSession.setStories(new ArrayList<>());
-        when(gameSessionDAO.getGame(GAME_CODE)).thenReturn(gameSession);
+        // The game document, its stories and map are separate reads; answer all of them from gameSession
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
         when(featureFlagHelper.getFlagValue(anyString())).thenReturn(false);
     }
 
@@ -143,8 +145,8 @@ class CollaborativeTextSubmissionFlowTest {
         InMemoryCollaborativeTextDAO scopedDAO = InMemoryCollaborativeTextDAO.scoped();
         OutcomeTypeHelper outcomeTypeHelper = new OutcomeTypeHelper();
         CollaborativeTextHelper scopedHelper = new CollaborativeTextHelper(gameSessionDAO, scopedDAO, adventureMapDAO,
-                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO, endingDAO);
-        VotingHelper scopedVoting = new VotingHelper(gameSessionDAO, scopedDAO, activeSessionHelper, outcomeTypeHelper, storyDAO);
+                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO, endingDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
+        VotingHelper scopedVoting = new VotingHelper(gameSessionDAO, scopedDAO, activeSessionHelper, outcomeTypeHelper, storyDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
 
         AdventureMap adventureMap = new AdventureMap();
         adventureMap.setLocations(new ArrayList<>(List.of(

@@ -20,13 +20,15 @@ public class RitualHelper {
     private final EndingDAO endingDAO;
     private final StoryDAO storyDAO;
     private final GameSessionDAO gameSessionDAO;
+    private final GameReadHelper gameReadHelper;
 
     @Autowired
-    public RitualHelper(RitualDAO ritualDAO, GameSessionDAO gameSessionDAO, EndingDAO endingDAO, StoryDAO storyDAO) {
+    public RitualHelper(RitualDAO ritualDAO, GameSessionDAO gameSessionDAO, EndingDAO endingDAO, StoryDAO storyDAO, GameReadHelper gameReadHelper) {
         this.ritualDAO = ritualDAO;
         this.gameSessionDAO = gameSessionDAO;
         this.endingDAO = endingDAO;
         this.storyDAO = storyDAO;
+        this.gameReadHelper = gameReadHelper;
     }
 
     public List<Story> getRitual(String gameCode) {
@@ -105,7 +107,7 @@ public class RitualHelper {
     }
 
     public WinState getVictory(String gameCode) {
-        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        GameSession gameSession = gameReadHelper.getGameWithMap(gameCode);
         List<Player> players = gameSession.getPlayers();
         int totalPlayerFavor = players.stream()
         .mapToInt(Player::getFavor)

@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 public class GameSessionController {
 
     private final GameSessionHelper gameSessionHelper;
-    private final GameStateTransitionHelper phaseTransitionHelper;
+    private final GameStateTransitionHelper gameStateTransitionHelper;
 
     @Autowired
-    public GameSessionController(GameSessionHelper gameSessionHelper, GameStateTransitionHelper phaseTransitionHelper) {
+    public GameSessionController(GameSessionHelper gameSessionHelper, GameStateTransitionHelper gameStateTransitionHelper) {
         this.gameSessionHelper = gameSessionHelper;
-        this.phaseTransitionHelper = phaseTransitionHelper;
+        this.gameStateTransitionHelper = gameStateTransitionHelper;
     }
 
     @GetMapping("/game")
@@ -51,7 +51,7 @@ public class GameSessionController {
     @ResponseBody
     public GameSession nextGameState(@RequestParam String gameCode) {
         // Returns the current game, unchanged, if a transition is already running
-        return this.phaseTransitionHelper.nextGameState(gameCode);
+        return this.gameStateTransitionHelper.nextGameState(gameCode);
     }
 
 }

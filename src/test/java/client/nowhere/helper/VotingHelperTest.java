@@ -9,6 +9,7 @@ import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
 import client.nowhere.model.*;
 import client.nowhere.util.InMemoryCollaborativeTextDAO;
+import client.nowhere.util.GameReads;
 import client.nowhere.util.TestJsonLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,8 +59,7 @@ public class VotingHelperTest {
                 collaborativeTextDAO,
                 activeSessionHelper,
                 outcomeTypeHelper,
-                storyDAO
-        );
+                storyDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, null));
     }
 
     /**
@@ -106,7 +106,7 @@ public class VotingHelperTest {
         Encounter encounterAtCoords = gameSession.getGameBoard().getEncounterAtPlayerCoordinates();
 
         // Mock the game session DAO
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, null, code -> gameSession);
 
         System.out.println("=== Testing coordinates (" + xCoordinate + ", " + yCoordinate + ") ===");
         System.out.println("Story at coordinates: " + (storyAtCoords != null ? storyAtCoords.getPrompt().substring(0, Math.min(50, storyAtCoords.getPrompt().length())) + "..." : "null"));
@@ -140,10 +140,10 @@ public class VotingHelperTest {
         for(Player player : gameSession.getPlayers()) {
             boolean alreadyDone = Boolean.TRUE.equals(gameSession.getActiveGameStateSession().getIsPlayerDone().get(player.getAuthorId()));
             if (!expectedActivePlayerIds.contains(player.getAuthorId()) && !alreadyDone) {
-                verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(gameSession.getGameState()), eq(List.of(player.getAuthorId())), eq(true));
+                verify(activeSessionHelper, times(1)).markDoneInCheckedState(eq(gameCode), eq(gameSession.getGameState()), eq(List.of(player.getAuthorId())));
             } else {
                 // Active players aren't marked done, and players already done are skipped without a transaction
-                verify(activeSessionHelper, never()).update(eq(gameCode), eq(gameSession.getGameState()), eq(List.of(player.getAuthorId())), eq(true));
+                verify(activeSessionHelper, never()).markDoneInCheckedState(eq(gameCode), eq(gameSession.getGameState()), eq(List.of(player.getAuthorId())));
             }
         }
     }
@@ -182,7 +182,7 @@ public class VotingHelperTest {
         GameSession gameSession = loadGame("MAKE_CHOICE_VOTING_START.json");
         String gameCode = gameSession.getGameCode();
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, null, code -> gameSession);
 
         System.out.println("=== All Players Iteration Test ===");
         System.out.println("Game Code: " + gameCode);
@@ -229,7 +229,7 @@ public class VotingHelperTest {
         String gameCode = gameSession.getGameCode();
         String phaseId = GameState.MAKE_CHOICE_VOTING.name();
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, null, code -> gameSession);
 
         // Get the story at current coordinates
         Story currentStory = gameSession.getStoryAtCurrentPlayerCoordinates();
@@ -263,7 +263,7 @@ public class VotingHelperTest {
     void testNonActivePlayersSetToDone() throws IOException {
         GameSession gameSession = loadGame("MAKE_CHOICE_VOTING_START.json");
         String gameCode = gameSession.getGameCode();
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, null, code -> gameSession);
         String phaseId = gameSession.getGameState().getPhaseId().name();
         PlayerVote playerVote = new PlayerVote("", "24fca1a7-efc5-4813-8530-448f0e5c29d1", "edefbad5-4e7f-4769-9637-c7aa3c246c7f", 1);
         votingHelper.submitPlayerVotes(
@@ -282,7 +282,7 @@ public class VotingHelperTest {
                 .map(Player::getAuthorId)
                 .filter(authorId -> !activeStory.getPlayerIds().contains(authorId))
                 .toList();
-        verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_CHOICE_VOTING), eq(inactivePlayerIds), eq(true));
+        verify(activeSessionHelper, times(1)).markDoneInCheckedState(eq(gameCode), eq(GameState.MAKE_CHOICE_VOTING), eq(inactivePlayerIds));
     }
 
     static Stream<Arguments> provideMakeChoiceVotingScenarios() {
@@ -297,7 +297,7 @@ public class VotingHelperTest {
     void testPlayerIdsSetOnMakeOutcomeChoiceVote() throws IOException {
         GameSession gameSession = loadGame("MAKE_OUTCOME_CHOICE_VOTING_START.json");
         String gameCode = gameSession.getGameCode();
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, null, code -> gameSession);
         PlayerVote playerVoteRank1 = new PlayerVote("", "f1805f47-b2c5-49a8-9cf1-c8a61845ad7b", "7d19c18e-d8c8-4189-8c22-87167321d840", 1);
         PlayerVote playerVoteRank2 = new PlayerVote("", "f1805f47-b2c5-49a8-9cf1-c8a61845ad7b", "0658b409-70a7-4f78-9633-455f2437ec26", 2);
 
@@ -307,7 +307,7 @@ public class VotingHelperTest {
         );
 
         //Verify active player for the story is set to done instead of being allowed to vote on their own outcomes
-        verify(activeSessionHelper, times(1)).update(eq(gameCode), eq(GameState.MAKE_OUTCOME_CHOICE_VOTING),
-                argThat((Collection<String> playerIds) -> playerIds.contains("eaa157ee-9d88-4d49-a728-4c8abca37119")), eq(true));
+        verify(activeSessionHelper, times(1)).markDoneInCheckedState(eq(gameCode), eq(GameState.MAKE_OUTCOME_CHOICE_VOTING),
+                argThat((Collection<String> playerIds) -> playerIds.contains("eaa157ee-9d88-4d49-a728-4c8abca37119")));
     }
 }

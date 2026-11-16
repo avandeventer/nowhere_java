@@ -79,13 +79,24 @@ public class ActiveSessionDAO {
      */
     public boolean updateActiveGameStateSession(String gameCode, GameState gamePhase, Collection<String> authorIds, boolean isDone) {
         DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-
         GameSession before = readFields(gameSessionRef, "gameState");
         if (!gamePhase.equals(before.getGameState())) {
             System.out.println("Players " + authorIds + " update skipped - game phase mismatch. Expected: " + gamePhase + ", Current: " + before.getGameState());
             return false;
         }
+        return markDoneAndCheck(gameSessionRef, gamePhase, authorIds, isDone);
+    }
 
+    /**
+     * updateActiveGameStateSession without its first read, for a caller that read the game in
+     * gamePhase moments ago (VotingHelper). If the game moved on in between, the stale flags are
+     * stamped with gamePhase, so they don't count towards the new state.
+     */
+    public boolean markPlayersDoneInCheckedState(String gameCode, GameState gamePhase, Collection<String> authorIds) {
+        return markDoneAndCheck(db.collection("gameSessions").document(gameCode), gamePhase, authorIds, true);
+    }
+
+    private boolean markDoneAndCheck(DocumentReference gameSessionRef, GameState gamePhase, Collection<String> authorIds, boolean isDone) {
         if (isDone && !authorIds.isEmpty()) {
             List<Object> fieldsAndValues = new ArrayList<>();
             for (String authorId : authorIds) {

@@ -98,7 +98,7 @@ public class GameSession {
     }
 
     // Stories are stored one document each under rounds/{round}/stories (StoryDAO), not on the
-    // game document. GameSessionDAO.getGame fills this list; Jackson still sends it to clients.
+    // game document. GameReadHelper.getFullGame fills this list; Jackson still sends it to clients.
     @Exclude
     public List<Story> getStories() {
         return stories;
@@ -134,7 +134,7 @@ public class GameSession {
     }
 
     // Stored as its own document (PhasePaths.adventureMapPath, AdventureMapDAO), not on the game
-    // document. GameSessionDAO.getGame fills it in; Jackson still sends it in GET /game.
+    // document. GameReadHelper fills it in; Jackson still sends it in GET /game.
     @Exclude
     public AdventureMap getAdventureMap() {
         return adventureMap;

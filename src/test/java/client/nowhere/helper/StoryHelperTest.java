@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import client.nowhere.constants.AuthorConstants;
+import client.nowhere.dao.AdventureMapDAO;
 import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
 import client.nowhere.dao.UserProfileDAO;
@@ -35,6 +36,12 @@ class StoryHelperTest {
 
     @Mock
     private UserProfileDAO userProfileDAO;
+
+    @Mock
+    private AdventureMapDAO adventureMapDAO;
+
+    @Mock
+    private GameReadHelper gameReadHelper;
 
     @Spy
     private MutexFactory<String> mutexFactory = new MutexFactory<>();
@@ -75,6 +82,9 @@ class StoryHelperTest {
 
         when(gameSessionDAO.getGameInTransaction(eq(gameCode), any()))
                 .thenReturn(mockGameSession);
+        // storePlayerStory reads the game's stories and map in the same transaction
+        when(storyDAO.loadStoriesInTransaction(any(), eq(gameCode), anyInt())).thenReturn(mockGameSession.getStories());
+        when(adventureMapDAO.getInTransaction(any(), eq(gameCode))).thenReturn(mockGameSession.getAdventureMap());
         when(storyDAO.getStories(gameCode)).thenReturn(new ArrayList<>()); // No game session stories
         when(storyDAO.getPlayerStories(gameCode, playerId, locationId)).thenReturn(new ArrayList<>()); // No player stories
         when(userProfileDAO.getRegularSaveGameStories(mockGameSession, locationId)).thenReturn(new ArrayList<>()); // No global stories
@@ -85,7 +95,7 @@ class StoryHelperTest {
         assertEquals(gameCode, result.getGameCode());
         assertEquals(locationId, result.getLocation().getId());
 
-        verify(gameSessionDAO).addStoryInTransaction(eq(mockGameSession), eq(result), any());
+        verify(storyDAO).createStoryInTransaction(any(), eq(result), anyInt());
     }
 
     @ParameterizedTest
@@ -125,6 +135,9 @@ class StoryHelperTest {
 
         when(gameSessionDAO.getGameInTransaction(eq(gameCode), any()))
                 .thenReturn(mockGameSession);
+        // storePlayerStory reads the game's stories and map in the same transaction
+        when(storyDAO.loadStoriesInTransaction(any(), eq(gameCode), anyInt())).thenReturn(mockGameSession.getStories());
+        when(adventureMapDAO.getInTransaction(any(), eq(gameCode))).thenReturn(mockGameSession.getAdventureMap());
         when(storyDAO.getStories(gameCode)).thenReturn(gameSessionStories);
         when(userProfileDAO.getSaveGameSequelStories(
                 eq(mockGameSession.getUserProfileId()),
@@ -187,7 +200,7 @@ class StoryHelperTest {
             verify(userProfileDAO).getRegularSaveGameStories(mockGameSession, locationId);
         }
         assertEquals("1", result.getLocation().getId());
-        verify(gameSessionDAO).addStoryInTransaction(eq(mockGameSession), eq(result), any());
+        verify(storyDAO).createStoryInTransaction(any(), eq(result), anyInt());
     }
 
     static Stream<Arguments> provideSequelStoryScenarios() {

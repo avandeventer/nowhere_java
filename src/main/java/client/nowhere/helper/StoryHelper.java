@@ -1,6 +1,7 @@
 package client.nowhere.helper;
 
 import client.nowhere.constants.AuthorConstants;
+import client.nowhere.dao.AdventureMapDAO;
 import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.dao.StoryDAO;
 import client.nowhere.dao.UserProfileDAO;
@@ -18,16 +19,20 @@ public class StoryHelper {
     private final StoryDAO storyDAO;
     private final GameSessionDAO gameSessionDAO;
     private final UserProfileDAO userProfileDAO;
+    private final AdventureMapDAO adventureMapDAO;
+    private final GameReadHelper gameReadHelper;
 
     @Autowired
-    public StoryHelper(StoryDAO storyDAO, GameSessionDAO gameSessionDAO, UserProfileDAO userProfileDAO) {
+    public StoryHelper(StoryDAO storyDAO, GameSessionDAO gameSessionDAO, UserProfileDAO userProfileDAO, AdventureMapDAO adventureMapDAO, GameReadHelper gameReadHelper) {
         this.storyDAO = storyDAO;
         this.gameSessionDAO = gameSessionDAO;
         this.userProfileDAO = userProfileDAO;
+        this.adventureMapDAO = adventureMapDAO;
+        this.gameReadHelper = gameReadHelper;
     }
 
     public Story createStory(Story story) {
-        GameSession gameSession = gameSessionDAO.getGame(story.getGameCode());
+        GameSession gameSession = gameReadHelper.getGameWithMap(story.getGameCode());
         story.randomizeNewStory(gameSession.getAdventureMap().getStatTypes());
         return storyDAO.createStory(story);
     }
@@ -52,6 +57,9 @@ public class StoryHelper {
         return gameSessionDAO.runInTransaction(txn -> {
             Story playerStory = null;
             GameSession gameSession = gameSessionDAO.getGameInTransaction(gameCode, txn);
+            int roundNumber = gameSession.getRoundNumber() == null ? 0 : gameSession.getRoundNumber();
+            gameSession.setAdventureMap(adventureMapDAO.getInTransaction(txn, gameCode));
+            gameSession.setStories(storyDAO.loadStoriesInTransaction(txn, gameCode, roundNumber));
 
             List<Story> existingUnwrittenPlayerStories = gameSession.getStories() == null || gameSession.getStories().isEmpty()
                     ? new ArrayList<>()
@@ -72,7 +80,8 @@ public class StoryHelper {
 
             playerStory.setPlayerId(playerId);
             playerStory.setVisited(true);
-            gameSessionDAO.addStoryInTransaction(gameSession, playerStory, txn);
+            playerStory.setGameCode(gameCode);
+            storyDAO.createStoryInTransaction(txn, playerStory, roundNumber);
             return playerStory;
         });
     }
@@ -340,7 +349,7 @@ public class StoryHelper {
     }
 
     public List<Story> saveAllGameSessionStories(String gameCode) {
-        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        GameSession gameSession = gameReadHelper.getFullGame(gameCode);
         String adventureId = gameSession.getAdventureMap().getAdventureId();
         String userProfileId = gameSession.getUserProfileId();
         String saveGameId = gameSession.getSaveGameId();

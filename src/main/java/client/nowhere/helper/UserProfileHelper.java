@@ -38,6 +38,7 @@ public class UserProfileHelper {
 
     public String saveGameSessionAdventureMapToUserProfile(String gameCode) {
         GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        gameSession.setAdventureMap(adventureMapDAO.get(gameCode));
         String saveGameId = saveGameSessionAdventureMapToUserProfile(gameSession);
 
         if (!saveGameId.isEmpty()) {

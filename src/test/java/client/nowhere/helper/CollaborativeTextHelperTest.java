@@ -1,5 +1,6 @@
 package client.nowhere.helper;
 
+import client.nowhere.util.GameReads;
 import static client.nowhere.model.GameState.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -73,8 +74,7 @@ public class CollaborativeTextHelperTest {
         collaborativeTextHelper = new CollaborativeTextHelper(
                 gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
                 adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO,
-                endingDAO
-        );
+                endingDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
     }
 
     // ===== HELPER METHODS FOR LOADING TEST DATA =====
@@ -124,7 +124,7 @@ public class CollaborativeTextHelperTest {
         assertNotNull(phase, "HOW_DOES_THIS_RESOLVE phase should exist in test data");
 
         // Mock the dependencies
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -165,7 +165,7 @@ public class CollaborativeTextHelperTest {
 
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -218,7 +218,7 @@ public class CollaborativeTextHelperTest {
             return;
         }
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -457,7 +457,7 @@ public class CollaborativeTextHelperTest {
         phase.setSubmissions(submissions);
         collaborativeTextDAO.seedPhase(gameSession, WHAT_HAPPENS_HERE, phase);
 
-        when(gameSessionDAO.getGame("TESTCODE")).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
         when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(true);
 
         // Act
@@ -514,7 +514,7 @@ public class CollaborativeTextHelperTest {
         Map<String, Integer> initialTraitCounts = gameSession.getPlayers().stream()
                 .collect(Collectors.toMap(Player::getAuthorId, p -> p.getTraits() == null ? 0 : p.getTraits().size()));
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         // Act
         collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -620,7 +620,7 @@ public class CollaborativeTextHelperTest {
             return;
         }
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -696,7 +696,7 @@ public class CollaborativeTextHelperTest {
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
         List<Story> stories = gameSession.getStories().stream().filter(story -> !story.isVisited()).toList();
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -836,7 +836,7 @@ public class CollaborativeTextHelperTest {
 
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         // Act
         List<TextSubmission> winningSubmissions = collaborativeTextHelper.calculateWinningSubmission(gameCode);
@@ -884,7 +884,7 @@ public class CollaborativeTextHelperTest {
 
         CollaborativeTextPhase phase = getPhaseFromGameSession(gameSession, phaseId);
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
         when(storyDAO.getAuthorStoriesByStoryId(anyString(), anyString())).thenReturn(List.of());
 
         // Act
@@ -947,7 +947,7 @@ public class CollaborativeTextHelperTest {
 
         addVote(gameSession, GameState.MAKE_CHOICE_VOTING, new PlayerVote("", "", votedOptionId, 1));
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         System.out.println("=== " + scenarioName + " ===");
 
@@ -1069,7 +1069,7 @@ public class CollaborativeTextHelperTest {
             addVote(gameSession, GameState.MAKE_OUTCOME_CHOICE_VOTING, new PlayerVote("", "", votedSubmissionId, 1));
         }
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         System.out.println("=== " + scenarioName + " ===");
 
@@ -1155,7 +1155,7 @@ public class CollaborativeTextHelperTest {
         }
         addVote(gameSession, GameState.MAKE_OUTCOME_CHOICE_VOTING, new PlayerVote("", "", votedSubmissionId, 1));
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         collaborativeTextHelper.calculateWinningSubmission(gameCode);
 
@@ -1393,7 +1393,7 @@ public class CollaborativeTextHelperTest {
         }
         addVote(gameSession, GameState.MAKE_OUTCOME_CHOICE_VOTING, new PlayerVote("", "", votedSubmissionId, 1));
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         collaborativeTextHelper.calculateWinningSubmission(gameCode);
 
@@ -1434,7 +1434,7 @@ public class CollaborativeTextHelperTest {
         String gameCode = gameSession.getGameCode();
 
         // Mock dependencies
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
         when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(locationVoting);
 
         System.out.println("=== " + scenarioName + " ===");
@@ -1527,7 +1527,7 @@ public class CollaborativeTextHelperTest {
             player.setSelectedLocationId(player.getUserName().equals("Subodh") ? "other-location" : "shared-location");
         }
 
-        when(gameSessionDAO.getGame(gameCode)).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
         when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(false);
 
         List<OutcomeType> outcomeTypes = collaborativeTextHelper.getOutcomeTypes(gameCode, andyId);

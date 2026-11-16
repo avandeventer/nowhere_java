@@ -36,7 +36,7 @@ class GameStateTransitionHelperTest {
     }
 
     private GameStateTransitionHelper helper(TransitionQueue transitionQueue) {
-        return new GameStateTransitionHelper(gameSessionHelper, gameSessionDAO, activeSessionDAO, transitionQueue, localTasks::add);
+        return new GameStateTransitionHelper(gameSessionHelper, activeSessionDAO, transitionQueue, localTasks::add);
     }
 
     @Test
@@ -54,7 +54,7 @@ class GameStateTransitionHelperTest {
     void nextGameState_whileATransitionIsRunning_returnsTheCurrentGameWithoutAdvancing() {
         GameSession current = new GameSession();
         when(activeSessionDAO.lockTransition(GAME_CODE, null, true)).thenReturn(Optional.empty());
-        when(gameSessionDAO.getGame(GAME_CODE)).thenReturn(current);
+        when(gameSessionHelper.getGame(GAME_CODE)).thenReturn(current);
 
         assertSame(current, helper(queue).nextGameState(GAME_CODE));
 

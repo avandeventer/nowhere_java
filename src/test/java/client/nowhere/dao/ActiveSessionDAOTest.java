@@ -77,6 +77,19 @@ class ActiveSessionDAOTest {
     }
 
     @Test
+    void markPlayersDoneInCheckedState_writesWithoutReadingTheStateFirst() {
+        // Only the read after the write happens
+        readsReturn(game(GameState.LOCATION_VOTING, Map.of("A", "LOCATION_VOTING", "B", "LOCATION_VOTING")));
+
+        assertTrue(dao.markPlayersDoneInCheckedState(GAME_CODE, GameState.LOCATION_VOTING, List.of("B")));
+
+        verify(db, times(1)).getAll(any(DocumentReference[].class), any(FieldMask.class));
+        verify(gameSessionRef).update(
+                eq(FieldPath.of("activeGameStateSession", "isPlayerDone", "B")), eq(true),
+                eq(FieldPath.of("activeGameStateSession", "donePhase", "B")), eq("LOCATION_VOTING"));
+    }
+
+    @Test
     void markingDoneForAPhaseTheGameHasLeft_writesNothing() {
         readsReturn(game(GameState.WHAT_HAPPENS_HERE, Map.of()));
 

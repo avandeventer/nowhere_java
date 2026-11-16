@@ -1,7 +1,6 @@
 package client.nowhere.dao;
 
-import client.nowhere.model.GameSession;
-import client.nowhere.model.Player;
+import client.nowhere.model.*;
 import com.google.api.core.ApiFutures;
 import com.google.cloud.firestore.*;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -62,7 +62,7 @@ class GameSessionDAOTest {
         CollectionReference unknown = leafCollection("somethingNew", unknownDocument);
         when(gameSessionRef.listCollections()).thenReturn(List.of(rounds, adventureMapCollection, unknown));
 
-        new GameSessionDAO(db, mock(StoryDAO.class)).deleteGame(GAME_CODE);
+        new GameSessionDAO(db).deleteGame(GAME_CODE);
 
         verify(batch).delete(adventureMap);
         verify(batch).delete(story);
@@ -79,7 +79,7 @@ class GameSessionDAOTest {
     void deleteGame_withNothingUnderTheGame_deletesOnlyTheGameDocument() {
         when(gameSessionRef.listCollections()).thenReturn(List.of());
 
-        new GameSessionDAO(db, mock(StoryDAO.class)).deleteGame(GAME_CODE);
+        new GameSessionDAO(db).deleteGame(GAME_CODE);
 
         verify(batch, never()).delete(any(DocumentReference.class));
         verify(gameSessionRef).delete();
@@ -92,7 +92,7 @@ class GameSessionDAOTest {
         Player storedC = player("C", 1);
         Transaction transaction = transactionReadingPlayers(List.of(storedA, storedB, storedC));
 
-        new GameSessionDAO(db, mock(StoryDAO.class)).updatePlayers(GAME_CODE, List.of(player("A", 5), player("C", 7)));
+        new GameSessionDAO(db).updatePlayers(GAME_CODE, List.of(player("A", 5), player("C", 7)));
 
         verify(transaction, times(1)).update(eq(gameSessionRef), eq("players"), argThat((List<Player> players) ->
                 players.size() == 3
@@ -103,9 +103,28 @@ class GameSessionDAOTest {
 
     @Test
     void updatePlayers_withNoPlayers_doesNothing() {
-        new GameSessionDAO(db, mock(StoryDAO.class)).updatePlayers(GAME_CODE, List.of());
+        new GameSessionDAO(db).updatePlayers(GAME_CODE, List.of());
 
         verify(db, never()).runTransaction(any());
+    }
+
+    @Test
+    void getGame_readsOnlyTheGameDocument() {
+        GameSession stored = new GameSession();
+        stored.setGameCode(GAME_CODE);
+        DocumentSnapshot snapshot = mock(DocumentSnapshot.class);
+        when(snapshot.exists()).thenReturn(true);
+        when(snapshot.toObject(GameSession.class)).thenReturn(stored);
+        when(gameSessionRef.get()).thenReturn(ApiFutures.immediateFuture(snapshot));
+
+        GameSession game = new GameSessionDAO(db).getGame(GAME_CODE);
+
+        assertSame(stored, game);
+        assertNull(game.getStories());
+        assertNull(game.getAdventureMap());
+        // Stories and the adventure map live under the game document; neither is read
+        verify(db, never()).document(anyString());
+        verify(db, times(1)).collection(anyString());
     }
 
     private static Player player(String authorId, int strength) {
