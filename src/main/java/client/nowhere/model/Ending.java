@@ -12,6 +12,7 @@ public class Ending {
     String authorId;
     String endingBody;
     boolean didWeSucceed;
+    List<OutcomeFork> outcomeForks;
 
     public Ending() { }
 
@@ -93,5 +94,13 @@ public class Ending {
         this.setAssociatedStories(ending.getAssociatedStories());
         this.setAssociatedLocationId(ending.getAssociatedLocationId());
         this.setAssociatedRitualOption(ending.getAssociatedRitualOption());
+    }
+
+    public List<OutcomeFork> getOutcomeForks() {
+        return outcomeForks;
+    }
+
+    public void setOutcomeForks(List<OutcomeFork> outcomeForks) {
+        this.outcomeForks = outcomeForks;
     }
 }
