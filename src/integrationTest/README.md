@@ -833,6 +833,18 @@ Agreed plan, 2026-10-26 (each step gets its own plan when we start it):
      `ActiveSessionHelper.markDoneInCheckedState`): no state read before the write, since the
      request just read the game; the `donePhase` stamp still keeps a stale flag from counting.
      `PUT /activeGameStateSession` keeps the check.
+   - `POST /collaborativeText` returns `phaseId` plus the submission it just created, with no
+     query (`getSubmissionsByAuthor` removed). The player client ignored the response (it follows
+     submissions through Firestore) and no longer keeps `collaborativePhase`; the harness reads the
+     new submission's id from it.
+   - The player client no longer loads the phase (`GET /collaborativeText`) on opening a writing
+     phase; it only used it to know whether the player had already submitted. Instead a new root
+     submission records `activeGameStateSession.submittedPlayers["PHASE:round"]` (arrayUnion of the
+     author, `ActiveSessionDAO.markSubmitted`; additions don't count), kept for the whole game:
+     `updateGameSession` now resets only `isPlayerDone` / `donePhase` by field path instead of
+     rewriting `activeGameStateSession`. The phone reads it from the game document it already
+     listens to (`syncSubmittedFromSession`). The endpoint stays (the harness reads the phase
+     directly); the harness no longer imitates the phone's call.
    - `FeatureFlagHelper` caches each flag per instance for 60s (`CACHE_TTL`); it was a Firestore
      read (~17ms) on most collaborative-text requests.
    - Tests: `util/GameReads` stubs every split read from one fixture per game (`getGame` returns a

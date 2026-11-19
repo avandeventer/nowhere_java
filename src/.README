@@ -56,7 +56,7 @@ src/main/java/client/nowhere/
 |---|---|
 | `GameSession` | Top-level game; holds `GameState`, round number, player list, `AdventureMap`, `GameBoard` |
 | `GameState` | Enum driving the full state machine (see Phase Reference below) |
-| `ActiveGameStateSession` | Per-game server-side phase state; holds `TextSubmission[]` for the current phase |
+| `ActiveGameStateSession` | Per-game phase status on the game document: done flags for the current state (`isPlayerDone`, `donePhase`) and, for the whole game, who submitted in each writing phase (`submittedPlayers`, keyed `PHASE:round`). Submissions themselves live under `rounds/{round}/phases/{phase}/submissions` |
 | `ActivePlayerSession` | Per-player live state: `startTimer`, `contributionPhaseActive`, `writeTimerDone` |
 | `AdventureMap` | Holds `EncounterLabel[]` — the named locations players create in world setup. A game's copy is its own document at `gameSessions/{gameCode}/adventureMap/map` (`AdventureMapDAO`, `PhasePaths.adventureMapPath`), not on the GameSession document; `GameSessionDAO.getGame` loads it into `GameSession.adventureMap`. Clients don't read it from Firestore: each loads `GET /display` once at startup (the display text plus `adventureMapName`, which isn't stored) for the start screen's map name and the phone's "View Our World" drawer; preamble/ending text reaches the TV through the phase info's `phaseQuestion` |
 | `GameBoard` | `DungeonGrid`: a `Map<"x,y", Encounter>` representing the dungeon |

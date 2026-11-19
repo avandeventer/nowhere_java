@@ -79,14 +79,6 @@ public class CollaborativeTextDAO {
         return snapshot.exists() ? snapshot.toObject(TextSubmission.class) : null;
     }
 
-    public List<TextSubmission> getSubmissionsByAuthor(String phasePath, String authorId) {
-        // Sorted in memory: whereEqualTo + orderBy on different fields would need a composite index.
-        List<TextSubmission> authorSubmissions = new ArrayList<>(
-                toSubmissions(await(submissions(phasePath).whereEqualTo("authorId", authorId).get())));
-        authorSubmissions.sort(Comparator.comparingLong(TextSubmission::getInsertOrder));
-        return authorSubmissions;
-    }
-
     public TextSubmission createSubmission(String phasePath, TextSubmission submission) {
         submission.setInsertOrder(nextInsertOrder());
         await(submissions(phasePath).document(submission.getSubmissionId()).set(submission));

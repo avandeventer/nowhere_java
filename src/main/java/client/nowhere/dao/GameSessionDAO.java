@@ -106,7 +106,14 @@ public class GameSessionDAO {
         if (gameSession.getSaveGameId() != null && !gameSession.getSaveGameId().isEmpty()) {
             updates.put("saveGameId", gameSession.getSaveGameId());
         }
-        updates.put("activeGameStateSession", gameSession.getActiveGameStateSession());
+        // Only the done flags are reset per state; submittedPlayers is written by
+        // ActiveSessionDAO.markSubmitted and kept for the whole game
+        ActiveGameStateSession activeGameStateSession = gameSession.getActiveGameStateSession();
+        if (activeGameStateSession != null) {
+            updates.put("activeGameStateSession.gameCode", activeGameStateSession.getGameCode());
+            updates.put("activeGameStateSession.isPlayerDone", activeGameStateSession.getIsPlayerDone());
+            updates.put("activeGameStateSession.donePhase", activeGameStateSession.getDonePhase());
+        }
         updates.put("roundNumber", gameSession.getRoundNumber());
         updates.put("activePlayerSession", gameSession.getActivePlayerSession());
         updates.put("totalPointsTowardsVictory", gameSession.getTotalPointsTowardsVictory());

@@ -174,11 +174,6 @@ public class GameFlowClient {
         return restTemplate.getForObject("/collaborativeText?gameCode={gameCode}", CollaborativeTextPhase.class, gameCode);
     }
 
-    /** Player-client collaborative-text.component loadCollaborativePhase. */
-    public String getCollaborativeTextPhaseRaw(String gameCode) {
-        return restTemplate.getForObject("/collaborativeText?gameCode={gameCode}", String.class, gameCode);
-    }
-
     /** Player-client collaborative-text.component loadStoryForOutcomeType / onRepercussionChange. */
     public String getStoryRaw(String gameCode, String storyId) {
         return restTemplate.getForObject("/story?gameCode={gameCode}&storyId={storyId}", String.class, gameCode, storyId);

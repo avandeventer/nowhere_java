@@ -74,20 +74,24 @@ public class CollaborativeTextHelper {
         }
         String phasePath = PhasePaths.phasePath(gameSession, phaseIdState);
 
-        TextSubmission newSubmission;
-        if (textAddition.getSubmissionId() != null && !textAddition.getSubmissionId().trim().isEmpty()) {
-            newSubmission = createBranchedSubmission(textAddition, phasePath);
-        } else {
-            newSubmission = createNewSubmission(textAddition, gameSession);
-        }
+        boolean isBranch = textAddition.getSubmissionId() != null && !textAddition.getSubmissionId().trim().isEmpty();
+        TextSubmission newSubmission = isBranch
+                ? createBranchedSubmission(textAddition, phasePath)
+                : createNewSubmission(textAddition, gameSession);
 
         collaborativeTextDAO.createSubmission(phasePath, newSubmission);
+        if (!isBranch) {
+            // The player client reads this to know the player already submitted (e.g. after a reload)
+            activeSessionDAO.markSubmitted(gameCode,
+                    ActiveGameStateSession.submissionKey(phaseIdState, gameSession.getRoundNumber()),
+                    textAddition.getAuthorId());
+        }
 
-        // The player client only reads phaseId and whether this player has submitted, so return just
-        // this player's submissions instead of the whole phase.
+        // The player client ignores this response (it follows submissions through Firestore); the
+        // integration harness reads the new submission's id from it. Nothing is re-read.
         CollaborativeTextPhase response = new CollaborativeTextPhase();
         response.setPhaseId(phaseIdState.name());
-        response.setSubmissions(collaborativeTextDAO.getSubmissionsByAuthor(phasePath, textAddition.getAuthorId()));
+        response.setSubmissions(List.of(newSubmission));
         return response;
     }
 

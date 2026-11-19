@@ -90,6 +90,19 @@ class ActiveSessionDAOTest {
     }
 
     @Test
+    void markSubmitted_addsThePlayerToThatPhaseAndRoundsListOnly() {
+        when(gameSessionRef.update(any(FieldPath.class), any(), any(Object[].class)))
+                .thenReturn(ApiFutures.immediateFuture(mock(WriteResult.class)));
+
+        dao.markSubmitted(GAME_CODE, "WHAT_HAPPENS_HERE:1", "A");
+
+        verify(gameSessionRef).update(
+                eq(FieldPath.of("activeGameStateSession", "submittedPlayers", "WHAT_HAPPENS_HERE:1")),
+                eq(FieldValue.arrayUnion("A")));
+        verify(db, never()).runTransaction(any());
+    }
+
+    @Test
     void markingDoneForAPhaseTheGameHasLeft_writesNothing() {
         readsReturn(game(GameState.WHAT_HAPPENS_HERE, Map.of()));
 

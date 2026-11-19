@@ -105,13 +105,6 @@ public class InMemoryCollaborativeTextDAO extends CollaborativeTextDAO {
     }
 
     @Override
-    public List<TextSubmission> getSubmissionsByAuthor(String phasePath, String authorId) {
-        return getSubmissions(phasePath).stream()
-                .filter(submission -> authorId.equals(submission.getAuthorId()))
-                .toList();
-    }
-
-    @Override
     public TextSubmission createSubmission(String phasePath, TextSubmission submission) {
         putSubmissions(phasePath, List.of(submission));
         return submission;

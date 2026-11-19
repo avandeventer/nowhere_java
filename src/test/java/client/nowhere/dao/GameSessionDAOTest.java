@@ -109,6 +109,23 @@ class GameSessionDAOTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
+    void updateGameSession_resetsDoneFlagsButLeavesTheSubmissionHistory() {
+        when(gameSessionRef.update(anyMap())).thenReturn(ApiFutures.immediateFuture(mock(WriteResult.class)));
+        GameSession game = new GameSession(GAME_CODE, GameState.WHAT_HAPPENS_HERE);
+        game.getActiveGameStateSession().getSubmittedPlayers().put("WHERE_ARE_WE:0", List.of("A"));
+
+        new GameSessionDAO(db).updateGameSession(game);
+
+        org.mockito.ArgumentCaptor<java.util.Map<String, Object>> updates = org.mockito.ArgumentCaptor.forClass(java.util.Map.class);
+        verify(gameSessionRef).update(updates.capture());
+        assertTrue(updates.getValue().containsKey("activeGameStateSession.isPlayerDone"));
+        assertTrue(updates.getValue().containsKey("activeGameStateSession.donePhase"));
+        assertFalse(updates.getValue().containsKey("activeGameStateSession"));
+        assertFalse(updates.getValue().keySet().stream().anyMatch(key -> key.contains("submittedPlayers")));
+    }
+
+    @Test
     void getGame_readsOnlyTheGameDocument() {
         GameSession stored = new GameSession();
         stored.setGameCode(GAME_CODE);

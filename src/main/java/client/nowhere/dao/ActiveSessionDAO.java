@@ -115,6 +115,17 @@ public class ActiveSessionDAO {
     }
 
     /**
+     * Records that authorId submitted their own text in the phase submissionKey names
+     * (ActiveGameStateSession.submissionKey). A blind arrayUnion of one field, so players don't
+     * contend with each other and a repeat submission changes nothing.
+     */
+    public void markSubmitted(String gameCode, String submissionKey, String authorId) {
+        DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
+        await(gameSessionRef.update(FieldPath.of("activeGameStateSession", "submittedPlayers", submissionKey),
+                FieldValue.arrayUnion(authorId)));
+    }
+
+    /**
      * Locks the transition out of the game's current state, so only one request runs it. With
      * expectedState set, locks only if the game is still in that state. Fails (empty) while
      * another live lock for the current state exists. Also turns on the clients' loading indicator.
