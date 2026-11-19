@@ -581,7 +581,8 @@ public class FullGameScenario {
         if (!simulateClientTraffic) {
             return;
         }
-        bestEffort("GET /collaborativeText", () -> client.getCollaborativeTextPhaseRaw(gameCode));
+        // Phones no longer load the phase (GET /collaborativeText): whether a player already
+        // submitted comes from activeGameStateSession.submittedPlayers on the game document
         String storyId = storyClarifier(chosen);
         if (storyId != null) {
             bestEffort("GET /story", () -> client.getStoryRaw(gameCode, storyId));

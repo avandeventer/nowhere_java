@@ -1,6 +1,7 @@
 package client.nowhere.helper;
 
 import client.nowhere.dao.ActiveSessionDAO;
+import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,14 +15,14 @@ import java.util.List;
 public class ActiveSessionHelper {
 
     private final ActiveSessionDAO activeSessionDAO;
-    private final GameSessionHelper gameSessionHelper;
-    private final GameStateTransitionHelper phaseTransitionHelper;
+    private final GameSessionDAO gameSessionDAO;
+    private final GameStateTransitionHelper gameStateTransitionHelper;
 
     @Autowired
-    public ActiveSessionHelper(ActiveSessionDAO activeSessionDAO, GameSessionHelper gameSessionHelper, GameStateTransitionHelper phaseTransitionHelper) {
+    public ActiveSessionHelper(ActiveSessionDAO activeSessionDAO, GameSessionDAO gameSessionDAO, GameStateTransitionHelper gameStateTransitionHelper) {
         this.activeSessionDAO = activeSessionDAO;
-        this.gameSessionHelper = gameSessionHelper;
-        this.phaseTransitionHelper = phaseTransitionHelper;
+        this.gameSessionDAO = gameSessionDAO;
+        this.gameStateTransitionHelper = gameStateTransitionHelper;
     }
 
     public ActivePlayerSession update(ActivePlayerSession activeSession) {
@@ -46,12 +47,23 @@ public class ActiveSessionHelper {
         boolean gameProgressionNeeded = this.activeSessionDAO.updateActiveGameStateSession(gameCode, gamePhase, authorIds, isDone);
 
         if (gameProgressionNeeded && !gamePhase.equals(GameState.INIT)) {
-            this.phaseTransitionHelper.allPlayersDone(gameCode, gamePhase);
+            this.gameStateTransitionHelper.allPlayersDone(gameCode, gamePhase);
+        }
+    }
+
+    /** update(..., true) for a caller that has just read the game in gamePhase; see ActiveSessionDAO.markPlayersDoneInCheckedState. */
+    public void markDoneInCheckedState(String gameCode, GameState gamePhase, Collection<String> authorIds) {
+        if (authorIds.isEmpty()) {
+            return;
+        }
+        boolean gameProgressionNeeded = this.activeSessionDAO.markPlayersDoneInCheckedState(gameCode, gamePhase, authorIds);
+        if (gameProgressionNeeded && !gamePhase.equals(GameState.INIT)) {
+            this.gameStateTransitionHelper.allPlayersDone(gameCode, gamePhase);
         }
     }
 
     public ActivePlayerSession nextPlayerTurn(String gameCode, String currentTurnPlayerId) {
-        GameSession gameSession = gameSessionHelper.getGame(gameCode);
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
         ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
         activePlayerSession.setGameCode(gameCode);
 
@@ -86,7 +98,7 @@ public class ActiveSessionHelper {
     }
 
     public ActivePlayerSession setFirstPlayerTurn(String gameCode) {
-        GameSession gameSession = this.gameSessionHelper.getGame(gameCode);
+        GameSession gameSession = this.gameSessionDAO.getGame(gameCode);
         ActivePlayerSession activePlayerSession = gameSession.getActivePlayerSession();
         activePlayerSession.setGameCode(gameCode);
 

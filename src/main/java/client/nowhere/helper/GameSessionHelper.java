@@ -36,6 +36,7 @@ public class GameSessionHelper {
     private final FeatureFlagHelper featureFlagHelper;
     private final CollaborativeTextHelper collaborativeTextHelper;
     private final ActiveSessionDAO activeSessionDAO;
+    private final GameReadHelper gameReadHelper;
 
     @Autowired
     public GameSessionHelper(
@@ -46,7 +47,8 @@ public class GameSessionHelper {
             UserProfileHelper userProfileHelper,
             FeatureFlagHelper featureFlagHelper,
             CollaborativeTextHelper collaborativeTextHelper,
-            ActiveSessionDAO activeSessionDAO
+            ActiveSessionDAO activeSessionDAO,
+            GameReadHelper gameReadHelper
     ) {
         this.gameSessionDAO = gameSessionDAO;
         this.adventureMapDAO = adventureMapDAO;
@@ -56,6 +58,7 @@ public class GameSessionHelper {
         this.featureFlagHelper = featureFlagHelper;
         this.collaborativeTextHelper = collaborativeTextHelper;
         this.activeSessionDAO = activeSessionDAO;
+        this.gameReadHelper = gameReadHelper;
     }
 
     public GameSession createGameSession(String userProfileId, String adventureId, String saveGameId, Integer storiesToWritePerRound, Integer storiesToPlayPerRound, GameMode gameMode) {
@@ -84,11 +87,16 @@ public class GameSessionHelper {
             gameSession.getActiveGameStateSession().setGameCode(newGameCode);
         }
 
-        return gameSessionDAO.createGameSession(gameSession);
+        gameSessionDAO.createGameSession(gameSession);
+        if (gameSession.getStories() != null && !gameSession.getStories().isEmpty()) {
+            int roundNumber = gameSession.getRoundNumber() == null ? 0 : gameSession.getRoundNumber();
+            storyDAO.createStories(newGameCode, gameSession.getStories(), roundNumber);
+        }
+        return gameReadHelper.getFullGame(newGameCode);
     }
 
     public GameSession adminUpdateGameSession(GameSession gameSession) {
-        GameSession newGameSession = gameSessionDAO.getGame(gameSession.getGameCode());
+        GameSession newGameSession = gameReadHelper.getFullGame(gameSession.getGameCode());
         newGameSession.setGameState(gameSession.getGameState());
         return updateGameSession(newGameSession, false);
     }
@@ -98,7 +106,8 @@ public class GameSessionHelper {
      * locks the transition first (and turns on the clients' loading indicator) so it runs once.
      */
     public GameSession updateToNextGameState(String gameCode) {
-        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        // The phase handlers work on every story and the map
+        GameSession gameSession = gameReadHelper.getFullGame(gameCode);
 
         if (gameSession.getGameState().equals(INIT)) {
             if (!gameSession.areAllPlayersDone()) {
@@ -112,6 +121,7 @@ public class GameSessionHelper {
     }
 
     public GameSession updateGameSession(GameSession gameSession, boolean isTestMode) {
+        // Only the stored state and players are compared and reset here
         GameSession existingSession = gameSessionDAO.getGame(gameSession.getGameCode());
 
         boolean locationVoting = featureFlagHelper.getFlagValue("locationVoting");
@@ -280,8 +290,9 @@ public class GameSessionHelper {
                         collaborativeTextHelper.handleRoundZeroBoard(gameSession);
                         ActivePlayerSession playerSession = gameSession.getActivePlayerSession();
                         playerSession.setGameCode(gameSession.getGameCode());
+                        // handleRoundZeroBoard just wrote the board and its stories
                         GameSession refreshedSession = gameSessionDAO.getGame(gameSession.getGameCode());
-                        Location playerLocation = refreshedSession.getStoryAtCurrentPlayerCoordinates().getLocation();
+                        Location playerLocation = gameReadHelper.getCurrentEncounterStory(refreshedSession).getLocation();
                         collaborativeTextHelper.setLocationTraitOutcomeDisplay(gameSession.getPlayers(), playerLocation, playerSession);
                         gameSession.setGameState(NAVIGATE_WINNER);
                     } else if (locationVoting && gameSession.getRoundNumber() >= 2) {
@@ -634,7 +645,7 @@ public class GameSessionHelper {
         player.setGameCode(player.getGameCode().toUpperCase(Locale.ROOT));
 
         GameSession gameSession =
-                this.gameSessionDAO.getGame(player.getGameCode());
+                this.gameReadHelper.getGameWithMap(player.getGameCode());
 
         List<Player> alreadyJoinedPlayers = gameSession.getPlayers();
 
@@ -664,8 +675,9 @@ public class GameSessionHelper {
         return this.gameSessionDAO.getPlayers(gameCode);
     }
 
+    /** GET /game: the game with every story and its map, as clients expect */
     public GameSession getGame(String gameCode) {
-        return this.gameSessionDAO.getGame(gameCode);
+        return this.gameReadHelper.getFullGame(gameCode);
     }
 
     public Player updatePlayer(Player player) {

@@ -1,6 +1,7 @@
 package client.nowhere.helper;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,9 +31,10 @@ public class CollaborativeTextHelper {
     private final OutcomeTypeHelper outcomeTypeHelper;
     private final ActiveSessionDAO activeSessionDAO;
     private final EndingDAO endingDAO;
+    private final GameReadHelper gameReadHelper;
 
     @Autowired
-    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO, AdventureMapHelper adventureMapHelper, StoryDAO storyDAO, FeatureFlagHelper featureFlagHelper, OutcomeTypeHelper outcomeTypeHelper, ActiveSessionDAO activeSessionDAO, EndingDAO endingDAO) {
+    public CollaborativeTextHelper(GameSessionDAO gameSessionDAO, CollaborativeTextDAO collaborativeTextDAO, AdventureMapDAO adventureMapDAO, AdventureMapHelper adventureMapHelper, StoryDAO storyDAO, FeatureFlagHelper featureFlagHelper, OutcomeTypeHelper outcomeTypeHelper, ActiveSessionDAO activeSessionDAO, EndingDAO endingDAO, GameReadHelper gameReadHelper) {
         this.gameSessionDAO = gameSessionDAO;
         this.collaborativeTextDAO = collaborativeTextDAO;
         this.adventureMapDAO = adventureMapDAO;
@@ -42,6 +44,7 @@ public class CollaborativeTextHelper {
         this.outcomeTypeHelper = outcomeTypeHelper;
         this.activeSessionDAO = activeSessionDAO;
         this.endingDAO = endingDAO;
+        this.gameReadHelper = gameReadHelper;
     }
 
     // ===== PUBLIC API METHODS =====
@@ -64,32 +67,36 @@ public class CollaborativeTextHelper {
             throw new ValidationException("Added text cannot be null or empty");
         }
 
-        GameSession gameSession = getGameSession(gameCode);
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
         GameState phaseIdState = gameSession.getGameState().getPhaseId();
         if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
         }
         String phasePath = PhasePaths.phasePath(gameSession, phaseIdState);
 
-        TextSubmission newSubmission;
-        if (textAddition.getSubmissionId() != null && !textAddition.getSubmissionId().trim().isEmpty()) {
-            newSubmission = createBranchedSubmission(textAddition, phasePath);
-        } else {
-            newSubmission = createNewSubmission(textAddition, gameSession);
-        }
+        boolean isBranch = textAddition.getSubmissionId() != null && !textAddition.getSubmissionId().trim().isEmpty();
+        TextSubmission newSubmission = isBranch
+                ? createBranchedSubmission(textAddition, phasePath)
+                : createNewSubmission(textAddition, gameSession);
 
         collaborativeTextDAO.createSubmission(phasePath, newSubmission);
+        if (!isBranch) {
+            // The player client reads this to know the player already submitted (e.g. after a reload)
+            activeSessionDAO.markSubmitted(gameCode,
+                    ActiveGameStateSession.submissionKey(phaseIdState, gameSession.getRoundNumber()),
+                    textAddition.getAuthorId());
+        }
 
-        // The player client only reads phaseId and whether this player has submitted, so return just
-        // this player's submissions instead of the whole phase.
+        // The player client ignores this response (it follows submissions through Firestore); the
+        // integration harness reads the new submission's id from it. Nothing is re-read.
         CollaborativeTextPhase response = new CollaborativeTextPhase();
         response.setPhaseId(phaseIdState.name());
-        response.setSubmissions(collaborativeTextDAO.getSubmissionsByAuthor(phasePath, textAddition.getAuthorId()));
+        response.setSubmissions(List.of(newSubmission));
         return response;
     }
 
     public CollaborativeTextPhase getCollaborativeTextPhase(String gameCode) {
-        GameSession gameSession = getGameSession(gameCode);
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
         GameState phaseIdState = gameSession.getGameState().getPhaseId();
         if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
@@ -125,7 +132,7 @@ public class CollaborativeTextHelper {
     }
 
     public List<TextSubmission> calculateWinningSubmission(String gameCode) {
-        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        GameSession gameSession = gameReadHelper.getFullGame(gameCode);
         return calculateWinningSubmission(gameSession);
     }
 
@@ -137,7 +144,7 @@ public class CollaborativeTextHelper {
         }
 
         CollaborativeTextPhase phase = loadPhase(gameSession, phaseIdState);
-        return getWinningSubmissions(phaseIdState, phase, gameSession);
+        return getWinningSubmissions(phaseIdState, phase, gameSession, () -> gameReadHelper.getCurrentEncounterStory(gameSession));
     }
 
     public List<TextSubmission> calculateWinningSubmission(GameSession gameSession) {
@@ -147,7 +154,7 @@ public class CollaborativeTextHelper {
         }
 
         CollaborativeTextPhase phase = loadPhase(gameSession, phaseIdState);
-        List<TextSubmission> winningSubmissions = getWinningSubmissions(phaseIdState, phase, gameSession);
+        List<TextSubmission> winningSubmissions = getWinningSubmissions(phaseIdState, phase, gameSession, gameSession::getStoryAtCurrentPlayerCoordinates);
 
         // Store the winning submissions in GameSessionDisplay
         if (!winningSubmissions.isEmpty()) {
@@ -157,10 +164,11 @@ public class CollaborativeTextHelper {
         return winningSubmissions;
     }
 
-    private List<TextSubmission> getWinningSubmissions(GameState phaseId, CollaborativeTextPhase phase, GameSession gameSession) {
+    // currentStory is only read for MAKE_OUTCOME_CHOICE_VOTING, whose candidates are the current story's forks
+    private List<TextSubmission> getWinningSubmissions(GameState phaseId, CollaborativeTextPhase phase, GameSession gameSession, Supplier<Story> currentStory) {
         switch (phaseId) {
             case GameState.MAKE_CHOICE_VOTING, MAKE_OUTCOME_CHOICE_VOTING, GameState.LOCATION_OPTION_MAKE_CHOICE_VOTING, GameState.MAKE_PARTNER_CHOICE_VOTING, ACCEPT_PARTNER_CHOICE_VOTING -> {
-                return calculateWinnersFromVotes(phase, gameSession.getGameState(), gameSession);
+                return calculateWinnersFromVotes(phase, gameSession.getGameState(), currentStory);
             }
             case GameState.HOW_DOES_THIS_RESOLVE, HOW_DOES_THIS_RESOLVE_AGAIN -> {
                 return phase.getSubmissionsWithoutParentSubmissions();
@@ -176,7 +184,7 @@ public class CollaborativeTextHelper {
     }
 
     public List<TextSubmission> getAvailableSubmissionsForPlayer(String gameCode, String playerId, int requestedCount, String outcomeTypeId, boolean showNewSubmissions) {
-        GameSession gameSession = getGameSession(gameCode);
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
         GameState phaseIdState = gameSession.getGameState().getPhaseId();
         if (phaseIdState == null) {
             throw new ValidationException("Current game state does not support collaborative text: " + gameSession.getGameState());
@@ -184,10 +192,9 @@ public class CollaborativeTextHelper {
 
         String phasePath = PhasePaths.phasePath(gameSession, phaseIdState);
 
-        List<String> excludeOutcomeTypeIds = gameSession.getStories().stream()
-                .filter(story -> playerId.equals(story.getPlayerId()))
-                .map(Story::getStoryId)
-                .collect(Collectors.toList());
+        // Submissions about the player's own stories aren't shown to them; only the ids are needed
+        List<String> excludeOutcomeTypeIds = new ArrayList<>(storyDAO.getStoryIdsForPlayer(
+                gameCode, playerId, gameSession.getRoundNumber() == null ? 0 : gameSession.getRoundNumber()));
         excludeOutcomeTypeIds.add(playerId);
 
         CollaborativeTextPhase phase = collaborativeTextDAO.loadPhaseWithViews(phasePath, phaseIdState.name());
@@ -324,8 +331,9 @@ public class CollaborativeTextHelper {
 
     // ===== GENERALIZED VALIDATION METHODS =====
 
+    // The game with every story and its map, for code that uses them (see GameReadHelper)
     private GameSession getGameSession(String gameCode) {
-        GameSession gameSession = gameSessionDAO.getGame(gameCode);
+        GameSession gameSession = gameReadHelper.getFullGame(gameCode);
         if (gameSession == null) {
             throw new ValidationException("Game session not found: " + gameCode);
         }
@@ -343,7 +351,7 @@ public class CollaborativeTextHelper {
      * @return The assigned outcome type, or null if not applicable for the current phase
      */
     public OutcomeType getOutcomeTypeForPlayer(String gameCode, String playerId) {
-        GameSession gameSession = getGameSession(gameCode);
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
         GameState currentState = gameSession.getGameState();
         GameState phaseIdState = currentState.getPhaseId();
 
@@ -366,7 +374,7 @@ public class CollaborativeTextHelper {
      */
     private OutcomeType assignOptionTextToPlayer(GameSession gameSession, String playerId) {
         // Get the story at current encounter
-        Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
+        Story story = gameReadHelper.getCurrentEncounterStory(gameSession);
         if (story == null) {
             throw new ValidationException("Story not found at player coordinates");
         }
@@ -529,10 +537,10 @@ public class CollaborativeTextHelper {
         }
     }
 
-    private List<TextSubmission> calculateWinnersFromVotes(CollaborativeTextPhase phase, GameState gameState, GameSession gameSession) {
+    private List<TextSubmission> calculateWinnersFromVotes(CollaborativeTextPhase phase, GameState gameState, Supplier<Story> currentStory) {
         List<TextSubmission> submissions = phase.getSubmissions();
         if (gameState.getPhaseId() == GameState.MAKE_OUTCOME_CHOICE_VOTING) {
-            Story story = gameSession.getStoryAtCurrentPlayerCoordinates();
+            Story story = currentStory.get();
             submissions = story.getSelectedOption().getOutcomeForks().stream().map(OutcomeFork::getTextSubmission).toList();
         }
         for (TextSubmission submission : submissions) {
@@ -963,7 +971,7 @@ public class CollaborativeTextHelper {
                 return;
             }
 
-            GameSession gameSession = getGameSession(gameCode);
+            GameSession gameSession = gameReadHelper.getGameWithMap(gameCode);
             AdventureMap adventureMap = gameSession.getAdventureMap();
             if (adventureMap == null) {
                 adventureMap = new AdventureMap();
@@ -1008,7 +1016,7 @@ public class CollaborativeTextHelper {
      */
     public void initializeLocationVoting(String gameCode) {
         try {
-            GameSession gameSession = getGameSession(gameCode);
+            GameSession gameSession = gameReadHelper.getGameWithMap(gameCode);
             AdventureMap adventureMap = gameSession.getAdventureMap();
             if (adventureMap == null || adventureMap.getLocations() == null || adventureMap.getLocations().isEmpty()) {
                 return;
@@ -1766,7 +1774,7 @@ public class CollaborativeTextHelper {
             String direction = winningSubmission.getSubmissionId();
 
             // Get current game session and player coordinates
-            GameSession gameSession = getGameSession(gameCode);
+            GameSession gameSession = gameSessionDAO.getGame(gameCode);
             GameBoard gameBoard = gameSession.getGameBoard();
             if (gameBoard == null) {
                 System.err.println("Game board not found for game: " + gameCode);
@@ -1874,7 +1882,7 @@ public class CollaborativeTextHelper {
 
     public void initializeMakePartnerChoiceVoting(String gameCode) {
         try {
-            GameSession gameSession = getGameSession(gameCode);
+            GameSession gameSession = gameSessionDAO.getGame(gameCode);
             List<Player> players = gameSession.getPlayers();
             if (players == null || players.isEmpty()) return;
 
@@ -1995,7 +2003,7 @@ public class CollaborativeTextHelper {
     private void createPlayerStatForFearPhase(String gameCode, TextSubmission winningSubmission) {
         try {
             // Get the game session to access the adventure map
-            GameSession gameSession = getGameSession(gameCode);
+            GameSession gameSession = gameReadHelper.getGameWithMap(gameCode);
             if (gameSession.getAdventureMap() == null) {
                 gameSession.setAdventureMap(new AdventureMap());
             }
@@ -2028,7 +2036,7 @@ public class CollaborativeTextHelper {
     private void createPlayerStatsForCapablePhase(String gameCode, List<TextSubmission> winningSubmissions) {
         try {
             // Get the game session to access the adventure map
-            GameSession gameSession = getGameSession(gameCode);
+            GameSession gameSession = gameReadHelper.getGameWithMap(gameCode);
             if (gameSession.getAdventureMap() == null) {
                 gameSession.setAdventureMap(new AdventureMap());
             }
@@ -2058,7 +2066,7 @@ public class CollaborativeTextHelper {
     }
 
     public List<RepercussionTypeOption> getPlayerRepercussionTypes(String gameCode, String authorId) {
-        GameSession gameSession = getGameSession(gameCode);
+        GameSession gameSession = gameSessionDAO.getGame(gameCode);
         Player player = gameSession.getPlayers().stream()
                 .filter(p -> p.getAuthorId().equals(authorId))
                 .findFirst()
@@ -2105,7 +2113,7 @@ public class CollaborativeTextHelper {
             gameState
         );
 
-        Story storyToIterateOn = gameSession.getStoryAtCurrentPlayerCoordinates();
+        Story storyToIterateOn = gameReadHelper.getCurrentEncounterStory(gameSession);
 
         List<TextSubmission> locationVotingSubmissions = null;
         if (gameState == GameState.LOCATION_VOTING || gameState == GameState.LOCATION_WINNING) {
@@ -2268,7 +2276,7 @@ public class CollaborativeTextHelper {
      */
     public List<EncounterLabel> getEncounterLabels(String gameCode) {
         try {
-            GameSession gameSession = getGameSession(gameCode);
+            GameSession gameSession = gameReadHelper.getGameWithMap(gameCode);
             AdventureMap adventureMap = gameSession.getAdventureMap();
             if (adventureMap == null || adventureMap.getEncounterLabels() == null) {
                 return new ArrayList<>();

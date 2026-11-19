@@ -9,6 +9,13 @@ pivot" below. This file is the up-to-date source of truth for where things actua
 > **Latest work (2026-10-25): backend latency.** See "Latency work (in progress)" below for where
 > things stand, the measurements so far, and next steps. The rest of this section is from 2026-08-10.
 
+> **Parallel runs (2026-11-18):** `./gradlew integrationTest` runs test classes in parallel, one
+> JVM per class (`maxParallelForks`, default 5). Use `-PintegrationForks=1` to run them one at a
+> time. Every class still hits the one sandbox backend, so parallel runs push latency up. When
+> collecting `LatencyLog` numbers, run a single class (`--tests ...`) or use `-PintegrationForks=1`.
+> Gradle's console can mix stdout from the different JVMs; per-class output is kept separate in
+> `build/reports/tests/integrationTest/`.
+
 ## Current state (as of pausing this session, 2026-08-10)
 
 `FullGameScenario` is now a single, self-contained engine (no more separate scenario-hook class) —
@@ -797,10 +804,68 @@ Agreed plan, 2026-10-26 (each step gets its own plan when we start it):
      drop to roughly done-flag time; the transition itself shows as `POST /internal/transitions`
      in the Cloud Run request logs.
 
+5. **Split game reads (lighter reads committed 2026-11-15; split into separate DAO calls
+   2026-11-15, uncommitted, not run live).** Measured first (sandbox, 2026-11-13..15, Cloud
+   Monitoring `firestore.dao` and `http.server.requests`): `GameSessionDAO.getGame` was ~10,700
+   calls at ~100ms, by far the most Firestore time, ~70% of it `StoryDAO.loadStories`. Server-side
+   averages: `/voting` 284ms, `/available` 285ms, `/votes` 214ms; the harness adds ~100-350ms of
+   network and Cloud Run routing.
+   - `GameSessionDAO.getGame` reads only the game document (`stories` and `adventureMap` null) and
+     no longer depends on `StoryDAO`. It now throws `ResourceException` on a failed read instead
+     of returning an empty `GameSession`.
+   - `GameReadHelper` puts parts together where a flow needs them: `getFullGame` (map read started
+     with the game document, stories once its round is known: same latency as the old `getGame`),
+     `getGameWithMap`, `getCurrentEncounterStory` (`StoryDAO.getStory`, one `getAll` over rounds).
+     `StoryDAO.loadStoriesAsync` / `AdventureMapDAO.getAsync` return futures for this.
+   - Game document only: `GET /player`, `/player/authorId`, `/repercussionTypes`, `/game-board`,
+     `PUT /activePlayerSession` turn changes, `POST /collaborativeText`, `GET /collaborativeText`,
+     `/available` (plus `StoryDAO.getStoryIdsForPlayer`), `updateGameSession`'s stored-state
+     comparison, `handleNavigation`, `initializeMakePartnerChoiceVoting`, ritual updates.
+   - Plus the current story, read only where used: `/phaseInfo`; `/voting` in MAKE_CHOICE,
+     MAKE_OUTCOME, MAKE_PARTNER and LOCATION_OPTION voting; `/votes` in MAKE_CHOICE and
+     MAKE_OUTCOME voting; `/outcomeType` in HOW_DOES_THIS_RESOLVE; `/winner` for
+     MAKE_OUTCOME_CHOICE_VOTING; the round-zero board. MAKE_PARTNER_CHOICE_VOTING in `/voting`
+     also loads every story (existing partners).
+   - Plus the map: joining (`POST /player`), `initializeLocationVoting`,
+     `addAllSubmissionsToAdventureMap`, both `createPlayerStat...` handlers, `getEncounterLabels`,
+     ritual victory, `POST /story`, saving the map to a profile.
+   - Full game: `GET /game` (same response as before), transitions (`updateToNextGameState`),
+     `/outcomeTypes`, `PUT /game/next` while a transition is running, saving stories to a profile.
+     `storePlayerStory` (LOCATION_SELECT) reads the game, stories and map in its transaction itself.
+   - `GameSession.currentEncounterStory` removed; `getStoryAtCurrentPlayerCoordinates` works only
+     on a full game (transitions). Request flows take the story from `getCurrentEncounterStory`.
+   - `updateGameSession` returns the game document without stories or map when the state didn't
+     change (PUT `/game/next` / PUT `/game` responses in that case).
+   - Done flags from `VotingHelper` use `ActiveSessionDAO.markPlayersDoneInCheckedState` (via
+     `ActiveSessionHelper.markDoneInCheckedState`): no state read before the write, since the
+     request just read the game; the `donePhase` stamp still keeps a stale flag from counting.
+     `PUT /activeGameStateSession` keeps the check.
+   - `POST /collaborativeText` returns `phaseId` plus the submission it just created, with no
+     query (`getSubmissionsByAuthor` removed). The player client ignored the response (it follows
+     submissions through Firestore) and no longer keeps `collaborativePhase`; the harness reads the
+     new submission's id from it.
+   - The player client no longer loads the phase (`GET /collaborativeText`) on opening a writing
+     phase; it only used it to know whether the player had already submitted. Instead a new root
+     submission records `activeGameStateSession.submittedPlayers["PHASE:round"]` (arrayUnion of the
+     author, `ActiveSessionDAO.markSubmitted`; additions don't count), kept for the whole game:
+     `updateGameSession` now resets only `isPlayerDone` / `donePhase` by field path instead of
+     rewriting `activeGameStateSession`. The phone reads it from the game document it already
+     listens to (`syncSubmittedFromSession`). The endpoint stays (the harness reads the phase
+     directly); the harness no longer imitates the phone's call.
+   - `FeatureFlagHelper` caches each flag per instance for 60s (`CACHE_TTL`); it was a Firestore
+     read (~17ms) on most collaborative-text requests.
+   - Tests: `util/GameReads` stubs every split read from one fixture per game (`getGame` returns a
+     copy without stories or map, so code that uses them without reading them fails);
+     `GameReadHelperTest` covers the three compositions. Unit tests pass (212).
+   - Spikes of 8-15s in the latency logs (e.g. one 14.3s `/outcomeTypes`) were all cold starts: each
+     matches an instance logging "Started GameApplication" ~10s later. Left alone for now (user's
+     call, 2026-11-15); options were startup tuning or `--min-instances 1` (~$10-15/month).
+
 Smaller items, not scheduled:
-- `GET /voting` still does a full `getGame` (~240ms avg) on every poll.
-- `GET /collaborativeText/available`: 13s max in round-1 WHAT_HAPPENS_HERE in 6A7W46 (30
-  concurrent calls, each reading the whole phase plus views).
+- `GET /voting` loads every story in MAKE_PARTNER_CHOICE_VOTING (to find existing partners).
+- `GET /collaborativeText/available` still reads the whole phase plus every player's views per call.
+- `GET /collaborativeText/outcomeTypes` still uses the full `getGame`.
+- Cold starts (~10s Spring Boot startup) when Cloud Run adds an instance.
 
 ## False leads from this session (corrected, for context)
 

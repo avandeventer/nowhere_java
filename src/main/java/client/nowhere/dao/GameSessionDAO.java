@@ -22,12 +22,10 @@ public class GameSessionDAO {
     private static final int MAX_BATCH_WRITES = 500;
 
     private final Firestore db;
-    private final StoryDAO storyDAO;
 
     @Autowired
-    public GameSessionDAO(Firestore db, StoryDAO storyDAO) {
+    public GameSessionDAO(Firestore db) {
         this.db = db;
-        this.storyDAO = storyDAO;
     }
 
     public GameSession createGameSession(
@@ -66,22 +64,20 @@ public class GameSessionDAO {
         return gameSession;
     }
 
+    /**
+     * Writes a whole game (the debug game endpoint): the game document and its adventure map. The
+     * caller writes the stories (StoryDAO.createStories), which are @Exclude'd from the game document.
+     */
     public GameSession createGameSession(GameSession gameSession) {
         DocumentReference docRef = db.collection("gameSessions").document(gameSession.getGameCode());
 
         try {
-            // GameSession.stories and .adventureMap are @Exclude'd from the game document; they get their own documents
             WriteBatch batch = db.batch();
             batch.set(docRef, gameSession);
             if (gameSession.getAdventureMap() != null) {
                 batch.set(adventureMapRef(gameSession.getGameCode()), gameSession.getAdventureMap());
             }
             batch.commit().get();
-            if (gameSession.getStories() != null && !gameSession.getStories().isEmpty()) {
-                storyDAO.createStories(gameSession.getGameCode(), gameSession.getStories(), roundNumber(gameSession));
-            }
-
-            gameSession = getGame(gameSession.getGameCode());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue creating the game session", e);
@@ -110,7 +106,14 @@ public class GameSessionDAO {
         if (gameSession.getSaveGameId() != null && !gameSession.getSaveGameId().isEmpty()) {
             updates.put("saveGameId", gameSession.getSaveGameId());
         }
-        updates.put("activeGameStateSession", gameSession.getActiveGameStateSession());
+        // Only the done flags are reset per state; submittedPlayers is written by
+        // ActiveSessionDAO.markSubmitted and kept for the whole game
+        ActiveGameStateSession activeGameStateSession = gameSession.getActiveGameStateSession();
+        if (activeGameStateSession != null) {
+            updates.put("activeGameStateSession.gameCode", activeGameStateSession.getGameCode());
+            updates.put("activeGameStateSession.isPlayerDone", activeGameStateSession.getIsPlayerDone());
+            updates.put("activeGameStateSession.donePhase", activeGameStateSession.getDonePhase());
+        }
         updates.put("roundNumber", gameSession.getRoundNumber());
         updates.put("activePlayerSession", gameSession.getActivePlayerSession());
         updates.put("totalPointsTowardsVictory", gameSession.getTotalPointsTowardsVictory());
@@ -132,31 +135,21 @@ public class GameSessionDAO {
         return game.getPlayers();
     }
 
+    /**
+     * The game document only: stories and the adventure map are their own documents
+     * (StoryDAO, AdventureMapDAO), so getStories() and getAdventureMap() are null here. Callers that
+     * need them read them too, or use GameReadHelper.
+     */
     public GameSession getGame(String gameCode) {
-        GameSession gameSession = new GameSession();
         try {
-            DocumentReference gameSessionRef = db.collection("gameSessions").document(gameCode);
-            DocumentSnapshot gameSessionSnapshot = FirestoreDAOUtil.getDocumentSnapshot(gameSessionRef);
-            gameSession = FirestoreDAOUtil.mapGameSession(gameSessionSnapshot);
-            ApiFuture<DocumentSnapshot> adventureMap = adventureMapRef(gameCode).get();
-            gameSession.setStories(storyDAO.loadStories(gameCode, roundNumber(gameSession)));
-            gameSession.setAdventureMap(toAdventureMap(adventureMap.get()));
+            return FirestoreDAOUtil.mapGameSession(FirestoreDAOUtil.getDocumentSnapshot(getGameRef(gameCode)));
         } catch (InterruptedException | ExecutionException e) {
-            System.out.println("There was an issue retrieving the game session " + e.getMessage());
+            throw new ResourceException("There was an issue retrieving the game session " + gameCode, e);
         }
-        return gameSession;
     }
 
     private DocumentReference adventureMapRef(String gameCode) {
         return db.document(PhasePaths.adventureMapPath(gameCode));
-    }
-
-    private static AdventureMap toAdventureMap(DocumentSnapshot snapshot) {
-        return snapshot.exists() ? snapshot.toObject(AdventureMap.class) : null;
-    }
-
-    private static int roundNumber(GameSession gameSession) {
-        return gameSession.getRoundNumber() == null ? 0 : gameSession.getRoundNumber();
     }
 
     public Player updatePlayer(Player player) {
@@ -301,26 +294,17 @@ public class GameSessionDAO {
         }
     }
 
+    /** The game document only, read inside txn (see getGame). */
     public GameSession getGameInTransaction(String gameCode, Transaction txn) {
         try {
-            DocumentReference ref = getGameRef(gameCode);
-            DocumentSnapshot snapshot = txn.get(ref).get();
+            DocumentSnapshot snapshot = txn.get(getGameRef(gameCode)).get();
             if (!snapshot.exists()) {
                 throw new ResourceException("GameSession " + gameCode + " not found");
             }
-            GameSession gameSession = snapshot.toObject(GameSession.class);
-            gameSession.setAdventureMap(toAdventureMap(txn.get(adventureMapRef(gameCode)).get()));
-            gameSession.setStories(storyDAO.loadStoriesInTransaction(txn, gameCode, roundNumber(gameSession)));
-            return gameSession;
+            return snapshot.toObject(GameSession.class);
         } catch (Exception e) {
             throw new RuntimeException("Failed to get GameSession in transaction", e);
         }
-    }
-
-    /** Adds one story inside a transaction that read the game with getGameInTransaction. */
-    public void addStoryInTransaction(GameSession gameSession, Story story, Transaction txn) {
-        story.setGameCode(gameSession.getGameCode());
-        storyDAO.createStoryInTransaction(txn, story, roundNumber(gameSession));
     }
 
     public <T> T runInTransaction(Transaction.Function<T> txnLogic) {

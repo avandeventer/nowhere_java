@@ -3,6 +3,7 @@ package client.nowhere.helper;
 import client.nowhere.dao.*;
 import client.nowhere.model.*;
 import client.nowhere.util.InMemoryCollaborativeTextDAO;
+import client.nowhere.util.GameReads;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -13,6 +14,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -47,12 +51,13 @@ class CollaborativeTextSubmissionFlowTest {
         collaborativeTextDAO = new InMemoryCollaborativeTextDAO();
         OutcomeTypeHelper outcomeTypeHelper = new OutcomeTypeHelper();
         collaborativeTextHelper = new CollaborativeTextHelper(gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
-                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO, endingDAO);
-        votingHelper = new VotingHelper(gameSessionDAO, collaborativeTextDAO, activeSessionHelper, outcomeTypeHelper, storyDAO);
+                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO, endingDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
+        votingHelper = new VotingHelper(gameSessionDAO, collaborativeTextDAO, activeSessionHelper, outcomeTypeHelper, storyDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
 
         gameSession = new GameSession(GAME_CODE, GameState.HOW_DOES_THIS_RESOLVE);
         gameSession.setStories(new ArrayList<>());
-        when(gameSessionDAO.getGame(GAME_CODE)).thenReturn(gameSession);
+        // The game document, its stories and map are separate reads; answer all of them from gameSession
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
         when(featureFlagHelper.getFlagValue(anyString())).thenReturn(false);
     }
 
@@ -66,15 +71,29 @@ class CollaborativeTextSubmissionFlowTest {
     }
 
     @Test
-    void submitResponseHoldsOnlyTheAuthorsSubmissions() {
-        submitRoot(ALICE, "Alice's root");
-        CollaborativeTextPhase response = collaborativeTextHelper.submitTextAddition(GAME_CODE, addition(BOB, "Bob's root", null));
+    void submitResponseHoldsOnlyTheNewSubmission() {
+        submitRoot(BOB, "Bob's first root");
+        CollaborativeTextPhase response = collaborativeTextHelper.submitTextAddition(GAME_CODE, addition(BOB, "Bob's second root", null));
 
         assertEquals(GameState.HOW_DOES_THIS_RESOLVE.name(), response.getPhaseId());
         assertEquals(1, response.getSubmissions().size());
-        assertEquals(BOB, response.getSubmissions().getFirst().getAuthorId());
-        // The full phase still has both
-        assertEquals(2, collaborativeTextHelper.getCollaborativeTextPhase(GAME_CODE).getSubmissions().size());
+        TextSubmission created = response.getSubmissions().getFirst();
+        assertEquals(BOB, created.getAuthorId());
+        assertEquals("Bob's second root", created.getCurrentText());
+        // It is the stored submission, and the phase still has both
+        List<TextSubmission> stored = collaborativeTextHelper.getCollaborativeTextPhase(GAME_CODE).getSubmissions();
+        assertEquals(2, stored.size());
+        assertTrue(stored.stream().anyMatch(submission -> submission.getSubmissionId().equals(created.getSubmissionId())));
+    }
+
+    @Test
+    void anOwnSubmissionIsRecordedForThePhaseAndRoundButAnAdditionIsNot() {
+        gameSession.setRoundNumber(1);
+        String rootId = submitRoot(ALICE, "Alice begins");
+        collaborativeTextHelper.submitTextAddition(GAME_CODE, addition(BOB, "and Bob continues", rootId));
+
+        verify(activeSessionDAO).markSubmitted(GAME_CODE, "HOW_DOES_THIS_RESOLVE:1", ALICE);
+        verify(activeSessionDAO, never()).markSubmitted(anyString(), anyString(), eq(BOB));
     }
 
     @Test
@@ -143,8 +162,8 @@ class CollaborativeTextSubmissionFlowTest {
         InMemoryCollaborativeTextDAO scopedDAO = InMemoryCollaborativeTextDAO.scoped();
         OutcomeTypeHelper outcomeTypeHelper = new OutcomeTypeHelper();
         CollaborativeTextHelper scopedHelper = new CollaborativeTextHelper(gameSessionDAO, scopedDAO, adventureMapDAO,
-                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO, endingDAO);
-        VotingHelper scopedVoting = new VotingHelper(gameSessionDAO, scopedDAO, activeSessionHelper, outcomeTypeHelper, storyDAO);
+                adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO, endingDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
+        VotingHelper scopedVoting = new VotingHelper(gameSessionDAO, scopedDAO, activeSessionHelper, outcomeTypeHelper, storyDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
 
         AdventureMap adventureMap = new AdventureMap();
         adventureMap.setLocations(new ArrayList<>(List.of(

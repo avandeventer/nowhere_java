@@ -186,6 +186,50 @@ public class StoryDAOTest {
         verify(mockTransaction, times(1)).set(eq(secondRef), argThat((Story s) -> "PLAYER_B".equals(s.getPlayerId())));
     }
 
+    @Test
+    void getStory_findsTheStoryInWhicheverRoundCreatedItWithOneRead() {
+        String gameCode = "GAME123";
+        Firestore mockDb = mock(Firestore.class);
+        DocumentReference round0 = mock(DocumentReference.class);
+        DocumentReference round1 = mock(DocumentReference.class);
+        for (int round = 0; round <= 1; round++) {
+            CollectionReference stories = mock(CollectionReference.class);
+            when(mockDb.collection("gameSessions/" + gameCode + "/rounds/" + round + "/stories")).thenReturn(stories);
+            when(stories.document("s1")).thenReturn(round == 0 ? round0 : round1);
+        }
+        DocumentSnapshot missing = mock(DocumentSnapshot.class);
+        DocumentSnapshot found = mock(DocumentSnapshot.class);
+        when(found.exists()).thenReturn(true);
+        Story stored = story(gameCode, "s1", "PLAYER_A");
+        when(found.toObject(Story.class)).thenReturn(stored);
+        when(mockDb.getAll(round0, round1)).thenReturn(ApiFutures.immediateFuture(List.of(missing, found)));
+
+        assertSame(stored, new StoryDAO(mockDb).getStory(gameCode, "s1", 1));
+        verify(mockDb, times(1)).getAll(any(DocumentReference[].class));
+    }
+
+    @Test
+    void getStoryIdsForPlayer_queriesEachRoundForThePlayersStoryNamesOnly() {
+        String gameCode = "GAME123";
+        Firestore mockDb = mock(Firestore.class);
+        for (int round = 0; round <= 1; round++) {
+            CollectionReference stories = mock(CollectionReference.class);
+            Query byPlayer = mock(Query.class);
+            Query namesOnly = mock(Query.class);
+            when(mockDb.collection("gameSessions/" + gameCode + "/rounds/" + round + "/stories")).thenReturn(stories);
+            when(stories.whereEqualTo("playerId", "PLAYER_A")).thenReturn(byPlayer);
+            when(byPlayer.select(FieldPath.documentId())).thenReturn(namesOnly);
+            QueryDocumentSnapshot document = mock(QueryDocumentSnapshot.class);
+            when(document.getId()).thenReturn("story-round-" + round);
+            QuerySnapshot result = mock(QuerySnapshot.class);
+            when(result.getDocuments()).thenReturn(List.of(document));
+            when(namesOnly.get()).thenReturn(ApiFutures.immediateFuture(result));
+        }
+
+        assertEquals(List.of("story-round-0", "story-round-1"),
+                new StoryDAO(mockDb).getStoryIdsForPlayer(gameCode, "PLAYER_A", 1));
+    }
+
     private static Story story(String gameCode, String storyId, String playerId) {
         Story story = new Story();
         story.setGameCode(gameCode);

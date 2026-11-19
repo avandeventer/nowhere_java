@@ -5,7 +5,9 @@ import client.nowhere.helper.PhasePaths;
 import client.nowhere.model.Option;
 import client.nowhere.model.Story;
 import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutures;
 import com.google.cloud.firestore.*;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -371,23 +373,66 @@ public class StoryDAO {
 
     /** Stories of rounds 0..currentRound, read in parallel; for callers that already know the round. */
     public List<Story> loadStories(String gameCode, int currentRound) {
+        return await(loadStoriesAsync(gameCode, currentRound));
+    }
+
+    /**
+     * loadStories without waiting, so a caller can read something else (e.g. the adventure map) at
+     * the same time; see GameReadHelper.
+     */
+    public ApiFuture<List<Story>> loadStoriesAsync(String gameCode, int currentRound) {
         List<ApiFuture<QuerySnapshot>> rounds = new ArrayList<>();
         for (int round = 0; round <= currentRound; round++) {
             rounds.add(db.collection(PhasePaths.storiesPath(gameCode, round)).orderBy("insertOrder").get());
         }
-        List<Story> stories = new ArrayList<>();
-        for (ApiFuture<QuerySnapshot> round : rounds) {
-            await(round).getDocuments().forEach(document -> stories.add(document.toObject(Story.class)));
+        return ApiFutures.transform(ApiFutures.allAsList(rounds), snapshots -> {
+            List<Story> stories = new ArrayList<>();
+            snapshots.forEach(round -> round.getDocuments().forEach(document -> stories.add(document.toObject(Story.class))));
+            return stories;
+        }, MoreExecutors.directExecutor());
+    }
+
+    /**
+     * One story by id, looked up in rounds 0..currentRound with a single batched read (the caller
+     * doesn't know which round created it). Null if there is no such story.
+     */
+    public Story getStory(String gameCode, String storyId, int currentRound) {
+        List<DocumentReference> candidates = new ArrayList<>();
+        for (int round = 0; round <= currentRound; round++) {
+            candidates.add(storyRef(gameCode, round, storyId));
         }
-        return stories;
+        return await(db.getAll(candidates.toArray(new DocumentReference[0]))).stream()
+                .filter(DocumentSnapshot::exists)
+                .map(snapshot -> snapshot.toObject(Story.class))
+                .findFirst()
+                .orElse(null);
+    }
+
+    /**
+     * Ids of the stories assigned to playerId (Story.playerId) in rounds 0..currentRound. Reads only
+     * document names, never the stories themselves.
+     */
+    public List<String> getStoryIdsForPlayer(String gameCode, String playerId, int currentRound) {
+        List<ApiFuture<QuerySnapshot>> rounds = new ArrayList<>();
+        for (int round = 0; round <= currentRound; round++) {
+            rounds.add(db.collection(PhasePaths.storiesPath(gameCode, round))
+                    .whereEqualTo("playerId", playerId)
+                    .select(FieldPath.documentId())
+                    .get());
+        }
+        List<String> storyIds = new ArrayList<>();
+        for (ApiFuture<QuerySnapshot> round : rounds) {
+            await(round).getDocuments().forEach(document -> storyIds.add(document.getId()));
+        }
+        return storyIds;
     }
 
     /** Inside a transaction: every round's stories, for read-then-write flows like storePlayerStory. */
-    public List<Story> loadStoriesInTransaction(Transaction transaction, String gameCode, int currentRound) throws ExecutionException, InterruptedException {
+    public List<Story> loadStoriesInTransaction(Transaction transaction, String gameCode, int currentRound) {
         List<Story> stories = new ArrayList<>();
         for (int round = 0; round <= currentRound; round++) {
             Query roundStories = db.collection(PhasePaths.storiesPath(gameCode, round)).orderBy("insertOrder");
-            transaction.get(roundStories).get().getDocuments().forEach(document -> stories.add(document.toObject(Story.class)));
+            await(transaction.get(roundStories)).getDocuments().forEach(document -> stories.add(document.toObject(Story.class)));
         }
         return stories;
     }

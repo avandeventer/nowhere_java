@@ -1,5 +1,6 @@
 package client.nowhere.helper;
 
+import client.nowhere.util.GameReads;
 import client.nowhere.util.InMemoryCollaborativeTextDAO;
 
 import client.nowhere.dao.*;
@@ -49,8 +50,7 @@ public class DigidestinedBugReproTest {
         collaborativeTextHelper = new CollaborativeTextHelper(
                 gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
                 adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper, activeSessionDAO,
-                endingDAO
-        );
+                endingDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class DigidestinedBugReproTest {
         gameSession.setPlayers(List.of(player));
         gameSession.setStories(List.of(story));
 
-        when(gameSessionDAO.getGame("TEST1")).thenReturn(gameSession);
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> gameSession);
 
         List<OutcomeType> outcomeTypes = collaborativeTextHelper.getOutcomeTypes("TEST1", playerId);
 

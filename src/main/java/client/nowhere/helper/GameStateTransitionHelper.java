@@ -1,7 +1,6 @@
 package client.nowhere.helper;
 
 import client.nowhere.dao.ActiveSessionDAO;
-import client.nowhere.dao.GameSessionDAO;
 import client.nowhere.model.GameSession;
 import client.nowhere.model.GameState;
 import org.springframework.beans.factory.ObjectProvider;
@@ -31,17 +30,15 @@ import java.util.concurrent.Executors;
 public class GameStateTransitionHelper {
 
     private final GameSessionHelper gameSessionHelper;
-    private final GameSessionDAO gameSessionDAO;
     private final ActiveSessionDAO activeSessionDAO;
     private final TransitionQueue transitionQueue;
     private final Executor localExecutor;
 
     @Autowired
     public GameStateTransitionHelper(GameSessionHelper gameSessionHelper,
-                                 GameSessionDAO gameSessionDAO,
                                  ActiveSessionDAO activeSessionDAO,
                                  ObjectProvider<TransitionQueue> transitionQueue) {
-        this(gameSessionHelper, gameSessionDAO, activeSessionDAO, transitionQueue.getIfAvailable(), localExecutor());
+        this(gameSessionHelper, activeSessionDAO, transitionQueue.getIfAvailable(), localExecutor());
     }
 
     // On Cloud Run without a queue, background threads would get throttled CPU, so run the
@@ -58,12 +55,10 @@ public class GameStateTransitionHelper {
     }
 
     GameStateTransitionHelper(GameSessionHelper gameSessionHelper,
-                          GameSessionDAO gameSessionDAO,
                           ActiveSessionDAO activeSessionDAO,
                           TransitionQueue transitionQueue,
                           Executor localExecutor) {
         this.gameSessionHelper = gameSessionHelper;
-        this.gameSessionDAO = gameSessionDAO;
         this.activeSessionDAO = activeSessionDAO;
         this.transitionQueue = transitionQueue;
         this.localExecutor = localExecutor;
@@ -73,7 +68,7 @@ public class GameStateTransitionHelper {
     public GameSession nextGameState(String gameCode) {
         Optional<String> lockId = activeSessionDAO.lockTransition(gameCode, null, true);
         if (lockId.isEmpty()) {
-            return gameSessionDAO.getGame(gameCode);
+            return gameSessionHelper.getGame(gameCode);
         }
         return run(gameCode, lockId.get());
     }

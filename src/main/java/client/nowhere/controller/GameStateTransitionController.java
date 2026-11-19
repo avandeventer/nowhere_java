@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class GameStateTransitionController {
 
-    private final GameStateTransitionHelper phaseTransitionHelper;
+    private final GameStateTransitionHelper gameStateTransitionHelper;
 
     @Autowired
-    public GameStateTransitionController(GameStateTransitionHelper phaseTransitionHelper) {
-        this.phaseTransitionHelper = phaseTransitionHelper;
+    public GameStateTransitionController(GameStateTransitionHelper gameStateTransitionHelper) {
+        this.gameStateTransitionHelper = gameStateTransitionHelper;
     }
 
     @PostMapping("/internal/transitions")
@@ -29,14 +29,14 @@ public class GameStateTransitionController {
                                               @RequestParam String lockId,
                                               @RequestHeader(value = "Authorization", required = false) String authorization) {
         try {
-            phaseTransitionHelper.verifyQueuedRequest(authorization);
+            gameStateTransitionHelper.verifyQueuedRequest(authorization);
         } catch (ResourceException | IllegalStateException e) {
             System.out.println("Refused /internal/transitions for game " + gameCode + ": " + e.getMessage());
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         // Always 200 once verified: a failed transition releases its lock, so a retry would do
         // nothing anyway, and PUT /game/next can take over
-        phaseTransitionHelper.runQueued(gameCode, lockId);
+        gameStateTransitionHelper.runQueued(gameCode, lockId);
         return ResponseEntity.ok().build();
     }
 }

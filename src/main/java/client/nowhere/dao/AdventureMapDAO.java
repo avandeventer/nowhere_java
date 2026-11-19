@@ -4,14 +4,17 @@ import client.nowhere.exception.ResourceException;
 import client.nowhere.helper.PhasePaths;
 import client.nowhere.model.*;
 import com.google.api.core.ApiFuture;
+import com.google.api.core.ApiFutures;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.SetOptions;
+import com.google.cloud.firestore.Transaction;
 import com.google.cloud.firestore.WriteResult;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.slf4j.Logger;
@@ -150,12 +153,29 @@ public class AdventureMapDAO {
      */
     public AdventureMap get(String gameCode) {
         try {
-            DocumentSnapshot snapshot = gameSessionMapRef(gameCode).get().get();
-            return snapshot.exists() ? snapshot.toObject(AdventureMap.class) : null;
+            return getAsync(gameCode).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
             throw new ResourceException("There was an issue reading the game's adventure map", e);
         }
+    }
+
+    /** get without waiting, so a caller can read the game at the same time; see GameReadHelper. */
+    public ApiFuture<AdventureMap> getAsync(String gameCode) {
+        return ApiFutures.transform(gameSessionMapRef(gameCode).get(), AdventureMapDAO::toAdventureMap, MoreExecutors.directExecutor());
+    }
+
+    /** The game's adventure map, read inside txn. */
+    public AdventureMap getInTransaction(Transaction txn, String gameCode) {
+        try {
+            return toAdventureMap(txn.get(gameSessionMapRef(gameCode)).get());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new ResourceException("There was an issue reading the game's adventure map", e);
+        }
+    }
+
+    private static AdventureMap toAdventureMap(DocumentSnapshot snapshot) {
+        return snapshot.exists() ? snapshot.toObject(AdventureMap.class) : null;
     }
 
     public DocumentReference gameSessionMapRef(String gameCode) {

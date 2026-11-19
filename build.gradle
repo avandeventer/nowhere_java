@@ -81,6 +81,13 @@ tasks.register('integrationTest', Test) {
 	testClassesDirs = sourceSets.integrationTest.output.classesDirs
 	classpath = sourceSets.integrationTest.runtimeClasspath
 	useJUnitPlatform()
+	// One JVM per test class, run side by side. Each class creates its own game, so they don't
+	// share state - but they all hit the same sandbox backend, so run a single class on its own
+	// (--tests ...) when measuring latency. Override with -PintegrationForks=N (1 = sequential).
+	maxParallelForks = (project.findProperty('integrationForks') ?: '5') as int
+	forkEvery = 1
+	// These hit a live backend, so a run with unchanged code isn't "up to date" - always re-run.
+	outputs.upToDateWhen { false }
 	shouldRunAfter test
 }
 

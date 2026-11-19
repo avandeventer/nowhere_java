@@ -1,5 +1,6 @@
 package client.nowhere.helper;
 
+import client.nowhere.util.GameReads;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,14 +94,12 @@ public class GameSessionHelperTest {
         collaborativeTextHelper = new CollaborativeTextHelper(
                 gameSessionDAO, collaborativeTextDAO, adventureMapDAO,
                 adventureMapHelper, storyDAO, featureFlagHelper, outcomeTypeHelper,
-                activeSessionDAO, endingDAO
-        );
+                activeSessionDAO, endingDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
         // Construct GameSessionHelper with real CollaborativeTextHelper
         gameSessionHelper = new GameSessionHelper(
                 gameSessionDAO, adventureMapDAO, storyDAO, endingDAO,
                 userProfileHelper, featureFlagHelper, collaborativeTextHelper,
-                activeSessionDAO
-        );
+                activeSessionDAO, GameReads.gameReadHelper(gameSessionDAO, storyDAO, adventureMapDAO));
     }
 
     /**
@@ -124,7 +123,7 @@ public class GameSessionHelperTest {
         List<Player> players = createPlayers(playerCount);
         GameSession gameSession = createGameSession(currentGameState, playerIdAssignments, players, playedStoryPlayerIds);
 
-        when(gameSessionDAO.getGame(anyString())).thenAnswer(invocation -> deepCopy(gameSession));
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> deepCopy(gameSession));
         when(gameSessionDAO.getPlayers(anyString())).thenReturn(players);
         when(gameSessionDAO.updateGameSession(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(storyDAO.getStories(anyString())).thenAnswer(invocation -> gameSession.getStories());
@@ -449,7 +448,7 @@ public class GameSessionHelperTest {
         List<Location> locations = createTestLocations(players);
         gameSession.getAdventureMap().setLocations(locations);
         
-        when(gameSessionDAO.getGame(anyString())).thenAnswer(invocation -> deepCopy(gameSession));
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> deepCopy(gameSession));
         when(gameSessionDAO.getPlayers(anyString())).thenReturn(players);
         when(gameSessionDAO.updateGameSession(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(gameSessionDAO.updatePlayer(any(Player.class))).thenAnswer(invocation -> {
@@ -574,7 +573,7 @@ public class GameSessionHelperTest {
         gameSession.setUserProfileId(userId);
         
         // Mock the dependencies
-        when(gameSessionDAO.getGame(anyString())).thenAnswer(invocation -> deepCopy(gameSession));
+        GameReads.stub(gameSessionDAO, storyDAO, adventureMapDAO, code -> deepCopy(gameSession));
         when(gameSessionDAO.getPlayers(anyString())).thenReturn(players);
         when(gameSessionDAO.updateGameSession(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -677,8 +676,9 @@ public class GameSessionHelperTest {
         gameSession.getGameBoard().getPlayerCoordinates().setyCoordinate(yCoordinate);
 
         when(gameSessionDAO.getGame(gameCode))
-                .thenReturn(gameSession)
-                .thenAnswer(invocation -> existingGameSession);
+                .thenReturn(GameReads.gameDocumentOnly(gameSession))
+                .thenAnswer(invocation -> GameReads.gameDocumentOnly(existingGameSession));
+        GameReads.stubStoriesAndMap(storyDAO, adventureMapDAO, code -> gameSession);
         when(gameSessionDAO.updateGameSession(any(GameSession.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         when(featureFlagHelper.getFlagValue("locationVoting")).thenReturn(true);
@@ -761,8 +761,9 @@ public class GameSessionHelperTest {
 
         // Mock the dependencies
         when(gameSessionDAO.getGame(gameCode))
-                .thenReturn(gameSession)
-                .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson(testFileName));
+                .thenReturn(GameReads.gameDocumentOnly(gameSession))
+                .thenAnswer(invocation -> GameReads.gameDocumentOnly(TestJsonLoader.loadGameSessionFromJson(testFileName)));
+        GameReads.stubStoriesAndMap(storyDAO, adventureMapDAO, code -> gameSession);
         when(gameSessionDAO.updateGameSession(any(GameSession.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         when(featureFlagHelper.getFlagValue("includeTraits")).thenReturn(true);
@@ -1031,8 +1032,9 @@ public class GameSessionHelperTest {
         String gameCode = gameSession.getGameCode();
 
         when(gameSessionDAO.getGame(gameCode))
-                .thenReturn(gameSession)
-                .thenAnswer(invocation -> TestJsonLoader.loadGameSessionFromJson(testFileName));
+                .thenReturn(GameReads.gameDocumentOnly(gameSession))
+                .thenAnswer(invocation -> GameReads.gameDocumentOnly(TestJsonLoader.loadGameSessionFromJson(testFileName)));
+        GameReads.stubStoriesAndMap(storyDAO, adventureMapDAO, code -> gameSession);
         when(gameSessionDAO.updateGameSession(any(GameSession.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         when(featureFlagHelper.getFlagValue("includeTraits")).thenReturn(true);
