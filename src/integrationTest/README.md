@@ -9,6 +9,13 @@ pivot" below. This file is the up-to-date source of truth for where things actua
 > **Latest work (2026-10-25): backend latency.** See "Latency work (in progress)" below for where
 > things stand, the measurements so far, and next steps. The rest of this section is from 2026-08-10.
 
+> **Parallel runs (2026-11-18):** `./gradlew integrationTest` runs test classes in parallel, one
+> JVM per class (`maxParallelForks`, default 5). Use `-PintegrationForks=1` to run them one at a
+> time. Every class still hits the one sandbox backend, so parallel runs push latency up. When
+> collecting `LatencyLog` numbers, run a single class (`--tests ...`) or use `-PintegrationForks=1`.
+> Gradle's console can mix stdout from the different JVMs; per-class output is kept separate in
+> `build/reports/tests/integrationTest/`.
+
 ## Current state (as of pausing this session, 2026-08-10)
 
 `FullGameScenario` is now a single, self-contained engine (no more separate scenario-hook class) —
