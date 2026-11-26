@@ -14,6 +14,12 @@ public class AdventureMap {
     Story ritual;
     List<EncounterLabel> encounterLabels;
     List<Trait> traits;
+    /**
+     * Goes up each time a master map is published to /maps (see MasterAdventureMapSyncHelper).
+     * A profile's copy older than the global one is replaced when that user logs in.
+     * updateFrom never copies it, so a client sending back an old copy can't change it.
+     */
+    long version;
 
     public AdventureMap() {
         this.name = "";
@@ -270,6 +276,14 @@ public class AdventureMap {
 
     public void setTraits(List<Trait> traits) {
         this.traits = traits;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
     }
 
     public void updateTraits(List<Trait> traits) {

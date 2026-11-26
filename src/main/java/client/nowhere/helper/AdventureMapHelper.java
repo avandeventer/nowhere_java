@@ -17,18 +17,21 @@ public class AdventureMapHelper {
     private final GameSessionDAO gameSessionDAO;
     private final StoryHelper storyHelper;
     private final StoryDAO storyDAO;
+    private final MasterAdventureMapSyncHelper masterAdventureMapSyncHelper;
 
     @Autowired
     public AdventureMapHelper(
             AdventureMapDAO adventureMapDAO,
             GameSessionDAO gameSessionDAO,
             StoryHelper storyHelper,
-            StoryDAO storyDAO
+            StoryDAO storyDAO,
+            MasterAdventureMapSyncHelper masterAdventureMapSyncHelper
     ) {
         this.adventureMapDAO = adventureMapDAO;
         this.gameSessionDAO = gameSessionDAO;
         this.storyHelper = storyHelper;
         this.storyDAO = storyDAO;
+        this.masterAdventureMapSyncHelper = masterAdventureMapSyncHelper;
     }
 
     public List<Location> getGameLocations(String gameCode) {
@@ -87,24 +90,38 @@ public class AdventureMapHelper {
     }
 
     //User Profile Adventure Map Functions
+    // When the master profile edits a master map, each of these also publishes the result to /maps
+    // (see MasterAdventureMapSyncHelper)
     public AdventureMap create(String userProfileId, AdventureMap adventureMap) {
-        return this.adventureMapDAO.create(userProfileId, adventureMap);
+        AdventureMap createdMap = this.adventureMapDAO.create(userProfileId, adventureMap);
+        return publishIfMaster(userProfileId, createdMap);
     }
 
     public AdventureMap updateAdventureMap(String userProfileId, AdventureMap adventureMap) {
-        return this.adventureMapDAO.updateAdventureMap(userProfileId, adventureMap);
+        AdventureMap updatedMap = this.adventureMapDAO.updateAdventureMap(userProfileId, adventureMap);
+        return publishIfMaster(userProfileId, updatedMap);
     }
 
     public AdventureMap addLocation(String userProfileId, String adventureId, Location location) {
-        return this.adventureMapDAO.addLocation(userProfileId, adventureId, location);
+        AdventureMap updatedMap = this.adventureMapDAO.addLocation(userProfileId, adventureId, location);
+        return publishIfMaster(userProfileId, updatedMap);
     }
 
     public AdventureMap addStatType(String userProfileId, String adventureId, StatType statType) {
-        return this.adventureMapDAO.addStatTypeGlobal(userProfileId, adventureId, statType);
+        AdventureMap updatedMap = this.adventureMapDAO.addStatTypeGlobal(userProfileId, adventureId, statType);
+        return publishIfMaster(userProfileId, updatedMap);
     }
 
     public AdventureMap addRitualOption(String userProfileId, String adventureId, Option option) {
-        return this.adventureMapDAO.addRitualOption(userProfileId, adventureId, option);
+        AdventureMap updatedMap = this.adventureMapDAO.addRitualOption(userProfileId, adventureId, option);
+        return publishIfMaster(userProfileId, updatedMap);
+    }
+
+    private AdventureMap publishIfMaster(String userProfileId, AdventureMap profileMap) {
+        if (profileMap != null && masterAdventureMapSyncHelper.isMasterEdit(userProfileId, profileMap.getAdventureId())) {
+            return masterAdventureMapSyncHelper.publish(userProfileId, profileMap);
+        }
+        return profileMap;
     }
 
     public AdventureMap get(String userProfileId, String adventureId) {
