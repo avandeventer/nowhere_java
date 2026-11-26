@@ -15,12 +15,17 @@ public class UserProfileHelper {
     UserProfileDAO userProfileDAO;
     AdventureMapDAO adventureMapDAO;
     GameSessionDAO gameSessionDAO;
+    MasterAdventureMapSyncHelper masterAdventureMapSyncHelper;
 
     @Autowired
-    public UserProfileHelper(UserProfileDAO userProfileDAO, AdventureMapDAO adventureMapDAO, GameSessionDAO gameSessionDAO) {
+    public UserProfileHelper(UserProfileDAO userProfileDAO,
+                             AdventureMapDAO adventureMapDAO,
+                             GameSessionDAO gameSessionDAO,
+                             MasterAdventureMapSyncHelper masterAdventureMapSyncHelper) {
         this.userProfileDAO = userProfileDAO;
         this.adventureMapDAO = adventureMapDAO;
         this.gameSessionDAO = gameSessionDAO;
+        this.masterAdventureMapSyncHelper = masterAdventureMapSyncHelper;
     }
 
     public UserProfile create(UserProfile userProfile) {
@@ -72,8 +77,11 @@ public class UserProfileHelper {
         return saveGameId;
     }
 
+    /** Logs in, first bringing the profile's copies of the master maps up to date. */
     public UserProfile get(String email, String password) {
-        return this.userProfileDAO.get(email, password);
+        UserProfile userProfile = this.userProfileDAO.get(email, password);
+        this.masterAdventureMapSyncHelper.syncOnLogin(userProfile);
+        return userProfile;
     }
 
     public SaveGame upsertSaveGame(String userProfileId, String adventureId, SaveGame saveGame) {

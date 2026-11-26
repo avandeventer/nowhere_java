@@ -70,6 +70,24 @@ src/main/java/client/nowhere/
 | `CollaborativeTextPhase` | In-memory view of one phase: its `TextSubmission[]` plus the votes for the current vote. Not stored as one object: `CollaborativeTextDAO` keeps each submission, ballot (`PlayerBallot`) and player's views in its own document under `gameSessions/{gameCode}/rounds/{round}/...phases/{phaseId}/`, by round (and encounter, for per-encounter votes) via `PhasePaths`. See `src/docs/.OUTCOMES.md`, "Where phase data lives" |
 | `CollaborativePhaseTypeInstructions` | Per-phase writing config: `phaseModeInstructions`, `contributionPhaseInstructions`, `characterLimit` |
 
+### Master adventure maps
+
+Global maps live in `/maps/{adventureId}`. Each user profile keeps its own copy at
+`userProfiles/{id}.maps.{adventureId}` = `{ adventureMap, saveGames }`. Some global maps are
+**master maps** (`nowhere.master-maps.adventure-ids`), edited by one or more **master profiles**
+(`nowhere.master-maps.master-profile-ids`) and kept in step for every user by `MasterAdventureMapSyncHelper`:
+
+- **Publish:** when a master profile edits a master map through `/user-profile/{id}/adventure-map`
+  (POST, PUT, `/location`, `/stat-type` or `/ritual-option`), the edited map is written to `/maps` with
+  `AdventureMap.version` one above the global version, and written back to that master's profile.
+  A direct `PUT /adventure-map` (global) also raises the version.
+- **Sync on login:** `GET /user-profile` replaces the profile's copy whose `version` is below the
+  global one. This includes master profiles, so each master starts from the others' latest edits. It writes only `maps.{id}.adventureMap`, so `saveGames` and the profile's other maps are
+  untouched. If the profile doesn't have the map, it is added with one new empty save game. The sync is a
+  **full overwrite**: that user's own edits to a master map are lost, and deletions the master makes reach
+  everyone. A sync failure is logged and never blocks login.
+- The edit endpoints don't authenticate, so anyone who sends a master profile id can publish.
+
 ---
 
 ## Collaborative Writing Modes

@@ -68,32 +68,39 @@ public class AdventureMapDAO {
     }
 
     public AdventureMap createGlobal(AdventureMap adventureMap) {
+        return setGlobal(adventureMap);
+    }
+
+    /** Replaces /maps/{adventureId} with adventureMap. */
+    public AdventureMap setGlobal(AdventureMap adventureMap) {
         try {
             DocumentReference globalAdventureMapRef = db.collection("maps").document(adventureMap.getAdventureId());
-            ApiFuture<WriteResult> result = globalAdventureMapRef.set(adventureMap);
-            WriteResult asyncResponse = result.get();
-            System.out.println("Update time : " + result.get().toString());
+            globalAdventureMapRef.set(adventureMap).get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            throw new ResourceException("There was an issue creating the game session", e);
+            throw new ResourceException("There was an issue writing the global adventure map", e);
         }
         return adventureMap;
     }
 
     public AdventureMap updateGlobal(AdventureMap adventureMapUpdates) {
-        try {
-            DocumentReference globalAdventureMapRef = db.collection("maps").document(adventureMapUpdates.getAdventureId());
-            AdventureMap existingAdventureMap = FirestoreDAOUtil.mapDatabaseObject(globalAdventureMapRef, AdventureMap.class);
-            existingAdventureMap.updateAdventureMapDisplay(adventureMapUpdates);
+        DocumentReference globalAdventureMapRef = db.collection("maps").document(adventureMapUpdates.getAdventureId());
+        AdventureMap existingAdventureMap = FirestoreDAOUtil.mapDatabaseObject(globalAdventureMapRef, AdventureMap.class);
+        existingAdventureMap.updateFrom(adventureMapUpdates);
+        // A direct edit of the global map is a new version too, so profiles pick it up on login
+        existingAdventureMap.setVersion(existingAdventureMap.getVersion() + 1);
+        return setGlobal(existingAdventureMap);
+    }
 
-            ApiFuture<WriteResult> result = globalAdventureMapRef.set(adventureMapUpdates);
-            WriteResult asyncResponse = result.get();
-            System.out.println("Update time : " + result.get().toString());
+    /** /maps/{adventureId}, or null when there is no such global map. */
+    public AdventureMap findGlobal(String adventureId) {
+        try {
+            DocumentSnapshot snapshot = db.collection("maps").document(adventureId).get().get();
+            return toAdventureMap(snapshot);
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            throw new ResourceException("There was an issue creating the game session", e);
+            throw new ResourceException("There was an issue reading the global adventure map", e);
         }
-        return adventureMapUpdates;
     }
 
     public AdventureMap updateAdventureMap(String userProfileId, AdventureMap adventureMapUpdates) {

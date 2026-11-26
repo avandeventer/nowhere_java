@@ -268,22 +268,35 @@ public class UserProfileDAO {
     }
 
     /**
-     * Adds an adventure map to the user's profile if it doesn't already exist
+     * Replaces only the map part of the profile's maps.{adventureId} entry with adventureMap.
+     * The entry's saveGames and the profile's other maps are not touched.
+     */
+    public void replaceProfileAdventureMap(String userProfileId, AdventureMap adventureMap) {
+        try {
+            db.collection("userProfiles").document(userProfileId)
+                    .update(FieldPath.of("maps", adventureMap.getAdventureId(), "adventureMap"), adventureMap)
+                    .get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            throw new ResourceException("Error replacing adventure map on user profile. User Profile ID: " + userProfileId + ", adventure " + adventureMap.getAdventureId());
+        }
+    }
+
+    /**
+     * Adds an adventure map, with one new empty save game, to the user's profile as
+     * maps.{adventureId}. Callers check first that the profile doesn't already have it, since an
+     * existing entry (and its save games) would be replaced.
      * @param userProfileId The user's profile ID
      * @param adventureMap The adventure map to add
-     * @return true if the adventure map was added, false if it already existed
+     * @return the ProfileAdventureMap that was written
      */
     public ProfileAdventureMap addAdventureMap(String userProfileId, AdventureMap adventureMap) {
         try {
             DocumentReference userProfileRef = db.collection("userProfiles").document(userProfileId);
-            DocumentSnapshot userProfileSnapshot = FirestoreDAOUtil.getDocumentSnapshot(userProfileRef);
-            UserProfile userProfile = FirestoreDAOUtil.mapUserProfile(userProfileSnapshot);
-
             ProfileAdventureMap profileAdventureMap = new ProfileAdventureMap(adventureMap);
-            userProfile.upsertProfileAdventureMap(profileAdventureMap);
 
-            ApiFuture<WriteResult> result = userProfileRef.update("maps", userProfile.getMaps());
-            result.get();
+            // Writes only maps.{adventureId}: the profile's other maps are neither read nor rewritten
+            userProfileRef.update(FieldPath.of("maps", adventureMap.getAdventureId()), profileAdventureMap).get();
 
             return profileAdventureMap;
         } catch (InterruptedException | ExecutionException e) {
